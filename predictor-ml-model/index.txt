@@ -1,0 +1,12 @@
+train-matches-FOOTBALL-holland.csv
+predictor_pkg.egg-info
+res
+test-matches-FOOTBALL-holland.csv
+index.txt
+.gitignore
+src
+dist
+.idea
+.git
+build
+setup.py

@@ -1,0 +1,83 @@
+package com.timmytime.predictordatareactive.service.impl;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.timmytime.predictordatareactive.model.Result;
+import com.timmytime.predictordatareactive.repo.ResultRepo;
+import com.timmytime.predictordatareactive.service.MessageReceivedService;
+import com.timmytime.predictordatareactive.service.ResultService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
+import reactor.core.publisher.Mono;
+
+import java.util.function.Consumer;
+
+
+@Service("messageReceivedService")
+public class MessageReceivedServiceImpl implements MessageReceivedService {
+
+    private final Logger log = LoggerFactory.getLogger(MessageReceivedServiceImpl.class);
+
+    private final ResultService resultService;
+
+    private Consumer<JsonNode> receive;
+    private final Flux<JsonNode> results;
+
+    @Autowired
+    public MessageReceivedServiceImpl(
+            ResultService resultService
+    ) {
+        this.resultService = resultService;
+
+        this.results = Flux.push(sink ->
+                MessageReceivedServiceImpl.this.receive = (t) -> sink.next(t), FluxSink.OverflowStrategy.DROP);
+
+        this.results.subscribe(this::process);
+    }
+
+
+
+    @Override
+    public Mono<Void> receive(Mono<JsonNode> received) {
+        return
+                received.doOnNext(receive::accept)
+                        .thenEmpty(Mono.empty());
+    }
+
+    @Override
+    public Mono<Void> completed() {
+        log.info("completed scrape message received");
+        //shut down the scraper service with lambda call.
+        return Mono.empty();
+    }
+
+    private void process(JsonNode received) {
+
+        Integer matchId = received.get("matchId").asInt();
+        String type = received.get("type").textValue();
+        log.info("match: {} received message {}", matchId, received.toString());
+
+        resultService.findByMatch(matchId)
+                .subscribe(result -> {
+                    log.info("we have a record {}", result.getMatchId());
+                    switch (type) {
+                        case "result":
+                            result.setResult(received.toString());
+                            break;
+                        case "lineup":
+                            result.setLineup(received.toString());
+                            break;
+                        case "match":
+                            result.setMatch(received.toString());
+                            break;
+                    }
+
+                    resultService.process(result);
+                });
+
+    }
+
+}

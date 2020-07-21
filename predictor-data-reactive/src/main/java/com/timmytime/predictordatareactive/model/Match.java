@@ -1,0 +1,37 @@
+package com.timmytime.predictordatareactive.model;
+
+
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+@Getter
+@Setter
+@Document
+@NoArgsConstructor
+public class Match  {
+
+    @Id
+    private UUID id;
+    private LocalDateTime date;
+
+    //need to remove this too
+    private List<UUID> teams = new ArrayList<>();
+    //to remove this.
+    private Stats stats;
+
+    //replacement fields
+    private UUID homeTeam;
+    private UUID awayTeam;
+    private Integer homeScore;
+    private Integer awayScore;
+
+}
