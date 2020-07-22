@@ -2,53 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b6e64a2f-df01-4001-85a4-1cb3a0a01cb0" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/predictor-config/predictor-scraper-reactive.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/predictor-events-reactive/src/main/java/com/timmytime/predictoreventsreactive/model/Match.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/predictor-events-reactive/src/main/java/com/timmytime/predictoreventsreactive/service/ValidationService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/predictor-events-reactive/src/main/java/com/timmytime/predictoreventsreactive/service/impl/ValidationServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/predictor-events-reactive/src/test/java/com/timmytime/predictoreventsreactive/service/impl/ValidationServiceImplTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/predictor-players-reactive/src/main/java/com/timmytime/predictorplayersreactive/service/ValidationService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/predictor-players-reactive/src/main/java/com/timmytime/predictorplayersreactive/service/impl/ValidationServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/predictor-teams-reactive/src/test/java/com/timmytime/predictorteamsreactive/service/impl/TrainingServiceImplTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-data-reactive/src/main/java/com/timmytime/predictordatareactive/handler/MatchHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-data-reactive/src/main/java/com/timmytime/predictordatareactive/handler/MatchHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-data-reactive/src/main/java/com/timmytime/predictordatareactive/repo/MatchRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-data-reactive/src/main/java/com/timmytime/predictordatareactive/repo/MatchRepo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-data-reactive/src/main/java/com/timmytime/predictordatareactive/router/MatchFunction.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-data-reactive/src/main/java/com/timmytime/predictordatareactive/router/MatchFunction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-data-reactive/src/main/java/com/timmytime/predictordatareactive/service/MatchService.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-data-reactive/src/main/java/com/timmytime/predictordatareactive/service/MatchService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-data-reactive/src/main/java/com/timmytime/predictordatareactive/service/impl/MatchServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-data-reactive/src/main/java/com/timmytime/predictordatareactive/service/impl/MatchServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-events-reactive/src/main/java/com/timmytime/predictoreventsreactive/facade/WebClientFacade.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-events-reactive/src/main/java/com/timmytime/predictoreventsreactive/facade/WebClientFacade.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-events-reactive/src/main/java/com/timmytime/predictoreventsreactive/model/EventOutcome.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-events-reactive/src/main/java/com/timmytime/predictoreventsreactive/model/EventOutcome.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-events-reactive/src/main/java/com/timmytime/predictoreventsreactive/repo/EventOutcomeRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-events-reactive/src/main/java/com/timmytime/predictoreventsreactive/repo/EventOutcomeRepo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-events-reactive/src/main/java/com/timmytime/predictoreventsreactive/service/EventOutcomeService.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-events-reactive/src/main/java/com/timmytime/predictoreventsreactive/service/EventOutcomeService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-events-reactive/src/main/java/com/timmytime/predictoreventsreactive/service/impl/EventOutcomeServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-events-reactive/src/main/java/com/timmytime/predictoreventsreactive/service/impl/EventOutcomeServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-events-reactive/src/main/java/com/timmytime/predictoreventsreactive/service/impl/MessageReceivedServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-events-reactive/src/main/java/com/timmytime/predictoreventsreactive/service/impl/MessageReceivedServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/predictor_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/predictor_api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/train/match_goals_train.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/train/match_goals_train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/train/match_result_train.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/train/match_result_train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/util/model_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/util/model_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/util/training_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/util/training_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/util/model_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/util/model_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/util/training_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/util/training_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-players-reactive/src/main/java/com/timmytime/predictorplayersreactive/enumerator/ApplicableFantasyLeagues.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-players-reactive/src/main/java/com/timmytime/predictorplayersreactive/enumerator/ApplicableFantasyLeagues.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-players-reactive/src/main/java/com/timmytime/predictorplayersreactive/model/PlayersTrainingHistory.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-players-reactive/src/main/java/com/timmytime/predictorplayersreactive/model/PlayersTrainingHistory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-players-reactive/src/main/java/com/timmytime/predictorplayersreactive/service/impl/MessageReceivedServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-players-reactive/src/main/java/com/timmytime/predictorplayersreactive/service/impl/MessageReceivedServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-players-reactive/src/main/java/com/timmytime/predictorplayersreactive/service/impl/TensorflowTrainingServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-players-reactive/src/main/java/com/timmytime/predictorplayersreactive/service/impl/TensorflowTrainingServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-players-reactive/src/main/java/com/timmytime/predictorplayersreactive/service/impl/TrainingServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-players-reactive/src/main/java/com/timmytime/predictorplayersreactive/service/impl/TrainingServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-players-reactive/src/test/java/com/timmytime/predictorplayersreactive/MachineLearningTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-players-reactive/src/test/java/com/timmytime/predictorplayersreactive/MachineLearningTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-players-reactive/src/test/java/com/timmytime/predictorplayersreactive/service/impl/MessageReceivedServiceImplTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-players-reactive/src/test/java/com/timmytime/predictorplayersreactive/service/impl/MessageReceivedServiceImplTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-teams-reactive/src/main/java/com/timmytime/predictorteamsreactive/handler/MessageHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-teams-reactive/src/main/java/com/timmytime/predictorteamsreactive/handler/MessageHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-teams-reactive/src/main/java/com/timmytime/predictorteamsreactive/model/TrainingHistory.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-teams-reactive/src/main/java/com/timmytime/predictorteamsreactive/model/TrainingHistory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-teams-reactive/src/main/java/com/timmytime/predictorteamsreactive/router/MessageFunction.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-teams-reactive/src/main/java/com/timmytime/predictorteamsreactive/router/MessageFunction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-teams-reactive/src/main/java/com/timmytime/predictorteamsreactive/service/MessageReceivedService.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-teams-reactive/src/main/java/com/timmytime/predictorteamsreactive/service/MessageReceivedService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-teams-reactive/src/main/java/com/timmytime/predictorteamsreactive/service/TensorflowDataService.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-teams-reactive/src/main/java/com/timmytime/predictorteamsreactive/service/TensorflowDataService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-teams-reactive/src/main/java/com/timmytime/predictorteamsreactive/service/TrainingHistoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-teams-reactive/src/main/java/com/timmytime/predictorteamsreactive/service/TrainingHistoryService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-teams-reactive/src/main/java/com/timmytime/predictorteamsreactive/service/TrainingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-teams-reactive/src/main/java/com/timmytime/predictorteamsreactive/service/TrainingService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-teams-reactive/src/main/java/com/timmytime/predictorteamsreactive/service/impl/MessageReceivedServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-teams-reactive/src/main/java/com/timmytime/predictorteamsreactive/service/impl/MessageReceivedServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-teams-reactive/src/main/java/com/timmytime/predictorteamsreactive/service/impl/TensorflowDataServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-teams-reactive/src/main/java/com/timmytime/predictorteamsreactive/service/impl/TensorflowDataServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-teams-reactive/src/main/java/com/timmytime/predictorteamsreactive/service/impl/TrainingHistoryServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-teams-reactive/src/main/java/com/timmytime/predictorteamsreactive/service/impl/TrainingHistoryServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-teams-reactive/src/main/java/com/timmytime/predictorteamsreactive/service/impl/TrainingServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-teams-reactive/src/main/java/com/timmytime/predictorteamsreactive/service/impl/TrainingServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-teams-reactive/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-teams-reactive/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-teams-reactive/src/test/java/com/timmytime/predictorteamsreactive/service/impl/MessageReceivedServiceImplTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-teams-reactive/src/test/java/com/timmytime/predictorteamsreactive/service/impl/MessageReceivedServiceImplTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-data-reactive/src/main/java/com/timmytime/predictordatareactive/model/Lineup.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-data-reactive/src/main/java/com/timmytime/predictordatareactive/model/Lineup.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-data-reactive/src/main/java/com/timmytime/predictordatareactive/model/Match.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-data-reactive/src/main/java/com/timmytime/predictordatareactive/model/Match.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-data-reactive/src/main/java/com/timmytime/predictordatareactive/model/Stats.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-data-reactive/src/main/java/com/timmytime/predictordatareactive/model/TeamStats.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-data-reactive/src/main/java/com/timmytime/predictordatareactive/repo/TeamStatsRepo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-data-reactive/src/main/java/com/timmytime/predictordatareactive/service/DataRepairService.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-data-reactive/src/main/java/com/timmytime/predictordatareactive/service/DataRepairService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-data-reactive/src/main/java/com/timmytime/predictordatareactive/service/TeamStatsService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-data-reactive/src/main/java/com/timmytime/predictordatareactive/service/impl/DataRepairServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-data-reactive/src/main/java/com/timmytime/predictordatareactive/service/impl/DataRepairServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-data-reactive/src/main/java/com/timmytime/predictordatareactive/service/impl/TeamStatsServiceImpl.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,6 +30,9 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="1f2CPhbd8n2Nkfo5a2mNAjORpsp" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -201,30 +167,34 @@
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="476" y="130" width="1024" height="845" key="#Project_Structure/67.27.1853.1053@67.27.1853.1053" timestamp="1595416983925" />
-    <state x="801" y="260" width="374" height="585" key="#com.intellij.ide.util.MemberChooser" timestamp="1595422701446">
+    <state x="801" y="260" width="374" height="585" key="#com.intellij.ide.util.MemberChooser" timestamp="1595429128473">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="801" y="260" width="374" height="585" key="#com.intellij.ide.util.MemberChooser/67.27.1853.1053@67.27.1853.1053" timestamp="1595422701446" />
+    <state x="801" y="260" width="374" height="585" key="#com.intellij.ide.util.MemberChooser/67.27.1853.1053@67.27.1853.1053" timestamp="1595429128473" />
     <state x="699" y="222" width="575" height="661" key="#com.intellij.ide.util.frameworkSupport.AddFrameworkSupportDialog" timestamp="1595408602895">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="699" y="222" width="575" height="661" key="#com.intellij.ide.util.frameworkSupport.AddFrameworkSupportDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1595408602895" />
-    <state width="1807" height="278" key="GridCell.Tab.0.bottom" timestamp="1595422750782">
+    <state x="726" y="301" width="524" height="502" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1595429070404">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1807" height="278" key="GridCell.Tab.0.bottom/67.27.1853.1053@67.27.1853.1053" timestamp="1595422750782" />
-    <state width="1807" height="278" key="GridCell.Tab.0.center" timestamp="1595422750781">
+    <state x="726" y="301" width="524" height="502" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1595429070404" />
+    <state width="1807" height="219" key="GridCell.Tab.0.bottom" timestamp="1595428974734">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1807" height="278" key="GridCell.Tab.0.center/67.27.1853.1053@67.27.1853.1053" timestamp="1595422750781" />
-    <state width="1807" height="278" key="GridCell.Tab.0.left" timestamp="1595422750780">
+    <state width="1807" height="219" key="GridCell.Tab.0.bottom/67.27.1853.1053@67.27.1853.1053" timestamp="1595428974734" />
+    <state width="1807" height="219" key="GridCell.Tab.0.center" timestamp="1595428974732">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1807" height="278" key="GridCell.Tab.0.left/67.27.1853.1053@67.27.1853.1053" timestamp="1595422750780" />
-    <state width="1807" height="278" key="GridCell.Tab.0.right" timestamp="1595422750781">
+    <state width="1807" height="219" key="GridCell.Tab.0.center/67.27.1853.1053@67.27.1853.1053" timestamp="1595428974732" />
+    <state width="1807" height="219" key="GridCell.Tab.0.left" timestamp="1595428974730">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1807" height="278" key="GridCell.Tab.0.right/67.27.1853.1053@67.27.1853.1053" timestamp="1595422750781" />
+    <state width="1807" height="219" key="GridCell.Tab.0.left/67.27.1853.1053@67.27.1853.1053" timestamp="1595428974730" />
+    <state width="1807" height="219" key="GridCell.Tab.0.right" timestamp="1595428974733">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state width="1807" height="219" key="GridCell.Tab.0.right/67.27.1853.1053@67.27.1853.1053" timestamp="1595428974733" />
     <state width="1807" height="344" key="GridCell.Tab.1.bottom" timestamp="1595422618687">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>

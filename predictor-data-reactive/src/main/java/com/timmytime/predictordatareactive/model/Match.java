@@ -23,11 +23,6 @@ public class Match  {
     private UUID id;
     private LocalDateTime date;
 
-    //need to remove this too
-    private List<UUID> teams = new ArrayList<>();
-    //to remove this.
-    private Stats stats;
-
     //replacement fields
     private UUID homeTeam;
     private UUID awayTeam;

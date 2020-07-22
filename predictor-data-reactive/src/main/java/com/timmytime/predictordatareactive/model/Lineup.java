@@ -25,9 +25,4 @@ public class Lineup {
     //new fields
     private UUID matchId;
 
-    //remove these...all are players.  time is indicator of if they played or not.
-    private List<LineupPlayer> players = new ArrayList<>();
-    private List<LineupPlayer> nonPlayingSubs = new ArrayList<>();
-    private List<LineupPlayer> playingSubs = new ArrayList<>();
-
 }
