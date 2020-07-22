@@ -8,6 +8,7 @@ import java.util.UUID;
 public interface TrainingHistoryService {
     TrainingHistory create(Message message);
     TrainingHistory find(UUID id);
-    void save(TrainingHistory trainingHistory);
+    TrainingHistory save(TrainingHistory trainingHistory);
     Boolean finished();
+    TrainingHistory find(String country);
 }

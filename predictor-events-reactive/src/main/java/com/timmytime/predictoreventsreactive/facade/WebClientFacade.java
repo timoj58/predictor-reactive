@@ -2,9 +2,11 @@ package com.timmytime.predictoreventsreactive.facade;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.timmytime.predictoreventsreactive.model.Match;
 import com.timmytime.predictoreventsreactive.request.Prediction;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -29,6 +31,14 @@ public class WebClientFacade {
                 ), JsonNode.class)
                 .exchange()
                 .subscribe();
+    }
+
+    public Mono<Match> getMatch(String url){
+        return WebClient.builder().build()
+                .get()
+                .uri(url)
+                .retrieve()
+                .bodyToMono(Match.class);
 
     }
 }

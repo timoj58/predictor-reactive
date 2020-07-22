@@ -40,4 +40,13 @@ public class MessageHandler {
                 )
         );
     }
+
+    public Mono<ServerResponse> historicTraining(ServerRequest request) {
+
+        return ServerResponse.ok().build(
+                messageReceivedService.historicTraining(
+                        UUID.fromString(request.queryParam("id").get())
+                )
+        );
+    }
 }

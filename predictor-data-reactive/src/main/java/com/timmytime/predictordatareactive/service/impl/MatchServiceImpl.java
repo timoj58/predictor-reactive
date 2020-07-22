@@ -51,6 +51,14 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
+    public Mono<Match> getMatch(UUID home, UUID away, String date) {
+        return matchRepo.findByHomeTeamAndAwayTeam(home,away)
+                .filter(f -> f.getDate().toLocalDate().equals(LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"))))
+                .next();
+
+    }
+
+    @Override
     public Flux<Match> getMatches(UUID team) {
 
         return Flux.concat(

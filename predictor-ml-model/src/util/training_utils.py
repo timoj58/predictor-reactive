@@ -28,16 +28,8 @@ def create_train_path(country):
     return train_path
 
 def create_data_range(learning_cfg, history_file, country):
-    competition_count = cache_utils.get_competitions_per_country(cache_utils.COMPETITIONS_BY_COUNTRY_URL, country)
 
-    if learning_cfg['historic']:
-      data_range = model_utils.create_range(int(learning_cfg['months_per_cycle']), learning_cfg)
-
-      if competition_count > 2:
-        data_range = model_utils.create_range(int(learning_cfg['months_per_cycle']/2), learning_cfg)
-
-    else:
-     data_range = model_utils.real_time_range(
+    data_range = model_utils.real_time_range(
         start_day=train_history_utils.get_history(filename=history_file, key=country)['end_day'],
         start_month=train_history_utils.get_history(filename=history_file, key=country)['end_month'],
         start_year=train_history_utils.get_history(filename=history_file, key=country)['end_year'])

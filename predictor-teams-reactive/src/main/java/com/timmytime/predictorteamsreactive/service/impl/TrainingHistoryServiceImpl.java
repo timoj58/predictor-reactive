@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -50,13 +52,18 @@ public class TrainingHistoryServiceImpl implements TrainingHistoryService {
     }
 
     @Override
-    public void save(TrainingHistory trainingHistory) {
-        trainingHistoryRepo.save(trainingHistory);
+    public TrainingHistory save(TrainingHistory trainingHistory) {
+        return trainingHistoryRepo.save(trainingHistory);
     }
 
     @Override
     public Boolean finished() {
         return trainingHistoryRepo.findByCompletedFalse().isEmpty();
+    }
+
+    @Override
+    public TrainingHistory find(String country) {
+        return trainingHistoryRepo.findByCountryOrderByDateDesc(country.toLowerCase()).stream().findFirst().get();
     }
 
     @PostConstruct
@@ -68,12 +75,12 @@ public class TrainingHistoryServiceImpl implements TrainingHistoryService {
                     CountryCompetitions.values()
             ).stream()
                     .forEach(country -> {
-                        //TODO need to set the real from -> to dates in the config as per the machine learning config
                         TrainingHistory trainingHistory = new TrainingHistory(
                                 country.name().toLowerCase(),
-                                LocalDateTime.now().minusDays(10),
-                                LocalDateTime.now().minusDays(5));
+                                LocalDate.parse("01-08-2009", DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay(),
+                                LocalDate.parse("01-08-2009", DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay());
 
+                        trainingHistory.setCompleted(Boolean.TRUE);
                         trainingHistoryRepo.save(trainingHistory);
                     });
 

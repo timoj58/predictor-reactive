@@ -10,4 +10,5 @@ import java.util.List;
 public interface TensorflowDataService {
     void load(CountryMatch match);
     List<CompetitionEventOutcomeCsv> getCountryCsv(String country, String fromDate, String toDate);
+    void clear(String country);
 }

@@ -5,6 +5,7 @@ import com.timmytime.predictorteamsreactive.model.Message;
 import com.timmytime.predictorteamsreactive.model.TrainingHistory;
 import com.timmytime.predictorteamsreactive.service.CompetitionService;
 import com.timmytime.predictorteamsreactive.service.TrainingHistoryService;
+import com.timmytime.predictorteamsreactive.service.TrainingService;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
@@ -18,12 +19,15 @@ class MessageReceivedServiceImplTest {
     private final CompetitionService competitionService = mock(CompetitionService.class);
     private final TrainingHistoryService trainingHistoryService = mock(TrainingHistoryService.class);
     private final WebClientFacade webClientFacade = mock(WebClientFacade.class);
+    private final TrainingService trainingService = mock(TrainingService.class);
 
     private final MessageReceivedServiceImpl messageReceivedService
             = new MessageReceivedServiceImpl(
                     "dummy",
+            "dummy",
             competitionService,
             trainingHistoryService,
+            trainingService,
             webClientFacade);
 
     @Test
@@ -74,7 +78,7 @@ class MessageReceivedServiceImplTest {
         TrainingHistory trainingHistory = new TrainingHistory();
         trainingHistory.setCountry("england");
 
-        when(trainingHistoryService.find(any())).thenReturn(trainingHistory);
+        when(trainingHistoryService.find(any(UUID.class))).thenReturn(trainingHistory);
         when(trainingHistoryService.finished()).thenReturn(Boolean.TRUE);
 
         messageReceivedService.training(UUID.randomUUID()).subscribe();
@@ -88,7 +92,7 @@ class MessageReceivedServiceImplTest {
     @Test
     public void trainingNotFinishedTest() throws InterruptedException {
 
-        when(trainingHistoryService.find(any())).thenReturn(new TrainingHistory());
+        when(trainingHistoryService.find(any(UUID.class))).thenReturn(new TrainingHistory());
         when(trainingHistoryService.finished()).thenReturn(Boolean.FALSE);
 
         messageReceivedService.training(UUID.randomUUID()).subscribe();

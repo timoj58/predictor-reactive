@@ -9,6 +9,7 @@ import com.timmytime.predictoreventsreactive.facade.WebClientFacade;
 import com.timmytime.predictoreventsreactive.request.Message;
 import com.timmytime.predictoreventsreactive.service.MessageReceivedService;
 import com.timmytime.predictoreventsreactive.service.PredictionService;
+import com.timmytime.predictoreventsreactive.service.ValidationService;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     private final Map<String, List<Messages>> messages = new HashMap<>();
 
     private final PredictionService predictionService;
+    private final ValidationService validationService;
     private final WebClientFacade webClientFacade;
 
     private final String playersHost;
@@ -34,10 +36,12 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     public MessageReceivedServiceImpl(
             @Value("${players.host}") String playersHost,
             PredictionService predictionService,
+            ValidationService validationService,
             WebClientFacade webClientFacade
     ){
         this.playersHost = playersHost;
         this.predictionService = predictionService;
+        this.validationService = validationService;
         this.webClientFacade = webClientFacade;
 
         Arrays.asList(CountryCompetitions.values())
@@ -54,6 +58,9 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                     messages.get(msg.getCountry()).add(msg.getType());
 
                     if(messages.get(msg.getCountry()).containsAll(Arrays.asList(Messages.values()))){
+                        //should chain these as a pipeline, though they are not actually linked.
+                        validationService.resetLast(msg.getCountry());
+                        validationService.validate(msg.getCountry());
                         webClientFacade.sendMessage(playersHost+"/message", createMessage(msg.getCountry()));
                         predictionService.start(msg.getCountry());
                     }

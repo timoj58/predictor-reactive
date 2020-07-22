@@ -8,10 +8,7 @@ import com.timmytime.predictorteamsreactive.facade.WebClientFacade;
 import com.timmytime.predictorteamsreactive.model.Message;
 import com.timmytime.predictorteamsreactive.model.TrainingHistory;
 import com.timmytime.predictorteamsreactive.repo.TrainingHistoryRepo;
-import com.timmytime.predictorteamsreactive.service.CompetitionService;
-import com.timmytime.predictorteamsreactive.service.MessageReceivedService;
-import com.timmytime.predictorteamsreactive.service.TensorflowTrainService;
-import com.timmytime.predictorteamsreactive.service.TrainingHistoryService;
+import com.timmytime.predictorteamsreactive.service.*;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +29,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
 
     private final CompetitionService competitionService;
     private final TrainingHistoryService trainingHistoryService;
+    private final TrainingService trainingService;
     private final WebClientFacade webClientFacade;
 
     private final String eventsHost;
@@ -43,12 +41,14 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
             @Value("${players.host}") String playersHost,
             CompetitionService competitionService,
             TrainingHistoryService trainingHistoryService,
+            TrainingService trainingService,
             WebClientFacade webClientFacade
     ){
         this.eventsHost = eventsHost;
         this.playersHost = playersHost;
         this.competitionService = competitionService;
         this.trainingHistoryService = trainingHistoryService;
+        this.trainingService = trainingService;
         this.webClientFacade = webClientFacade;
     }
 
@@ -89,6 +89,13 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
             }
         }).thenEmpty(Mono.empty());
 
+    }
+
+    @Override
+    public Mono<Void> historicTraining(UUID id) {
+        return Mono.just(
+                trainingHistoryService.find(id)
+        ).doOnNext(history -> trainingService.train(history)).thenEmpty(Mono.empty());
     }
 
     private JsonNode createMessage(String country, String type){

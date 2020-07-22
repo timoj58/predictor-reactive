@@ -26,10 +26,7 @@ def create_train_path():
 
 def create_data_range(learning_cfg, history_file):
 
-    if learning_cfg['historic']:
-     data_range = model_utils.create_range(int(learning_cfg['months_per_cycle']), learning_cfg)
-    else:
-     data_range = model_utils.real_time_range(
+    data_range = model_utils.real_time_range(
         start_day=train_history_utils.get_history(filename=history_file,key='default')['end_day'],
         start_month=train_history_utils.get_history(filename=history_file,key='default')['end_month'],
         start_year=train_history_utils.get_history(filename=history_file,key='default')['end_year'])

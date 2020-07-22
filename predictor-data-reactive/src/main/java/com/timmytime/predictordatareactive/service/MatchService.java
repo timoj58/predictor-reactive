@@ -17,6 +17,7 @@ public interface MatchService {
     void delete(UUID id);
     Mono<Match> save(Match match);
     Mono<Match> find(UUID homeTeam, UUID awayTeam, LocalDateTime date);
+    Mono<Match> getMatch(@RequestParam UUID home, @RequestParam  UUID away, @RequestParam String date);
     Flux<Match> getMatches(@PathVariable UUID team);
     Flux<Match> getMatchesByCountry(
             @PathVariable String country,

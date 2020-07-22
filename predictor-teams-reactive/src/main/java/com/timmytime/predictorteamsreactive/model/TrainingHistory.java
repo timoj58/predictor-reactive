@@ -1,11 +1,10 @@
 package com.timmytime.predictorteamsreactive.model;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -13,6 +12,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class TrainingHistory {
 
     @Id
@@ -27,15 +28,19 @@ public class TrainingHistory {
     public TrainingHistory(String country, LocalDateTime fromDate){
         this.id = UUID.randomUUID();
         this.date = LocalDateTime.now();
-        this.country = country;
+        this.country = country.toLowerCase();
         this.fromDate = fromDate;
     }
 
     public TrainingHistory(String country, LocalDateTime fromDate, LocalDateTime toDate){
         this.id = UUID.randomUUID();
         this.date = LocalDateTime.now();
-        this.country = country;
+        this.country = country.toLowerCase();
         this.fromDate = fromDate;
         this.toDate = toDate;
+
+        if(this.toDate.isAfter(LocalDate.now().atStartOfDay())){
+            this.toDate = LocalDateTime.now();
+        }
     }
 }

@@ -1,10 +1,12 @@
 package com.timmytime.predictoreventsreactive.service.impl;
 
+import com.timmytime.predictoreventsreactive.enumerator.CountryCompetitions;
 import com.timmytime.predictoreventsreactive.model.EventOutcome;
 import com.timmytime.predictoreventsreactive.repo.EventOutcomeRepo;
 import com.timmytime.predictoreventsreactive.service.EventOutcomeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -29,5 +31,19 @@ public class EventOutcomeServiceImpl implements EventOutcomeService {
     @Override
     public Mono<EventOutcome> find(UUID id) {
         return eventOutcomeRepo.findById(id);
+    }
+
+    @Override
+    public Flux<EventOutcome> toValidate(String country) {
+        return eventOutcomeRepo.findByCompetitionInAndSuccessNull(
+                CountryCompetitions.valueOf(country.toUpperCase()).getCompetitions()
+        );
+    }
+
+    @Override
+    public Flux<EventOutcome> lastEvents(String country) {
+        return eventOutcomeRepo.findByCompetitionInAndPreviousEventTrue(
+                CountryCompetitions.valueOf(country.toUpperCase()).getCompetitions()
+        );
     }
 }

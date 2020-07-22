@@ -14,18 +14,6 @@ logger = logging.getLogger(__name__)
 local_dir = get_dir_cfg()['local']
 history_file = get_dir_cfg()['country_results_train_history_file']
 
-
-def train(receipt):
-
-    logger.info ('starting...')
-
-    countries = cache_utils.get_countries(cache_utils.COUNTRIES_URL)
-    for country in countries:
-         logger.info (country)
-         train_country("FOOTBALL", country, None)
-
-    receipt_utils.put_receipt(receipt_utils.TRAIN_RECEIPT_URL, receipt, None)
-
 def train_country(country, receipt):
 
    learning_cfg = get_learning_cfg(country, "match_result")

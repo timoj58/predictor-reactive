@@ -29,34 +29,15 @@ EVENT_MODEL_URL = get_analysis_cfg()['team_model_url']
 def real_time_range(start_day, start_month, start_year):
 
     start_date = datetime.date(start_year, start_month, start_day)
+    end_date = datetime.date(start_year, start_month, start_day)
+
+    if end_date > datetime.date.today():
+      end_date = datetime.date.today()
 
     return ['/'+ start_date.strftime('%d-%m-%Y')
      +'/'
-     + (datetime.date.today()).strftime('%d-%m-%Y')]
+     + end_date.strftime('%d-%m-%Y')]
 
-
-def create_range(increment, learning_cfg):
-
-
-    end_date = datetime.date(learning_cfg['end_year'], learning_cfg['end_month'], learning_cfg['end_day'])
-    start_date = datetime.date(learning_cfg['start_year'], learning_cfg['start_month'], learning_cfg['start_day'])
-
-    ranges = []
-
-    no_of_months = diff_month(start_date, end_date) / increment
-
-    temp_end_date = start_date
-
-    for month in range(0, int(no_of_months)):
-
-       temp_end_date = add_months(temp_end_date, increment)
-       ranges.append('/'+start_date.strftime('%d-%m-%Y')+'/'+temp_end_date.strftime('%d-%m-%Y'))
-       start_date = temp_end_date
-
-    ##number of months between dates
-    ranges.append('/'+temp_end_date.strftime('%d-%m-%Y')+'/'+end_date.strftime('%d-%m-%Y'))
-
-    return ranges
 
 def diff_month(d2, d1):
     return (d1.year - d2.year) * 12 + d1.month - d2.month

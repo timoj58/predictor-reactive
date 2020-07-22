@@ -66,6 +66,12 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public void clear(String country) {
+        data.get(country).clear();
+
+    }
+
     private void process(CountryMatch countryMatch){
         log.info("adding {} vs {} to {}", countryMatch.getMatch().getHomeTeam(), countryMatch.getMatch().getAwayTeam(), countryMatch.getCountry());
         data.get(countryMatch.getCountry()).add(countryMatch.getMatch());

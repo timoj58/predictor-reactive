@@ -19,5 +19,6 @@ public interface MatchRepo extends ReactiveMongoRepository<Match, UUID> {
     Flux<Match> findByHomeTeamInAndDateBetween(List<UUID> ids, LocalDateTime fromDate, LocalDateTime toDate);
     Flux<Match> findByAwayTeamInAndDateBetween(List<UUID> ids, LocalDateTime fromDate, LocalDateTime toDate);
     Mono<Match> findByHomeTeamAndAwayTeamAndDate(UUID homeTeam, UUID awayTeam, LocalDateTime date);
+    Flux<Match> findByHomeTeamAndAwayTeam(UUID home, UUID away);
 
  }

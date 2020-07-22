@@ -23,6 +23,20 @@ public class MatchHandler {
         this.matchService = matchService;
     }
 
+    public Mono<ServerResponse> getMatch(ServerRequest serverRequest){
+
+        return ServerResponse.ok().body(
+                matchService.getMatch(
+                        UUID.fromString(
+                                serverRequest.queryParam("home").get()),
+                        UUID.fromString(
+                                serverRequest.queryParam("away").get()),
+                        serverRequest.queryParam("date").get()
+                ),
+                Match.class
+        );
+    }
+
     public Mono<ServerResponse> getMatches(ServerRequest serverRequest){
 
         return ServerResponse.ok().body(

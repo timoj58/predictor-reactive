@@ -3,9 +3,12 @@ package com.timmytime.predictorplayersreactive.service.impl;
 import com.timmytime.predictorplayersreactive.model.PlayersTrainingHistory;
 import com.timmytime.predictorplayersreactive.service.*;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
@@ -13,6 +16,8 @@ import java.time.format.DateTimeFormatter;
 
 @Service("trainingService")
 public class TrainingServiceImpl implements TrainingService {
+
+    private final Logger log = LoggerFactory.getLogger(TrainingServiceImpl.class);
 
     private final PlayersTrainingHistoryService playersTrainingHistoryService;
     private final TensorflowDataService tensorflowDataService;
@@ -36,10 +41,6 @@ public class TrainingServiceImpl implements TrainingService {
         this.playerMatchService = playerMatchService;
     }
 
-    /*
-      need to change this to only train by interval, given dont want to load all the data
-      anymore....TODO.  lots of changes including python
-     */
 
     @Override
     public void train() {
@@ -60,11 +61,28 @@ public class TrainingServiceImpl implements TrainingService {
     }
 
 
-    //TBC need to set this all back up.  1/8/2009 onwards....
+
     @PostConstruct
     private void init(){
 
-    } //makes sense in reality, to actually re-train everything, so its tested...
-     //as part of deployment.  yes.  parrallel builds for now.
+        playersTrainingHistoryService.find()
+                .switchIfEmpty(Mono.just(new PlayersTrainingHistory()))
+                .subscribe(history -> {
+
+                    if(history.getId() == null){
+                        log.info("init record");
+                        history = new PlayersTrainingHistory(
+                                LocalDate.parse("01-08-2009", DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay(),
+                                LocalDate.parse("01-08-2009", DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay()
+                                );
+
+                        history.setCompleted(Boolean.TRUE);
+
+                        playersTrainingHistoryService.save(history).subscribe();
+                    }
+
+                });
+
+    }
 
 }

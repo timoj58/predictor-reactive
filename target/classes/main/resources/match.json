@@ -1,0 +1,36 @@
+{
+  "matchId": 544083,
+  "type": "match",
+  "data": [
+    {
+      "data-stat": "possession",
+      "data-home-away": "home",
+      "value": "60"
+    },
+    {
+      "data-stat": "possession",
+      "data-home-away": "away",
+      "value": "40"
+    },
+    {
+      "data-stat": "shots",
+      "data-home-away": "home",
+      "value": "11"
+    },
+    {
+      "data-stat": "onTarget",
+      "data-home-away": "home",
+      "value": "2"
+    },
+    {
+      "data-stat": "shots",
+      "data-home-away": "away",
+      "value": "6"
+    },
+    {
+      "data-stat": "onTarget",
+      "data-home-away": "away",
+      "value": "2"
+    }
+  ]
+}

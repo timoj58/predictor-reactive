@@ -12,6 +12,7 @@ import com.timmytime.predictorplayersreactive.service.impl.PlayerServiceImpl;
 import com.timmytime.predictorplayersreactive.service.impl.PredictionServiceImpl;
 import com.timmytime.predictorplayersreactive.service.impl.TensorflowPredictionServiceImpl;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -25,6 +26,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@Disabled
 public class MachineLearningTest {
 
     private static final FantasyOutcomeService fantasyEventOutcomeService = mock(FantasyOutcomeService.class);
