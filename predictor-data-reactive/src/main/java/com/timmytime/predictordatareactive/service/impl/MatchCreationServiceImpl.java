@@ -21,7 +21,6 @@ public class MatchCreationServiceImpl implements MatchCreationService {
 
     private final MatchService matchService;
     private final StatMetricService statMetricService;
-    private final LineupService lineupService;
     private final LineupPlayerService lineupPlayerService;
     private final ResultRepo resultRepo;
 
@@ -29,13 +28,11 @@ public class MatchCreationServiceImpl implements MatchCreationService {
     public MatchCreationServiceImpl(
             MatchService matchService,
             StatMetricService statMetricService,
-            LineupService lineupService,
             LineupPlayerService lineupPlayerService,
             ResultRepo resultRepo
     ){
         this.matchService = matchService;
         this.statMetricService = statMetricService;
-        this.lineupService = lineupService;
         this.lineupPlayerService = lineupPlayerService;
         this.resultRepo = resultRepo;
     }
@@ -56,21 +53,6 @@ public class MatchCreationServiceImpl implements MatchCreationService {
         match.setHomeScore(resultData.getResult().getInt("homeScore"));
         match.setAwayScore(resultData.getResult().getInt("awayScore"));
 
-        Lineup homeLineup = new Lineup();
-        homeLineup.setId(UUID.randomUUID());
-        homeLineup.setEventDate(date);
-        homeLineup.setMatchId(match.getId());
-        homeLineup.setTeam(homeTeam.getId());
-
-        lineupService.save(homeLineup).subscribe();
-
-        Lineup awayLineup = new Lineup();
-        awayLineup.setId(UUID.randomUUID());
-        awayLineup.setEventDate(date);
-        awayLineup.setTeam(awayTeam.getId());
-        awayLineup.setMatchId(match.getId());
-
-        lineupService.save(awayLineup).subscribe();
 
         statMetricService.createTeamMetrics(
                 match.getId(),
@@ -97,7 +79,6 @@ public class MatchCreationServiceImpl implements MatchCreationService {
                             resultData.getLineups().getJSONObject("data").getJSONArray("home"),
                             homeTeam,
                             match.getId(),
-                            homeLineup.getId(),
                             date,
                             resultData,
                             "players");
@@ -107,7 +88,6 @@ public class MatchCreationServiceImpl implements MatchCreationService {
                                 resultData.getLineups().getJSONObject("data").getJSONArray("homePlayingSubs"),
                                 homeTeam,
                                 match.getId(),
-                                homeLineup.getId(),
                                 date,
                                 resultData,
                                 "subs");
@@ -118,7 +98,6 @@ public class MatchCreationServiceImpl implements MatchCreationService {
                                 resultData.getLineups().getJSONObject("data").getJSONArray("homeNonPlayingSubs"),
                                 homeTeam,
                                 match.getId(),
-                                homeLineup.getId(),
                                 date,
                                 resultData,
                                 "none");
@@ -128,7 +107,6 @@ public class MatchCreationServiceImpl implements MatchCreationService {
                             resultData.getLineups().getJSONObject("data").getJSONArray("away"),
                             awayTeam,
                             match.getId(),
-                            awayLineup.getId(),
                             date,
                             resultData,
                             "players");
@@ -138,7 +116,6 @@ public class MatchCreationServiceImpl implements MatchCreationService {
                                 resultData.getLineups().getJSONObject("data").getJSONArray("awayPlayingSubs"),
                                 awayTeam,
                                 match.getId(),
-                                awayLineup.getId(),
                                 date,
                                 resultData,
                                 "subs");
@@ -149,7 +126,6 @@ public class MatchCreationServiceImpl implements MatchCreationService {
                                 resultData.getLineups().getJSONObject("data").getJSONArray("awayNonPlayingSubs"),
                                 awayTeam,
                                 match.getId(),
-                                awayLineup.getId(),
                                 date,
                                 resultData,
                                 "none");

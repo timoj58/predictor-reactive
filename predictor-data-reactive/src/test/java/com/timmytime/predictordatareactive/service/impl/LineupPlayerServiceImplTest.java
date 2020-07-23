@@ -6,7 +6,6 @@ import com.timmytime.predictordatareactive.repo.PlayerRepo;
 import com.timmytime.predictordatareactive.repo.StatMetricRepo;
 import com.timmytime.predictordatareactive.service.*;
 import org.apache.commons.io.FileUtils;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -32,7 +30,6 @@ class LineupPlayerServiceImplTest {
     private static final LineupPlayerRepo lineupService = mock(LineupPlayerRepo.class);
     private final StatMetricService statMetricService =
             new StatMetricServiceImpl(statMetricRepo);
-    private static final TeamStatsService teamStatsService = mock(TeamStatsService.class);
 
     private static Team team;
     private static UUID lineupId = UUID.randomUUID();
@@ -44,8 +41,7 @@ class LineupPlayerServiceImplTest {
             = new LineupPlayerServiceImpl(
                     playerService,
             lineupService,
-            statMetricService,
-            teamStatsService
+            statMetricService
     );
 
     @BeforeAll
@@ -67,9 +63,6 @@ class LineupPlayerServiceImplTest {
         player.setId(UUID.randomUUID());
         player.setLabel("test");
 
-        Lineup lineup = new Lineup();
-        lineup.setId(lineupId);
-
         StatMetric statMetric = new StatMetric();
         statMetric.setId(UUID.randomUUID());
 
@@ -79,12 +72,6 @@ class LineupPlayerServiceImplTest {
 
         when(statMetricRepo.save(any(StatMetric.class))).thenReturn(Mono.just(statMetric));
 
-        TeamStats teamStats = new TeamStats();
-        teamStats.setId(UUID.randomUUID());
-
-        when(teamStatsService.find(any()))
-                .thenReturn(Mono.just(teamStats));
-
     }
 
     @Test
@@ -93,7 +80,6 @@ class LineupPlayerServiceImplTest {
         lineupPlayerService.processPlayers(
                 resultData.getLineups().getJSONObject("data").getJSONArray("home"),
                 team,
-                lineupId,
                 teamStatsId,
                 LocalDateTime.now(),
                 resultData,

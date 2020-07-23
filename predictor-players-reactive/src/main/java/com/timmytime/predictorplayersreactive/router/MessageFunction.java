@@ -35,7 +35,13 @@ public class MessageFunction {
     @RouterOperation(beanClass = MessageReceivedService.class, beanMethod = "training")
     RouterFunction<ServerResponse> training(MessageHandler messageHandler) {
         return route(RequestPredicates.POST("/training")
-                        .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON))
                 , messageHandler::training);
+    }
+
+    @Bean
+    @RouterOperation(beanClass = MessageReceivedService.class, beanMethod = "initTraining")
+    RouterFunction<ServerResponse> initTraining(MessageHandler messageHandler) {
+        return route(RequestPredicates.POST("/init-training")
+                , messageHandler::initTraining);
     }
 }

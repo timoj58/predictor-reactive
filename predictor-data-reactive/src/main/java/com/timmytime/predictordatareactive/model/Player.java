@@ -26,6 +26,7 @@ public class Player {
     private String label;
     private UUID latestTeam;
     private LocalDate lastAppearance;
+    private Boolean fantasyFootballer = Boolean.FALSE;
 
     @Transient
     @JsonIgnore

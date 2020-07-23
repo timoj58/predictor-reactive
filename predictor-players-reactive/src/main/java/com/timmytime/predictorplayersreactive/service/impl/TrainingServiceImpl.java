@@ -1,5 +1,6 @@
 package com.timmytime.predictorplayersreactive.service.impl;
 
+import com.timmytime.predictorplayersreactive.model.Player;
 import com.timmytime.predictorplayersreactive.model.PlayersTrainingHistory;
 import com.timmytime.predictorplayersreactive.service.*;
 import lombok.AllArgsConstructor;
@@ -8,19 +9,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.UUID;
 
 @Service("trainingService")
 public class TrainingServiceImpl implements TrainingService {
 
     private final Logger log = LoggerFactory.getLogger(TrainingServiceImpl.class);
 
+    private final PlayerService playerService;
     private final PlayersTrainingHistoryService playersTrainingHistoryService;
-    private final TensorflowDataService tensorflowDataService;
     private final TensorflowTrainingService tensorflowTrainingService;
     private final PlayerMatchService playerMatchService;
 
@@ -29,14 +34,14 @@ public class TrainingServiceImpl implements TrainingService {
     @Autowired
     public TrainingServiceImpl(
             @Value("${training.interval}") Integer interval,
+            PlayerService playerService,
             PlayersTrainingHistoryService playersTrainingHistoryService,
-            TensorflowDataService tensorflowDataService,
             TensorflowTrainingService tensorflowTrainingService,
             PlayerMatchService playerMatchService
     ){
         this.interval = interval;
+        this.playerService = playerService;
         this.playersTrainingHistoryService = playersTrainingHistoryService;
-        this.tensorflowDataService = tensorflowDataService;
         this.tensorflowTrainingService = tensorflowTrainingService;
         this.playerMatchService = playerMatchService;
     }
@@ -45,18 +50,39 @@ public class TrainingServiceImpl implements TrainingService {
     @Override
     public void train() {
 
+
+        UUID nextHistoryId = UUID.randomUUID();
+
+        List<Player> players = playerService.get();
+        Integer playerCount = players.size();
+
+        log.info("training init {} for {} players", nextHistoryId, playerCount);
+
+        //only running this once so if it takes time (ie 15 minutes per cycle its ok).
+        //trying to avoid redis, and this is only for retraining once (rarely used).
+
         playersTrainingHistoryService.find()
-                .subscribe(history ->
-                        playerMatchService.get(
-                                history.getToDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
-                                history.getToDate().plusYears(interval).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-                        )
-                .doOnNext(playerMatch -> tensorflowDataService.load(playerMatch))
-                .doFinally(train ->
+                .doOnNext(history ->
                     playersTrainingHistoryService.save(
-                           new PlayersTrainingHistory(history.getToDate(), history.getToDate().plusYears(interval))
-                    ).subscribe(trainingHistory -> tensorflowTrainingService.train(trainingHistory.getId()))
-                ));
+                            new PlayersTrainingHistory(
+                                    nextHistoryId,
+                                    history.getToDate(),
+                                    history.getToDate().plusYears(interval)
+                            )
+                    ).subscribe(trainingHistory ->
+                            Flux.fromStream(
+                                    players.stream()
+                            ).delayElements(Duration.ofMillis(250))
+                                    .subscribe(player -> playerMatchService.create(
+                                    player.getId(),
+                                    trainingHistory.getFromDate(),
+                                    trainingHistory.getToDate()))
+                    )
+                ).doFinally(train ->
+                Mono.just(nextHistoryId)
+                        .delayElement(Duration.ofMillis(250 * playerCount)) //to review in a bit.
+                        .subscribe(id -> tensorflowTrainingService.train(id)))
+        .subscribe();
 
     }
 

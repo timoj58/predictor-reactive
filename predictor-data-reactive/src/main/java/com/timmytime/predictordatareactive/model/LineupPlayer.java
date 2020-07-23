@@ -10,6 +10,7 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -27,14 +28,18 @@ public class LineupPlayer implements Serializable {
     private Integer appearance;
 
     //new fields
-    private UUID lineupId;
+    private UUID matchId;
+    private LocalDateTime date;
+    private UUID teamId;
 
 
-    public LineupPlayer(UUID player, int appearance, UUID lineupId) {
+    public LineupPlayer(UUID player, int appearance, UUID matchId, UUID teamId, LocalDateTime date) {
         this.id = UUID.randomUUID();
         this.player = player;
         this.appearance = appearance;
-        this.lineupId = lineupId;
+        this.matchId = matchId;
+        this.teamId = teamId;
+        this.date = date;
     }
 
 }

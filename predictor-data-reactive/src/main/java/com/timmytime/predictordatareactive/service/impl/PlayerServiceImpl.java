@@ -2,29 +2,33 @@ package com.timmytime.predictordatareactive.service.impl;
 
 import com.timmytime.predictordatareactive.enumerator.PlayerStats;
 import com.timmytime.predictordatareactive.model.Player;
+import com.timmytime.predictordatareactive.model.StatMetric;
 import com.timmytime.predictordatareactive.model.Team;
 import com.timmytime.predictordatareactive.repo.PlayerRepo;
+import com.timmytime.predictordatareactive.repo.StatMetricRepo;
 import com.timmytime.predictordatareactive.service.PlayerService;
 import com.timmytime.predictordatareactive.service.TeamService;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service("playerService")
 public class PlayerServiceImpl implements PlayerService {
+
+    private final Logger log = LoggerFactory.getLogger(PlayerServiceImpl.class);
 
     private final TeamService teamService;
     private final PlayerRepo playerRepo;
@@ -63,7 +67,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public Flux<Player> findByCompetition(String competition, String date) {
+    public Flux<Player> findByCompetition(String competition, String date, Boolean fantasy) {
 
         LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
@@ -73,7 +77,13 @@ public class PlayerServiceImpl implements PlayerService {
                 .collect(Collectors.toList());
 
         return playerRepo.findByLatestTeamIn(teams)
+                .filter(f -> fantasy == f.getFantasyFootballer())
                 .filter(f -> f.getLastAppearance().isAfter(localDate));
+    }
+
+    @Override
+    public Flux<Player> findFantasyFootballers() {
+        return playerRepo.findByFantasyFootballerTrue();
     }
 
     private List<Mono<Player>> createLineup(List<JSONObject> lineup){
@@ -127,4 +137,5 @@ public class PlayerServiceImpl implements PlayerService {
 
         return player;
     }
+
 }

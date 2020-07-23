@@ -15,18 +15,15 @@ public class MatchRepairServiceImpl implements MatchRepairService {
 
 
     private final LineupPlayerService lineupPlayerService;
-    private final LineupService lineupService;
     private final StatMetricService statMetricService;
     private final MatchService matchService;
 
     @Autowired
     public MatchRepairServiceImpl(
-            LineupService lineupService,
             LineupPlayerService lineupPlayerService,
             StatMetricService statMetricService,
             MatchService matchService
     ){
-        this.lineupService = lineupService;
         this.lineupPlayerService = lineupPlayerService;
         this.statMetricService = statMetricService;
         this.matchService = matchService;
@@ -37,10 +34,8 @@ public class MatchRepairServiceImpl implements MatchRepairService {
 
         log.info("repairing match");
 
-        lineupService.findByMatch(match.getId())
-                .doOnNext(lineup -> lineupPlayerService.deleteByLineup(lineup.getId()).subscribe())
+        lineupPlayerService.deleteByMatch(match.getId())
                 .doFinally(next -> {
-                    lineupService.deleteByMatch(match.getId()).subscribe();
                     statMetricService.deleteByMatch(match.getId()).subscribe();
                     matchService.delete(match.getId());
                 });

@@ -3,12 +3,10 @@ package com.timmytime.predictordatareactive.service.impl;
 import com.timmytime.predictordatareactive.model.Match;
 import com.timmytime.predictordatareactive.model.Team;
 import com.timmytime.predictordatareactive.repo.MatchRepo;
-import com.timmytime.predictordatareactive.repo.TeamRepo;
 import com.timmytime.predictordatareactive.service.MatchService;
 import com.timmytime.predictordatareactive.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -16,7 +14,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -55,7 +52,6 @@ public class MatchServiceImpl implements MatchService {
         return matchRepo.findByHomeTeamAndAwayTeam(home,away)
                 .filter(f -> f.getDate().toLocalDate().equals(LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"))))
                 .next();
-
     }
 
     @Override
@@ -83,6 +79,7 @@ public class MatchServiceImpl implements MatchService {
     public void delete(UUID id) {
         matchRepo.deleteById(id).subscribe();
     }
+
 
 
 }

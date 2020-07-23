@@ -1,23 +1,27 @@
 package com.timmytime.predictorplayersreactive.model;
 
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
-@Document
-public class PlayersByYear {
+public class Match  {
 
-    @Id
-    private Integer year;
-    private Set<UUID> players = new HashSet<>();
+    private UUID id;
+    private LocalDateTime date;
+
+    //replacement fields
+    private UUID homeTeam;
+    private UUID awayTeam;
+    private Integer homeScore;
+    private Integer awayScore;
 
 }

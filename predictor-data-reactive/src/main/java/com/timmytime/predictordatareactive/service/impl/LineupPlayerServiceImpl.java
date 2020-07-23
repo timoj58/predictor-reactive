@@ -4,20 +4,20 @@ import com.timmytime.predictordatareactive.model.LineupPlayer;
 import com.timmytime.predictordatareactive.model.ResultData;
 import com.timmytime.predictordatareactive.model.Team;
 import com.timmytime.predictordatareactive.repo.LineupPlayerRepo;
-import com.timmytime.predictordatareactive.repo.LineupRepo;
 import com.timmytime.predictordatareactive.service.*;
 import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.Duration;
+import javax.annotation.PostConstruct;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 @Service("lineupPlayerService")
@@ -28,19 +28,17 @@ public class LineupPlayerServiceImpl implements LineupPlayerService {
     private final PlayerService playerService;
     private final LineupPlayerRepo lineupPlayerRepo;
     private final StatMetricService statMetricService;
-    private final TeamStatsService teamStatsService;
+
 
     @Autowired
     public LineupPlayerServiceImpl(
             PlayerService playerService,
             LineupPlayerRepo lineupPlayerRepo,
-            StatMetricService statMetricService,
-            TeamStatsService teamStatsService
+            StatMetricService statMetricService
     ){
         this.playerService = playerService;
         this.lineupPlayerRepo = lineupPlayerRepo;
         this.statMetricService = statMetricService;
-        this.teamStatsService = teamStatsService;
     }
 
     @Override
@@ -48,7 +46,6 @@ public class LineupPlayerServiceImpl implements LineupPlayerService {
             JSONArray players,
             Team team,
             UUID matchId,
-            UUID lineupId,
             LocalDateTime date,
             ResultData resultData,
             String lineupType
@@ -59,7 +56,7 @@ public class LineupPlayerServiceImpl implements LineupPlayerService {
                         homePlayers.subscribe(
                                 homePlayer -> { //wrong now...
                                     lineupPlayerRepo.save(
-                                            new LineupPlayer(homePlayer.getId(), homePlayer.getDuration(), lineupId)
+                                            new LineupPlayer(homePlayer.getId(), homePlayer.getDuration(), matchId, team.getId(), date)
                                     ).subscribe();
 
 
@@ -92,7 +89,20 @@ public class LineupPlayerServiceImpl implements LineupPlayerService {
     }
 
     @Override
-    public Mono<Void> deleteByLineup(UUID lineupId) {
-        return deleteByLineup(lineupId);
+    public Mono<Void> deleteByMatch(UUID matchId) {
+        return lineupPlayerRepo.deleteByMatchId(matchId);
     }
+
+    @Override
+    public Flux<LineupPlayer> find(
+            UUID player,
+            String fromDate,
+            String toDate) {
+        LocalDateTime start = LocalDate.parse(fromDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay();
+        LocalDateTime end = LocalDate.parse(toDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay().plusDays(1);
+
+        return lineupPlayerRepo.findByPlayerAndDateBetween(
+                player, start, end);
+    }
+
 }

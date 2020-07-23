@@ -10,6 +10,5 @@ import java.util.UUID;
 
 @Repository
 public interface PlayersTrainingHistoryRepo extends ReactiveMongoRepository<PlayersTrainingHistory, UUID> {
-   Mono<PlayersTrainingHistory> findFirstOrderByDateDesc();
-   Mono<PlayersTrainingHistory> findByCompletedFalse();
+   Mono<PlayersTrainingHistory> findFirstByOrderByDateDesc();
 }

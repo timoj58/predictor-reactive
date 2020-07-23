@@ -16,5 +16,6 @@ public interface PlayerService {
     void delete(UUID id);
     Mono<Player> save(Player player);
     List<Mono<Player>> process(JSONArray players);
-    Flux<Player> findByCompetition(@PathVariable  String competition, @RequestParam String date);
+    Flux<Player> findByCompetition(@PathVariable  String competition, @RequestParam String date, @RequestParam Boolean fantasy);
+    Flux<Player> findFantasyFootballers();
 }

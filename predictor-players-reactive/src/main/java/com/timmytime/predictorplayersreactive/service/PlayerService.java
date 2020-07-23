@@ -9,4 +9,5 @@ public interface PlayerService {
     void load();
     List<Player> get(String competition);
     List<Player> get(String competition, UUID team);
+    List<Player> get();
 }

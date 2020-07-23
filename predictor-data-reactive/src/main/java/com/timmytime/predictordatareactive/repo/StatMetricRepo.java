@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,5 +21,9 @@ public interface StatMetricRepo extends ReactiveMongoRepository<StatMetric, UUID
     Flux<StatMetric> findByTeamNullAndPlayerNull();
 
     Mono<Void> deleteByMatchId(UUID matchId);
+
+    Flux<StatMetric> findByPlayerNotNullAndTimestampAfter(LocalDateTime timestamp);
+
+    Flux<StatMetric> findByPlayerAndMatchId(UUID player, UUID matchId);
 
 }

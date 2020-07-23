@@ -20,7 +20,6 @@ class MatchCreationServiceImplTest {
 
     private static final MatchService matchService = mock(MatchService.class);
     private static final StatMetricService statMetricService = mock(StatMetricService.class);
-    private static final LineupService lineupService = mock(LineupService.class);
     private static final LineupPlayerService lineupPlayerService = mock(LineupPlayerService.class);
     private static final ResultRepo resultRepo = mock(ResultRepo.class);
 
@@ -29,7 +28,6 @@ class MatchCreationServiceImplTest {
             = new MatchCreationServiceImpl(
                     matchService,
             statMetricService,
-            lineupService,
             lineupPlayerService,
             resultRepo
     );
@@ -47,7 +45,6 @@ class MatchCreationServiceImplTest {
         resultData = new ResultData(result);
         resultData.setId(1);
 
-        when(lineupService.save(any())).thenReturn(Mono.just(new Lineup()));
         when(matchService.save(any())).thenReturn(Mono.just(new Match()));
 
         when(resultRepo.findById(anyInt())).thenReturn(Mono.just(new Result()));

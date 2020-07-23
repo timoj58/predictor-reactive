@@ -179,5 +179,10 @@ public class StatMetricServiceImpl implements StatMetricService {
         return statMetricRepo.deleteByMatchId(matchId);
     }
 
+    @Override
+    public Flux<StatMetric> find(UUID player, UUID match) {
+        return statMetricRepo.findByPlayerAndMatchId(player, match);
+    }
+
 
 }

@@ -2,8 +2,7 @@ package com.timmytime.predictorplayersreactive.facade;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.timmytime.predictorplayersreactive.model.Event;
-import com.timmytime.predictorplayersreactive.model.Player;
+import com.timmytime.predictorplayersreactive.model.*;
 import com.timmytime.predictorplayersreactive.request.PlayerEventOutcomeCsv;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
@@ -13,6 +12,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class WebClientFacade {
@@ -25,6 +25,39 @@ public class WebClientFacade {
                 .uri(url)
                 .retrieve()
                 .bodyToFlux(Player.class);
+
+    }
+
+    public Flux<LineupPlayer> getAppearances(
+            String url
+    ){
+        return WebClient.builder().build()
+                .get()
+                .uri(url)
+                .retrieve()
+                .bodyToFlux(LineupPlayer.class);
+
+    }
+
+    public Mono<Match> getMatch(
+            String url
+    ){
+        return WebClient.builder().build()
+                .get()
+                .uri(url)
+                .retrieve()
+                .bodyToMono(Match.class);
+
+    }
+
+    public Flux<StatMetric> getStats(
+            String url
+    ){
+        return WebClient.builder().build()
+                .get()
+                .uri(url)
+                .retrieve()
+                .bodyToFlux(StatMetric.class);
 
     }
 

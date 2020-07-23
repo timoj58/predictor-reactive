@@ -33,4 +33,14 @@ public class PlayersTrainingHistory {
         }
     }
 
+    public PlayersTrainingHistory(UUID id, LocalDateTime fromDate, LocalDateTime toDate){
+        this.id = id;
+        this.date = LocalDateTime.now();
+        this.fromDate = fromDate;
+        this.toDate = toDate;
+        if(this.toDate.isAfter(LocalDateTime.now())){
+            this.toDate = LocalDateTime.now();
+        }
+    }
+
 }

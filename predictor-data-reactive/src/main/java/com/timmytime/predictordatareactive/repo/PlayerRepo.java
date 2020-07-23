@@ -13,4 +13,5 @@ import java.util.UUID;
 public interface PlayerRepo extends ReactiveMongoRepository<Player, UUID> {
     Mono<Player> findByLabel(String label);
     Flux<Player> findByLatestTeamIn(List<UUID> teams);
+    Flux<Player> findByFantasyFootballerTrue();
 }

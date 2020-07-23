@@ -1,18 +1,18 @@
 package com.timmytime.predictorplayersreactive.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class PlayerMatch {
 
     private UUID playerId;
@@ -20,4 +20,8 @@ public class PlayerMatch {
     private LocalDateTime date;
     private Boolean home;
     //and then we need the stats...
+    private List<StatMetric> stats = new ArrayList<>();
+    //duration and conceded also required
+    private Integer minutes;
+    private Integer conceded;
 }

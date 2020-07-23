@@ -6,6 +6,7 @@ import com.timmytime.predictoreventsreactive.enumerator.Messages;
 import com.timmytime.predictoreventsreactive.facade.WebClientFacade;
 import com.timmytime.predictoreventsreactive.request.Message;
 import com.timmytime.predictoreventsreactive.service.PredictionService;
+import com.timmytime.predictoreventsreactive.service.ValidationService;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
@@ -17,9 +18,10 @@ class MessageReceivedServiceImplTest {
 
     private final PredictionService predictionService = mock(PredictionService.class);
     private final WebClientFacade webClientFacade = mock(WebClientFacade.class);
+    private final ValidationService validationService = mock(ValidationService.class);
 
     private final MessageReceivedServiceImpl messageReceivedService
-            = new MessageReceivedServiceImpl("dummy", predictionService, webClientFacade);
+            = new MessageReceivedServiceImpl("dummy", predictionService, validationService, webClientFacade);
 
     @Test
     public void messageStartTest() throws InterruptedException, JsonProcessingException {

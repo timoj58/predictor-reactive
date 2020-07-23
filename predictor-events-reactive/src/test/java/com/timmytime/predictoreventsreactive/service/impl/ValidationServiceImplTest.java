@@ -38,7 +38,7 @@ class ValidationServiceImplTest {
         eventOutcome2.setDate(LocalDateTime.now());
         eventOutcome2.setPrediction("{\"result\":[{\"score\":99.7,\"key\":\"homeWin\"},{\"score\":0.2,\"key\":\"draw\"},{\"score\":0.1,\"key\":\"awayWin\"}],\"away\":\"Charlton Athletic\",\"type\":\"PREDICT_RESULTS\",\"home\":\"Portsmouth\"}");
 
-        when(eventOutcomeService.toValidate()).thenReturn(
+        when(eventOutcomeService.toValidate(anyString())).thenReturn(
                 Flux.fromStream(
                         Arrays.asList(eventOutcome, eventOutcome2).stream()
                 )
@@ -54,7 +54,7 @@ class ValidationServiceImplTest {
                 Mono.just(match)
         );
 
-        validationService.validate();
+        validationService.validate(anyString());
 
 
         verify(eventOutcomeService, atLeastOnce()).save(eventOutcome);

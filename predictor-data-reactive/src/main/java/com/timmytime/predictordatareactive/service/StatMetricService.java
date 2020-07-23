@@ -4,6 +4,7 @@ import com.timmytime.predictordatareactive.model.Player;
 import com.timmytime.predictordatareactive.model.ResultData;
 import com.timmytime.predictordatareactive.model.StatMetric;
 import com.timmytime.predictordatareactive.model.Team;
+import org.springframework.web.bind.annotation.PathVariable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -37,5 +38,7 @@ public interface StatMetricService {
     );
 
     Mono<Void> deleteByMatch(UUID matchId);
+
+    Flux<StatMetric> find(@PathVariable UUID player, @PathVariable UUID match);
 
 }

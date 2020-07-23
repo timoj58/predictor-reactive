@@ -1,30 +1,96 @@
 package com.timmytime.predictorplayersreactive.service.impl;
 
 import com.timmytime.predictorplayersreactive.facade.WebClientFacade;
+import com.timmytime.predictorplayersreactive.model.LineupPlayer;
+import com.timmytime.predictorplayersreactive.model.Match;
 import com.timmytime.predictorplayersreactive.model.PlayerMatch;
+import com.timmytime.predictorplayersreactive.model.StatMetric;
 import com.timmytime.predictorplayersreactive.service.PlayerMatchService;
+import com.timmytime.predictorplayersreactive.service.TensorflowDataService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.UUID;
 
 @Service("playerMatchService")
 public class PlayerMatchServiceImpl implements PlayerMatchService {
 
+    private final Logger log = LoggerFactory.getLogger(PlayerMatchServiceImpl.class);
+
+    private final TensorflowDataService tensorflowDataService;
     private final WebClientFacade webClientFacade;
     private final String dataHost;
 
     @Autowired
     public PlayerMatchServiceImpl(
             @Value("${data.host}") String dataHost,
+            TensorflowDataService tensorflowDataService,
             WebClientFacade webClientFacade
-    ){
+    ) {
         this.dataHost = dataHost;
+        this.tensorflowDataService = tensorflowDataService;
         this.webClientFacade = webClientFacade;
     }
 
+
     @Override
-    public Flux<PlayerMatch> get(String fromDate, String toDate) {
-        return null;
+    public Flux<LineupPlayer> getAppearances(UUID player, String fromDate, String toDate) {
+        return webClientFacade.getAppearances(
+                dataHost + "/players/appearances/" + player + "?fromDate=" + fromDate + "&toDate=" + toDate
+        );
+    }
+
+    @Override
+    public Mono<Match> getMatch(UUID match) {
+        return webClientFacade.getMatch(dataHost + "/match/" + match);
+    }
+
+    @Override
+    public Flux<StatMetric> getStats(UUID match, UUID player) {
+        return webClientFacade.getStats(dataHost + "/stats/" + player + "/" + match);
+    }
+
+    @Override
+    public void create(
+            UUID player,
+            LocalDateTime fromDate,
+            LocalDateTime toDate) {
+
+        getAppearances(player,
+                fromDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+                toDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+        )
+                //.delayElements(Duration.ofMillis(1))
+                .subscribe(appearance ->
+                        getMatch(appearance.getMatchId())
+                                .subscribe(match -> {
+                                            PlayerMatch playerMatch =
+                                                    PlayerMatch.builder()
+                                                            .date(match.getDate())
+                                                            .playerId(player)
+                                                             .opponent(appearance.getTeamId().equals(match.getHomeTeam()) ? match.getAwayTeam() : match.getHomeTeam())
+                                                             .home(appearance.getTeamId().equals(match.getHomeTeam()) ? Boolean.TRUE : Boolean.FALSE)
+                                                            .minutes(appearance.getAppearance())
+                                                            .stats(new ArrayList<>())
+                                                             .conceded(appearance.getTeamId().equals(match.getHomeTeam()) ? match.getAwayScore() : match.getHomeScore())
+                                                            .build();
+
+                                            getStats(match.getId(), player)
+                                                    .doOnNext(stat -> playerMatch.getStats().add(stat))
+                                                    .doFinally(save ->
+                                                            tensorflowDataService.load(playerMatch)
+                                                    )
+                                                    .subscribe();
+                                        }
+                                )
+                );
     }
 }

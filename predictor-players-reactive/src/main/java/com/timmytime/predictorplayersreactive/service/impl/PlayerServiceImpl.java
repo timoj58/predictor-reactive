@@ -53,7 +53,7 @@ public class PlayerServiceImpl implements PlayerService {
                     webClientFacade.getPlayers(dataHost
                             + "/players/competition/"
                             + league.name().toLowerCase()
-                            + "?date="+date)
+                            + "?date="+date+"&fantasy=true")
                             .subscribe(player -> players.get(league.name().toLowerCase()).add(player));
                 });
 
@@ -70,6 +70,14 @@ public class PlayerServiceImpl implements PlayerService {
         return players.get(competition)
                 .stream()
                 .filter(f -> f.getLatestTeam().equals(team))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Player> get() {
+        return players.values()
+                .stream()
+                .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }
 }

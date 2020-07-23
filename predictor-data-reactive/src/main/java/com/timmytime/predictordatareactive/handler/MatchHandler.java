@@ -1,7 +1,6 @@
 package com.timmytime.predictordatareactive.handler;
 
 import com.timmytime.predictordatareactive.model.Match;
-import com.timmytime.predictordatareactive.model.Player;
 import com.timmytime.predictordatareactive.service.MatchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,7 +22,7 @@ public class MatchHandler {
         this.matchService = matchService;
     }
 
-    public Mono<ServerResponse> getMatch(ServerRequest serverRequest){
+    public Mono<ServerResponse> getMatchByTeams(ServerRequest serverRequest){
 
         return ServerResponse.ok().body(
                 matchService.getMatch(
@@ -32,6 +31,16 @@ public class MatchHandler {
                         UUID.fromString(
                                 serverRequest.queryParam("away").get()),
                         serverRequest.queryParam("date").get()
+                ),
+                Match.class
+        );
+    }
+
+    public Mono<ServerResponse> getMatch(ServerRequest serverRequest){
+
+        return ServerResponse.ok().body(
+                matchService.find(
+                        UUID.fromString(serverRequest.pathVariable("id"))
                 ),
                 Match.class
         );
@@ -46,6 +55,7 @@ public class MatchHandler {
                 Match.class
         );
     }
+
 
     public Mono<ServerResponse> getMatchesByCountry(ServerRequest serverRequest){
 
