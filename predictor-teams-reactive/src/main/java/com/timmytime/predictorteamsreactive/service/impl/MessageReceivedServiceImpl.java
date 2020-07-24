@@ -80,6 +80,9 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
             history.setCompleted(Boolean.TRUE);
             trainingHistoryService.save(history);
 
+            //update -> this needs to advance training if we are not finished.  as per players.
+            //as used by full training mode too....
+
             if(trainingHistoryService.finished()){
                     webClientFacade.sendMessage(
                             eventsHost+"/message",
@@ -92,10 +95,9 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     }
 
     @Override
-    public Mono<Void> historicTraining(UUID id) {
-        return Mono.just(
-                trainingHistoryService.find(id)
-        ).doOnNext(history -> trainingService.train(history)).thenEmpty(Mono.empty());
+    public Mono<Void> initTraining() {
+        trainingService.train();
+        return Mono.empty();
     }
 
     private JsonNode createMessage(String country, String type){

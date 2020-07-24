@@ -26,32 +26,7 @@ local_dir = get_dir_cfg()['local']
 EVENT_MODEL_URL = get_analysis_cfg()['team_model_url']
 
 
-def real_time_range(start_day, start_month, start_year):
-
-    start_date = datetime.date(start_year, start_month, start_day)
-    end_date = datetime.date(start_year, start_month, start_day)
-
-    if end_date > datetime.date.today():
-      end_date = datetime.date.today()
-
-    return ['/'+ start_date.strftime('%d-%m-%Y')
-     +'/'
-     + end_date.strftime('%d-%m-%Y')]
-
-
-def diff_month(d2, d1):
-    return (d1.year - d2.year) * 12 + d1.month - d2.month
-
-
-def add_months(sourcedate,months):
-    month = sourcedate.month - 1 + months
-    year = sourcedate.year + month // 12
-    month = month % 12 + 1
-    day = min(sourcedate.day,calendar.monthrange(year,month)[1])
-    return datetime.date(year,month,day)
-
-
-def create_csv(url, filename, range, aws_path):
+def create_csv(url, filename, start_date, end_date, aws_path):
 
     logger.info ('getting csv data...'+filename)
     if is_on_file(filename):
@@ -59,8 +34,8 @@ def create_csv(url, filename, range, aws_path):
         head, tail = os.path.split(filename)
         return get_aws_file(head.replace(local_dir,'')+'/',tail)
     else:
-
-     data = requests.get(url+range, headers={'groups': 'ROLE_AUTOMATION,', 'username': 'machine-learning'})
+     data = requests.get(url+start_date.strftime("%d-%m-%Y")+'/'+end_date.strftime("%d-%m-%Y")
+                         , headers={'groups': 'ROLE_AUTOMATION,', 'username': 'machine-learning'})
      has_data = write_csv(filename, data)
 
      logger.info ('created csv')

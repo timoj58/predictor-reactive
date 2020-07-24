@@ -49,7 +49,7 @@ public class TensorflowTrainServiceImpl implements TensorflowTrainService {
 
         Flux.fromStream(
                 Arrays.asList(Training.values()).stream()
-        ).delayElements(Duration.ofMinutes(trainingDelay))
+        ).delayElements(Duration.ofSeconds(trainingDelay))
                 .subscribe(type ->
                         webClientFacade.train(
                                 trainingHost

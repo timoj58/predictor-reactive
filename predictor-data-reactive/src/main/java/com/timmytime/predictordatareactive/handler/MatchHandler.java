@@ -22,6 +22,19 @@ public class MatchHandler {
         this.matchService = matchService;
     }
 
+    public Mono<ServerResponse> getMatchByOpponent(ServerRequest serverRequest){
+
+        return ServerResponse.ok().body(
+                matchService.getMatchByOpponent(
+                        UUID.fromString(
+                                serverRequest.pathVariable("opponent")),
+                        Boolean.valueOf(serverRequest.queryParam("home").get()),
+                        serverRequest.queryParam("date").get()
+                ),
+                Match.class
+        );
+    }
+
     public Mono<ServerResponse> getMatchByTeams(ServerRequest serverRequest){
 
         return ServerResponse.ok().body(

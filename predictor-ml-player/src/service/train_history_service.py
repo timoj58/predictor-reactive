@@ -63,13 +63,13 @@ def create_vocab_history(vocab_date):
 
 def init_history(status, learning_cfg):
     return create_history(
-              status,
-              learning_cfg['start_day'],
-              learning_cfg['start_month'],
-              learning_cfg['start_year'],
-              learning_cfg['end_day'],
-              learning_cfg['end_month'],
-              learning_cfg['end_year'])
+        status,
+        learning_cfg['start_day'],
+        learning_cfg['start_month'],
+        learning_cfg['start_year'],
+        learning_cfg['end_day'],
+        learning_cfg['end_month'],
+        learning_cfg['end_year'])
 
 
 def init_vocab_history():

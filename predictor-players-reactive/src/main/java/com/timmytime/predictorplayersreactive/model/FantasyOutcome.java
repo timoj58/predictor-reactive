@@ -15,11 +15,9 @@ import java.util.UUID;
 @Document
 @Builder
 public class FantasyOutcome {
-
     @Id
     private UUID id;
     private UUID playerId;
-    private Boolean success;
     private FantasyEventTypes fantasyEventType;
     private String prediction;
     private String home;

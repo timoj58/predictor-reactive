@@ -49,8 +49,25 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     public Mono<Match> getMatch(UUID home, UUID away, String date) {
+        LocalDate filter = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+
         return matchRepo.findByHomeTeamAndAwayTeam(home,away)
-                .filter(f -> f.getDate().toLocalDate().equals(LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"))))
+                .filter(f -> f.getDate().toLocalDate().equals(filter))
+                .next();
+    }
+
+    @Override
+    public Mono<Match> getMatchByOpponent(UUID opponent, Boolean home, String date) {
+
+        LocalDate filter = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+
+        return home ?
+                matchRepo.findByAwayTeam(opponent)
+                        .filter(f -> f.getDate().toLocalDate().equals(filter))
+                        .next()
+                :
+                matchRepo.findByHomeTeam(opponent)
+                .filter(f -> f.getDate().toLocalDate().equals(filter))
                 .next();
     }
 

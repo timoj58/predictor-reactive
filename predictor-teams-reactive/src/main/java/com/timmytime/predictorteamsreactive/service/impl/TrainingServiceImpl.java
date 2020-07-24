@@ -39,7 +39,7 @@ public class TrainingServiceImpl implements TrainingService {
     public TrainingServiceImpl(
             @Value("${data.host}") String dataHost,
             @Value("${interval}") Integer interval,
-            @Value("{training.delay}") Integer trainingDelay,
+            @Value("${training.init.delay}") Integer trainingDelay,
             TensorflowDataService tensorflowDataService,
             TensorflowTrainService tensorflowTrainService,
             TrainingHistoryService trainingHistoryService,
@@ -56,6 +56,8 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     public void train() {
+
+        log.info("training init");
 
         Flux.fromStream(
                 Arrays.asList(CountryCompetitions.values()).stream()

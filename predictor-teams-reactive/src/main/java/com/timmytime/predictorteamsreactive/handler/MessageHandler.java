@@ -41,12 +41,11 @@ public class MessageHandler {
         );
     }
 
-    public Mono<ServerResponse> historicTraining(ServerRequest request) {
+    public Mono<ServerResponse> initTraining(ServerRequest request) {
 
         return ServerResponse.ok().build(
-                messageReceivedService.historicTraining(
-                        UUID.fromString(request.queryParam("id").get())
-                )
+                messageReceivedService.initTraining()
         );
     }
+
 }

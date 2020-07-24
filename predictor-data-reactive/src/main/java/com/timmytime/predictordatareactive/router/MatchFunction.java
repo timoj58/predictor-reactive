@@ -15,6 +15,13 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class MatchFunction {
 
     @Bean
+    @RouterOperation(beanClass = MatchService.class, beanMethod = "getMatchByOpponent")
+    RouterFunction<ServerResponse> getMatchByOpponent(MatchHandler matchHandler) {
+        return route(RequestPredicates.GET("/match/opponent/{opponent}")
+                , matchHandler::getMatchByOpponent);
+    }
+
+    @Bean
     @RouterOperation(beanClass = MatchService.class, beanMethod = "getMatch")
     RouterFunction<ServerResponse> getMatchByTeams(MatchHandler matchHandler) {
         return route(RequestPredicates.GET("/match")

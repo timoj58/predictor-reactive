@@ -15,6 +15,10 @@ public interface MatchService {
     Mono<Match> save(Match match);
     Mono<Match> find(UUID homeTeam, UUID awayTeam, LocalDateTime date);
     Mono<Match> getMatch(@RequestParam UUID home, @RequestParam  UUID away, @RequestParam String date);
+    Mono<Match> getMatchByOpponent(
+            @PathVariable UUID opponent,
+            @RequestParam Boolean home,
+            @RequestParam String date);
     Flux<Match> getMatches(@PathVariable UUID team);
     Flux<Match> getMatchesByCountry(
             @PathVariable String country,

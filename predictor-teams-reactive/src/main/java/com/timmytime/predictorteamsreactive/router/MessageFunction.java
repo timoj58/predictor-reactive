@@ -32,11 +32,10 @@ public class MessageFunction {
     }
 
     @Bean
-    @RouterOperation(beanClass = MessageReceivedService.class, beanMethod = "historicTraining")
-    RouterFunction<ServerResponse> historicTraining(MessageHandler messageHandler) {
-        return route(RequestPredicates.POST("/historic-training")
-                        .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON))
-                , messageHandler::historicTraining);
+    @RouterOperation(beanClass = MessageReceivedService.class, beanMethod = "initTraining")
+    RouterFunction<ServerResponse> initTraining(MessageHandler messageHandler) {
+        return route(RequestPredicates.POST("/init-training")
+                , messageHandler::initTraining);
     }
 
 }

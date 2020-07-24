@@ -25,4 +25,11 @@ public class StatMetric {
     //new field
     private UUID matchId;
 
+    public StatMetric(
+            String label, Integer value
+    ){
+        this.label = label;
+        this.value = value;
+    }
+
 }

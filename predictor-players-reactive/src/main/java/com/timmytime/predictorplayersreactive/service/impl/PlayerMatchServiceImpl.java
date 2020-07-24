@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -61,14 +62,14 @@ public class PlayerMatchServiceImpl implements PlayerMatchService {
     @Override
     public void create(
             UUID player,
-            LocalDateTime fromDate,
-            LocalDateTime toDate) {
+            String fromDate,
+            String toDate) {
 
         getAppearances(player,
-                fromDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
-                toDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                fromDate,
+                toDate
         )
-                //.delayElements(Duration.ofMillis(1))
+                .delayElements(Duration.ofMillis(5))
                 .subscribe(appearance ->
                         getMatch(appearance.getMatchId())
                                 .subscribe(match -> {
@@ -78,8 +79,8 @@ public class PlayerMatchServiceImpl implements PlayerMatchService {
                                                             .playerId(player)
                                                              .opponent(appearance.getTeamId().equals(match.getHomeTeam()) ? match.getAwayTeam() : match.getHomeTeam())
                                                              .home(appearance.getTeamId().equals(match.getHomeTeam()) ? Boolean.TRUE : Boolean.FALSE)
-                                                            .minutes(appearance.getAppearance())
-                                                            .stats(new ArrayList<>())
+                                                             .minutes(appearance.getAppearance())
+                                                             .stats(new ArrayList<>())
                                                              .conceded(appearance.getTeamId().equals(match.getHomeTeam()) ? match.getAwayScore() : match.getHomeScore())
                                                             .build();
 

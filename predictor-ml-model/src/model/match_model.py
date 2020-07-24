@@ -16,30 +16,18 @@ import json
 logger = logging.getLogger(__name__)
 local_dir = get_dir_cfg()['local']
 
-def create(country, train, label, label_values, model_dir, train_filename, test_filename, previous_vocab_date):
+def create(country, train, label, label_values, model_dir, train_filename, test_filename):
 
     aws_model_dir = 'models/'+model_dir+'/'+country
     tf_models_dir = local_dir+'/'+aws_model_dir
 
     learning_cfg = get_learning_cfg(country, model_dir)
 
-    logger.info(learning_cfg)
-
-    logger.info('team vocab started...')
     team_file = vocab_utils.create_vocab(
-        url=vocab_utils.TEAMS_URL,
         filename=vocab_utils.TEAMS_FILE,
-        country=country,
-        previous_vocab_date=previous_vocab_date);
-    logger.info('team vocab completed')
-
-    # and the other numerics.  they will be read from a CSV / or direct from mongo more likely.  yes.  from mongo.
-    # and review checkpoints, to only train with the newest data?  or build from scratch.  lets see.
-    #need to add the label field too.
+        country=country);
 
     feature_columns = match_featureset.create_feature_columns(team_vocab=team_file)
-
-
 
     # Build 2 hidden layer DNN with 10, 10 units respectively.  (from example will enrich at some point).
     classifier = classifier_utils.create(

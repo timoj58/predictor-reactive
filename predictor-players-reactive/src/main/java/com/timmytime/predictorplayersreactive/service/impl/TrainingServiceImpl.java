@@ -69,15 +69,19 @@ public class TrainingServiceImpl implements TrainingService {
                                     history.getToDate(),
                                     history.getToDate().plusYears(interval)
                             )
-                    ).subscribe(trainingHistory ->
-                            Flux.fromStream(
-                                    players.stream()
-                            ).delayElements(Duration.ofMillis(250))
-                                    .subscribe(player -> playerMatchService.create(
-                                    player.getId(),
-                                    trainingHistory.getFromDate(),
-                                    trainingHistory.getToDate()))
-                    )
+                    ).subscribe(trainingHistory -> {
+                        String fromDate = trainingHistory.getFromDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                        String toDate = trainingHistory.getToDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+
+                        Flux.fromStream(
+                                players.stream()
+                        ).limitRate(100)
+                                .delayElements(Duration.ofMillis(250))
+                                .subscribe(player -> playerMatchService.create(
+                                        player.getId(),
+                                        fromDate,
+                                        toDate));
+                    })
                 ).doFinally(train ->
                 Mono.just(nextHistoryId)
                         .delayElement(Duration.ofMillis(250 * playerCount)) //to review in a bit.

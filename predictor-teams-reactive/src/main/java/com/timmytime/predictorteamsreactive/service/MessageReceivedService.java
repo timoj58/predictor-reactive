@@ -8,5 +8,5 @@ import java.util.UUID;
 public interface MessageReceivedService {
     Mono<Void> receive(Mono<Message> message);
     Mono<Void> training(UUID id);
-    Mono<Void> historicTraining(UUID id);
+    Mono<Void> initTraining();
 }

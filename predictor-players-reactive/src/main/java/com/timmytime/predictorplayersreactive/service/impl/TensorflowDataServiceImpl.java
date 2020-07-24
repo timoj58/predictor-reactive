@@ -37,7 +37,6 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
 
 
     private void process(PlayerMatch playerMatch){
-        log.info("adding {} vs {}", playerMatch.getOpponent(), playerMatch.getPlayerId());
         playerMatches.add(playerMatch);
     }
 
@@ -53,8 +52,8 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
 
         return playerMatches
                 .stream()
-                .filter(f -> f.getDate().toLocalDate().isAfter(startDate))
-                .filter(f -> f.getDate().toLocalDate().isEqual(endDate) || f.getDate().toLocalDate().isBefore(endDate))
+                .filter(f -> f.getDate().toLocalDate().isEqual(startDate) || f.getDate().toLocalDate().isAfter(startDate))
+                .filter(f -> f.getDate().toLocalDate().isBefore(endDate))
                 .sorted(Comparator.comparing(PlayerMatch::getDate))
                 .map(PlayerEventOutcomeCsv::new)
                 .collect(Collectors.toList());
