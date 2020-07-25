@@ -2,22 +2,29 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b6e64a2f-df01-4001-85a4-1cb3a0a01cb0" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/predictor-ml-model/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/predictor-ml-player/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/predictor-reactive.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/predictor-reactive.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/config.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/dataset/dataset_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/dataset/dataset_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/dataset/match_dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/dataset/match_dataset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/featureset/featureset_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/featureset/featureset_utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/featureset/match_featureset.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/featureset/match_featureset.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/model/match_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/model/match_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/model/model_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/model/model_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/predict/match_goals_prediction.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/predict/match_goals_prediction.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/predict/match_result_prediction.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/predict/match_result_prediction.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/predictor_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/predictor_api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/service/config_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/service/config_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/service/index_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/service/index_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/service/prediction_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/service/prediction_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/service/receipt_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/service/receipt_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/service/train_history_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/service/train_history_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/service/training_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/service/training_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/util/dataset_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/dataset/dataset_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/util/featureset_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/featureset/featureset_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/util/model_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/model/model_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/featureset/match_featureset.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/featureset/match_featureset.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/model/match_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/model/match_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/service/predict_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/service/predict_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/service/training_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/service/training_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/util/dataset_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/dataset/dataset_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/util/featureset_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/featureset/featureset_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/util/model_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/model/model_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/service/vocab_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/service/vocab_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/train/match_goals_train.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/train/match_goals_train.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/train/match_result_train.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/train/match_result_train.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/util/classifier_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/util/classifier_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/util/file_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/util/file_utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,10 +57,10 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit5" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5" value="" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/predictor-players-reactive/src/main/java/com/timmytime/predictorplayersreactive/model" />
-    <property name="project.structure.last.edited" value="Modules" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/predictor-ml-player" />
+    <property name="project.structure.last.edited" value="SDKs" />
     <property name="project.structure.proportion" value="0.15" />
-    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="project.structure.side.proportion" value="0.38045976" />
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
   <component name="RecentsManager">
@@ -183,10 +190,14 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state x="476" y="130" width="1024" height="845" key="#Project_Structure" timestamp="1595416983925">
+    <state x="622" y="234" width="732" height="637" key="#Inspections" timestamp="1595672248328">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="476" y="130" width="1024" height="845" key="#Project_Structure/67.27.1853.1053@67.27.1853.1053" timestamp="1595416983925" />
+    <state x="622" y="234" width="732" height="637" key="#Inspections/67.27.1853.1053@67.27.1853.1053" timestamp="1595672248328" />
+    <state x="476" y="130" width="1024" height="845" key="#Project_Structure" timestamp="1595672586134">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="476" y="130" width="1024" height="845" key="#Project_Structure/67.27.1853.1053@67.27.1853.1053" timestamp="1595672586134" />
     <state x="801" y="260" width="374" height="585" key="#com.intellij.ide.util.MemberChooser" timestamp="1595585799791">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
@@ -199,6 +210,10 @@
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="726" y="301" width="524" height="502" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1595589774085" />
+    <state x="771" y="260" width="424" height="585" key="FileChooserDialogImpl" timestamp="1595672572912">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="771" y="260" width="424" height="585" key="FileChooserDialogImpl/67.27.1853.1053@67.27.1853.1053" timestamp="1595672572912" />
     <state width="1807" height="322" key="GridCell.Tab.0.bottom" timestamp="1595589834416">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
@@ -231,10 +246,14 @@
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state width="1807" height="344" key="GridCell.Tab.1.right/67.27.1853.1053@67.27.1853.1053" timestamp="1595422618687" />
-    <state x="476" y="130" width="1024" height="845" key="SettingsEditor" timestamp="1595408893274">
+    <state x="573" y="299" width="819" height="507" key="NewModule_or_Project.wizard" timestamp="1595671882411">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="476" y="130" width="1024" height="845" key="SettingsEditor/67.27.1853.1053@67.27.1853.1053" timestamp="1595408893274" />
+    <state x="573" y="299" width="819" height="507" key="NewModule_or_Project.wizard/67.27.1853.1053@67.27.1853.1053" timestamp="1595671882411" />
+    <state x="476" y="130" width="1024" height="845" key="SettingsEditor" timestamp="1595672386293">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="476" y="130" width="1024" height="845" key="SettingsEditor/67.27.1853.1053@67.27.1853.1053" timestamp="1595672386293" />
     <state x="649" y="372" width="685" height="360" key="com.intellij.testIntegration.createTest.CreateTestDialog" timestamp="1595581570935">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>

@@ -1,5 +1,6 @@
 import tensorflow as tf
 
+
 def train_input_fn(features, labels, batch_size):
     """An input function for training"""
     # Convert the inputs to a Dataset.

@@ -1,20 +1,24 @@
 import yaml
 
-
 with open("config.yml", 'r') as ymlfile:
     cfg = yaml.load(ymlfile)
+
 
 def get_dir_cfg():
     return cfg['base']
 
+
 def get_analysis_cfg():
     return cfg['analysis']
+
 
 def get_auth_cfg():
     return cfg['auth']
 
+
 def get_receipt_cfg():
     return cfg['receipt']
+
 
 def get_learning_cfg(type):
     config_by_types = cfg['learning']
@@ -26,5 +30,3 @@ def get_learning_cfg(type):
         response[attribute] = value
 
     return response
-
-

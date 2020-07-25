@@ -14,6 +14,8 @@
       <sourceFolder url="file://$MODULE_DIR$/predictor-players-reactive/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/predictor-scraper-reactive/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/predictor-teams-reactive/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/predictor-ml-model/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/predictor-ml-player/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />

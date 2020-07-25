@@ -2,7 +2,7 @@ base:
   aws: True
   aws_url: ""
   aws_bucket: "predictor-team-models"
-  local: "/home/ubuntu/res/"
+  local: "/home/timmy/"
   train_path: "train/<key>/"
   vocab_path: "vocab/<key>/"
   country_results_train_history_file: "country-matches-train-history.json"
@@ -11,27 +11,27 @@ base:
 learning:
 
   match_result:
-   default:
-     batch_size: 250
-     steps: 1000
-     hash_bins: 1000
-     hidden_units: [10, 20, 10]
-     evaluate: False
+    default:
+      batch_size: 250
+      steps: 1000
+      hash_bins: 1000
+      hidden_units: [10, 20, 10]
+      evaluate: False
 
 
   match_goals:
-   default:
-          batch_size: 250
-          steps: 1000
-          hash_bins: 1000
-          hidden_units: [10, 20, 10]
-          evaluate: False
+    default:
+      batch_size: 250
+      steps: 1000
+      hash_bins: 1000
+      hidden_units: [10, 20, 10]
+      evaluate: False
 
 
 analysis:
-        team_model_url: "http://ip-172-31-38-2.ec2.internal:8090/api/prediction/ml-data/competition/"
+  team_model_url: "http://ip-172-31-38-2.ec2.internal:8090/api/prediction/ml-data/competition/"
 
 receipt:
-        train_receipt_url: "http://ip-172-31-38-2.ec2.internal:8090/api/prediction/ml-data/train/receipt"
-        predict_receipt_url: "http://ip-172-31-40-214.ec2.internal:8094/api/prediction/events/ml-data/predict/receipt"
+  train_receipt_url: "http://ip-172-31-38-2.ec2.internal:8090/api/prediction/ml-data/train/receipt"
+  predict_receipt_url: "http://ip-172-31-40-214.ec2.internal:8094/api/prediction/events/ml-data/predict/receipt"
 
