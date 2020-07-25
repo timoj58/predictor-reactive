@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
 import java.time.Duration;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
 
@@ -55,7 +56,10 @@ public class TensorflowTrainServiceImpl implements TensorflowTrainService {
                                 trainingHost
                                         +getUrl(type)
                                         .replace("<receipt>", trainingHistory.getId().toString())
-                                        .replace("<country>", trainingHistory.getCountry()))
+                                        .replace("<country>", trainingHistory.getCountry())
+                                        .replace("<from>", trainingHistory.getFromDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+                                        .replace("<to>", trainingHistory.getToDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+                        )
                 );
 
 

@@ -83,6 +83,10 @@ public class WebClientFacade {
                 .subscribe();
     }
 
+    public void train(String url){
+
+    }
+
     public void config(String url){
         WebClient.builder().build()
                 .put()

@@ -2,27 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b6e64a2f-df01-4001-85a4-1cb3a0a01cb0" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/predictor-ml-model/test/training_service_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/predictor-reactive.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/predictor-reactive.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/config.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/predictor_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/predictor_api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/service/train_history_service.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/service/training_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/service/training_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/test/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/test/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/train/match_goals_train.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/train/match_goals_train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/train/match_result_train.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/train/match_result_train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/config.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/predictor_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/predictor_api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/service/train_history_service.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/service/training_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/service/training_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/train/player_assists_train.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/train/player_assists_train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/train/player_conceded_train.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/train/player_conceded_train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/train/player_goals_train.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/train/player_goals_train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/train/player_minutes_train.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/train/player_minutes_train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/train/player_red_card_train.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/train/player_red_card_train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/train/player_saves_train.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/train/player_saves_train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/train/player_yellow_card_train.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/train/player_yellow_card_train.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-players-reactive/src/main/java/com/timmytime/predictorplayersreactive/service/impl/TensorflowTrainingServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-players-reactive/src/main/java/com/timmytime/predictorplayersreactive/service/impl/TensorflowTrainingServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-players-reactive/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-players-reactive/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-teams-reactive/src/main/java/com/timmytime/predictorteamsreactive/service/impl/TensorflowTrainServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-teams-reactive/src/main/java/com/timmytime/predictorteamsreactive/service/impl/TensorflowTrainServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-teams-reactive/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-teams-reactive/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
