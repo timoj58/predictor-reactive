@@ -1,11 +1,9 @@
-import util.model_utils as model_utils
-import util.cache_utils as cache_utils
 import dataset.match_dataset as match_dataset
-import util.receipt_utils as receipt_utils
+import service.receipt_service as receipt_service
 import service.training_service as training_service
 import service.train_history_service as train_history_service
-from util.config_utils import get_dir_cfg
-from util.config_utils import get_learning_cfg
+from service.config_service import get_dir_cfg
+from service.config_service import get_learning_cfg
 import logging
 
 logger = logging.getLogger(__name__)
@@ -19,7 +17,7 @@ def train(receipt):
     learning_cfg = get_learning_cfg("red")
     train_history_service.init_history('in progress',learning_cfg)
 
-    train_history_service.train(
+    training_service.train(
         #data_range=training_utils.create_data_range(learning_cfg=learning_cfg, history_file=history_file),
         label='red',
         label_values=match_dataset.CARDS,
@@ -29,4 +27,4 @@ def train(receipt):
         #history=history,
         history_file=history_file)
 
-    receipt_utils.put_receipt(receipt_utils.TRAIN_RECEIPT_URL, receipt, None)
+    receipt_service.put_receipt(receipt_service.TRAIN_RECEIPT_URL, receipt, None)

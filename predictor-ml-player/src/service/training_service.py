@@ -1,17 +1,11 @@
-import util.receipt_utils as receipt_utils
-import util.cache_utils as cache_utils
+import service.receipt_service as receipt_service
 import util.model_utils as model_utils
 import model.match_model as match_model
 import util.train_history_utils as train_history_utils
 
 
-from shutil import copyfile
-from util.config_utils import get_dir_cfg
-from util.file_utils import is_on_file
-from util.file_utils import get_aws_file
-from util.file_utils import write_filenames_index_from_filename
-from util.file_utils import put_aws_file_with_path
-from util.config_utils import get_learning_cfg
+from service.config_service import get_dir_cfg
+from service.config_service import get_learning_cfg
 
 import logging
 
@@ -123,7 +117,7 @@ def train(data_range, label, label_values, model_dir, train_path, receipt, histo
         train_history_utils.add_history(history_file, 'default', history)
 
     if receipt is not None:
-        receipt_utils.put_receipt(receipt_utils.TRAIN_RECEIPT_URL, receipt, None)
+        receipt_service.put_receipt(receipt_service.TRAIN_RECEIPT_URL, receipt, None)
 
     history['status'] = "Success - Full"
     train_history_utils.add_history(history_file, 'default', history)

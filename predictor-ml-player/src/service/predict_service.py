@@ -1,6 +1,6 @@
-import util.receipt_utils as receipt_utils
+import service.receipt_service as receipt_service
 import model.match_model as match_model
-from util.config_utils import get_dir_cfg
+from service.config_service import get_dir_cfg
 import util.model_utils as model_utils
 import logging
 
@@ -46,4 +46,4 @@ def predict(data, init, label, label_values,  model_dir, receipt):
         logger.info('tidying up')
         match_model.tidy_up(local_dir+'/models/'+model_dir,None, None, None)
 
-    receipt_utils.put_receipt(receipt_utils.PREDICT_RECEIPT_URL, receipt,response)
+    receipt_service.put_receipt(receipt_service.PREDICT_RECEIPT_URL, receipt,response)

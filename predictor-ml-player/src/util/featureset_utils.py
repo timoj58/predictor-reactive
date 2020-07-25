@@ -1,5 +1,4 @@
 import tensorflow as tf
-from util.config_utils import get_dir_cfg
 
 
 def create_vocab_column(key, vocab):

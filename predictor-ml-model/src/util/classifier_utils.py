@@ -1,7 +1,7 @@
 import tensorflow as tf
 from util.file_utils import get_indexes
 from util.file_utils import get_aws_file
-from util.config_utils import get_dir_cfg
+from service.config_service import get_dir_cfg
 import logging
 
 logger = logging.getLogger(__name__)

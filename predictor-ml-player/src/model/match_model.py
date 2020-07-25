@@ -1,10 +1,10 @@
 import dataset.match_dataset as match_dataset
 import featureset.match_featureset as match_featureset
-import util.vocab_utils as vocab_utils
+import service.vocab_service as vocab_service
 import util.classifier_utils as classifier_utils
 import util.dataset_utils as dataset_utils
-from util.config_utils import get_dir_cfg
-from util.config_utils import get_learning_cfg
+from service.config_service import get_dir_cfg
+from service.config_service import get_learning_cfg
 from util.model_utils import tidy_up
 from util.model_utils import predict
 
@@ -27,18 +27,14 @@ def create(train, label, label_values, model_dir, train_filename, test_filename,
     logger.info(learning_cfg)
 
     logger.info('team vocab started...')
-    team_file = vocab_utils.create_vocab(
-        url=vocab_utils.ALL_TEAMS_URL,
-        filename=vocab_utils.TEAMS_FILE,
-        player='default')
+    team_file = vocab_service.create_vocab(
+        filename=vocab_service.TEAMS_FILE)
     logger.info('team vocab completed')
 
 
     logger.info('player vocab started...')
-    player_file = vocab_utils.create_vocab(
-     url=vocab_utils.PLAYERS_URL,
-     filename=vocab_utils.PLAYERS_FILE,
-     player='default')
+    player_file = vocab_service.create_vocab(
+     filename=vocab_service.PLAYERS_FILE)
     logger.info('[player vocab completed')
 
     # and the other numerics.  they will be read from a CSV / or direct from mongo more likely.  yes.  from mongo.
@@ -83,16 +79,6 @@ def create(train, label, label_values, model_dir, train_filename, test_filename,
              input_fn=lambda:dataset_utils.eval_input_fn(test_x, test_y,learning_cfg['batch_size']))
 
          logger.info('\nTest set accuracy: {accuracy:0.3f}\n'.format(**eval_result))
-
-         if learning_cfg['aws_debug']:
-          with open(local_dir+'sample.json') as f:
-           sample = json.load(f)
-
-
-          predict(
-             classifier=classifier,
-             predict_x=sample,
-             label_values=label_values)
 
         if init:
          logger.info('tidying up')

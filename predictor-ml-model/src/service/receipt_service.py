@@ -1,9 +1,7 @@
 import requests
 from requests.auth import HTTPDigestAuth
 import json
-
-from util.config_utils import get_receipt_cfg
-from util.config_utils import get_dir_cfg
+from service.config_service import get_receipt_cfg
 
 
 TRAIN_RECEIPT_URL = get_receipt_cfg()['train_receipt_url']

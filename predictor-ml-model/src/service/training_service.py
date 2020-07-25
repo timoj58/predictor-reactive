@@ -2,9 +2,9 @@ import logging
 import model.match_model as match_model
 import service.train_history_service as train_history_service
 import util.model_utils as model_utils
-import util.receipt_utils as receipt_utils
-from util.config_utils import get_dir_cfg
-from util.config_utils import get_learning_cfg
+import service.receipt_service as receipt_service
+from service.config_service import get_dir_cfg
+from service.config_service import get_learning_cfg
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -99,7 +99,7 @@ def train_match(country, label, label_values, model_dir, receipt, history_file):
 
 
     if receipt is not None:
-     receipt_utils.put_receipt(receipt_utils.TRAIN_RECEIPT_URL, receipt, None)
+     receipt_service.put_receipt(receipt_service.TRAIN_RECEIPT_URL, receipt, None)
 
     history['status'] = "Success - Full"
     train_history_service.add_history(history_file, country, history)

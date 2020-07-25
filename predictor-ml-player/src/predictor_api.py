@@ -18,7 +18,7 @@ import train.player_minutes_train as player_minutes_train
 import train.player_conceded_train as player_conceded_train
 import train.player_red_card_train as player_red_card_train
 import train.player_yellow_card_train as player_yellow_card_train
-from util.config_utils import get_dir_cfg
+from service.config_service import get_dir_cfg
 
 import json
 import logging
@@ -184,7 +184,7 @@ def train_minutes(receipt):
     return json.dumps(done_response())
 
 @app.route('/train/red-card/<receipt>', methods=['POST'])
-def train_red(player, receipt):
+def train_red(receipt):
     thread = threading.Thread(target=player_red_card_train.train,
                               args=receipt)
     process(thread)

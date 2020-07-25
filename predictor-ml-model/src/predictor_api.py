@@ -4,7 +4,7 @@ import predict.match_result_prediction as match_result_prediction
 import predict.match_goals_prediction as match_goals_prediction
 import train.match_result_train as match_result_train
 import train.match_goals_train as match_goals_train
-from util.config_utils import get_dir_cfg
+from service.config_service import get_dir_cfg
 
 import json
 import logging

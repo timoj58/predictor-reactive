@@ -2,15 +2,14 @@ import requests
 from requests.auth import HTTPDigestAuth
 from util.file_utils import write_csv
 
-from util.config_utils import get_analysis_cfg
-from util.config_utils import get_analysis_cfg
+from service.config_service import get_analysis_cfg
 from util.file_utils import put_aws_file_with_path
 from util.file_utils import write_filenames_index_from_filename
 from util.dataset_utils import eval_input_fn
 import datetime
 from datetime import date, timedelta
 import logging
-from util.config_utils import get_dir_cfg
+from service.config_service import get_dir_cfg
 from util.file_utils import clear_directory
 from util.file_utils import on_finish
 from util.file_utils import is_on_file

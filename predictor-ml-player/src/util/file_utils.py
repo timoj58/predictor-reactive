@@ -1,5 +1,5 @@
-from util.config_utils import get_dir_cfg
-from util.index_utils import process_index, read_index
+from service.config_service import get_dir_cfg
+from service.index_service import process_index, read_index
 import os.path
 import os
 import requests

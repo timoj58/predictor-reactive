@@ -2,7 +2,7 @@
 from util.file_utils import get_aws_file
 from util.file_utils import make_dir
 import logging
-from util.config_utils import get_dir_cfg
+from service.config_service import get_dir_cfg
 import os.path
 import os
 

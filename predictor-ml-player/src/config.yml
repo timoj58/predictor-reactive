@@ -1,101 +1,90 @@
 base:
   aws: True
   aws_url: ""
-  aws_bucket: "tabiiki-test"
-  local: "/home/timmytime/"
-
-  train_path: "train/<type>/<key>/"
-  vocab_path: "vocab/<type>/<key>/"
-  country_results_train_history_file: "country-matches-train-history.json"
-  country_goals_train_history_file: "country-goals-train-history.json"
-  vocab_history_file:  ""
+  aws_bucket: "predictor-player-models"
+  local: "/home/ubuntu/res/"
+  train_path: "train/"
+  vocab_path: "vocab/"
+  player_assists_train_history_file: "player-assists-train-history.json"
+  player_goals_train_history_file: "player-goals-train-history.json"
+  player_saves_train_history_file: "player-saves-train-history.json"
+  player_minutes_train_history_file: "player-minutes-train-history.json"
+  player_conceded_train_history_file: "player-conceded-train-history.json"
+  player_red_card_train_history_file: "player-red-card-train-history.json"
+  player_yellow_card_train_history_file: "player-yellow-card-train-history.json"
 
 learning:
 
-  match_result:
+  goals:
 
    default:
-     batch_size: 100
+     batch_size: 500
      steps: 1000
-     months_per_cycle: 2
-     start_day: 28
-     start_month: 9
-     start_year: 2018
-     end_day: 4
-     end_month: 10
-     end_year: 2018
-     hash_bins: 10000
+     hash_bins: 1000
      hidden_units: [10, 20, 10]
-     aws_debug: False
-     historic: True
      evaluate: False
 
-   england:
-     batch_size: 250
-     months_per_cycle: 4
-     hash_bins: 25000
+  saves:
+
+   default:
+     batch_size: 500
+     steps: 1000
+     hash_bins: 1000
      hidden_units: [10, 20, 10]
-     start_day: 4
-     start_month: 10
-     start_year: 2018
+     evaluate: False
+     
+  minutes:
 
-   spain:
-     batch_size: 150
+   default:
+     batch_size: 500
+     steps: 1000
+     hash_bins: 1000
+     hidden_units: [10, 20, 10]
+     evaluate: False
+   
+ 
+  assists:
 
-   france:
-     batch_size: 150
+   default:
+     batch_size: 500
+     steps: 1000
+     hash_bins: 1000
+     hidden_units: [10, 20, 10]
+     evaluate: False
 
-   scotland:
-     batch_size: 200
-     months_per_cycle: 4
-   italy:
-     batch_size: 150
-     start_day: 1
-     start_month: 8
-     start_year: 2009
-     evaluate: True
+  conceded:
 
-   german:
-     batch_size: 150
-     start_day: 1
-     start_month: 8
-     start_year: 2009
-     evaluate: True
+   default:
+     batch_size: 500
+     steps: 1000
+     months_per_cycle: 12
+     hash_bins: 1000
+     hidden_units: [10, 20, 10]
+     evaluate: False
 
-   greece:
-     months_per_cycle: 4
+  red:
 
-   holland:
-     months_per_cycle: 4
-   denmark:
-     months_per_cycle: 4
-   sweden:
-     months_per_cycle: 4
-   norway:
-     months_per_cycle: 4
-   turkey:
-     months_per_cycle: 4
-   russia:
-     months_per_cycle: 4
-     start_day: 4
-     start_month: 10
-     start_year: 2018
-   portugal:
-     months_per_cycle: 4
-   belgium:
-     months_per_cycle: 4
+   default:
+     batch_size: 500
+     steps: 1000
+     hash_bins: 1000
+     hidden_units: [10, 20, 10]
+     evaluate: False
 
-  match_goals:
+  yellow:
 
-vocab:
-  team_vocab_url: ":8090/api/prediction/teams"
+   default:
+     batch_size: 500
+     steps: 1000
+     hash_bins: 1000
+     hidden_units: [10, 20, 10]
+     evaluate: False
+
 
 analysis:
-  team_model_url: ":8090/api/prediction/ml-data/competition/"
-  types_url: ":8090/api/prediction/cache/types"
-  countries_url: ":8090/api/prediction/cache/countries"
-  comps_by_country_url: ":8090/api/prediction/cache/competition-count"
+        team_model_url: "http://ip-172-31-42-43.ec2.internal:8095/api/prediction/players/ml-data"
 
 receipt:
-  train_receipt_url: ":8090/api/prediction/ml-data/train/receipt"
-  predict_receipt_url: ":8090/api/prediction/ml-data/predict/receipt"
+        train_receipt_url: "http://ip-172-31-42-43.ec2.internal:8095/api/prediction/players/train/receipt"
+        predict_receipt_url: "http://ip-172-31-42-43.ec2.internal:8095/api/prediction/players/predict/receipt"
+

@@ -3,7 +3,7 @@ import os.path
 import logging
 import datetime
 
-from util.config_utils import get_dir_cfg
+from service.config_service import get_dir_cfg
 
 logger = logging.getLogger(__name__)
 local_dir = get_dir_cfg()['local']

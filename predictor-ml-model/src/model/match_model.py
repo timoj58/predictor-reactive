@@ -1,10 +1,10 @@
 import dataset.match_dataset as match_dataset
 import featureset.match_featureset as match_featureset
-import util.vocab_utils as vocab_utils
+import service.vocab_service as vocab_service
 import util.classifier_utils as classifier_utils
 import util.dataset_utils as dataset_utils
-from util.config_utils import get_dir_cfg
-from util.config_utils import get_learning_cfg
+from service.config_service import get_dir_cfg
+from service.config_service import get_learning_cfg
 from util.model_utils import tidy_up
 from util.model_utils import predict
 
@@ -23,8 +23,8 @@ def create(country, train, label, label_values, model_dir, train_filename, test_
 
     learning_cfg = get_learning_cfg(country, model_dir)
 
-    team_file = vocab_utils.create_vocab(
-        filename=vocab_utils.TEAMS_FILE,
+    team_file = vocab_service.create_vocab(
+        filename=vocab_service.TEAMS_FILE,
         country=country);
 
     feature_columns = match_featureset.create_feature_columns(team_vocab=team_file)
@@ -63,17 +63,6 @@ def create(country, train, label, label_values, model_dir, train_filename, test_
              input_fn=lambda:dataset_utils.eval_input_fn(test_x, test_y,learning_cfg['batch_size']))
 
          logger.info('\nTest set accuracy: {accuracy:0.3f}\n'.format(**eval_result))
-
-         if learning_cfg['aws_debug']:
-          with open(local_dir+'sample.json') as f:
-           sample = json.load(f)
-
-
-          predict(
-             classifier=classifier,
-             predict_x=sample,
-             label_values=label_values)
-
 
         tidy_up(
             tf_models_dir=tf_models_dir,
