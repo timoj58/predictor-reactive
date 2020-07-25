@@ -1,23 +1,24 @@
-import json
-import os.path
-import logging
 import datetime
+import json
+import logging
+import os.path
 
 from service.config_service import get_dir_cfg
 
 logger = logging.getLogger(__name__)
 local_dir = get_dir_cfg()['local']
-vocab_file = get_dir_cfg()['vocab_history_file']
+
 
 def write_history(filename, history):
-    logger.info('opening '+filename)
+    logger.info('opening ' + filename)
 
-    with open(local_dir+filename, 'w') as outfile:
+    with open(local_dir + filename, 'w') as outfile:
         json.dump(history, outfile)
 
+
 def read_history(filename):
-    if os.path.isfile(local_dir+filename):
-        with open(local_dir+filename) as f:
+    if os.path.isfile(local_dir + filename):
+        with open(local_dir + filename) as f:
             return json.load(f)
     else:
         return {}
@@ -30,11 +31,13 @@ def get_history(filename, key):
 
     return {}
 
+
 def add_vocab_history(key):
     all_history = read_history(vocab_file)
     all_history[key] = init_vocab_history()
 
     write_history(vocab_file, all_history)
+
 
 def add_history(filename, key, history):
     all_history = read_history(filename)
@@ -60,6 +63,7 @@ def create_vocab_history(vocab_date):
     record['vocab_date'] = vocab_date
 
     return record
+
 
 def init_history(status, learning_cfg):
     return create_history(

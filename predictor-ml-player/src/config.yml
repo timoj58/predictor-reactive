@@ -2,7 +2,7 @@ base:
   aws: True
   aws_url: ""
   aws_bucket: "predictor-player-models"
-  local: "/home/ubuntu/res/"
+  local: "/home/timmy/"
   train_path: "train/"
   vocab_path: "vocab/"
   player_assists_train_history_file: "player-assists-train-history.json"
@@ -17,74 +17,74 @@ learning:
 
   goals:
 
-   default:
-     batch_size: 500
-     steps: 1000
-     hash_bins: 1000
-     hidden_units: [10, 20, 10]
-     evaluate: False
+    default:
+      batch_size: 500
+      steps: 1000
+      hash_bins: 1000
+      hidden_units: [10, 20, 10]
+      evaluate: False
 
   saves:
 
-   default:
-     batch_size: 500
-     steps: 1000
-     hash_bins: 1000
-     hidden_units: [10, 20, 10]
-     evaluate: False
-     
+    default:
+      batch_size: 500
+      steps: 1000
+      hash_bins: 1000
+      hidden_units: [10, 20, 10]
+      evaluate: False
+
   minutes:
 
-   default:
-     batch_size: 500
-     steps: 1000
-     hash_bins: 1000
-     hidden_units: [10, 20, 10]
-     evaluate: False
-   
- 
+    default:
+      batch_size: 500
+      steps: 1000
+      hash_bins: 1000
+      hidden_units: [10, 20, 10]
+      evaluate: False
+
+
   assists:
 
-   default:
-     batch_size: 500
-     steps: 1000
-     hash_bins: 1000
-     hidden_units: [10, 20, 10]
-     evaluate: False
+    default:
+      batch_size: 500
+      steps: 1000
+      hash_bins: 1000
+      hidden_units: [10, 20, 10]
+      evaluate: False
 
   conceded:
 
-   default:
-     batch_size: 500
-     steps: 1000
-     months_per_cycle: 12
-     hash_bins: 1000
-     hidden_units: [10, 20, 10]
-     evaluate: False
+    default:
+      batch_size: 500
+      steps: 1000
+      months_per_cycle: 12
+      hash_bins: 1000
+      hidden_units: [10, 20, 10]
+      evaluate: False
 
   red:
 
-   default:
-     batch_size: 500
-     steps: 1000
-     hash_bins: 1000
-     hidden_units: [10, 20, 10]
-     evaluate: False
+    default:
+      batch_size: 500
+      steps: 1000
+      hash_bins: 1000
+      hidden_units: [10, 20, 10]
+      evaluate: False
 
   yellow:
 
-   default:
-     batch_size: 500
-     steps: 1000
-     hash_bins: 1000
-     hidden_units: [10, 20, 10]
-     evaluate: False
+    default:
+      batch_size: 500
+      steps: 1000
+      hash_bins: 1000
+      hidden_units: [10, 20, 10]
+      evaluate: False
 
 
 analysis:
-        team_model_url: "http://ip-172-31-42-43.ec2.internal:8095/api/prediction/players/ml-data"
+  team_model_url: "http://ip-172-31-42-43.ec2.internal:8095/api/prediction/players/ml-data"
 
 receipt:
-        train_receipt_url: "http://ip-172-31-42-43.ec2.internal:8095/api/prediction/players/train/receipt"
-        predict_receipt_url: "http://ip-172-31-42-43.ec2.internal:8095/api/prediction/players/predict/receipt"
+  train_receipt_url: "http://ip-172-31-42-43.ec2.internal:8095/api/prediction/players/train/receipt"
+  predict_receipt_url: "http://ip-172-31-42-43.ec2.internal:8095/api/prediction/players/predict/receipt"
 
