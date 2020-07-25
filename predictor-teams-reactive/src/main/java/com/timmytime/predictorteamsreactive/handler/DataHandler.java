@@ -1,8 +1,6 @@
-package com.timmytime.predictorplayersreactive.handler;
+package com.timmytime.predictorteamsreactive.handler;
 
-import com.timmytime.predictorplayersreactive.request.PlayerEventOutcomeCsv;
-import com.timmytime.predictorplayersreactive.service.TensorflowDataService;
-import lombok.AllArgsConstructor;
+import com.timmytime.predictorteamsreactive.service.TensorflowDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -24,7 +22,8 @@ public class DataHandler {
     public Mono<ServerResponse> getData(ServerRequest request) {
 
         return ServerResponse.ok().bodyValue(
-                tensorflowDataService.getPlayerCsv(
+                tensorflowDataService.getCountryCsv(
+                        request.pathVariable("country"),
                         request.pathVariable("fromDate"),
                         request.pathVariable("toDate")
                 )

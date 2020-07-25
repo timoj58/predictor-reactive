@@ -52,7 +52,7 @@ def create_csv(url, filename, start_date, end_date, aws_path):
         return get_aws_file(head.replace(local_dir, '') + '/', tail)
     else:
 
-        data = requests.get(url + start_date.strftime("%d-%m-%Y") + '/' + end_date.strftime("%d-%m-%Y"),
+        data = requests.get(url + '/' + start_date.strftime("%d-%m-%Y") + '/' + end_date.strftime("%d-%m-%Y"),
                             headers={'groups': 'ROLE_AUTOMATION,', 'username': 'machine-learning'})
         has_data = write_csv(filename, data)
 

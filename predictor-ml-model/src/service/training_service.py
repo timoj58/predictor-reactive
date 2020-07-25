@@ -63,16 +63,19 @@ def train_match(country, start, end, label, label_values, model_dir, receipt):
         if evaluate_filename is not None:
             evaluate_filename = train_path + evaluate_filename
 
-        match_model.create(
-            country=country,
-            train=True,
-            label=label,
-            label_values=label_values,
-            model_dir=model_dir,
-            train_filename=train_filename,
-            test_filename=evaluate_filename)
+            match_model.create(
+             country=country,
+             train=True,
+             label=label,
+             label_values=label_values,
+             model_dir=model_dir,
+             train_filename=train_filename,
+             test_filename=evaluate_filename)
     else:
         logger.info('no data to train')
 
     if receipt is not None:
-        receipt_service.put_receipt(receipt_service.TRAIN_RECEIPT_URL, receipt, None)
+        receipt_service.put_receipt(
+            url=receipt_service.TRAIN_RECEIPT_URL,
+            receipt=receipt,
+            result=None)
