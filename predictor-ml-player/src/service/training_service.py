@@ -1,7 +1,7 @@
 import service.receipt_service as receipt_service
-import util.model_utils as model_utils
+import model.model_utils as model_utils
 import model.match_model as match_model
-import util.train_history_utils as train_history_utils
+import service.train_history_service as train_history_service
 
 
 from service.config_service import get_dir_cfg
@@ -21,9 +21,9 @@ def create_train_path():
 def create_data_range(learning_cfg, history_file):
 
     data_range = model_utils.real_time_range(
-        start_day=train_history_utils.get_history(filename=history_file,key='default')['end_day'],
-        start_month=train_history_utils.get_history(filename=history_file,key='default')['end_month'],
-        start_year=train_history_utils.get_history(filename=history_file,key='default')['end_year'])
+        start_day=train_history_service.get_history(filename=history_file,key='default')['end_day'],
+        start_month=train_history_service.get_history(filename=history_file,key='default')['end_month'],
+        start_year=train_history_service.get_history(filename=history_file,key='default')['end_year'])
 
     return data_range
 
@@ -113,12 +113,12 @@ def train(data_range, label, label_values, model_dir, train_path, receipt, histo
 
         #write the history...
         start_day, start_month, start_year, end_day, end_month, end_year = get_range_details(data)
-        history = train_history_utils.create_history('Success - Partial', start_day, start_month, start_year, end_day, end_month, end_year)
-        train_history_utils.add_history(history_file, 'default', history)
+        history = train_history_service.create_history('Success - Partial', start_day, start_month, start_year, end_day, end_month, end_year)
+        train_history_service.add_history(history_file, 'default', history)
 
     if receipt is not None:
         receipt_service.put_receipt(receipt_service.TRAIN_RECEIPT_URL, receipt, None)
 
     history['status'] = "Success - Full"
-    train_history_utils.add_history(history_file, 'default', history)
+    train_history_service.add_history(history_file, 'default', history)
 

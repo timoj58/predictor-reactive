@@ -5,8 +5,7 @@ import util.classifier_utils as classifier_utils
 import util.dataset_utils as dataset_utils
 from service.config_service import get_dir_cfg
 from service.config_service import get_learning_cfg
-from util.model_utils import tidy_up
-from util.model_utils import predict
+from model.model_utils import tidy_up
 
 
 import logging

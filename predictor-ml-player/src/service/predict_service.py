@@ -1,7 +1,7 @@
 import service.receipt_service as receipt_service
 import model.match_model as match_model
 from service.config_service import get_dir_cfg
-import util.model_utils as model_utils
+import model.model_utils as model_utils
 import logging
 
 local_dir = get_dir_cfg()['local']

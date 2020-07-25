@@ -1,6 +1,5 @@
 import tensorflow as tf
-import util.featureset_utils as featureset_utils
-import dataset.match_dataset as match_dataset
+import featureset.featureset_utils as featureset_utils
 
 
 def create_feature_columns(team_vocab):

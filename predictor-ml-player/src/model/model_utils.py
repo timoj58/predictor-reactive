@@ -5,7 +5,7 @@ from util.file_utils import write_csv
 from service.config_service import get_analysis_cfg
 from util.file_utils import put_aws_file_with_path
 from util.file_utils import write_filenames_index_from_filename
-from util.dataset_utils import eval_input_fn
+from dataset.dataset_utils import eval_input_fn
 import datetime
 from datetime import date, timedelta
 import logging
@@ -25,7 +25,29 @@ local_dir = get_dir_cfg()['local']
 EVENT_MODEL_URL = get_analysis_cfg()['team_model_url']
 
 
-def create_csv(url, filename, start_date, end_date, aws_path):
+def real_time_range(start_day, start_month, start_year):
+
+    start_date = datetime.date(start_year, start_month, start_day)
+    end_date = datetime.date(start_year+1, start_month, start_day)
+
+    if end_date > datetime.date.today():
+        end_date = datetime.date.today()
+
+    return ['/'+ start_date.strftime('%d-%m-%Y')
+     +'/'
+     + end_date.strftime('%d-%m-%Y')]
+
+
+
+def add_months(sourcedate,months):
+    month = sourcedate.month - 1 + months
+    year = sourcedate.year + month // 12
+    month = month % 12 + 1
+    day = min(sourcedate.day,calendar.monthrange(year,month)[1])
+    return datetime.date(year,month,day)
+
+
+def create_csv(url, filename, range, aws_path):
 
     logger.info ('getting csv data...'+filename)
     if is_on_file(filename):
@@ -33,8 +55,8 @@ def create_csv(url, filename, start_date, end_date, aws_path):
         head, tail = os.path.split(filename)
         return get_aws_file(head.replace(local_dir,'')+'/',tail)
     else:
-     data = requests.get(url+start_date.strftime("%d-%m-%Y")+'/'+end_date.strftime("%d-%m-%Y")
-                         , headers={'groups': 'ROLE_AUTOMATION,', 'username': 'machine-learning'})
+
+     data = requests.get(url+range, headers={'groups': 'ROLE_AUTOMATION,', 'username': 'machine-learning'})
      has_data = write_csv(filename, data)
 
      logger.info ('created csv')
@@ -58,6 +80,8 @@ def tidy_up(tf_models_dir, aws_model_dir, team_file, train_filename):
     #training
     if train_filename is not None:
         clear_directory(os.path.dirname(local_dir+train_filename))
+
+    return 'Ok'
 
 
 def predict(classifier, predict_x, label_values):

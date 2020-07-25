@@ -1,7 +1,7 @@
 import logging
 import model.match_model as match_model
 import service.train_history_service as train_history_service
-import util.model_utils as model_utils
+import model.model_utils as model_utils
 import service.receipt_service as receipt_service
 from service.config_service import get_dir_cfg
 from service.config_service import get_learning_cfg

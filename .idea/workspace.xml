@@ -2,47 +2,22 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b6e64a2f-df01-4001-85a4-1cb3a0a01cb0" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/predictor-ml-model/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/predictor-ml-player/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/config.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/featureset/match_featureset.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/featureset/match_featureset.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/model/match_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/model/match_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/predictor_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/predictor_api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/service/prediction_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/service/prediction_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/service/receipt_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/service/receipt_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/service/train_history_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/service/train_history_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/service/training_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/service/training_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/service/vocab_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/service/vocab_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/train/match_goals_train.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/train/match_goals_train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/train/match_result_train.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/train/match_result_train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/util/classifier_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/util/classifier_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/util/featureset_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/util/featureset_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/util/file_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/util/file_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/util/model_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/util/model_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/config.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/util/dataset_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/dataset/dataset_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/util/featureset_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/featureset/featureset_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-ml-model/src/util/model_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-model/src/model/model_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/featureset/match_featureset.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/featureset/match_featureset.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/model/match_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/model/match_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/predict/player_assists_prediction.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/predict/player_assists_prediction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/predict/player_conceded_prediction.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/predict/player_conceded_prediction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/predict/player_goals_prediction.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/predict/player_goals_prediction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/predict/player_minutes_prediction.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/predict/player_minutes_prediction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/predict/player_red_card_prediction.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/predict/player_red_card_prediction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/predict/player_saves_prediction.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/predict/player_saves_prediction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/predict/player_yellow_card_prediction.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/predict/player_yellow_card_prediction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/predictor_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/predictor_api.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/service/predict_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/service/predict_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/service/receipt_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/service/receipt_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/service/train_history_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/service/train_history_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/service/training_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/service/training_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/service/vocab_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/service/vocab_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/train/player_assists_train.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/train/player_assists_train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/train/player_conceded_train.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/train/player_conceded_train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/train/player_goals_train.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/train/player_goals_train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/train/player_minutes_train.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/train/player_minutes_train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/train/player_red_card_train.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/train/player_red_card_train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/train/player_saves_train.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/train/player_saves_train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/train/player_yellow_card_train.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/train/player_yellow_card_train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/util/classifier_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/util/classifier_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/util/featureset_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/util/featureset_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/util/file_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/util/file_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/util/model_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/util/model_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/util/dataset_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/dataset/dataset_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/util/featureset_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/featureset/featureset_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predictor-ml-player/src/util/model_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/predictor-ml-player/src/model/model_utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,6 +61,13 @@
       <recent name="com.timmytime.predictorplayersreactive.service.impl" />
       <recent name="com.timmytime.predictoreventsreactive.service.impl" />
       <recent name="com.timmytime.predictorteamsreactive.service.impl" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/predictor-ml-player/src/model" />
+      <recent name="$PROJECT_DIR$/predictor-ml-player/src/featureset" />
+      <recent name="$PROJECT_DIR$/predictor-ml-player/src/dataset" />
+      <recent name="$PROJECT_DIR$/predictor-ml-model/src/featureset" />
+      <recent name="$PROJECT_DIR$/predictor-ml-model/src/dataset" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="com.timmytime.predictorplayersreactive.model" />
