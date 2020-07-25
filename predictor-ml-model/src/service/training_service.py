@@ -1,10 +1,10 @@
 import logging
 from datetime import datetime
+import pandas as pd
 
 import model.match_model as match_model
 import model.model_utils as model_utils
 import service.receipt_service as receipt_service
-import service.train_history_service as train_history_service
 from service.config_service import get_dir_cfg
 from service.config_service import get_learning_cfg
 
@@ -19,33 +19,21 @@ def create_train_path(country):
     return train_path
 
 
-def train_match(country, label, label_values, model_dir, receipt, history_file):
+def train_match(country, start, end, label, label_values, model_dir, receipt):
     train_path = create_train_path(country)
 
-    start_date = datetime.date(
-        train_history_service.get_history(filename=history_file, key=country)['end_year'],
-        train_history_service.get_history(filename=history_file, key=country)['end_month'],
-        train_history_service.get_history(filename=history_file, key=country)['end_day']
-    )
-    end_date = datetime.date(
-        train_history_service.get_history(filename=history_file, key=country)['end_year'] + 1,
-        train_history_service.get_history(filename=history_file, key=country)['end_month'],
-        train_history_service.get_history(filename=history_file, key=country)['end_day']
-    )
+    start_date = datetime.strptime(start, '%d-%m-%Y')
+    end_date = datetime.strptime(end, '%d-%m-%Y')
 
-    next_date = datetime.date(
-        train_history_service.get_history(filename=history_file, key=country)['end_year'] + 2,
-        train_history_service.get_history(filename=history_file, key=country)['end_month'],
-        train_history_service.get_history(filename=history_file, key=country)['end_day']
-    )
+    next_date = end_date + pd.DateOffset(years=1)
 
     if end_date > datetime.now():
         end_date = datetime.now()
 
     learning_cfg = get_learning_cfg(model_dir)
 
-    train_filename = "train-matches" + start_date.strftime("%d-%m-%Y") + '-' + end_date.strftime("%d-%m-%Y") + ".csv"
-    evaluate_filename = "train-matches" + + end_date.strftime("%d-%m-%Y") + '-' + next_date.strftime(
+    train_filename = "train-matches-" + start_date.strftime("%d-%m-%Y") + '-' + end_date.strftime("%d-%m-%Y") + ".csv"
+    evaluate_filename = "train-matches-" + end_date.strftime("%d-%m-%Y") + '-' + next_date.strftime(
         "%d-%m-%Y") + ".csv"
     train_file_path = local_dir + train_path + train_filename
     evaluate_file_path = local_dir + train_path + evaluate_filename
@@ -86,20 +74,5 @@ def train_match(country, label, label_values, model_dir, receipt, history_file):
     else:
         logger.info('no data to train')
 
-    # write the history...
-    history = train_history_service.create_history(
-        'Success - Partial',
-        start_date.strftime("%d"),
-        start_date.strftime("%m"),
-        start_date.strftime("%Y"),
-        end_date.strftime("%d"),
-        end_date.strftime("%m"),
-        end_date.strftime("%Y"));
-
-    train_history_service.add_history(history_file, country, history)
-
     if receipt is not None:
         receipt_service.put_receipt(receipt_service.TRAIN_RECEIPT_URL, receipt, None)
-
-    history['status'] = "Success - Full"
-    train_history_service.add_history(history_file, country, history)

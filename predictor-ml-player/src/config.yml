@@ -5,13 +5,6 @@ base:
   local: "/home/timmy/"
   train_path: "train/"
   vocab_path: "vocab/"
-  player_assists_train_history_file: "player-assists-train-history.json"
-  player_goals_train_history_file: "player-goals-train-history.json"
-  player_saves_train_history_file: "player-saves-train-history.json"
-  player_minutes_train_history_file: "player-minutes-train-history.json"
-  player_conceded_train_history_file: "player-conceded-train-history.json"
-  player_red_card_train_history_file: "player-red-card-train-history.json"
-  player_yellow_card_train_history_file: "player-yellow-card-train-history.json"
 
 learning:
 

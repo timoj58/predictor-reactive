@@ -5,8 +5,6 @@ base:
   local: "/home/timmy/"
   train_path: "train/<key>/"
   vocab_path: "vocab/<key>/"
-  country_results_train_history_file: "country-matches-train-history.json"
-  country_goals_train_history_file: "country-goals-train-history.json"
 
 learning:
 

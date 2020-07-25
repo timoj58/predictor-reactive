@@ -1,10 +1,10 @@
 import logging
 from datetime import datetime
+import pandas as pd
 
 import model.match_model as match_model
 import model.model_utils as model_utils
 import service.receipt_service as receipt_service
-import service.train_history_service as train_history_service
 from service.config_service import get_dir_cfg
 from service.config_service import get_learning_cfg
 
@@ -18,25 +18,13 @@ def create_train_path():
     return train_path
 
 
-def train(label, label_values, model_dir, receipt, history_file):
+def train(start, end, label, label_values, model_dir, receipt):
     train_path = create_train_path()
 
-    start_date = datetime.date(
-        train_history_service.get_history(filename=history_file, key='default')['end_year'],
-        train_history_service.get_history(filename=history_file, key='default')['end_month'],
-        train_history_service.get_history(filename=history_file, key='default')['end_day']
-    )
-    end_date = datetime.date(
-        train_history_service.get_history(filename=history_file, key='default')['end_year'] + 1,
-        train_history_service.get_history(filename=history_file, key='default')['end_month'],
-        train_history_service.get_history(filename=history_file, key='default')['end_day']
-    )
+    start_date = datetime.strptime(start, '%d-%m-%Y')
+    end_date = datetime.strptime(end, '%d-%m-%Y')
 
-    next_date = datetime.date(
-        train_history_service.get_history(filename=history_file, key='default')['end_year'] + 2,
-        train_history_service.get_history(filename=history_file, key='default')['end_month'],
-        train_history_service.get_history(filename=history_file, key='default')['end_day']
-    )
+    next_date = end_date + pd.DateOffset(years=1)
 
     if end_date > datetime.now():
         end_date = datetime.now()
@@ -87,20 +75,5 @@ def train(label, label_values, model_dir, receipt, history_file):
     else:
         logger.info('no data to train')
 
-    # write the history...
-    history = train_history_service.create_history(
-        'Success - Partial',
-        start_date.strftime("%d"),
-        start_date.strftime("%m"),
-        start_date.strftime("%Y"),
-        end_date.strftime("%d"),
-        end_date.strftime("%m"),
-        end_date.strftime("%Y"));
-
-    train_history_service.add_history(history_file, 'default', history)
-
     if receipt is not None:
         receipt_service.put_receipt(receipt_service.TRAIN_RECEIPT_URL, receipt, None)
-
-    history['status'] = "Success - Full"
-    train_history_service.add_history(history_file, 'default', history)

@@ -59,20 +59,20 @@ def predict_result(country, receipt):
 
 
 # need to also schedule this -- this is for me to get it started.
-@app.route('/train/results/<country>/<receipt>', methods=['POST'])
-def train_country_results(country, receipt):
+@app.route('/train/results/<country>/<start>/<end>/<receipt>', methods=['POST'])
+def train_country_results(country, start, end, receipt):
     thread = threading.Thread(target=match_result_train.train_country,
-                              args=(country, receipt))
+                              args=(country, start, end, receipt))
     process(thread)
 
     return json.dumps(done_response())
 
 
 # need to also schedule this -- this is for me to get it started.
-@app.route('/train/goals/<country>/<receipt>', methods=['POST'])
-def train_country_total_goals(country, receipt):
+@app.route('/train/goals/<country>/<start>/<end>/<receipt>', methods=['POST'])
+def train_country_total_goals(country, start, end, receipt):
     thread = threading.Thread(target=match_goals_train.train_country,
-                              args=(country, receipt))
+                              args=(country, start, end, receipt))
     process(thread)
 
     return json.dumps(done_response())
