@@ -3,6 +3,8 @@ services:
  data:
     image: timmytime/predictor-event-scraper-reactive:latest
     container_name: predictor-event-scraper-reactive
+    volumes:
+      - /home/ubuntu/.aws/:/root/.aws:ro
     environment:
      - "SPRING_PROFILES_ACTIVE=prod"
     ports:

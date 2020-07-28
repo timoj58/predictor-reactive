@@ -6,7 +6,7 @@ services:
     environment:
      - "SPRING_PROFILES_ACTIVE=prod"
     ports:
-     - "8100:8100"
+     - "8095:8095"
     networks:
      predictornet:
       ipv4_address: 172.22.0.20
