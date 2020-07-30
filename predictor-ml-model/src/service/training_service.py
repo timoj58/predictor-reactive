@@ -54,23 +54,26 @@ def train_match(country, start, end, label, label_values, model_dir, receipt):
             end_date=next_date,
             aws_path=train_path)
 
-        if has_data == True and has_test_data == False:
+        if has_data is True and has_test_data is False:
             evaluate_filename = None
 
     if has_data:
+        logger.info('we have data to train')
 
         train_filename = train_path + train_filename
         if evaluate_filename is not None:
             evaluate_filename = train_path + evaluate_filename
 
+            logger.info('creating match model')
+
             match_model.create(
-             country=country,
-             train=True,
-             label=label,
-             label_values=label_values,
-             model_dir=model_dir,
-             train_filename=train_filename,
-             test_filename=evaluate_filename)
+                country=country,
+                train=True,
+                label=label,
+                label_values=label_values,
+                model_dir=model_dir,
+                train_filename=train_filename,
+                test_filename=evaluate_filename)
     else:
         logger.info('no data to train')
 

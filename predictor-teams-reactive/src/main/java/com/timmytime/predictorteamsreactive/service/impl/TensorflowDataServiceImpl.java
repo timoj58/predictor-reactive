@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -71,6 +70,7 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
         data.get(country).clear();
 
     }
+
 
     private void process(CountryMatch countryMatch){
         log.info("adding {} vs {} to {}", countryMatch.getMatch().getHomeTeam(), countryMatch.getMatch().getAwayTeam(), countryMatch.getCountry());

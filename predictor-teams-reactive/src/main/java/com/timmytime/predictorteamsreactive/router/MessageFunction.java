@@ -26,8 +26,7 @@ public class MessageFunction {
     @Bean
     @RouterOperation(beanClass = MessageReceivedService.class, beanMethod = "training")
     RouterFunction<ServerResponse> training(MessageHandler messageHandler) {
-        return route(RequestPredicates.POST("/training")
-                        .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON))
+        return route(RequestPredicates.PUT("/training")
                 , messageHandler::training);
     }
 

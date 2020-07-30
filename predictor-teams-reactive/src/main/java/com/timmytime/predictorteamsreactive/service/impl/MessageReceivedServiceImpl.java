@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -77,19 +79,15 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         return Mono.just(
                 trainingHistoryService.find(id)
         ).doOnNext(history -> {
-            history.setCompleted(Boolean.TRUE);
-            trainingHistoryService.save(history);
+                trainingService.train(history);
 
-            //update -> this needs to advance training if we are not finished.  as per players.
-            //as used by full training mode too....
-
-            if(trainingHistoryService.finished()){
+                if(trainingHistoryService.finished()){
                     webClientFacade.sendMessage(
                             eventsHost+"/message",
                             createMessage(history.getCountry().toUpperCase(), "TRAINING_COMPLETED")
                     );
 
-            }
+                }
         }).thenEmpty(Mono.empty());
 
     }

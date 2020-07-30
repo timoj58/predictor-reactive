@@ -26,7 +26,7 @@ public class MessageFunction {
     @Bean
     @RouterOperation(beanClass = MessageReceivedService.class, beanMethod = "prediction")
     RouterFunction<ServerResponse> prediction(MessageHandler messageHandler) {
-        return route(RequestPredicates.POST("/prediction")
+        return route(RequestPredicates.PUT("/prediction")
                         .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON))
                 , messageHandler::prediction);
     }
@@ -34,7 +34,7 @@ public class MessageFunction {
     @Bean
     @RouterOperation(beanClass = MessageReceivedService.class, beanMethod = "training")
     RouterFunction<ServerResponse> training(MessageHandler messageHandler) {
-        return route(RequestPredicates.POST("/training")
+        return route(RequestPredicates.PUT("/training")
                 , messageHandler::training);
     }
 

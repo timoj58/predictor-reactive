@@ -1,4 +1,7 @@
 import yaml
+import logging
+
+logger = logging.getLogger(__name__)
 
 with open("config.yml", 'r') as ymlfile:
     cfg = yaml.load(ymlfile)

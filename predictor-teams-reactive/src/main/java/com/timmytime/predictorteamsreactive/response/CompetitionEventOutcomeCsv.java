@@ -43,15 +43,4 @@ public class CompetitionEventOutcomeCsv {
 
         return stringBuilder.toString();
     }
-
-
-    //cant use mapper due to it calling toString (which is for CSV)
-    public String getJson() {
-        return "{\"home\": \"" + home + "\"," +
-                "\"away\": \"" + away + "\"," +
-                "\"outcome\": \"" + outcome + "\"," +
-                "\"goals\": \"" + goals + "\" }";
-    }
-
-
 }

@@ -10,5 +10,4 @@ import java.util.UUID;
 public interface MessageReceivedService {
     Mono<Void> receive(Mono<Message> message);
     Mono<Void> prediction(@RequestParam UUID id, Mono<JsonNode> prediction);
-
 }

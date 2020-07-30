@@ -1,4 +1,8 @@
 import pandas as pd
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 # need to map homeWin, draw, awayWin
 
@@ -21,10 +25,13 @@ def load_train_data(train_path, y_name, convert):
     else:
         converted_train_y = train_y
 
-    return (train_x, converted_train_y)
+    return train_x, converted_train_y
 
 
 def load_data(train_path, test_path, y_name, convert):
+    logger.info(train_path)
+    logger.info(test_path)
+
     train = pd.read_csv(train_path, names=CSV_COLUMN_NAMES, header=None)
     train_x, train_y = train, train.pop(y_name)
 
@@ -46,5 +53,7 @@ def load_data(train_path, test_path, y_name, convert):
             converted_test_y.append(convert.index(key))
     else:
         converted_test_y = test_y
+
+    logger.info('returning loaded data')
 
     return (train_x, converted_train_y), (test_x, converted_test_y)

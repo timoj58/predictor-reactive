@@ -71,7 +71,7 @@ public class TrainingServiceImpl implements TrainingService {
                             )
                     ).subscribe(trainingHistory -> {
                         String fromDate = trainingHistory.getFromDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-                        String toDate = trainingHistory.getToDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                        String toDate = trainingHistory.getToDate().plusYears(1).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
                         Flux.fromStream(
                                 players.stream()
