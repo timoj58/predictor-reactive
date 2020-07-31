@@ -1,5 +1,6 @@
 package com.timmytime.predictorplayersreactive.service.impl;
 
+import com.timmytime.predictorplayersreactive.enumerator.FantasyEventTypes;
 import com.timmytime.predictorplayersreactive.model.Player;
 import com.timmytime.predictorplayersreactive.model.PlayersTrainingHistory;
 import com.timmytime.predictorplayersreactive.service.*;
@@ -16,8 +17,11 @@ import javax.annotation.PostConstruct;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service("trainingService")
 public class TrainingServiceImpl implements TrainingService {
@@ -30,6 +34,9 @@ public class TrainingServiceImpl implements TrainingService {
     private final PlayerMatchService playerMatchService;
 
     private final Integer interval;
+
+    private final FantasyEventTypes first;
+    private final List<FantasyEventTypes> toTrain;
 
     @Autowired
     public TrainingServiceImpl(
@@ -44,11 +51,20 @@ public class TrainingServiceImpl implements TrainingService {
         this.playersTrainingHistoryService = playersTrainingHistoryService;
         this.tensorflowTrainingService = tensorflowTrainingService;
         this.playerMatchService = playerMatchService;
+
+        toTrain = Arrays.asList(
+                FantasyEventTypes.values()
+        ).stream().filter(f -> f.getPredict() == Boolean.TRUE)
+                .collect(Collectors.toList());
+
+        first  = toTrain.stream().findFirst().get();
+        toTrain.remove(first);
+
     }
 
 
     @Override
-    public void train() {
+    public void train(FantasyEventTypes type) {
 
 
         UUID nextHistoryId = UUID.randomUUID();
@@ -58,60 +74,98 @@ public class TrainingServiceImpl implements TrainingService {
 
         log.info("training init {} for {} players", nextHistoryId, playerCount);
 
-        //only running this once so if it takes time (ie 15 minutes per cycle its ok).
-        //trying to avoid redis, and this is only for retraining once (rarely used).
-
-        playersTrainingHistoryService.find()
+        playersTrainingHistoryService.find(type)
                 .doOnNext(history ->
                     playersTrainingHistoryService.save(
                             new PlayersTrainingHistory(
+                                    history.getType(),
                                     nextHistoryId,
                                     history.getToDate(),
                                     history.getToDate().plusYears(interval)
                             )
                     ).subscribe(trainingHistory -> {
-                        String fromDate = trainingHistory.getFromDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-                        String toDate = trainingHistory.getToDate().plusYears(1).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                        if (type.equals(first)) {
+                            String fromDate = trainingHistory.getFromDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                            String toDate = trainingHistory.getToDate().plusYears(1).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
-                        Flux.fromStream(
-                                players.stream()
-                        ).limitRate(100)
-                                .delayElements(Duration.ofMillis(250))
-                                .subscribe(player -> playerMatchService.create(
-                                        player.getId(),
-                                        fromDate,
-                                        toDate));
+                            Flux.fromStream(
+                                    players.stream()
+                            ).limitRate(100)
+                                    .delayElements(Duration.ofMillis(250))
+                                    .subscribe(player -> playerMatchService.create(
+                                            player.getId(),
+                                            fromDate,
+                                            toDate));
+                        }
                     })
-                ).doFinally(train ->
-                Mono.just(nextHistoryId)
-                        .delayElement(Duration.ofMillis(250 * playerCount)) //to review in a bit.
-                        .subscribe(id -> tensorflowTrainingService.train(id)))
+                ).doFinally(train -> {
+                    if(type.equals(first)) {
+                        Mono.just(nextHistoryId)
+                                .delayElement(Duration.ofMillis(250 * playerCount))
+                                .subscribe(id -> tensorflowTrainingService.train(id));
+                    }else{
+                        tensorflowTrainingService.train(nextHistoryId);
+                    }
+        })
         .subscribe();
 
     }
 
+    @Override
+    public void train(PlayersTrainingHistory playersTrainingHistory) {
+        playersTrainingHistory.setCompleted(Boolean.TRUE);
+        playersTrainingHistoryService.save(playersTrainingHistory)
+                .subscribe(history -> {
+                    playerMatchService.clear();
+                    if(playersTrainingHistory.getToDate().isBefore(LocalDate.now().atStartOfDay())){
+                        train(history.getType());
+                    }else {
+                        log.info("training is complete for {}", playersTrainingHistory.getType());
+                        //need to start the next item available in list...
+                        if(!toTrain.isEmpty()){
+                            FantasyEventTypes next = toTrain.stream().findFirst().get();
+                            toTrain.remove(next);
+                            train(next);
+                        }else{
+                            log.info("training is complete"); //we only train off-line not in realtime.
+                        }
+                    }
+                });
+
+    }
+
+    @Override
+    public FantasyEventTypes first() {
+        return first;
+    }
 
 
     @PostConstruct
     private void init(){
 
-        playersTrainingHistoryService.find()
+        Flux.fromStream(
+                Arrays.asList(FantasyEventTypes.values())
+                .stream()
+                .filter(f -> f.getPredict() == Boolean.TRUE)
+        ).subscribe(type ->
+        playersTrainingHistoryService.find(type)
                 .switchIfEmpty(Mono.just(new PlayersTrainingHistory()))
                 .subscribe(history -> {
 
                     if(history.getId() == null){
                         log.info("init record");
                         history = new PlayersTrainingHistory(
+                                type,
                                 LocalDate.parse("01-08-2009", DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay(),
                                 LocalDate.parse("01-08-2009", DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay()
                                 );
 
                         history.setCompleted(Boolean.TRUE);
-
                         playersTrainingHistoryService.save(history).subscribe();
                     }
 
-                });
+                })
+        );
 
     }
 

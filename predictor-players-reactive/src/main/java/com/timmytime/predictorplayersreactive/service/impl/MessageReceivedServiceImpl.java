@@ -48,6 +48,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
 
     @Override
     public Mono<Void> receive(Mono<Message> message) {
+
         return message.doOnNext(
                 msg -> {
                     log.info("received {}", msg.getType());
@@ -71,23 +72,13 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     @Override
     public Mono<Void> training(UUID id) {
        return playersTrainingHistoryService.find(id)
-               .doOnNext(history -> {
-                   history.setCompleted(Boolean.TRUE);
-                   playersTrainingHistoryService.save(history)
-                           .subscribe(then -> {
-                               if(then.getToDate().isBefore(LocalDate.now().atStartOfDay())){
-                                   trainingService.train();
-                               }else {
-                                   log.info("training is complete");
-                               }
-                           });
-               })
+               .doOnNext(history -> trainingService.train(history))
                .thenEmpty(Mono.empty());
     }
 
     @Override
     public Mono<Void> initTraining() {
-        trainingService.train();
+        trainingService.train(trainingService.first());
         return Mono.empty();
     }
 }

@@ -1,5 +1,6 @@
 package com.timmytime.predictorteamsreactive.service.impl;
 
+import com.timmytime.predictorteamsreactive.enumerator.Training;
 import com.timmytime.predictorteamsreactive.facade.WebClientFacade;
 import com.timmytime.predictorteamsreactive.model.Match;
 import com.timmytime.predictorteamsreactive.model.TrainingHistory;
@@ -32,15 +33,15 @@ class TrainingServiceImplTest {
     @Test
     public void trainingTest() throws InterruptedException {
 
-        when(trainingHistoryService.find(anyString()))
-                .thenReturn(new TrainingHistory("country", LocalDateTime.now().minusYears(10), LocalDateTime.now().minusYears(10)));
+        when(trainingHistoryService.find(any(), anyString()))
+                .thenReturn(new TrainingHistory(Training.TRAIN_RESULTS, "country", LocalDateTime.now().minusYears(10), LocalDateTime.now().minusYears(10)));
 
         when(webClientFacade.getMatches(anyString())).thenReturn(Flux.fromStream(
                 Arrays.asList(new Match()).stream()
         ));
 
         when(trainingHistoryService.save(any())).thenReturn(
-                new TrainingHistory("test", LocalDateTime.now(), LocalDateTime.now())
+                new TrainingHistory(Training.TRAIN_RESULTS, "test", LocalDateTime.now(), LocalDateTime.now())
         );
 
         trainingService.train();
@@ -50,13 +51,12 @@ class TrainingServiceImplTest {
 
         verify(tensorflowTrainService, atLeastOnce()).train(any());
 
-
     }
 
     @Test
     public void trainingFinishedTest(){
 
-        trainingService.train(new TrainingHistory("test", LocalDateTime.now(), LocalDateTime.now()));
+        trainingService.train(new TrainingHistory(Training.TRAIN_RESULTS, "test", LocalDateTime.now(), LocalDateTime.now()));
 
         verify(webClientFacade, never()).getMatches(anyString());
 

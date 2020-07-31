@@ -1,5 +1,6 @@
 package com.timmytime.predictorplayersreactive.model;
 
+import com.timmytime.predictorplayersreactive.enumerator.FantasyEventTypes;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -22,10 +23,12 @@ public class PlayersTrainingHistory {
     LocalDateTime fromDate;
     LocalDateTime toDate;
     private Boolean completed = Boolean.FALSE;
+    private FantasyEventTypes type;
 
-    public PlayersTrainingHistory(LocalDateTime fromDate, LocalDateTime toDate){
+    public PlayersTrainingHistory(FantasyEventTypes type, LocalDateTime fromDate, LocalDateTime toDate){
         this.id = UUID.randomUUID();
         this.date = LocalDateTime.now();
+        this.type = type;
         this.fromDate = fromDate;
         this.toDate = toDate;
         if(this.toDate.isAfter(LocalDateTime.now())){
@@ -33,9 +36,10 @@ public class PlayersTrainingHistory {
         }
     }
 
-    public PlayersTrainingHistory(UUID id, LocalDateTime fromDate, LocalDateTime toDate){
+    public PlayersTrainingHistory(FantasyEventTypes type, UUID id, LocalDateTime fromDate, LocalDateTime toDate){
         this.id = id;
         this.date = LocalDateTime.now();
+        this.type = type;
         this.fromDate = fromDate;
         this.toDate = toDate;
         if(this.toDate.isAfter(LocalDateTime.now())){

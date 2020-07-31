@@ -73,7 +73,6 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
 
 
     private void process(CountryMatch countryMatch){
-        log.info("adding {} vs {} to {}", countryMatch.getMatch().getHomeTeam(), countryMatch.getMatch().getAwayTeam(), countryMatch.getCountry());
         data.get(countryMatch.getCountry()).add(countryMatch.getMatch());
     }
 

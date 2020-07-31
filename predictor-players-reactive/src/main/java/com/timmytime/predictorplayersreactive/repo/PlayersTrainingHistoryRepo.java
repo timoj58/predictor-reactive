@@ -1,5 +1,6 @@
 package com.timmytime.predictorplayersreactive.repo;
 
+import com.timmytime.predictorplayersreactive.enumerator.FantasyEventTypes;
 import com.timmytime.predictorplayersreactive.model.PlayersTrainingHistory;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.stereotype.Repository;
@@ -10,5 +11,5 @@ import java.util.UUID;
 
 @Repository
 public interface PlayersTrainingHistoryRepo extends ReactiveMongoRepository<PlayersTrainingHistory, UUID> {
-   Mono<PlayersTrainingHistory> findFirstByOrderByDateDesc();
+   Mono<PlayersTrainingHistory> findFirstByTypeAndOrderByDateDesc(FantasyEventTypes type);
 }

@@ -12,4 +12,5 @@ public interface PlayerMatchService {
     Mono<Match> getMatch(UUID match);
     Flux<StatMetric> getStats(UUID match, UUID player);
     void create(UUID player, String fromDate, String toDate);
+    void clear();
 }

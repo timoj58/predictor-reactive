@@ -1,5 +1,6 @@
 package com.timmytime.predictorplayersreactive.service.impl;
 
+import com.timmytime.predictorplayersreactive.enumerator.FantasyEventTypes;
 import com.timmytime.predictorplayersreactive.model.PlayersTrainingHistory;
 import com.timmytime.predictorplayersreactive.repo.PlayersTrainingHistoryRepo;
 import com.timmytime.predictorplayersreactive.service.PlayersTrainingHistoryService;
@@ -34,7 +35,7 @@ public class PlayersTrainingHistoryServiceImpl implements PlayersTrainingHistory
     }
 
     @Override
-    public Mono<PlayersTrainingHistory> find() {
-        return playersTrainingHistoryRepo.findFirstByOrderByDateDesc();
+    public Mono<PlayersTrainingHistory> find(FantasyEventTypes type) {
+        return playersTrainingHistoryRepo.findFirstByTypeAndOrderByDateDesc(type);
     }
 }

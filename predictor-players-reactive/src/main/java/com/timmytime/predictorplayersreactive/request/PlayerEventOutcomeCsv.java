@@ -87,48 +87,4 @@ public class PlayerEventOutcomeCsv {
         }
     }
 
-    @Override
-    public String toString() {
-
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(player).append(",");
-
-        stringBuilder
-                .append(opponent)
-                .append(",")
-                .append(home)
-                .append(",")
-                .append(minutes)
-                .append(",")
-                .append(saves)
-                .append(",")
-                .append(conceded)
-                .append(",")
-                .append(goals)
-                .append(",")
-                .append(assists)
-                .append(",")
-                .append(red)
-                .append(",")
-                .append(yellow);
-
-        return stringBuilder.toString();
-    }
-
-
-    //cant use mapper due to it calling toString (which is for CSV)
-    public String getJson() {
-        return "{\"opponent\": \"" + opponent + "\"," +
-                "\"home\": \"" + home + "\"," +
-                "\"player\": \"" + player + "\"," +
-                "\"minutes\": \"" + minutes + "\"," +
-                "\"saves\": \"" + saves + "\"," +
-                "\"goals\": \"" + goals + "\"," +
-                "\"assists\": \"" + assists + "\"," +
-                "\"red\": \"" + red + "\"," +
-                "\"yellow\": \"" + yellow + "\"," +
-                "\"conceded\": \"" + conceded + "\" }";
-    }
-
-
 }

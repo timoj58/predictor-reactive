@@ -1,5 +1,6 @@
 package com.timmytime.predictorteamsreactive.model;
 
+import com.timmytime.predictorteamsreactive.enumerator.Training;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -24,16 +25,19 @@ public class TrainingHistory {
     LocalDateTime toDate;
     private String country;
     private Boolean completed = Boolean.FALSE;
+    private Training type = Training.TRAIN_RESULTS;
 
-    public TrainingHistory(String country, LocalDateTime fromDate){
+    public TrainingHistory(Training type, String country, LocalDateTime fromDate){
         this.id = UUID.randomUUID();
         this.date = LocalDateTime.now();
         this.country = country.toLowerCase();
         this.fromDate = fromDate;
+        this.type = type;
     }
 
-    public TrainingHistory(String country, LocalDateTime fromDate, LocalDateTime toDate){
+    public TrainingHistory(Training type, String country, LocalDateTime fromDate, LocalDateTime toDate){
         this.id = UUID.randomUUID();
+        this.type = type;
         this.date = LocalDateTime.now();
         this.country = country.toLowerCase();
         this.fromDate = fromDate;

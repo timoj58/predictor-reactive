@@ -46,6 +46,11 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
     }
 
     @Override
+    public void clear() {
+        playerMatches.clear();
+    }
+
+    @Override
     public List<PlayerEventOutcomeCsv> getPlayerCsv(String fromDate, String toDate) {
         LocalDate startDate = LocalDate.parse(fromDate, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         LocalDate endDate = LocalDate.parse(toDate, DateTimeFormatter.ofPattern("dd-MM-yyyy"));

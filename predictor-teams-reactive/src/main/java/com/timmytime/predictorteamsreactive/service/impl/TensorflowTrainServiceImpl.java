@@ -26,42 +26,32 @@ public class TensorflowTrainServiceImpl implements TensorflowTrainService {
     private final String resultsUrl;
     private final String goalsUrl;
 
-    private final Integer trainingDelay;
-
 
     @Autowired
     public TensorflowTrainServiceImpl(
             @Value("${training.host}") String trainingHost,
             @Value("${ml.train.result.url}") String resultsUrl,
             @Value("${ml.train.goals.url}") String goalsUrl,
-             @Value("${training.delay}") Integer trainingDelay,
-             WebClientFacade webClientFacade
+            WebClientFacade webClientFacade
     ){
         this.trainingHost = trainingHost;
         this.resultsUrl = resultsUrl;
         this.goalsUrl = goalsUrl;
-        this.trainingDelay = trainingDelay;
         this.webClientFacade = webClientFacade;
     }
 
     @Override
     public void train(TrainingHistory trainingHistory) {
-        log.info("training {}", trainingHistory.getCountry());
+        log.info("training {} {}", trainingHistory.getCountry(), trainingHistory.getId());
 
-        Flux.fromStream(
-                Arrays.asList(Training.values()).stream()
-        ).delayElements(Duration.ofSeconds(trainingDelay))
-                .subscribe(type ->
                         webClientFacade.train(
                                 trainingHost
-                                        +getUrl(type)
+                                        +getUrl(trainingHistory.getType())
                                         .replace("<receipt>", trainingHistory.getId().toString())
                                         .replace("<country>", trainingHistory.getCountry())
                                         .replace("<from>", trainingHistory.getFromDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
                                         .replace("<to>", trainingHistory.getToDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
-                        )
-                );
-
+                        );
 
     }
 

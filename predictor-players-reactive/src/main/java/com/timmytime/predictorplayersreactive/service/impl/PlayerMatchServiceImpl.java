@@ -94,4 +94,9 @@ public class PlayerMatchServiceImpl implements PlayerMatchService {
                                 )
                 );
     }
+
+    @Override
+    public void clear() {
+        tensorflowDataService.clear();
+    }
 }

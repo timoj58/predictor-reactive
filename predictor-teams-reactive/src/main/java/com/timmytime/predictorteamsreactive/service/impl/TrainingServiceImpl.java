@@ -1,6 +1,7 @@
 package com.timmytime.predictorteamsreactive.service.impl;
 
 import com.timmytime.predictorteamsreactive.enumerator.CountryCompetitions;
+import com.timmytime.predictorteamsreactive.enumerator.Training;
 import com.timmytime.predictorteamsreactive.facade.WebClientFacade;
 import com.timmytime.predictorteamsreactive.model.CountryMatch;
 import com.timmytime.predictorteamsreactive.model.TrainingHistory;
@@ -8,17 +9,16 @@ import com.timmytime.predictorteamsreactive.service.TensorflowDataService;
 import com.timmytime.predictorteamsreactive.service.TensorflowTrainService;
 import com.timmytime.predictorteamsreactive.service.TrainingHistoryService;
 import com.timmytime.predictorteamsreactive.service.TrainingService;
-import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
@@ -44,7 +44,7 @@ public class TrainingServiceImpl implements TrainingService {
             TensorflowTrainService tensorflowTrainService,
             TrainingHistoryService trainingHistoryService,
             WebClientFacade webClientFacade
-    ){
+    ) {
         this.dataHost = dataHost;
         this.interval = interval;
         this.trainingDelay = trainingDelay;
@@ -54,52 +54,78 @@ public class TrainingServiceImpl implements TrainingService {
         this.webClientFacade = webClientFacade;
     }
 
+
     @Override
     public void train() {
 
         log.info("training init");
 
         Flux.fromStream(
-                Arrays.asList(CountryCompetitions.values()).stream()
-        ).delayElements(Duration.ofMinutes(trainingDelay))
-                .subscribe(country -> {
-                    TrainingHistory previous = trainingHistoryService.find(country.name());
-                    TrainingHistory trainingHistory = trainingHistoryService.save(
-                            new TrainingHistory(country.name(), previous.getToDate(), previous.getToDate().plusYears(interval))
-                    );
+                        Arrays.asList(CountryCompetitions.values()).stream()
+                ).delayElements(Duration.ofMinutes(trainingDelay))
+                        .subscribe(country -> {
 
-                    webClientFacade.getMatches(
-                            dataHost + "/match/country/" + trainingHistory.getCountry()
-                                    + "/" + trainingHistory.getFromDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-                                    + "/" + trainingHistory.getToDate().toLocalDate().plusYears(1).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-                    ).doOnNext(match -> tensorflowDataService.load(new CountryMatch(trainingHistory.getCountry(), match)))
-                            .doFinally(f -> tensorflowTrainService.train(trainingHistory))
-                            .subscribe();
-                });
+                            TrainingHistory trainingHistory = init(Training.TRAIN_RESULTS, country.name());
+                            webClientFacade.getMatches(
+                                    dataHost + "/match/country/" + trainingHistory.getCountry()
+                                            + "/" + trainingHistory.getFromDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                                            + "/" + trainingHistory.getToDate().plusYears(1).toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                            ).doOnNext(match -> tensorflowDataService.load(new CountryMatch(trainingHistory.getCountry(), match)))
+                                    .doFinally(f -> tensorflowTrainService.train(trainingHistory))
+                                    .subscribe();
+                        });
+
     }
 
     @Override
-    public void train(TrainingHistory trainingHistory) {
-
-        tensorflowDataService.clear(trainingHistory.getCountry());
+    public Boolean train(TrainingHistory trainingHistory) {
 
         trainingHistory.setCompleted(Boolean.TRUE);
         trainingHistoryService.save(trainingHistory);
 
-        if(trainingHistory.getToDate().isBefore(LocalDate.now().atStartOfDay())) {
+        if (trainingHistory.getToDate().isBefore(LocalDate.now().atStartOfDay())) {
 
-            TrainingHistory next = new TrainingHistory(trainingHistory.getCountry(), trainingHistory.getToDate(), trainingHistory.getToDate().plusYears(interval));
+            TrainingHistory next = trainingHistoryService.save(
+                    new TrainingHistory(
+                            trainingHistory.getType(),
+                            trainingHistory.getCountry(),
+                            trainingHistory.getToDate(),
+                            trainingHistory.getToDate().plusYears(interval)
+                    )
+            );
 
-            webClientFacade.getMatches(
-                    dataHost + "/match/country/" + next.getCountry()
-                            + "/" + next.getFromDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-                            + "/" + next.getToDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-            ).doOnNext(match -> tensorflowDataService.load(new CountryMatch(next.getCountry(), match)))
-                    .doFinally(f -> tensorflowTrainService.train(next))
-                    .subscribe();
-        }else{
-            log.info("we have completed {}", trainingHistory.getCountry());
+            if(trainingHistory.getType().equals(Training.TRAIN_RESULTS)){
+                //and also need to load our next section....
+                webClientFacade.getMatches(
+                        dataHost + "/match/country/" + trainingHistory.getCountry()
+                                + "/" + next.getFromDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                                + "/" + next.getToDate().plusYears(1).toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                ).doOnNext(match -> tensorflowDataService.load(new CountryMatch(next.getCountry(), match)))
+                        .doFinally(f -> tensorflowTrainService.train(next))
+                .subscribe();
+            }else{
+                Mono.just(next)
+                        .subscribe(history -> tensorflowTrainService.train(history));
+            }
+
+        } else {
+            log.info("we have completed {} - {}", trainingHistory.getCountry(), trainingHistory.getType());
+            return Boolean.FALSE;
         }
 
+        return Boolean.TRUE;
+    }
+
+    @Override
+    public TrainingHistory init(Training type, String country) {
+        TrainingHistory previous = trainingHistoryService.find(type, country.toLowerCase());
+        return trainingHistoryService.save(
+                new TrainingHistory(
+                        type,
+                        country.toLowerCase(),
+                        previous.getToDate(),
+                        previous.getToDate().plusYears(interval)
+                )
+        );
     }
 }

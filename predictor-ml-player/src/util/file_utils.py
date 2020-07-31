@@ -125,10 +125,10 @@ def write_csv(filename, data):
     make_dir(filename)
     has_data = False
     with open(filename, 'w') as f:
-        writer = csv.writer(f)
-        reader = csv.reader(data.text.splitlines())
+        fnames = ['player', 'opponent', 'home', 'minutes', 'saves', 'conceded', 'goals', 'assists', 'red', 'yellow']
+        writer = csv.DictWriter(f, fieldnames=fnames)
 
-        for row in reader:
+        for row in data:
             writer.writerow(row)
             has_data = True
 

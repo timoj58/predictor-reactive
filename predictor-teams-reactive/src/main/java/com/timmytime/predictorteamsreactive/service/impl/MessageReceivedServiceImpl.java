@@ -4,12 +4,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.timmytime.predictorteamsreactive.enumerator.CountryCompetitions;
+import com.timmytime.predictorteamsreactive.enumerator.Training;
 import com.timmytime.predictorteamsreactive.facade.WebClientFacade;
 import com.timmytime.predictorteamsreactive.model.Message;
 import com.timmytime.predictorteamsreactive.model.TrainingHistory;
 import com.timmytime.predictorteamsreactive.repo.TrainingHistoryRepo;
 import com.timmytime.predictorteamsreactive.service.*;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,13 +30,14 @@ import java.util.stream.Stream;
 @Service("messageReceivedService")
 public class MessageReceivedServiceImpl implements MessageReceivedService {
 
+    private static final Logger log = LoggerFactory.getLogger(MessageReceivedServiceImpl.class);
+
     private final List<String> received = new ArrayList<>();
 
-    private final CompetitionService competitionService;
     private final TrainingHistoryService trainingHistoryService;
     private final TrainingService trainingService;
+    private final TensorflowDataService tensorflowDataService;
     private final WebClientFacade webClientFacade;
-
     private final String eventsHost;
     private final String playersHost;
 
@@ -41,16 +45,16 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     public MessageReceivedServiceImpl(
             @Value("${events.host}") String eventsHost,
             @Value("${players.host}") String playersHost,
-            CompetitionService competitionService,
             TrainingHistoryService trainingHistoryService,
             TrainingService trainingService,
+            TensorflowDataService tensorflowDataService,
             WebClientFacade webClientFacade
     ){
         this.eventsHost = eventsHost;
         this.playersHost = playersHost;
-        this.competitionService = competitionService;
         this.trainingHistoryService = trainingHistoryService;
         this.trainingService = trainingService;
+        this.tensorflowDataService = tensorflowDataService;
         this.webClientFacade = webClientFacade;
     }
 
@@ -67,7 +71,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                                 playersHost+"/message",
                                 createMessage(msg.getCountry().toUpperCase(), "DATA_LOADED")
                         );
-                        competitionService.load(trainingHistoryService.create(msg));
+                        trainingService.train(trainingHistoryService.create(Training.TRAIN_RESULTS, msg));
                     }
                 }
         ).thenEmpty(Mono.empty());
@@ -76,17 +80,30 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
 
     @Override
     public Mono<Void> training(UUID id) {
+
+        log.info("received {}", id);
+
         return Mono.just(
                 trainingHistoryService.find(id)
         ).doOnNext(history -> {
-                trainingService.train(history);
-
-                if(trainingHistoryService.finished()){
-                    webClientFacade.sendMessage(
-                            eventsHost+"/message",
-                            createMessage(history.getCountry().toUpperCase(), "TRAINING_COMPLETED")
-                    );
-
+                if(!trainingService.train(history)){
+                    switch (history.getType()){
+                        case TRAIN_RESULTS:
+                            //we start training goals..
+                            log.info("now training goals for {}", history.getCountry());
+                            trainingService.train(
+                                    trainingService.init(Training.TRAIN_GOALS, history.getCountry())
+                            );
+                            break;
+                        case TRAIN_GOALS:
+                            //finished.
+                            tensorflowDataService.clear(history.getCountry());
+                            webClientFacade.sendMessage(
+                                    eventsHost + "/message",
+                                    createMessage(history.getCountry().toUpperCase(), "TRAINING_COMPLETED")
+                            );
+                            break;
+                    }
                 }
         }).thenEmpty(Mono.empty());
 
