@@ -36,6 +36,6 @@ public class PlayersTrainingHistoryServiceImpl implements PlayersTrainingHistory
 
     @Override
     public Mono<PlayersTrainingHistory> find(FantasyEventTypes type) {
-        return playersTrainingHistoryRepo.findFirstByTypeAndOrderByDateDesc(type);
+        return playersTrainingHistoryRepo.findFirstByTypeOrderByDateDesc(type);
     }
 }

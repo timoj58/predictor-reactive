@@ -15,5 +15,3 @@ def train(start, end, receipt):
         label_values=match_dataset.CARDS,
         model_dir="red",
         receipt=receipt)
-
-    receipt_service.put_receipt(receipt_service.TRAIN_RECEIPT_URL, receipt, None)

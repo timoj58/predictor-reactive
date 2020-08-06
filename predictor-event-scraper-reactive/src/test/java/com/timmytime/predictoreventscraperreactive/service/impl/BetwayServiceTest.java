@@ -44,7 +44,6 @@ class BetwayServiceTest {
 
     @Test
     public void scrapeTest() throws InterruptedException {
-
         betwayService.scrape();
 
         Thread.sleep(10000L);

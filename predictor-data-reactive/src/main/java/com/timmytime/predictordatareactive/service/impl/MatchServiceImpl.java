@@ -42,10 +42,6 @@ public class MatchServiceImpl implements MatchService {
         return matchRepo.save(match);
     }
 
-    @Override
-    public Mono<Match> find(UUID homeTeam, UUID awayTeam, LocalDateTime date) {
-        return matchRepo.findByHomeTeamAndAwayTeamAndDate(homeTeam, awayTeam, date);
-    }
 
     @Override
     public Mono<Match> getMatch(UUID home, UUID away, String date) {

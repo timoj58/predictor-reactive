@@ -38,11 +38,6 @@ public class StatMetricServiceImpl implements StatMetricService {
     }
 
     @Override
-    public Mono<StatMetric> find(UUID id) {
-        return null;
-    }
-
-    @Override
     public void delete(UUID id) {
         statMetricRepo.deleteById(id).subscribe();
     }

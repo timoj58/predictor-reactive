@@ -17,4 +17,3 @@ def train(start, end, receipt):
         model_dir="conceded",
         receipt=receipt)
 
-    receipt_service.put_receipt(receipt_service.TRAIN_RECEIPT_URL, receipt, None)

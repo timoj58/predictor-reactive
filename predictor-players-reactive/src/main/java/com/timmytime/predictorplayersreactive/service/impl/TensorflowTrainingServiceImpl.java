@@ -1,5 +1,6 @@
 package com.timmytime.predictorplayersreactive.service.impl;
 
+import com.timmytime.predictorplayersreactive.enumerator.FantasyEventTypes;
 import com.timmytime.predictorplayersreactive.facade.WebClientFacade;
 import com.timmytime.predictorplayersreactive.model.PlayersTrainingHistory;
 import com.timmytime.predictorplayersreactive.service.PlayersTrainingHistoryService;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @Service("tensorflowTrainingService")
@@ -60,7 +62,35 @@ public class TensorflowTrainingServiceImpl implements TensorflowTrainingService 
 
         playersTrainingHistoryService.find(id)
                 .subscribe(history ->
-                        webClientFacade.train("TODO"));
+                        webClientFacade.train(
+                                trainingHost
+                                        +getUrl(history.getType())
+                                        .replace("<from>", history.getFromDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+                                        .replace("<to>", history.getToDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+                                        .replace("<receipt>", id.toString())
+                        )
+                );
 
+    }
+
+    private String getUrl(FantasyEventTypes fantasyEventTypes) {
+        switch (fantasyEventTypes) {
+            case GOALS:
+                return goalsUrl;
+            case ASSISTS:
+                return assistsUrl;
+            case SAVES:
+                return savesUrl;
+            case MINUTES:
+                return minutesUrl;
+            case GOALS_CONCEDED:
+                return concededUrl;
+            case RED_CARD:
+                return redUrl;
+            case YELLOW_CARD:
+                return yellowUrl;
+        }
+
+        return "";
     }
 }

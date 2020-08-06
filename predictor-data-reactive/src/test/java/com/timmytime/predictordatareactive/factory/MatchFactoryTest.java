@@ -52,7 +52,7 @@ class MatchFactoryTest {
     @Test
     public void createMatchTest() throws InterruptedException {
 
-        when(matchService.find(any(), any(), any(LocalDateTime.class)))
+        when(matchService.getMatch(any(), any(), any()))
                 .thenReturn(Mono.empty());
 
         Team team = new Team();
@@ -80,7 +80,7 @@ class MatchFactoryTest {
         Match match = new Match();
         match.setId(UUID.randomUUID());
 
-        when(matchService.find(any(), any(), any(LocalDateTime.class)))
+        when(matchService.getMatch(any(), any(), any()))
                 .thenReturn(Mono.just(match));
 
         Team team = new Team();

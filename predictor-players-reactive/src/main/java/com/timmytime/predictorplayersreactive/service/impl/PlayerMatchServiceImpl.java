@@ -65,11 +65,13 @@ public class PlayerMatchServiceImpl implements PlayerMatchService {
             String fromDate,
             String toDate) {
 
+        log.info("creating {}", player);
+
         getAppearances(player,
                 fromDate,
                 toDate
         )
-                .delayElements(Duration.ofMillis(5))
+                .delayElements(Duration.ofMillis(4))
                 .subscribe(appearance ->
                         getMatch(appearance.getMatchId())
                                 .subscribe(match -> {
@@ -97,6 +99,7 @@ public class PlayerMatchServiceImpl implements PlayerMatchService {
 
     @Override
     public void clear() {
+        log.info("clearing data");
         tensorflowDataService.clear();
     }
 }

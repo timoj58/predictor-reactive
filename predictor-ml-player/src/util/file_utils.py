@@ -126,7 +126,7 @@ def write_csv(filename, data):
     has_data = False
     with open(filename, 'w') as f:
         fnames = ['player', 'opponent', 'home', 'minutes', 'saves', 'conceded', 'goals', 'assists', 'red', 'yellow']
-        writer = csv.DictWriter(f, fieldnames=fnames)
+        writer = csv.DictWriter(f, fieldnames=fnames, extrasaction='ignore')
 
         for row in data:
             writer.writerow(row)

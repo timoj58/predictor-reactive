@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.timmytime.predictorplayersreactive.model.*;
 import com.timmytime.predictorplayersreactive.request.PlayerEventOutcomeCsv;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -16,6 +18,8 @@ import java.util.Map;
 
 @Component
 public class WebClientFacade {
+
+    private final Logger log = LoggerFactory.getLogger(WebClientFacade.class);
 
     public Flux<Player> getPlayers(
             String url
@@ -84,7 +88,12 @@ public class WebClientFacade {
     }
 
     public void train(String url){
-
+        log.info("url post {}", url);
+        WebClient.builder().build()
+                .post()
+                .uri(url)
+                .exchange()
+                .subscribe();
     }
 
     public void config(String url){

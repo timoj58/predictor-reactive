@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface StatMetricService {
-    Mono<StatMetric> find(UUID id);
     void delete(UUID id);
     Mono<StatMetric> save(StatMetric match);
     List<Mono<StatMetric>> createTeamMetrics(

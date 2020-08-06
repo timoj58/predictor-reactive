@@ -13,7 +13,6 @@ public interface MatchService {
     Mono<Match> find(@PathVariable UUID id);
     void delete(UUID id);
     Mono<Match> save(Match match);
-    Mono<Match> find(UUID homeTeam, UUID awayTeam, LocalDateTime date);
     Mono<Match> getMatch(@RequestParam UUID home, @RequestParam  UUID away, @RequestParam String date);
     Mono<Match> getMatchByOpponent(
             @PathVariable UUID opponent,

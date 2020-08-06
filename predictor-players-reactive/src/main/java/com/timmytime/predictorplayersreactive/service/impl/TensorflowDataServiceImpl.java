@@ -47,7 +47,9 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
 
     @Override
     public void clear() {
+        log.info("player matches before count {}", playerMatches.size());
         playerMatches.clear();
+        log.info("player matches after count {}", playerMatches.size());
     }
 
     @Override
@@ -59,7 +61,7 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
                 .stream()
                 .filter(f -> f.getDate().toLocalDate().isEqual(startDate) || f.getDate().toLocalDate().isAfter(startDate))
                 .filter(f -> f.getDate().toLocalDate().isBefore(endDate))
-                .sorted(Comparator.comparing(PlayerMatch::getDate))
+                //.sorted(Comparator.comparing(PlayerMatch::getDate))
                 .map(PlayerEventOutcomeCsv::new)
                 .collect(Collectors.toList());
     }

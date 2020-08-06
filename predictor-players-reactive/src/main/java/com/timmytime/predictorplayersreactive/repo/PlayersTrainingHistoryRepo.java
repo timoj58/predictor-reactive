@@ -11,5 +11,5 @@ import java.util.UUID;
 
 @Repository
 public interface PlayersTrainingHistoryRepo extends ReactiveMongoRepository<PlayersTrainingHistory, UUID> {
-   Mono<PlayersTrainingHistory> findFirstByTypeAndOrderByDateDesc(FantasyEventTypes type);
+   Mono<PlayersTrainingHistory> findFirstByTypeOrderByDateDesc(FantasyEventTypes type);
 }

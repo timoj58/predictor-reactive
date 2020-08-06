@@ -52,7 +52,6 @@ public class BetwayService implements BookmakerService {
 
     @Override
     public void scrape() {
-
         log.info("scraping betway");
 
         List<BookmakerSiteRules> bookmakerSiteRules

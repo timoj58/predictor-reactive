@@ -34,6 +34,7 @@ public class TrainingServiceImpl implements TrainingService {
     private final PlayerMatchService playerMatchService;
 
     private final Integer interval;
+    private final Integer playerDelay;
 
     private final FantasyEventTypes first;
     private final List<FantasyEventTypes> toTrain;
@@ -41,12 +42,14 @@ public class TrainingServiceImpl implements TrainingService {
     @Autowired
     public TrainingServiceImpl(
             @Value("${training.interval}") Integer interval,
+            @Value("${training.player.delay}") Integer playerDelay,
             PlayerService playerService,
             PlayersTrainingHistoryService playersTrainingHistoryService,
             TensorflowTrainingService tensorflowTrainingService,
             PlayerMatchService playerMatchService
     ){
         this.interval = interval;
+        this.playerDelay = playerDelay;
         this.playerService = playerService;
         this.playersTrainingHistoryService = playersTrainingHistoryService;
         this.tensorflowTrainingService = tensorflowTrainingService;
@@ -65,7 +68,6 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     public void train(FantasyEventTypes type) {
-
 
         UUID nextHistoryId = UUID.randomUUID();
 
@@ -91,22 +93,19 @@ public class TrainingServiceImpl implements TrainingService {
                             Flux.fromStream(
                                     players.stream()
                             ).limitRate(100)
-                                    .delayElements(Duration.ofMillis(250))
-                                    .subscribe(player -> playerMatchService.create(
+                                    .delayElements(Duration.ofMillis(playerDelay))
+                                    .doOnNext(player -> playerMatchService.create(
                                             player.getId(),
                                             fromDate,
-                                            toDate));
+                                            toDate))
+                            .doFinally(train ->
+                                    Mono.just(nextHistoryId)
+                                    .delayElement(Duration.ofMinutes(1))
+                                    .subscribe(id -> tensorflowTrainingService.train(id))
+                            ).subscribe();
                         }
                     })
-                ).doFinally(train -> {
-                    if(type.equals(first)) {
-                        Mono.just(nextHistoryId)
-                                .delayElement(Duration.ofMillis(250 * playerCount))
-                                .subscribe(id -> tensorflowTrainingService.train(id));
-                    }else{
-                        tensorflowTrainingService.train(nextHistoryId);
-                    }
-        })
+                )
         .subscribe();
 
     }
