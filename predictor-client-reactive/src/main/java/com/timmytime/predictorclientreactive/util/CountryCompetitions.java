@@ -1,9 +1,11 @@
-package com.timmytime.predictoreventsreactive.enumerator;
+package com.timmytime.predictorclientreactive.util;
 
 import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 public enum CountryCompetitions {
@@ -27,5 +29,22 @@ public enum CountryCompetitions {
 
     CountryCompetitions(List<String> competitions){
         this.competitions = competitions;
+    }
+
+    public static CountryCompetitions findByCompetition(String competition){
+        return Arrays.asList(
+                CountryCompetitions.values()
+        ).stream()
+                .filter(f -> f.getCompetitions().contains(competition))
+                .findFirst()
+                .get();
+    }
+
+    public static List<String> getAllCompetitions(){
+        return Arrays.asList(CountryCompetitions.values())
+                .stream()
+                .map(CountryCompetitions::getCompetitions)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 }

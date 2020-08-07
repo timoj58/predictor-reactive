@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -13,5 +14,5 @@ import java.util.List;
 public class CountryAndCompetitionResponse implements Serializable {
 
     private CountryResponse countryResponse;
-    private List<CompetitionResponse> competitionResponses;
+    private List<CompetitionResponse> competitionResponses = new ArrayList<>();
 }

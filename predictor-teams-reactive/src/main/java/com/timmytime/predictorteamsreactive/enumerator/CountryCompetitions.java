@@ -14,7 +14,7 @@ public enum CountryCompetitions {
     FRANCE(Arrays.asList("france_1", "france_2")),
     SPAIN(Arrays.asList("spain_1", "spain_2")),
     GERMAN(Arrays.asList("german_1", "german_2")),
-    HOLLAND(Arrays.asList("holland_1", "holland_2")),
+    HOLLAND(Arrays.asList("holland_1")),
     BELGIUM(Arrays.asList("belgium_1")),
     PORTUGAL(Arrays.asList("portugal_1")),
     GREECE(Arrays.asList("greece_1")),

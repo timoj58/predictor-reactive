@@ -1,4 +1,14 @@
 package com.timmytime.predictorclientreactive.facade;
 
-public class S3Facade {
+import lombok.Builder;
+import org.springframework.stereotype.Component;
+
+@Component
+public class S3Facade implements IS3Facade{
+
+    @Override
+    public void put(String key, String json){
+
+        //TODO.
+    }
 }
