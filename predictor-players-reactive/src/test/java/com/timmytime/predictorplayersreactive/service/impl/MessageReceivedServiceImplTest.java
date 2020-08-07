@@ -56,41 +56,4 @@ class MessageReceivedServiceImplTest {
 
     }
 
-    @Test
-    @Disabled
-    public void trainingFinishedTest() throws InterruptedException {
-
-        when(playersTrainingHistoryService.find(any(FantasyEventTypes.class))).thenReturn(Mono.just(
-                new PlayersTrainingHistory(FantasyEventTypes.GOALS,LocalDateTime.now(), LocalDateTime.now())
-        ));
-
-        when(playersTrainingHistoryService.save(any())).thenReturn(Mono.just(
-                new PlayersTrainingHistory(FantasyEventTypes.GOALS, LocalDateTime.now(), LocalDateTime.now())
-        ));
-
-        messageReceivedService.training(UUID.randomUUID()).subscribe();
-        Thread.sleep(1000);
-
-        verify(trainingService, never()).train(any(FantasyEventTypes.class));
-    }
-
-    @Test
-    @Disabled
-    public void trainingNotFinishedTest() throws InterruptedException {
-
-        when(playersTrainingHistoryService.find(any(FantasyEventTypes.class))).thenReturn(Mono.just(
-                new PlayersTrainingHistory(FantasyEventTypes.GOALS, LocalDateTime.now().minusDays(1), LocalDateTime.now().minusDays(1))
-        ));
-
-        when(playersTrainingHistoryService.save(any())).thenReturn(Mono.just(
-                new PlayersTrainingHistory(FantasyEventTypes.GOALS, LocalDateTime.now().minusDays(1), LocalDateTime.now().minusDays(1))
-        ));
-
-        messageReceivedService.training(UUID.randomUUID()).subscribe();
-
-        Thread.sleep(1000);
-
-        verify(trainingService, atLeastOnce()).train(any(FantasyEventTypes.class));
-    }
-
 }

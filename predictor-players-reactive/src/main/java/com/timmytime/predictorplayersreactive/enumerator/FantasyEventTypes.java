@@ -1,6 +1,7 @@
 package com.timmytime.predictorplayersreactive.enumerator;
 
 public enum FantasyEventTypes {
+    MINUTES(Boolean.TRUE, -1), //some data has incorrect range numbers...from scraper
     GOALS(Boolean.TRUE, 0),
     GOAL_TYPE(Boolean.FALSE, -1),
     OWN_GOALS(Boolean.FALSE, -1),
@@ -11,7 +12,6 @@ public enum FantasyEventTypes {
     ASSISTS(Boolean.TRUE, 1),
     PENALTY_SAVED(Boolean.FALSE, -1),
     PENALTY_MISSED(Boolean.FALSE, -1),
-    MINUTES(Boolean.TRUE, -1),
     RED_CARD(Boolean.TRUE, -1),
     YELLOW_CARD(Boolean.TRUE, 2),
     GOALS_CONCEDED(Boolean.TRUE, -1),

@@ -69,19 +69,16 @@ public class TrainingServiceImpl implements TrainingService {
     @Override
     public void train(FantasyEventTypes type) {
 
-        UUID nextHistoryId = UUID.randomUUID();
-
         List<Player> players = playerService.get();
         Integer playerCount = players.size();
 
-        log.info("training init {} for {} players", nextHistoryId, playerCount);
+        log.info("training init {} for {} players",type.name(), playerCount);
 
         playersTrainingHistoryService.find(type)
                 .doOnNext(history ->
                     playersTrainingHistoryService.save(
                             new PlayersTrainingHistory(
                                     history.getType(),
-                                    nextHistoryId,
                                     history.getToDate(),
                                     history.getToDate().plusYears(interval)
                             )
@@ -99,10 +96,13 @@ public class TrainingServiceImpl implements TrainingService {
                                             fromDate,
                                             toDate))
                             .doFinally(train ->
-                                    Mono.just(nextHistoryId)
-                                    .delayElement(Duration.ofMinutes(1))
+                                    Mono.just(trainingHistory.getId())
+                                    .delayElement(Duration.ofMinutes(interval))
                                     .subscribe(id -> tensorflowTrainingService.train(id))
                             ).subscribe();
+                        }else{
+                            log.info("training without loading data {}", type.name());
+                            tensorflowTrainingService.train(trainingHistory.getId());
                         }
                     })
                 )
