@@ -66,7 +66,7 @@ class MessageReceivedServiceImplTest {
 
         Thread.sleep(1000L);
 
-        verify(trainingHistoryService, atLeastOnce()).create(any(), any());
+        verify(trainingHistoryService, atLeastOnce()).find(any(), any());
     }
 
     @Test

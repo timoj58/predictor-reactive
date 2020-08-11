@@ -41,9 +41,7 @@ public class ResultServiceImpl implements ResultService {
         this.results = Flux.push(sink ->
             ResultServiceImpl.this.receive = (t) -> sink.next(t), FluxSink.OverflowStrategy.DROP);
 
-        this.results
-                .delayElements(Duration.ofMillis(100L))
-                .subscribe(result -> matchFactory.createMatch(result));
+        this.results.subscribe(matchFactory::createMatch);
     }
 
     @Override
@@ -52,6 +50,7 @@ public class ResultServiceImpl implements ResultService {
         resultRepo.save(result).subscribe(saved -> {
                         log.info("saved result record {}, ready? {}", saved.getMatchId(), saved.ready());
                         if (saved.ready()) {
+                            log.info("processing");
                             receive.accept(result);
                         }
                     });

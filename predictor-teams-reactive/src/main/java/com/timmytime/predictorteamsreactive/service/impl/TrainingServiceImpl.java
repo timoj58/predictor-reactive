@@ -19,6 +19,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
@@ -34,6 +35,8 @@ public class TrainingServiceImpl implements TrainingService {
     private final Integer interval;
     private final String dataHost;
     private final Integer trainingDelay;
+
+    private Boolean evaluateMode = Boolean.FALSE;
 
     @Autowired
     public TrainingServiceImpl(
@@ -60,6 +63,8 @@ public class TrainingServiceImpl implements TrainingService {
 
         log.info("training init");
 
+        evaluateMode = Boolean.TRUE;
+
         Flux.fromStream(
                         Arrays.asList(CountryCompetitions.values()).stream()
                 ).delayElements(Duration.ofMinutes(trainingDelay))
@@ -69,7 +74,7 @@ public class TrainingServiceImpl implements TrainingService {
                             webClientFacade.getMatches(
                                     dataHost + "/match/country/" + trainingHistory.getCountry()
                                             + "/" + trainingHistory.getFromDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-                                            + "/" + trainingHistory.getToDate().plusYears(1).toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                                            + "/" + trainingHistory.getToDate().plusYears(interval).toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
                             ).doOnNext(match -> tensorflowDataService.load(new CountryMatch(trainingHistory.getCountry(), match)))
                                     .doFinally(f -> tensorflowTrainService.train(trainingHistory))
                                     .subscribe();
@@ -86,20 +91,26 @@ public class TrainingServiceImpl implements TrainingService {
         if (trainingHistory.getToDate().isBefore(LocalDate.now().atStartOfDay())) {
 
             TrainingHistory next = trainingHistoryService.save(
-                    new TrainingHistory(
-                            trainingHistory.getType(),
-                            trainingHistory.getCountry(),
-                            trainingHistory.getToDate(),
-                            trainingHistory.getToDate().plusYears(interval)
-                    )
-            );
+                        new TrainingHistory(
+                                trainingHistory.getType(),
+                                trainingHistory.getCountry(),
+                                trainingHistory.getToDate(),
+                                trainingHistory.getToDate().plusYears(interval).isAfter(LocalDateTime.now()) ?
+                                        LocalDateTime.now() : trainingHistory.getToDate().plusYears(interval)
+                        )
+                );
 
             if(trainingHistory.getType().equals(Training.TRAIN_RESULTS)){
                 //and also need to load our next section....
                 webClientFacade.getMatches(
                         dataHost + "/match/country/" + trainingHistory.getCountry()
                                 + "/" + next.getFromDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-                                + "/" + next.getToDate().plusYears(1).toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                                + "/" +
+                                (evaluateMode ?
+                                        next.getToDate().toLocalDate().plusYears(interval).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                                        :
+                                        next.getToDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                                )
                 ).doOnNext(match -> tensorflowDataService.load(new CountryMatch(next.getCountry(), match)))
                         .doFinally(f -> tensorflowTrainService.train(next))
                 .subscribe();
@@ -124,7 +135,9 @@ public class TrainingServiceImpl implements TrainingService {
                         type,
                         country.toLowerCase(),
                         previous.getToDate(),
-                        previous.getToDate().plusYears(interval)
+                        previous.getToDate().plusYears(interval).isAfter(LocalDateTime.now()) ?
+                                LocalDateTime.now() :
+                                previous.getToDate().plusYears(interval)
                 )
         );
     }

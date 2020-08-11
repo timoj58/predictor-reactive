@@ -1,28 +1,25 @@
 package com.timmytime.predictorclientreactive.model;
 
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
+import java.util.UUID;
 
 @Getter
 @Setter
-public class UpcomingEventResponse implements Serializable {
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class UpcomingEventResponse{
 
     private Team home;
     private Team away;
-    private Date eventDate;
-
+    private String eventDate;
     private String country;
 
-    //need the match bets too...match only for now.  (homea /away / draw).
-
-    public UpcomingEventResponse() {
-
-    }
 
     @Override
     public boolean equals(Object o) {

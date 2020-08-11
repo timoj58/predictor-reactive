@@ -73,7 +73,7 @@ public class MatchFactory {
             String eventDate = resultData.getResult().getString("date");
             LocalDateTime eventDateLdt = LocalDateTime.parse(eventDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm'Z'"));
 
-            matchService.getMatch(homeTeam.get().getId(), awayTeam.get().getId(), eventDate)
+            matchService.getMatch(homeTeam.get().getId(), awayTeam.get().getId(), eventDateLdt.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
                     .switchIfEmpty(Mono.just(new Match()))
                     .subscribe(match ->
                     {

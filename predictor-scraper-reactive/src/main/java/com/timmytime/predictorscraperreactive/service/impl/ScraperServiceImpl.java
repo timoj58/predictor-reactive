@@ -68,9 +68,14 @@ public class ScraperServiceImpl implements ScraperService {
 
         scraperHistory.setId(UUID.randomUUID());
         scraperHistory.setDate(LocalDateTime.now());
-        scraperHistory.setDaysScraped(daysToScrape(scraperHistoryRepo.findFirstByOrderByDateDesc().getDate())); //needs to be configurvale
+        scraperHistory.setDaysScraped((int)
+                Duration.between(
+                            scraperHistoryRepo.findFirstByOrderByDateDesc().getDate().toLocalDate().atStartOfDay(),
+                            LocalDate.now().atStartOfDay()
+                ).toDays());
 
         scraperHistoryRepo.save(scraperHistory);
+
 
         SportScraper sportScraper =sportsScraperConfigurationFactory.getConfig(ScraperTypeKeys.RESULTS)
                 .getSportScrapers()
@@ -110,26 +115,4 @@ public class ScraperServiceImpl implements ScraperService {
         return Mono.empty();
     }
 
-    //this is not needed now....good...no more updating of config either.
-    @PostConstruct
-    public void init() {
-        if (scraperHistoryRepo.count() == 0L) {
-            //we need to add our start record if it does not exist.
-            ScraperHistory scraperHistory = new ScraperHistory();
-            scraperHistory.setId(UUID.randomUUID());
-            scraperHistory.setDate(defaultStartDate);
-            scraperHistory.setDaysScraped(0);
-
-            scraperHistoryRepo.save(scraperHistory);
-        }
-
-    }
-
-    private Integer daysToScrape(LocalDateTime date) {
-        if (date.getDayOfWeek()
-                .equals(DayOfWeek.TUESDAY)) {
-            return 4;
-        }
-        return 3;
-    }
 }

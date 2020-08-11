@@ -71,7 +71,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                                 playersHost+"/message",
                                 createMessage(msg.getCountry().toUpperCase(), "DATA_LOADED")
                         );
-                        trainingService.train(trainingHistoryService.create(Training.TRAIN_RESULTS, msg));
+                        trainingService.train(trainingHistoryService.find(Training.TRAIN_RESULTS, msg.getCountry()));
                     }
                 }
         ).thenEmpty(Mono.empty());

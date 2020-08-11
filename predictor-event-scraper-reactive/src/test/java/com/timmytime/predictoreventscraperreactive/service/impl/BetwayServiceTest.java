@@ -7,6 +7,7 @@ import com.timmytime.predictoreventscraperreactive.scraper.betway.BetwayEventSpe
 import com.timmytime.predictoreventscraperreactive.scraper.betway.BetwayEventsScraper;
 import com.timmytime.predictoreventscraperreactive.service.MessageService;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -14,6 +15,7 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@Disabled
 class BetwayServiceTest {
 
     private final MessageService messageService = mock(MessageService.class);

@@ -31,26 +31,6 @@ public class TrainingHistoryServiceImpl implements TrainingHistoryService {
     }
 
     @Override
-    public TrainingHistory create(Training type, Message message) {
-        //TODO this is now wrong as well.
-        TrainingHistory previous = trainingHistoryRepo.findByTypeAndCountryOrderByDateDesc(
-                type,
-                message.getCountry()
-        )
-                .stream()
-                .findFirst()
-                .get();
-
-        return trainingHistoryRepo.save(
-                new TrainingHistory(
-                        type,
-                        message.getCountry(),
-                        previous.getToDate()
-                )
-        );
-    }
-
-    @Override
     public TrainingHistory find(UUID id) {
         return trainingHistoryRepo.findById(id).get();
     }

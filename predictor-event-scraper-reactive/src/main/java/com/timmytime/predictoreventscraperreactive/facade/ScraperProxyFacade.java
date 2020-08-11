@@ -1,5 +1,6 @@
 package com.timmytime.predictoreventscraperreactive.facade;
 
+import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lambda.AWSLambda;
@@ -27,18 +28,7 @@ public class ScraperProxyFacade {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private String scraperProxyHost;// = "http://ec2-3-250-88-102.eu-west-1.compute.amazonaws.com:8080";
-    private final String profile;
 
-    @Autowired
-    public ScraperProxyFacade(
-            @Value("${aws.profile}") String profile
-    ){
-        this.profile = profile;
-
-        if(profile == null){
-            profile = "";
-        }
-    }
 
     public ScraperResponse scrape(String type, String method, ScraperRequest scraperRequest) {
 
@@ -64,7 +54,7 @@ public class ScraperProxyFacade {
 
         try {
             AWSLambda awsLambda = AWSLambdaClientBuilder.standard()
-                    .withCredentials(new ProfileCredentialsProvider(profile))
+                    .withCredentials(new InstanceProfileCredentialsProvider(false))
                     .withRegion(Regions.US_EAST_1).build();
 
             invokeResult = awsLambda.invoke(invokeRequest);
