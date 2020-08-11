@@ -74,7 +74,7 @@ public class TrainingServiceImpl implements TrainingService {
                             webClientFacade.getMatches(
                                     dataHost + "/match/country/" + trainingHistory.getCountry()
                                             + "/" + trainingHistory.getFromDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-                                            + "/" + trainingHistory.getToDate().plusYears(interval).toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                                            + "/" + trainingHistory.getToDate().plusYears(interval*2).toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
                             ).doOnNext(match -> tensorflowDataService.load(new CountryMatch(trainingHistory.getCountry(), match)))
                                     .doFinally(f -> tensorflowTrainService.train(trainingHistory))
                                     .subscribe();
