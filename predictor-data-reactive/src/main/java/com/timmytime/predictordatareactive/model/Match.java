@@ -29,4 +29,10 @@ public class Match  {
     private Integer homeScore;
     private Integer awayScore;
 
+    public Match(UUID homeTeam, UUID awayTeam, LocalDateTime date){
+        this.homeTeam = homeTeam;
+        this.awayTeam = awayTeam;
+        this.date = date;
+    }
+
 }

@@ -7,6 +7,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public interface MatchService {
@@ -14,6 +15,7 @@ public interface MatchService {
     void delete(UUID id);
     Mono<Match> save(Match match);
     Mono<Match> getMatch(@RequestParam UUID home, @RequestParam  UUID away, @RequestParam String date);
+
     Mono<Match> getMatchByOpponent(
             @PathVariable UUID opponent,
             @RequestParam Boolean home,
@@ -23,5 +25,6 @@ public interface MatchService {
             @PathVariable String country,
             @PathVariable String fromDate,
             @PathVariable String toDate);
+
 
 }

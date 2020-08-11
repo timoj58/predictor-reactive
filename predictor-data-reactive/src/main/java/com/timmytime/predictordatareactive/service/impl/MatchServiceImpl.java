@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.groupingBy;
+
 @Service("matchService")
 public class MatchServiceImpl implements MatchService {
 
@@ -51,6 +53,7 @@ public class MatchServiceImpl implements MatchService {
                 .filter(f -> f.getDate().toLocalDate().equals(filter))
                 .next();
     }
+
 
     @Override
     public Mono<Match> getMatchByOpponent(UUID opponent, Boolean home, String date) {
