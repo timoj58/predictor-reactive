@@ -66,7 +66,7 @@ public class CompetitionServiceImpl implements ILoadService {
 
             log.info("finishing");
             try {
-                s3Facade.put("", new ObjectMapper().writeValueAsString(countryAndCompetitionResponses));
+                s3Facade.put("leagues", new ObjectMapper().writeValueAsString(countryAndCompetitionResponses));
                 shutdownService.receive(CompetitionServiceImpl.class.getName());
             } catch (JsonProcessingException e) {
                 log.error("json issue", e);

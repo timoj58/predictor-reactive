@@ -6,12 +6,15 @@ import com.timmytime.predictorclientreactive.model.Event;
 import com.timmytime.predictorclientreactive.model.Team;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import com.timmytime.predictorclientreactive.service.TeamService;
+import com.timmytime.predictorclientreactive.util.CountryCompetitions;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -29,7 +32,7 @@ class FixtureServiceImplTest {
     );
 
     @Test
-    public void loadTest(){
+    public void loadTest() throws InterruptedException {
 
         Event event = new Event();
         event.setDate(LocalDateTime.now());
@@ -37,11 +40,27 @@ class FixtureServiceImplTest {
         event.setHome(UUID.randomUUID());
 
         when(teamService.getTeam(anyString(), any(UUID.class))).thenReturn(new Team());
-        when(webClientFacade.getEvents(anyString())).thenReturn(Flux.fromStream(Arrays.asList(event).stream()));
+
+        Arrays.asList(
+                CountryCompetitions.values()
+        )
+                .stream()
+                .map(f -> f.getCompetitions())
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList())
+                .stream()
+                .forEach(c ->
+                        when(webClientFacade.getEvents("/events/" + c)).thenReturn(Flux.fromStream(Arrays.asList(event).stream())));
+
+
+
+
 
         fixtureService.load();
 
-        verify(s3Facade, atLeastOnce()).put("", "");
+        Thread.sleep(1000L);
+
+        verify(s3Facade, atLeastOnce()).put("fixtures/england_1", "{\"competition\":\"england_1\",\"upcomingEventResponses\":[{\"home\":{\"id\":null,\"label\":null,\"country\":null,\"competition\":null},\"away\":{\"id\":null,\"label\":null,\"country\":null,\"competition\":null},\"eventDate\":\"12-08-2020\",\"country\":\"england\"}]}");
         verify(shutdownService, atLeastOnce()).receive(anyString());
     }
 

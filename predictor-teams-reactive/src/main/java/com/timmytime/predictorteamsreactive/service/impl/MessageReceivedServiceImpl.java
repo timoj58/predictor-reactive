@@ -96,6 +96,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                             );
                             break;
                         case TRAIN_GOALS:
+                            log.info("finishing up {}", history.getCountry().toUpperCase());
                             //finished.
                             tensorflowDataService.clear(history.getCountry());
                             webClientFacade.sendMessage(

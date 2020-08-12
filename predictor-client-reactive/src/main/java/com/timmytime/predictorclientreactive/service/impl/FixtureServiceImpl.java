@@ -75,7 +75,7 @@ public class FixtureServiceImpl implements ILoadService {
                                         ))
                                 .doFinally(save -> {
                                     try {
-                                        s3Facade.put("", new ObjectMapper().writeValueAsString(upcomingCompetitionEventsResponse));
+                                        s3Facade.put("fixtures/"+competition, new ObjectMapper().writeValueAsString(upcomingCompetitionEventsResponse));
                                     } catch (JsonProcessingException e) {
                                         log.error("json", e);
                                     }
