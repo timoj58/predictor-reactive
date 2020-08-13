@@ -33,4 +33,14 @@ public class StatsHandler {
                 StatMetric.class
         );
     }
+
+    public Mono<ServerResponse> getPlayerStats(ServerRequest serverRequest){
+
+        return ServerResponse.ok().body(
+                statMetricService.getPlayerStats(
+                        UUID.fromString(serverRequest.pathVariable("player"))
+                ),
+                StatMetric.class
+        );
+    }
 }

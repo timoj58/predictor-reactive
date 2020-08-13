@@ -4,7 +4,7 @@ import com.timmytime.predictorclientreactive.enumerator.Messages;
 import com.timmytime.predictorclientreactive.request.Message;
 import com.timmytime.predictorclientreactive.service.ILoadService;
 import com.timmytime.predictorclientreactive.service.MessageReceivedService;
-import com.timmytime.predictorclientreactive.util.CountryCompetitions;
+import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,6 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     @Autowired
     public MessageReceivedServiceImpl(
             CompetitionServiceImpl competitionService,
-            PlayerServiceImpl playerService,
             BetServiceImpl betService,
             FixtureServiceImpl fixtureService,
             PreviousFixtureServiceImpl previousFixtureService,
@@ -33,7 +32,6 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
             TeamsMatchServiceImpl teamsMatchService
     ){
         this.loaders.add(competitionService);
-        this.loaders.add(playerService);
         this.loaders.add(betService);
         this.loaders.add(fixtureService);
         this.loaders.add(previousFixtureService);

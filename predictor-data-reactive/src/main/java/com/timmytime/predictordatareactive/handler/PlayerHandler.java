@@ -58,5 +58,15 @@ public class PlayerHandler {
         );
     }
 
+    public Mono<ServerResponse> getTotalAppearances(ServerRequest serverRequest){
+
+        return ServerResponse.ok().body(
+                lineupPlayerService.totalAppearances(
+                        UUID.fromString(serverRequest.pathVariable("player"))
+                ),
+                Integer.class
+        );
+    }
+
 
 }

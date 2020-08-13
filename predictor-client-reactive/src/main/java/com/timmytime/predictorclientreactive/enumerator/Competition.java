@@ -1,4 +1,4 @@
-package com.timmytime.predictorclientreactive.util;
+package com.timmytime.predictorclientreactive.enumerator;
 
 public enum Competition {
 

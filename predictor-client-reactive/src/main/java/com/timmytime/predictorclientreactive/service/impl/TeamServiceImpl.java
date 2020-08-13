@@ -1,10 +1,8 @@
 package com.timmytime.predictorclientreactive.service.impl;
 
-import com.timmytime.predictorclientreactive.facade.WebClientFacade;
 import com.timmytime.predictorclientreactive.model.Team;
 import com.timmytime.predictorclientreactive.service.TeamService;
-import com.timmytime.predictorclientreactive.util.CountryCompetitions;
-import lombok.AllArgsConstructor;
+import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,4 +61,5 @@ public class TeamServiceImpl implements TeamService {
     public Team getTeam(String country, UUID id) {
         return teams.get(country).values().stream().filter(f -> f.getId().equals(id)).findFirst().get();
     }
+
 }

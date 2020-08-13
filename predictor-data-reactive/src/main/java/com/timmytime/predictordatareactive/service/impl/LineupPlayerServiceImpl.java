@@ -105,4 +105,9 @@ public class LineupPlayerServiceImpl implements LineupPlayerService {
                 player, start, end);
     }
 
+    @Override
+    public Mono<Long> totalAppearances(UUID player) {
+        return lineupPlayerRepo.findByPlayer(player).count();
+    }
+
 }

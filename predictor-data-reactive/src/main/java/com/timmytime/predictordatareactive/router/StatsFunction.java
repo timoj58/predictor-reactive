@@ -20,4 +20,11 @@ public class StatsFunction {
         return route(RequestPredicates.GET("/stats/{player}/{match}")
                 , statsHandler::getMatchStats);
     }
+
+    @Bean
+    @RouterOperation(beanClass = StatMetricService.class, beanMethod = "getPlayerStats")
+    RouterFunction<ServerResponse> getAllStats(StatsHandler statsHandler) {
+        return route(RequestPredicates.GET("/all-stats/{player}")
+                , statsHandler::getPlayerStats);
+    }
 }

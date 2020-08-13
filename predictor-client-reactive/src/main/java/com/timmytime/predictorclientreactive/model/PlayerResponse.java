@@ -1,5 +1,6 @@
 package com.timmytime.predictorclientreactive.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,6 +18,7 @@ public class PlayerResponse implements Serializable {
     private String label;
     private UUID id;
     private String currentTeam;
+    private UUID teamId;
     private Integer appearances;
     private Integer goals;
     private Integer assists;
@@ -24,11 +26,6 @@ public class PlayerResponse implements Serializable {
     private Integer yellowCards;
     private Integer saves;
 
-    //this is for recent form...
-    private Double hardmanRed;
-    private Double hardmanYellow;
-    private Double marksman;
-    private Double wizard;
 
     private Double fantasyEventScore; //saves time.  also should use this for the mobile
     private String fantasyEventKey; //saves time.  also should use this for the mobile
@@ -36,6 +33,5 @@ public class PlayerResponse implements Serializable {
 
     private List<FantasyResponse> fantasyResponse = new ArrayList<>();
     private List<FantasyEvent> averages = new ArrayList<>();
-
 
 }

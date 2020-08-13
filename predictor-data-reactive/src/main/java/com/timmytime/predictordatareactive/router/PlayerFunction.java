@@ -35,4 +35,11 @@ public class PlayerFunction {
         return route(RequestPredicates.GET("/players/appearances/{player}")
                 , playerHandler::getAppearances);
     }
+
+    @Bean
+    @RouterOperation(beanClass = LineupPlayerService.class, beanMethod = "totalAppearances")
+    RouterFunction<ServerResponse> totalAppearances(PlayerHandler playerHandler) {
+        return route(RequestPredicates.GET("/players/total-appearances/{player}")
+                , playerHandler::getTotalAppearances);
+    }
 }

@@ -1,9 +1,6 @@
 package com.timmytime.predictorclientreactive.facade;
 
-import com.timmytime.predictorclientreactive.model.Event;
-import com.timmytime.predictorclientreactive.model.EventOutcome;
-import com.timmytime.predictorclientreactive.model.Match;
-import com.timmytime.predictorclientreactive.model.Team;
+import com.timmytime.predictorclientreactive.model.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -18,7 +15,7 @@ public class WebClientFacade {
         return null;
     }
 
-    public Flux<Event> getEvents(
+    public Flux<Event> getUpcomingEvents(
             String url
     ) {
         return WebClient.builder().build()
@@ -28,7 +25,7 @@ public class WebClientFacade {
                 .bodyToFlux(Event.class);
     }
 
-    public Flux<EventOutcome> getPreviousEvents(
+    public Flux<EventOutcome> getPreviousEventOutcomes(
             String url
     ) {
         return WebClient.builder().build()
@@ -38,7 +35,7 @@ public class WebClientFacade {
                 .bodyToFlux(EventOutcome.class);
     }
 
-    public Flux<EventOutcome> getUpcomingEvents(
+    public Flux<EventOutcome> getUpcomingEventOutcomes(
             String url
     ) {
         return WebClient.builder().build()
@@ -60,6 +57,18 @@ public class WebClientFacade {
                 .retrieve()
                 .bodyToMono(Match.class);
 
+    }
+
+    public Flux<Player> getPlayers(String url){
+        return WebClient.builder().build()
+                .get()
+                .uri(url)
+                .retrieve()
+                .bodyToFlux(Player.class);
+    }
+
+    public Mono<PlayerResponse> getPlayer(String url){
+        return null;
     }
 
 }

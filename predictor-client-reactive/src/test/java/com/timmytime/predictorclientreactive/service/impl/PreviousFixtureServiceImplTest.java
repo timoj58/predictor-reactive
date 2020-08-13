@@ -2,12 +2,11 @@ package com.timmytime.predictorclientreactive.service.impl;
 
 import com.timmytime.predictorclientreactive.facade.S3Facade;
 import com.timmytime.predictorclientreactive.facade.WebClientFacade;
-import com.timmytime.predictorclientreactive.model.Event;
 import com.timmytime.predictorclientreactive.model.EventOutcome;
 import com.timmytime.predictorclientreactive.model.Match;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import com.timmytime.predictorclientreactive.service.TeamService;
-import com.timmytime.predictorclientreactive.util.CountryCompetitions;
+import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 

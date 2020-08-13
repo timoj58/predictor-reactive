@@ -6,7 +6,7 @@ import com.timmytime.predictorclientreactive.model.Event;
 import com.timmytime.predictorclientreactive.model.Team;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import com.timmytime.predictorclientreactive.service.TeamService;
-import com.timmytime.predictorclientreactive.util.CountryCompetitions;
+import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 
@@ -16,7 +16,6 @@ import java.util.Collection;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class FixtureServiceImplTest {

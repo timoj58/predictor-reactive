@@ -16,4 +16,13 @@ public class MatchSelectionsResponse {
     private UUID away;
     private List<MatchSelectionResponse> matchSelectionResponses = new ArrayList<>();
 
+    public MatchSelectionsResponse(
+            UUID home,
+            UUID away,
+            List<MatchSelectionResponse> matchSelectionResponses
+    ){
+        this.home = home;
+        this.away = away;
+        this.matchSelectionResponses = matchSelectionResponses;
+    }
 }

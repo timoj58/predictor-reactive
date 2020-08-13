@@ -1,23 +1,19 @@
 package com.timmytime.predictorclientreactive.service.impl;
 
-import com.amazonaws.services.ecs.model.transform.UlimitJsonUnmarshaller;
 import com.timmytime.predictorclientreactive.facade.S3Facade;
 import com.timmytime.predictorclientreactive.facade.WebClientFacade;
 import com.timmytime.predictorclientreactive.model.EventOutcome;
 import com.timmytime.predictorclientreactive.model.Team;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import com.timmytime.predictorclientreactive.service.TeamService;
-import com.timmytime.predictorclientreactive.util.CountryCompetitions;
+import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Value;
 import reactor.core.publisher.Flux;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class TeamsMatchServiceImplTest {

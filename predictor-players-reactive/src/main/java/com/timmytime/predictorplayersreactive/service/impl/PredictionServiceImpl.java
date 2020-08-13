@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -26,6 +27,7 @@ public class PredictionServiceImpl implements PredictionService {
 
     private final EventsService eventsService;
     private final PlayerService playerService;
+    private final PlayerResponseService playerResponseService;
     private final TensorflowPredictionService tensorflowPredictionService;
     private final FantasyOutcomeService fantasyOutcomeService;
 
@@ -33,11 +35,13 @@ public class PredictionServiceImpl implements PredictionService {
     public PredictionServiceImpl(
             EventsService eventsService,
             PlayerService playerService,
+            PlayerResponseService playerResponseService,
             TensorflowPredictionService tensorflowPredictionService,
             FantasyOutcomeService fantasyOutcomeService
     ) {
         this.eventsService = eventsService;
         this.playerService = playerService;
+        this.playerResponseService = playerResponseService;
         this.tensorflowPredictionService = tensorflowPredictionService;
         this.fantasyOutcomeService = fantasyOutcomeService;
     }
@@ -49,7 +53,7 @@ public class PredictionServiceImpl implements PredictionService {
 
         Flux.fromStream(
                 ApplicableFantasyLeagues.findByCountry(country).stream()
-        ).subscribe(competition ->
+        ).doOnNext(competition ->
                 eventsService.get(competition.name().toLowerCase())
                         .delayElements(Duration.ofSeconds(1))
                         .subscribe(event -> {
@@ -57,7 +61,12 @@ public class PredictionServiceImpl implements PredictionService {
                              processPlayers(competition.name().toLowerCase(), event.getDate(), event.getHome(), event.getAway(), Boolean.TRUE);
                              processPlayers(competition.name().toLowerCase(), event.getDate(), event.getAway(), event.getHome(), Boolean.FALSE);
                         })
-        );
+        )
+        .doFinally(finish -> Mono.just(
+                country
+        ).delayElement(Duration.ofMinutes(5))  // TODO review.  probably best to delay it a bit.
+        .subscribe(key -> playerResponseService.load(key)))
+        .subscribe();
 
     }
 

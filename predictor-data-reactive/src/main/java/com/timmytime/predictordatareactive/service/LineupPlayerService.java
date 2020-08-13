@@ -28,4 +28,8 @@ public interface LineupPlayerService {
             @PathVariable UUID player,
             @RequestParam String fromDate,
             @RequestParam String toDate);
+
+    Mono<Long> totalAppearances(
+            @PathVariable UUID player
+    );
 }

@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
@@ -79,5 +80,21 @@ public class PlayerServiceImpl implements PlayerService {
                 .stream()
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Flux<Player> byMatch(String competition, UUID home, UUID away) {
+
+        Flux<Player> homePlayers = Flux.fromStream(
+                players.get(competition)
+                        .stream()
+                        .filter(f -> f.getLatestTeam().equals(home)));
+
+        Flux<Player> awayPlayers = Flux.fromStream(
+                players.get(competition)
+                        .stream()
+                        .filter(f -> f.getLatestTeam().equals(away)));
+
+        return Flux.concat(homePlayers, awayPlayers);
     }
 }

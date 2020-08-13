@@ -4,14 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.timmytime.predictorclientreactive.facade.S3Facade;
 import com.timmytime.predictorclientreactive.facade.WebClientFacade;
-import com.timmytime.predictorclientreactive.model.Event;
-import com.timmytime.predictorclientreactive.model.Team;
 import com.timmytime.predictorclientreactive.model.UpcomingCompetitionEventsResponse;
 import com.timmytime.predictorclientreactive.model.UpcomingEventResponse;
 import com.timmytime.predictorclientreactive.service.ILoadService;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import com.timmytime.predictorclientreactive.service.TeamService;
-import com.timmytime.predictorclientreactive.util.CountryCompetitions;
+import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +61,7 @@ public class FixtureServiceImpl implements ILoadService {
                                 new UpcomingCompetitionEventsResponse(
                                         competition,
                                         new ArrayList<>());
-                        webClientFacade.getEvents(eventDataHost + "/events/" + competition)
+                        webClientFacade.getUpcomingEvents(eventDataHost + "/events/" + competition)
                                 .doOnNext(event ->
                                         upcomingCompetitionEventsResponse.getUpcomingEventResponses().add(
                                                 UpcomingEventResponse.builder()

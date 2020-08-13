@@ -1,6 +1,6 @@
 package com.timmytime.predictorclientreactive.model;
 
-import com.timmytime.predictorclientreactive.util.Competition;
+import com.timmytime.predictorclientreactive.enumerator.Competition;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

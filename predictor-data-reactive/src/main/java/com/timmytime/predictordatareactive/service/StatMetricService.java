@@ -40,4 +40,7 @@ public interface StatMetricService {
 
     Flux<StatMetric> find(@PathVariable UUID player, @PathVariable UUID match);
 
+    Flux<StatMetric> getPlayerStats(@PathVariable UUID player);
+
+
 }

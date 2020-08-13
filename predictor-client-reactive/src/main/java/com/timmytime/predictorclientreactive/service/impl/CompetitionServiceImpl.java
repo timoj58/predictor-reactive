@@ -8,8 +8,8 @@ import com.timmytime.predictorclientreactive.model.CountryAndCompetitionResponse
 import com.timmytime.predictorclientreactive.model.CountryResponse;
 import com.timmytime.predictorclientreactive.service.ILoadService;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
-import com.timmytime.predictorclientreactive.util.Competition;
-import com.timmytime.predictorclientreactive.util.CountryCompetitions;
+import com.timmytime.predictorclientreactive.enumerator.Competition;
+import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

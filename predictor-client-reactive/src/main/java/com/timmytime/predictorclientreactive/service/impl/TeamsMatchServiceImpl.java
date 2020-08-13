@@ -6,11 +6,10 @@ import com.timmytime.predictorclientreactive.facade.S3Facade;
 import com.timmytime.predictorclientreactive.facade.WebClientFacade;
 import com.timmytime.predictorclientreactive.model.EventOutcome;
 import com.timmytime.predictorclientreactive.model.EventOutcomeResponse;
-import com.timmytime.predictorclientreactive.model.TeamPredictionOutcome;
 import com.timmytime.predictorclientreactive.service.ILoadService;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import com.timmytime.predictorclientreactive.service.TeamService;
-import com.timmytime.predictorclientreactive.util.CountryCompetitions;
+import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +67,7 @@ public class TeamsMatchServiceImpl implements ILoadService {
                             log.info("processing {}", competition);
                             byCompetition.put(competition, new ArrayList<>());
 
-                            webClientFacade.getUpcomingEvents(eventsHost+"/events/"+competition)
+                            webClientFacade.getUpcomingEventOutcomes(eventsHost+"/events/"+competition)
                                     .doOnNext(event -> byCompetition.get(competition).add(transform(event)))
                                     .doFinally(save ->
                                             Mono.just(competition).delayElement(Duration.ofMinutes(delay)).subscribe(key -> save(key)))
