@@ -29,7 +29,7 @@ public class ShutdownServiceImpl implements ShutdownService {
         if(received.containsAll(Arrays.asList(
                 BetServiceImpl.class.getName(),
                 CompetitionServiceImpl.class.getName(),
-                MatchServiceImpl.class.getName(),
+                PlayersMatchServiceImpl.class.getName(),
                 FixtureServiceImpl.class.getName(),
                 PlayerServiceImpl.class.getName(),
                 PreviousFixtureServiceImpl.class.getName()

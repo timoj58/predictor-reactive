@@ -67,7 +67,11 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
 
     @Override
     public void clear(String country) {
-        data.get(country).clear();
+        if(data.containsKey(country)) {
+            data.get(country).clear();
+        }else {
+            log.info("no data to clear for {}", country);
+        }
 
     }
 

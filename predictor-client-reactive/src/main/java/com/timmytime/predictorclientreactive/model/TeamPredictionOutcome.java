@@ -16,8 +16,5 @@ public class TeamPredictionOutcome implements Serializable {
 
     private UUID teamId;
     private String team;
-    private List<TeamAccuracy> accuracy = new ArrayList<>();
     private List<PredictionOutcome> predictionOutcomes = new ArrayList<>();
-    private List<MarketRating> marketRatings = new ArrayList<>();
-
 }

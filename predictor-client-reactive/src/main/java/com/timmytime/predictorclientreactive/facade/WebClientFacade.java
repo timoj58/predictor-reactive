@@ -38,6 +38,16 @@ public class WebClientFacade {
                 .bodyToFlux(EventOutcome.class);
     }
 
+    public Flux<EventOutcome> getUpcomingEvents(
+            String url
+    ) {
+        return WebClient.builder().build()
+                .get()
+                .uri(url)
+                .retrieve()
+                .bodyToFlux(EventOutcome.class);
+    }
+
 
     public void startScraper(String url){
 

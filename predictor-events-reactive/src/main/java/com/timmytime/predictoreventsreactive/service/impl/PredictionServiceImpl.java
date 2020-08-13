@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
+import javax.annotation.PostConstruct;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -57,7 +58,7 @@ public class PredictionServiceImpl implements PredictionService {
                             .subscribe(event ->
                                     Flux.fromStream(
                                             Arrays.asList(Predictions.values()).stream()
-                                    ).delayElements(Duration.ofSeconds(1))
+                                    )
                                             .subscribe(predict ->
                                                     eventOutcomeService.save(
                                                             EventOutcome.builder()
@@ -83,6 +84,7 @@ public class PredictionServiceImpl implements PredictionService {
 
     @Override
     public void result(UUID id, JSONObject result) {
+        log.info("received a result {}", id.toString());
         eventOutcomeService.find(id)
                 .subscribe(eventOutcome -> {
                     eventOutcome.setPrediction(normalize(result).toString());
@@ -124,4 +126,5 @@ public class PredictionServiceImpl implements PredictionService {
                 .sorted((o1, o2) -> o2.getScore().compareTo(o1.getScore()))
                 .collect(Collectors.toList());
     }
+
 }

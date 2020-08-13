@@ -35,7 +35,7 @@ public class PreviousFixtureServiceImpl implements ILoadService {
 
     private final String eventsHost;
     private final String dataHost;
-    private Integer delay;
+    private final Integer delay;
 
     private final Map<String, List<PreviousFixtureResponse>> byCompetition = new HashMap<>();
 

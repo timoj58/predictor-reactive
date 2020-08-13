@@ -6,6 +6,7 @@ import com.timmytime.predictoreventsreactive.service.EventOutcomeService;
 import com.timmytime.predictoreventsreactive.service.EventService;
 import com.timmytime.predictoreventsreactive.service.TensorflowPredictionService;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

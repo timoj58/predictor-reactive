@@ -3,7 +3,8 @@ import service.prediction_service as prediction_service
 
 
 def predict(data, country, receipt):
-    return prediction_service.predict_process(
+
+    prediction_service.predict(
         data=data,
         country=country,
         label='goals',

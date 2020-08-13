@@ -42,15 +42,14 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
 
     @Override
     public void predict(Predictions predictions, Prediction prediction, String country) {
-        log.info("predicting {}", prediction.getHome(), prediction.getAway());
+        log.info("predicting id {} {} {}", prediction.getId(), prediction.getHome(), prediction.getAway());
 
         webClientFacade.predict(
-                trainingHost+getUrl(predictions)
-                        .replace("<receipt>", prediction.getId().toString())
-                        .replace("<country>", country),
-                prediction
+                    trainingHost + getUrl(predictions)
+                            .replace("<receipt>", prediction.getId().toString())
+                            .replace("<country>", country),
+                    prediction
         );
-
     }
 
     private String getUrl(Predictions predictions) {

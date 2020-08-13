@@ -52,10 +52,14 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         return message.doOnNext(
                 msg -> {
                     log.info("received {}", msg.getType());
-                    messages.get(msg.getCountry().toLowerCase()).add(msg.getType());
+                    if(messages.containsKey(msg.getCountry().toLowerCase())) {
+                        messages.get(msg.getCountry().toLowerCase()).add(msg.getType());
 
-                    if(messages.get(msg.getCountry().toLowerCase()).containsAll(Arrays.asList(Messages.values()))){
-                        predictionService.start(msg.getCountry().toLowerCase());
+                        if (messages.get(msg.getCountry().toLowerCase()).containsAll(Arrays.asList(Messages.values()))) {
+                            predictionService.start(msg.getCountry().toLowerCase());
+                        }
+                    }else {
+                        log.info("skipping {} not applicable", msg.getCountry());
                     }
 
                 }

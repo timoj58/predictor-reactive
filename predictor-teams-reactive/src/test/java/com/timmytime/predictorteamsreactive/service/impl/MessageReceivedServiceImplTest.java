@@ -1,5 +1,6 @@
 package com.timmytime.predictorteamsreactive.service.impl;
 
+import com.timmytime.predictorteamsreactive.enumerator.Training;
 import com.timmytime.predictorteamsreactive.facade.WebClientFacade;
 import com.timmytime.predictorteamsreactive.model.Message;
 import com.timmytime.predictorteamsreactive.model.TrainingHistory;
@@ -70,14 +71,14 @@ class MessageReceivedServiceImplTest {
     }
 
     @Test
-    @Disabled
     public void trainingFinishedTest() throws InterruptedException {
 
         TrainingHistory trainingHistory = new TrainingHistory();
         trainingHistory.setCountry("england");
+        trainingHistory.setType(Training.TRAIN_GOALS);
 
         when(trainingHistoryService.find(any(UUID.class))).thenReturn(trainingHistory);
-        when(trainingHistoryService.finished(any())).thenReturn(Boolean.TRUE);
+        when(trainingService.train(any())).thenReturn(Boolean.FALSE);
 
         messageReceivedService.training(UUID.randomUUID()).subscribe();
 
@@ -91,7 +92,7 @@ class MessageReceivedServiceImplTest {
     public void trainingNotFinishedTest() throws InterruptedException {
 
         when(trainingHistoryService.find(any(UUID.class))).thenReturn(new TrainingHistory());
-        when(trainingHistoryService.finished(any())).thenReturn(Boolean.FALSE);
+        when(trainingService.train(any())).thenReturn(Boolean.TRUE);
 
         messageReceivedService.training(UUID.randomUUID()).subscribe();
 

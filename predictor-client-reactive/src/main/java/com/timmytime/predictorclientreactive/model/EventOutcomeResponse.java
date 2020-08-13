@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -14,22 +16,18 @@ import java.util.UUID;
 @NoArgsConstructor
 public class EventOutcomeResponse implements Serializable {
 
-
     private String eventType;
 
     private Team home;
     private Team away;
 
-    private Date eventDate;
-
+    private String eventDate;
     private String predictions;
 
-    private List<Bet> bets;
-
-    private TeamPredictionOutcome homeOutcomes;
-    private TeamPredictionOutcome awayOutcomes;
-    private Double rating;
-    private Integer successCount;
-    private UUID eventOutcome;
+    public EventOutcomeResponse(EventOutcome eventOutcome) {
+        this.predictions = eventOutcome.getPrediction();
+        this.eventDate = eventOutcome.getDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        this.eventType = eventOutcome.getEventType();
+    }
 
 }
