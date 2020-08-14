@@ -40,7 +40,7 @@ class TeamsMatchServiceImplTest {
                 .collect(Collectors.toList())
                 .stream()
                 .forEach(c ->
-                        when(webClientFacade.getUpcomingEvents("/events/"+c))
+                        when(webClientFacade.getUpcomingEventOutcomes("/events/"+c))
                                 .thenReturn(Flux.fromStream(Arrays.asList(new EventOutcome()).stream()
                                 )));
 
@@ -52,7 +52,7 @@ class TeamsMatchServiceImplTest {
 
         teamsMatchService.load();
 
-        Thread.sleep(2000L);
+        Thread.sleep(3000L);
 
 
         verify(s3Facade, atLeast(15)).put(anyString(), anyString());

@@ -31,7 +31,6 @@ public class ShutdownServiceImpl implements ShutdownService {
                 CompetitionServiceImpl.class.getName(),
                 PlayersMatchServiceImpl.class.getName(),
                 FixtureServiceImpl.class.getName(),
-                PlayerServiceImpl.class.getName(),
                 PreviousFixtureServiceImpl.class.getName()
         ))){
             shutdown();

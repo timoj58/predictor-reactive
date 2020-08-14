@@ -13,7 +13,6 @@ import static org.mockito.Mockito.*;
 class MessageReceivedServiceImplTest {
 
     CompetitionServiceImpl competitionService = mock(CompetitionServiceImpl.class);
-    PlayerServiceImpl playerService = mock(PlayerServiceImpl.class);
     BetServiceImpl betService = mock(BetServiceImpl.class);
     FixtureServiceImpl fixtureService = mock(FixtureServiceImpl.class);
     PreviousFixtureServiceImpl previousFixtureService = mock(PreviousFixtureServiceImpl.class);
@@ -22,7 +21,6 @@ class MessageReceivedServiceImplTest {
 
     private final MessageReceivedServiceImpl messageReceivedService = new MessageReceivedServiceImpl(
             competitionService,
-            playerService,
             betService,
             fixtureService,
             previousFixtureService,

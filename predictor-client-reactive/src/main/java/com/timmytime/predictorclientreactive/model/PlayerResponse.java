@@ -26,6 +26,12 @@ public class PlayerResponse implements Serializable {
     private Integer yellowCards;
     private Integer saves;
 
+    //this is for recent form...
+    private Double hardmanRed;
+    private Double hardmanYellow;
+    private Double marksman;
+    private Double wizard;
+
 
     private Double fantasyEventScore; //saves time.  also should use this for the mobile
     private String fantasyEventKey; //saves time.  also should use this for the mobile
@@ -34,4 +40,26 @@ public class PlayerResponse implements Serializable {
     private List<FantasyResponse> fantasyResponse = new ArrayList<>();
     private List<FantasyEvent> averages = new ArrayList<>();
 
+    public PlayerResponse(PlayerResponse playerResponse, FantasyEvent fantasyEvent){
+        this.label = playerResponse.getLabel();
+        this.id = playerResponse.getId();
+        this.currentTeam = playerResponse.getCurrentTeam();
+        this.appearances = playerResponse.getAppearances();
+        this.goals = playerResponse.getGoals();
+        this.assists = playerResponse.getAssists();
+        this.redCards = playerResponse.getRedCards();
+        this.yellowCards = playerResponse.getYellowCards();
+        this.saves = playerResponse.getSaves();
+        this.hardmanRed = playerResponse.getHardmanRed();
+        this.hardmanYellow = playerResponse.getHardmanYellow();
+        this.marksman = playerResponse.getMarksman();
+        this.wizard = playerResponse.getWizard();
+        this.averages = playerResponse.getAverages();
+
+        this.fantasyEventScore = fantasyEvent.getFantasyEventScore();
+        this.fantasyEventKey = fantasyEvent.getFantasyEventKey();
+
+
+        this.fantasyResponse = playerResponse.getFantasyResponse();
+    }
 }

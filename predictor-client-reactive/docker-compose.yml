@@ -1,0 +1,22 @@
+version: '3'
+services:
+ data:
+    image: timmytime/predictor-client-reactive:latest
+    container_name: predictor-client-reactive
+    environment:
+     - "SPRING_PROFILES_ACTIVE=prod"
+    ports:
+     - "8100:8100"
+    networks:
+     predictornet:
+      ipv4_address: 172.22.0.20
+networks:
+  predictornet:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "false"
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.22.0.0/16
+ 

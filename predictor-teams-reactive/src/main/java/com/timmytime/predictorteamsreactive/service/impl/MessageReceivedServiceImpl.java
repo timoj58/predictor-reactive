@@ -71,7 +71,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                                 playersHost+"/message",
                                 createMessage(msg.getCountry().toUpperCase(), "DATA_LOADED")
                         );
-                        trainingService.train(trainingHistoryService.find(Training.TRAIN_RESULTS, msg.getCountry()));
+                        trainingService.train(trainingHistoryService.find(Training.TRAIN_RESULTS, msg.getCountry()), Boolean.FALSE);
                     }
                 }
         ).thenEmpty(Mono.empty());
@@ -86,13 +86,14 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         return Mono.just(
                 trainingHistoryService.find(id)
         ).doOnNext(history -> {
-                if(!trainingService.train(history)){
+                if(!trainingService.train(history, Boolean.FALSE)){
                     switch (history.getType()){
                         case TRAIN_RESULTS:
                             //we start training goals..
                             log.info("now training goals for {}", history.getCountry());
                             trainingService.train(
-                                    trainingService.init(Training.TRAIN_GOALS, history.getCountry())
+                                    trainingService.init(Training.TRAIN_GOALS, history.getCountry()),
+                                    Boolean.TRUE
                             );
                             break;
                         case TRAIN_GOALS:

@@ -10,7 +10,9 @@ import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
@@ -34,7 +36,7 @@ class FixtureServiceImplTest {
     public void loadTest() throws InterruptedException {
 
         Event event = new Event();
-        event.setDate(LocalDateTime.now());
+        event.setDate(LocalDate.parse("12-08-2020", DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay());
         event.setAway(UUID.randomUUID());
         event.setHome(UUID.randomUUID());
 
@@ -49,7 +51,7 @@ class FixtureServiceImplTest {
                 .collect(Collectors.toList())
                 .stream()
                 .forEach(c ->
-                        when(webClientFacade.getEvents("/events/" + c)).thenReturn(Flux.fromStream(Arrays.asList(event).stream())));
+                        when(webClientFacade.getUpcomingEvents("/events/" + c)).thenReturn(Flux.fromStream(Arrays.asList(event).stream())));
 
 
 

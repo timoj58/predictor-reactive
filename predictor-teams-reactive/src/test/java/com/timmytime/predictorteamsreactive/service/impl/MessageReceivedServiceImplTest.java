@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.mockito.Mockito.*;
@@ -78,7 +80,7 @@ class MessageReceivedServiceImplTest {
         trainingHistory.setType(Training.TRAIN_GOALS);
 
         when(trainingHistoryService.find(any(UUID.class))).thenReturn(trainingHistory);
-        when(trainingService.train(any())).thenReturn(Boolean.FALSE);
+        when(trainingService.train(any(), any())).thenReturn(Boolean.FALSE);
 
         messageReceivedService.training(UUID.randomUUID()).subscribe();
 
@@ -92,7 +94,7 @@ class MessageReceivedServiceImplTest {
     public void trainingNotFinishedTest() throws InterruptedException {
 
         when(trainingHistoryService.find(any(UUID.class))).thenReturn(new TrainingHistory());
-        when(trainingService.train(any())).thenReturn(Boolean.TRUE);
+        when(trainingService.train(any(), any())).thenReturn(Boolean.TRUE);
 
         messageReceivedService.training(UUID.randomUUID()).subscribe();
 

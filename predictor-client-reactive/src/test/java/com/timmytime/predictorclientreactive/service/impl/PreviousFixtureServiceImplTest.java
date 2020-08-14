@@ -48,7 +48,7 @@ class PreviousFixtureServiceImplTest {
                .collect(Collectors.toList())
                .stream()
                .forEach(c ->
-                       when(webClientFacade.getPreviousEvents("/previous-events/"+c))
+                       when(webClientFacade.getPreviousEventOutcomes("/previous-events/"+c))
                                .thenReturn(Flux.fromStream(get.get().stream()
                                )));
 

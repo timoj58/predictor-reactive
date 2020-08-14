@@ -1,6 +1,7 @@
 package com.timmytime.predictoreventsreactive.service;
 
 import com.timmytime.predictoreventsreactive.model.EventOutcome;
+import org.springframework.web.bind.annotation.PathVariable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -11,4 +12,6 @@ public interface EventOutcomeService {
     Mono<EventOutcome> find(UUID id);
     Flux<EventOutcome> toValidate(String country);
     Flux<EventOutcome> lastEvents(String country);
+    Flux<EventOutcome> previousEvents(@PathVariable String competition);
+    Flux<EventOutcome> currentEvents(@PathVariable String competition);
 }

@@ -82,15 +82,17 @@ public class TrainingServiceImpl implements TrainingService {
 
     }
 
+    /*
+      TODO need to seperate evaluation training, and normal training
+     */
+
     @Override
-    public Boolean train(TrainingHistory trainingHistory) {
+    public Boolean train(TrainingHistory trainingHistory, Boolean init) {
+       //NEED to tidy all of this up given various states (goals/results and evaluation mode etc)
+        if (init || trainingHistory.getToDate().isBefore(LocalDate.now().atStartOfDay())) {
 
-        trainingHistory.setCompleted(Boolean.TRUE);
-        trainingHistoryService.save(trainingHistory);
-
-        if (trainingHistory.getToDate().isBefore(LocalDate.now().atStartOfDay())) {
-
-            TrainingHistory next = trainingHistoryService.save(
+            TrainingHistory next = init ? trainingHistory :
+                    trainingHistoryService.save(
                         new TrainingHistory(
                                 trainingHistory.getType(),
                                 trainingHistory.getCountry(),
@@ -104,7 +106,8 @@ public class TrainingServiceImpl implements TrainingService {
                 //and also need to load our next section....
                 webClientFacade.getMatches(
                         dataHost + "/match/country/" + trainingHistory.getCountry()
-                                + "/" + next.getFromDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                                //note: minus 1 months due to getting out of synch with goals.  can remove at some point.
+                                + "/" + next.getFromDate().toLocalDate().minusMonths(1).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
                                 + "/" +
                                 (evaluateMode ?
                                         next.getToDate().toLocalDate().plusYears(interval).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
@@ -121,6 +124,9 @@ public class TrainingServiceImpl implements TrainingService {
 
         } else {
             log.info("we have completed {} - {}", trainingHistory.getCountry(), trainingHistory.getType());
+            trainingHistory.setCompleted(Boolean.TRUE);
+            trainingHistoryService.save(trainingHistory);
+
             return Boolean.FALSE;
         }
 

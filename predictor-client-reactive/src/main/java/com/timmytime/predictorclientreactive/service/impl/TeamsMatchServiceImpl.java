@@ -39,8 +39,8 @@ public class TeamsMatchServiceImpl implements ILoadService {
 
     @Autowired
     public TeamsMatchServiceImpl(
-            @Value("${}") String eventsHost,
-            @Value("${}") Integer delay,
+            @Value("${event.host}") String eventsHost,
+            @Value("${delay}") Integer delay,
             WebClientFacade webClientFacade,
             S3Facade s3Facade,
             TeamService teamService,
@@ -84,7 +84,7 @@ public class TeamsMatchServiceImpl implements ILoadService {
                     .stream()
                     .forEach(event -> {
                         try{
-                        s3Facade.put("upcoming-events/"+event.getHome().getId()+"/"+event.getAway().getId(),
+                        s3Facade.put("upcoming-events/"+competition+"/"+event.getHome().getId()+"/"+event.getAway().getId(),
                                 new ObjectMapper().writeValueAsString(
                                         event
                                 ));

@@ -56,7 +56,7 @@ class TrainingServiceImplTest {
     @Test
     public void trainingFinishedTest(){
 
-        trainingService.train(new TrainingHistory(Training.TRAIN_RESULTS, "test", LocalDateTime.now(), LocalDateTime.now()));
+        trainingService.train(new TrainingHistory(Training.TRAIN_RESULTS, "test", LocalDateTime.now(), LocalDateTime.now()), Boolean.FALSE);
 
         verify(webClientFacade, never()).getMatches(anyString());
 

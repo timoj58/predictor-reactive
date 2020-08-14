@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 @Service("eventOutcomeService")
@@ -44,6 +45,20 @@ public class EventOutcomeServiceImpl implements EventOutcomeService {
     public Flux<EventOutcome> lastEvents(String country) {
         return eventOutcomeRepo.findByCompetitionInAndPreviousEventTrue(
                 CountryCompetitions.valueOf(country.toUpperCase()).getCompetitions()
+        );
+    }
+
+    @Override
+    public Flux<EventOutcome> previousEvents(String competition) {
+        return eventOutcomeRepo.findByCompetitionInAndPreviousEventTrue(
+                Arrays.asList(competition)
+        );
+    }
+
+    @Override
+    public Flux<EventOutcome> currentEvents(String competition) {
+        return eventOutcomeRepo.findByCompetitionInAndSuccessNull(
+                Arrays.asList(competition)
         );
     }
 }

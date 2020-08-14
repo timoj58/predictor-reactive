@@ -52,7 +52,7 @@ public class PlayersMatchServiceImpl implements ILoadService {
 
     @Autowired
     public PlayersMatchServiceImpl(
-            @Value("${}") Integer delay,
+            @Value("${delay}") Integer delay,
             S3Facade s3Facade,
             WebClientFacade webClientFacade,
             ShutdownService shutdownService

@@ -32,10 +32,10 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
             TeamsMatchServiceImpl teamsMatchService
     ){
         this.loaders.add(competitionService);
-        this.loaders.add(betService);
+       // this.loaders.add(betService);
         this.loaders.add(fixtureService);
         this.loaders.add(previousFixtureService);
-        this.loaders.add(matchService);
+       // this.loaders.add(matchService);
         this.loaders.add(teamsMatchService);
 
         Arrays.asList(
@@ -60,6 +60,12 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                 }
         ).thenEmpty(Mono.empty());
 
+    }
+
+    @Override
+    public Mono<Void> test() {
+        load();
+        return Mono.empty();
     }
 
     private void load(){

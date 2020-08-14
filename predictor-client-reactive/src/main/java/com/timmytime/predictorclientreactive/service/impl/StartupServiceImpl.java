@@ -33,9 +33,10 @@ public class StartupServiceImpl implements StartupService {
         this.webClientFacade = webClientFacade;
     }
 
+    //TODO
 
     @Override
-    @PostConstruct
+   // @PostConstruct
     public void start() throws InterruptedException {
         lambdaFacade.invoke(LambdaFunctions.INIT.getFunctionName());
         Thread.sleep(Duration.ofMinutes(3).toMillis());
