@@ -36,8 +36,6 @@ public class PlayersMatchServiceImpl implements ILoadService {
     private final Integer delay;
 
     private final Map<Competition, List<MatchSelectionsResponse>> byCompetition = new HashMap<>();
-
-
     private final MatchSelectionResponseTransformer matchSelectionResponseTransformer = new MatchSelectionResponseTransformer();
 
     private BiFunction<List<MatchSelectionsResponse>, FantasyEventTypes, List<PlayerResponse>> process = (matchSelectionsResponses, fantasyEventTypes) ->
@@ -126,13 +124,6 @@ public class PlayersMatchServiceImpl implements ILoadService {
                 });
 
         saveTopSelections(competition);
-        byCompetition.remove(competition);
-
-        if (byCompetition.keySet().isEmpty()) {
-            log.info("completed all competitions");
-            shutdownService.receive(TeamsMatchServiceImpl.class.getName());
-        }
-
     }
 
     private void saveTopSelections(Competition competition) {
@@ -159,6 +150,14 @@ public class PlayersMatchServiceImpl implements ILoadService {
                 log.error("json", e);
             }
         });
+
+        byCompetition.remove(competition);
+
+        if (byCompetition.keySet().isEmpty()) {
+            log.info("completed all competitions");
+            shutdownService.receive(TeamsMatchServiceImpl.class.getName());
+        }
+
 
     }
 

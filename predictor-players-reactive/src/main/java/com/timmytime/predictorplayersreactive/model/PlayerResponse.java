@@ -41,27 +41,4 @@ public class PlayerResponse implements Serializable {
 
     private List<FantasyEvent> averages = new ArrayList<>();
 
-    public PlayerResponse(PlayerResponse playerResponse, FantasyEvent fantasyEvent){
-        this.label = playerResponse.getLabel();
-        this.id = playerResponse.getId();
-        this.currentTeam = playerResponse.getCurrentTeam();
-        this.appearances = playerResponse.getAppearances();
-        this.goals = playerResponse.getGoals();
-        this.assists = playerResponse.getAssists();
-        this.redCards = playerResponse.getRedCards();
-        this.yellowCards = playerResponse.getYellowCards();
-        this.saves = playerResponse.getSaves();
-        this.hardmanRed = playerResponse.getHardmanRed();
-        this.hardmanYellow = playerResponse.getHardmanYellow();
-        this.marksman = playerResponse.getMarksman();
-        this.wizard = playerResponse.getWizard();
-        this.averages = playerResponse.getAverages();
-
-        this.fantasyEventScore = fantasyEvent.getFantasyEventScore();
-        this.fantasyEventKey = fantasyEvent.getFantasyEventKey();
-
-
-        this.fantasyResponse = playerResponse.getFantasyResponse();
-    }
-
 }

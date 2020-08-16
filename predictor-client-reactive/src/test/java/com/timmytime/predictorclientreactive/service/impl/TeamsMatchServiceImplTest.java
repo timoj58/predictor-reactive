@@ -7,6 +7,7 @@ import com.timmytime.predictorclientreactive.model.Team;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import com.timmytime.predictorclientreactive.service.TeamService;
 import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.*;
 
+@Disabled
 class TeamsMatchServiceImplTest {
 
     WebClientFacade webClientFacade = mock(WebClientFacade.class);

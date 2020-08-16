@@ -35,6 +35,16 @@ public class WebClientFacade {
                 .bodyToFlux(EventOutcome.class);
     }
 
+    public Flux<EventOutcome> getPreviousEventOutcomesByTeam(
+            String url
+    ) {
+        return WebClient.builder().build()
+                .get()
+                .uri(url)
+                .retrieve()
+                .bodyToFlux(EventOutcome.class);
+    }
+
     public Flux<EventOutcome> getUpcomingEventOutcomes(
             String url
     ) {
@@ -68,7 +78,11 @@ public class WebClientFacade {
     }
 
     public Mono<PlayerResponse> getPlayer(String url){
-        return null;
+        return WebClient.builder().build()
+                .get()
+                .uri(url)
+                .retrieve()
+                .bodyToMono(PlayerResponse.class);
     }
 
 }

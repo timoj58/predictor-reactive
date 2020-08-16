@@ -75,6 +75,11 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
+    public Player get(UUID id) {
+        return get().stream().filter(f -> f.getId().equals(id)).findFirst().get();
+    }
+
+    @Override
     public List<Player> get() {
         return players.values()
                 .stream()

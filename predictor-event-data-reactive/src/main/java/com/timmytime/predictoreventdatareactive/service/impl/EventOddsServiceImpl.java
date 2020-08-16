@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -38,7 +39,7 @@ public class EventOddsServiceImpl implements EventOddsService {
 
     @Override
     public Mono<Void> delete(Providers providers) {
-        return eventOddsRepo.deleteByProvider(providers.name());
+        return eventOddsRepo.deleteByProviderAndEventDateBefore(providers.name(), LocalDate.now().atStartOfDay());
     }
 
     @Override

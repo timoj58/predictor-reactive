@@ -62,10 +62,7 @@ public class PredictionServiceImpl implements PredictionService {
                              processPlayers(competition.name().toLowerCase(), event.getDate(), event.getAway(), event.getHome(), Boolean.FALSE);
                         })
         )
-        .doFinally(finish -> Mono.just(
-                country
-        ).delayElement(Duration.ofMinutes(5))  // TODO review.  probably best to delay it a bit.
-        .subscribe(key -> playerResponseService.load(key)))
+        .doFinally(finish -> {})  //TODO
         .subscribe();
 
     }
@@ -74,11 +71,14 @@ public class PredictionServiceImpl implements PredictionService {
     public void result(UUID id, JSONObject result) {
         fantasyOutcomeService.find(id)
                 .subscribe(fantasyOutcome -> {
+                    fantasyOutcome.setCurrent(Boolean.TRUE);
                     fantasyOutcome.setPrediction(
                             normalize(result).toString()
                     );
 
-                    fantasyOutcomeService.save(fantasyOutcome).subscribe();
+                    fantasyOutcomeService.save(fantasyOutcome).subscribe(
+                            outcome -> playerResponseService.addResult(outcome)
+                    );
                 });
 
     }

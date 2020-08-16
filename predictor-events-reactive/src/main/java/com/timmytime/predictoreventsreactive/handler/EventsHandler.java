@@ -8,6 +8,8 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 
 @Component
 public class EventsHandler {
@@ -35,6 +37,15 @@ public class EventsHandler {
         return ServerResponse.ok().body(
                 eventOutcomeService.previousEvents(
                         request.pathVariable("competition")),
+                EventOutcome.class
+        );
+    }
+
+    public Mono<ServerResponse> previousEventsByTeam(ServerRequest request) {
+
+        return ServerResponse.ok().body(
+                eventOutcomeService.previousEventsByTeam(
+                        UUID.fromString(request.pathVariable("team"))),
                 EventOutcome.class
         );
     }

@@ -3,10 +3,7 @@ package com.timmytime.predictorplayersreactive.service.impl;
 import com.timmytime.predictorplayersreactive.model.Event;
 import com.timmytime.predictorplayersreactive.model.FantasyOutcome;
 import com.timmytime.predictorplayersreactive.model.Player;
-import com.timmytime.predictorplayersreactive.service.EventsService;
-import com.timmytime.predictorplayersreactive.service.FantasyOutcomeService;
-import com.timmytime.predictorplayersreactive.service.PlayerService;
-import com.timmytime.predictorplayersreactive.service.TensorflowPredictionService;
+import com.timmytime.predictorplayersreactive.service.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
@@ -23,11 +20,12 @@ class PredictionServiceImplTest {
     private static final FantasyOutcomeService fantasyEventOutcomeService = mock(FantasyOutcomeService.class);
     private static final EventsService eventsService = mock(EventsService.class);
     private static final PlayerService playerService = mock(PlayerService.class);
+    private static final PlayerResponseService playerResponseService = mock(PlayerResponseService.class);
     private static final TensorflowPredictionService tensorflowPredictionService = mock(TensorflowPredictionService.class);
 
     private final PredictionServiceImpl predictionService
             = new PredictionServiceImpl(
-                    eventsService, playerService, tensorflowPredictionService, fantasyEventOutcomeService
+                    eventsService, playerService, playerResponseService, tensorflowPredictionService, fantasyEventOutcomeService
     );
 
     @BeforeAll

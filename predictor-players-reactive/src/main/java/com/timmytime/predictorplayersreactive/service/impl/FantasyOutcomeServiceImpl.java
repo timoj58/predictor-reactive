@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -32,5 +33,22 @@ public class FantasyOutcomeServiceImpl implements FantasyOutcomeService {
     public Mono<FantasyOutcome> find(UUID id) {
         return fantasyOutcomeRepo.findById(id);
     }
+
+    @Override
+    public Flux<FantasyOutcome> findByPlayer(UUID id) {
+        return fantasyOutcomeRepo.findByPlayerId(id);
+    }
+
+   //TODO @PostConstruct
+    private void init(){
+        //no longer validating for now, so simply turn them all off when rebooting system.
+        //but not until its live.  need data for now ;)
+        fantasyOutcomeRepo.findByCurrent(Boolean.TRUE)
+                .subscribe(outcome -> {
+                    outcome.setCurrent(Boolean.FALSE);
+                    fantasyOutcomeRepo.save(outcome).subscribe();
+                });
+    }
+
 
 }

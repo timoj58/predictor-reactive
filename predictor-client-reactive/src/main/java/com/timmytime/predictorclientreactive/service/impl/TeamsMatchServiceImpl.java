@@ -10,6 +10,8 @@ import com.timmytime.predictorclientreactive.service.ILoadService;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import com.timmytime.predictorclientreactive.service.TeamService;
 import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,7 +86,7 @@ public class TeamsMatchServiceImpl implements ILoadService {
                     .stream()
                     .forEach(event -> {
                         try{
-                        s3Facade.put("upcoming-events/"+competition+"/"+event.getHome().getId()+"/"+event.getAway().getId(),
+                        s3Facade.put("upcoming-events/"+competition+"/"+event.getHome().getId()+"/"+event.getAway().getId()+"/"+event.getEventType(),
                                 new ObjectMapper().writeValueAsString(
                                         event
                                 ));
@@ -105,6 +107,16 @@ public class TeamsMatchServiceImpl implements ILoadService {
 
 
     private EventOutcomeResponse transform(EventOutcome event){
+
+            //legacy stuff.
+            try{
+                JSONObject json = new JSONObject(event.getPrediction());
+            }catch (Exception e){
+                event.setPrediction(
+                        new JSONObject().put("result", new JSONArray(event.getPrediction()))
+                        .toString()
+                );
+            }
 
             EventOutcomeResponse eventOutcomeResponse = new EventOutcomeResponse(event);
             eventOutcomeResponse.setHome(teamService.getTeam(event.getCountry(), event.getHome()));

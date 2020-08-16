@@ -5,10 +5,7 @@ import com.timmytime.predictorplayersreactive.model.LineupPlayer;
 import com.timmytime.predictorplayersreactive.model.Player;
 import com.timmytime.predictorplayersreactive.model.PlayerMatch;
 import com.timmytime.predictorplayersreactive.model.PlayersTrainingHistory;
-import com.timmytime.predictorplayersreactive.service.PlayerMatchService;
-import com.timmytime.predictorplayersreactive.service.PlayerService;
-import com.timmytime.predictorplayersreactive.service.PlayersTrainingHistoryService;
-import com.timmytime.predictorplayersreactive.service.TensorflowTrainingService;
+import com.timmytime.predictorplayersreactive.service.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
@@ -28,6 +25,7 @@ class TrainingServiceImplTest {
     PlayersTrainingHistoryService playersTrainingHistoryService = mock(PlayersTrainingHistoryService.class);
     TensorflowTrainingService tensorflowTrainingService = mock(TensorflowTrainingService.class);
     PlayerMatchService playerMatchService = mock(PlayerMatchService.class);
+    TensorflowDataService tensorflowDataService = mock(TensorflowDataService.class);
 
     private TrainingServiceImpl trainingService
             = new TrainingServiceImpl(
@@ -36,7 +34,8 @@ class TrainingServiceImplTest {
             playerService,
             playersTrainingHistoryService,
             tensorflowTrainingService,
-            playerMatchService);
+            playerMatchService,
+            tensorflowDataService);
 
     @Test
     public void justTrainTest()  {
@@ -49,7 +48,7 @@ class TrainingServiceImplTest {
 
         trainingService.train(playersTrainingHistory);
 
-        verify(playerMatchService, never()).create(any(), any(), any());
+        verify(playerMatchService, never()).create(any(), any(), any(), any());
         verify(tensorflowTrainingService, atLeastOnce()).train(any());
 
     }
@@ -70,7 +69,7 @@ class TrainingServiceImplTest {
         Thread.sleep(1000L);
 
         verify(playerService, atLeastOnce()).get();
-        verify(playerMatchService, atLeastOnce()).create(any(), any(), any());
+        verify(playerMatchService, atLeastOnce()).create(any(), any(), any(), any());
 
         verify(tensorflowTrainingService, atLeastOnce()).train(any());
 

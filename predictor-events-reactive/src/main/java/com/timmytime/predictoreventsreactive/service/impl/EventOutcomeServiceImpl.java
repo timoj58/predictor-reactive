@@ -61,4 +61,12 @@ public class EventOutcomeServiceImpl implements EventOutcomeService {
                 Arrays.asList(competition)
         );
     }
+
+    @Override
+    public Flux<EventOutcome> previousEventsByTeam(UUID team) {
+        return Flux.concat(
+                eventOutcomeRepo.findByHomeOrderByDateDesc(team).take(6),
+                eventOutcomeRepo.findByAwayOrderByDateDesc(team).take(6)
+        );
+    }
 }

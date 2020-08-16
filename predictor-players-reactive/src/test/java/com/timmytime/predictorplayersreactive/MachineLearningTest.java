@@ -4,10 +4,8 @@ import com.timmytime.predictorplayersreactive.facade.WebClientFacade;
 import com.timmytime.predictorplayersreactive.model.Event;
 import com.timmytime.predictorplayersreactive.model.FantasyOutcome;
 import com.timmytime.predictorplayersreactive.model.Player;
-import com.timmytime.predictorplayersreactive.service.EventsService;
-import com.timmytime.predictorplayersreactive.service.FantasyOutcomeService;
-import com.timmytime.predictorplayersreactive.service.PlayerService;
-import com.timmytime.predictorplayersreactive.service.TensorflowPredictionService;
+import com.timmytime.predictorplayersreactive.model.PlayerResponse;
+import com.timmytime.predictorplayersreactive.service.*;
 import com.timmytime.predictorplayersreactive.service.impl.PlayerServiceImpl;
 import com.timmytime.predictorplayersreactive.service.impl.PredictionServiceImpl;
 import com.timmytime.predictorplayersreactive.service.impl.TensorflowPredictionServiceImpl;
@@ -31,6 +29,7 @@ public class MachineLearningTest {
 
     private static final FantasyOutcomeService fantasyEventOutcomeService = mock(FantasyOutcomeService.class);
     private static final EventsService eventsService = mock(EventsService.class);
+    private static final PlayerResponseService playerResponseService = mock(PlayerResponseService.class);
     private static final PlayerService playerService = new PlayerServiceImpl("http://localhost:8092", new WebClientFacade());
     private static final TensorflowPredictionService tensorflowPredictionService =
             new TensorflowPredictionServiceImpl(
@@ -51,6 +50,7 @@ public class MachineLearningTest {
             = new PredictionServiceImpl(
                     eventsService,
             playerService,
+            playerResponseService,
             tensorflowPredictionService,
             fantasyEventOutcomeService
     );

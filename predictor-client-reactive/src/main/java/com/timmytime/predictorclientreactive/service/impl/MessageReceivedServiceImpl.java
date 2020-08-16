@@ -29,7 +29,8 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
             FixtureServiceImpl fixtureService,
             PreviousFixtureServiceImpl previousFixtureService,
             PlayersMatchServiceImpl matchService,
-            TeamsMatchServiceImpl teamsMatchService
+            TeamsMatchServiceImpl teamsMatchService,
+            PreviousOutcomesServiceImpl previousOutcomesService
     ){
         this.loaders.add(competitionService);
        // this.loaders.add(betService);
@@ -37,6 +38,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         this.loaders.add(previousFixtureService);
        // this.loaders.add(matchService);
         this.loaders.add(teamsMatchService);
+        this.loaders.add(previousOutcomesService);
 
         Arrays.asList(
                 CountryCompetitions.values()

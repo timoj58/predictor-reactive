@@ -7,6 +7,7 @@ import com.timmytime.predictorclientreactive.model.Match;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import com.timmytime.predictorclientreactive.service.TeamService;
 import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+@Disabled
 class PreviousFixtureServiceImplTest {
 
     private final S3Facade s3Facade = mock(S3Facade.class);

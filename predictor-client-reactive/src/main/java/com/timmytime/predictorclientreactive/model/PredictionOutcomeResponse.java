@@ -17,13 +17,4 @@ public class PredictionOutcomeResponse {
     private String score;
 
 
-    public PredictionOutcomeResponse(PredictionOutcomeCacheResponse predictionOutcomeCacheResponse) {
-        this.eventDate = predictionOutcomeCacheResponse.getEventDate();
-        this.home = predictionOutcomeCacheResponse.getHome();
-        this.away = predictionOutcomeCacheResponse.getAway();
-        this.outcome = predictionOutcomeCacheResponse.getOutcome();
-        this.score = predictionOutcomeCacheResponse.getScore();
-        this.predictions = predictionOutcomeCacheResponse.getPredictions();
-    }
-
 }

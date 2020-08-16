@@ -12,6 +12,7 @@ public interface PlayerService {
     void load();
     List<Player> get(String competition);
     List<Player> get(String competition, UUID team);
+    Player get(UUID id);
     List<Player> get();
     Flux<Player> byMatch(
             @PathVariable String competition,

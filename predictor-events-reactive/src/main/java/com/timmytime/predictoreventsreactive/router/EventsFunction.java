@@ -30,4 +30,11 @@ public class EventsFunction {
         return route(RequestPredicates.GET("/previous-events/{competition}")
                 , eventsHandler::previousEvents);
     }
+
+    @Bean
+    @RouterOperation(beanClass = EventOutcomeService.class, beanMethod = "previousEventsByTeam")
+    RouterFunction<ServerResponse> previousEventsByTeam(EventsHandler eventsHandler) {
+        return route(RequestPredicates.GET("/previous-events-by-team/{team}")
+                , eventsHandler::previousEventsByTeam);
+    }
 }

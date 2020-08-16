@@ -18,6 +18,7 @@ class MessageReceivedServiceImplTest {
     PreviousFixtureServiceImpl previousFixtureService = mock(PreviousFixtureServiceImpl.class);
     PlayersMatchServiceImpl matchService = mock(PlayersMatchServiceImpl.class);
     TeamsMatchServiceImpl teamsMatchService = mock(TeamsMatchServiceImpl.class);
+    PreviousOutcomesServiceImpl previousOutcomesService = mock(PreviousOutcomesServiceImpl.class);
 
     private final MessageReceivedServiceImpl messageReceivedService = new MessageReceivedServiceImpl(
             competitionService,
@@ -25,7 +26,8 @@ class MessageReceivedServiceImplTest {
             fixtureService,
             previousFixtureService,
             matchService,
-            teamsMatchService
+            teamsMatchService,
+            previousOutcomesService
     );
 
     @Test

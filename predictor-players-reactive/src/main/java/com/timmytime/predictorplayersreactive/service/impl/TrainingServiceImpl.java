@@ -32,6 +32,7 @@ public class TrainingServiceImpl implements TrainingService {
     private final PlayersTrainingHistoryService playersTrainingHistoryService;
     private final TensorflowTrainingService tensorflowTrainingService;
     private final PlayerMatchService playerMatchService;
+    private final TensorflowDataService tensorflowDataService;
 
     private final Integer interval;
     private final Integer playerDelay;
@@ -46,7 +47,8 @@ public class TrainingServiceImpl implements TrainingService {
             PlayerService playerService,
             PlayersTrainingHistoryService playersTrainingHistoryService,
             TensorflowTrainingService tensorflowTrainingService,
-            PlayerMatchService playerMatchService
+            PlayerMatchService playerMatchService,
+            TensorflowDataService tensorflowDataService
     ){
         this.interval = interval;
         this.playerDelay = playerDelay;
@@ -54,6 +56,7 @@ public class TrainingServiceImpl implements TrainingService {
         this.playersTrainingHistoryService = playersTrainingHistoryService;
         this.tensorflowTrainingService = tensorflowTrainingService;
         this.playerMatchService = playerMatchService;
+        this.tensorflowDataService = tensorflowDataService;
 
         toTrain = Arrays.asList(
                 FantasyEventTypes.values()
@@ -94,7 +97,8 @@ public class TrainingServiceImpl implements TrainingService {
                                     .doOnNext(player -> playerMatchService.create(
                                             player.getId(),
                                             fromDate,
-                                            toDate))
+                                            toDate,
+                                            (data) -> tensorflowDataService.load(data)))
                             .doFinally(train ->
                                     Mono.just(trainingHistory.getId())
                                     .delayElement(Duration.ofMinutes(interval))
@@ -115,7 +119,7 @@ public class TrainingServiceImpl implements TrainingService {
         playersTrainingHistory.setCompleted(Boolean.TRUE);
         playersTrainingHistoryService.save(playersTrainingHistory)
                 .subscribe(history -> {
-                    playerMatchService.clear();
+                    tensorflowDataService.clear();
                     if(playersTrainingHistory.getToDate().isBefore(LocalDate.now().atStartOfDay())){
                         train(history.getType());
                     }else {

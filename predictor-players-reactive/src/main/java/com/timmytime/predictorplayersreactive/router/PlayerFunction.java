@@ -18,7 +18,7 @@ public class PlayerFunction {
     @Bean
     @RouterOperation(beanClass = PlayerService.class, beanMethod = "byMatch")
     RouterFunction<ServerResponse> getPlayers(PlayerHandler playerHandler) {
-        return route(RequestPredicates.GET("/players/{competition}")
+        return route(RequestPredicates.GET("/players/match/{competition}")
                 , playerHandler::getPlayers);
     }
 

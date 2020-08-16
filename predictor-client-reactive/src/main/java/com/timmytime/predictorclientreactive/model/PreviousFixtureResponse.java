@@ -22,9 +22,7 @@ public class PreviousFixtureResponse implements Serializable {
     private Integer homeScore;
     private Integer awayScore;
 
-    private String predictions;
-    private String eventType;
-    private Boolean success;
+    private List<PreviousFixtureOutcome> previousFixtureOutcomes = new ArrayList<>();
 
     public PreviousFixtureResponse withScore(Match match){
 

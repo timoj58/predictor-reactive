@@ -16,28 +16,28 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 @Service("playerMatchService")
 public class PlayerMatchServiceImpl implements PlayerMatchService {
 
     private final Logger log = LoggerFactory.getLogger(PlayerMatchServiceImpl.class);
 
-    private final TensorflowDataService tensorflowDataService;
     private final WebClientFacade webClientFacade;
     private final String dataHost;
 
     @Autowired
     public PlayerMatchServiceImpl(
             @Value("${data.host}") String dataHost,
-            TensorflowDataService tensorflowDataService,
             WebClientFacade webClientFacade
     ) {
         this.dataHost = dataHost;
-        this.tensorflowDataService = tensorflowDataService;
         this.webClientFacade = webClientFacade;
     }
 
@@ -63,7 +63,8 @@ public class PlayerMatchServiceImpl implements PlayerMatchService {
     public void create(
             UUID player,
             String fromDate,
-            String toDate) {
+            String toDate,
+            Consumer<PlayerMatch> consumer) {
 
         log.info("creating {}", player);
 
@@ -89,7 +90,7 @@ public class PlayerMatchServiceImpl implements PlayerMatchService {
                                             getStats(match.getId(), player)
                                                     .doOnNext(stat -> playerMatch.getStats().add(stat))
                                                     .doFinally(save ->
-                                                            tensorflowDataService.load(playerMatch)
+                                                            consumer.accept(playerMatch)
                                                     )
                                                     .subscribe();
                                         }
@@ -97,9 +98,5 @@ public class PlayerMatchServiceImpl implements PlayerMatchService {
                 );
     }
 
-    @Override
-    public void clear() {
-        log.info("clearing data");
-        tensorflowDataService.clear();
-    }
+
 }

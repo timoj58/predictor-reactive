@@ -14,4 +14,5 @@ public interface EventOutcomeService {
     Flux<EventOutcome> lastEvents(String country);
     Flux<EventOutcome> previousEvents(@PathVariable String competition);
     Flux<EventOutcome> currentEvents(@PathVariable String competition);
+    Flux<EventOutcome> previousEventsByTeam(@PathVariable UUID team);
 }

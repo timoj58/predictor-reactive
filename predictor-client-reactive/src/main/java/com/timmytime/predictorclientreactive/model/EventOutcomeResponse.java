@@ -3,6 +3,8 @@ package com.timmytime.predictorclientreactive.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import netscape.javascript.JSObject;
+import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -25,6 +27,7 @@ public class EventOutcomeResponse implements Serializable {
     private String predictions;
 
     public EventOutcomeResponse(EventOutcome eventOutcome) {
+        ///the fucking mess from before.  this is to get mobile working again...
         this.predictions = eventOutcome.getPrediction();
         this.eventDate = eventOutcome.getDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         this.eventType = eventOutcome.getEventType();

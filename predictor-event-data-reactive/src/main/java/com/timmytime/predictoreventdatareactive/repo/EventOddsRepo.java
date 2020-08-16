@@ -14,7 +14,7 @@ import java.util.UUID;
 @Repository
 public interface EventOddsRepo extends ReactiveMongoRepository<EventOdds, UUID> {
 
-    Mono<Void> deleteByProvider(String provider);
+    Mono<Void> deleteByProviderAndEventDateBefore(String provider, LocalDateTime date);
 
     Flux<EventOdds> findByCompetition(String competition);
 

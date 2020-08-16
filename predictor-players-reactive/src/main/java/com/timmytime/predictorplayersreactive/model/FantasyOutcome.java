@@ -23,5 +23,6 @@ public class FantasyOutcome {
     private String home;
     private UUID opponent;
     private LocalDateTime eventDate;
+    private Boolean current = Boolean.FALSE;
 
 }
