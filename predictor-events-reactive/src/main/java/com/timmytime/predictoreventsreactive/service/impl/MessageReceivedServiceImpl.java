@@ -58,11 +58,14 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                     messages.get(msg.getCountry()).add(msg.getType());
 
                     if(messages.get(msg.getCountry()).containsAll(Arrays.asList(Messages.values()))){
-                        //should chain these as a pipeline, though they are not actually linked.
-                        validationService.resetLast(msg.getCountry());
-                        validationService.validate(msg.getCountry());
-                        webClientFacade.sendMessage(playersHost+"/message", createMessage(msg.getCountry()));
-                        predictionService.start(msg.getCountry());
+
+                        validationService.resetLast(msg.getCountry())
+                        .subscribe(then -> {
+                            validationService.validate(msg.getCountry());
+                            webClientFacade.sendMessage(playersHost+"/message", createMessage(msg.getCountry()));
+                            predictionService.start(msg.getCountry());
+                        });
+
                     }
 
                 }

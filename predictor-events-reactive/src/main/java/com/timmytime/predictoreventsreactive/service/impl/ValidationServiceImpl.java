@@ -2,6 +2,7 @@ package com.timmytime.predictoreventsreactive.service.impl;
 
 import com.timmytime.predictoreventsreactive.enumerator.Predictions;
 import com.timmytime.predictoreventsreactive.facade.WebClientFacade;
+import com.timmytime.predictoreventsreactive.model.Event;
 import com.timmytime.predictoreventsreactive.model.EventOutcome;
 import com.timmytime.predictoreventsreactive.model.Match;
 import com.timmytime.predictoreventsreactive.service.EventOutcomeService;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -73,10 +75,10 @@ public class ValidationServiceImpl implements ValidationService {
     }
 
     @Override
-    public void resetLast(String country) {
+    public Flux<EventOutcome> resetLast(String country) {
 
-        eventOutcomeService.lastEvents(country)
-                .subscribe(previousEvent -> {
+        return eventOutcomeService.lastEvents(country)
+                .doOnNext(previousEvent -> {
                     previousEvent.setPreviousEvent(Boolean.FALSE);
                     eventOutcomeService.save(previousEvent).subscribe();
                 });
