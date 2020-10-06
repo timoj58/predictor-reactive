@@ -51,7 +51,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
 
         return message.doOnNext(
                 msg -> {
-                    log.info("received {}", msg.getType());
+                    log.info("received {} {}", msg.getType(), msg.getCountry());
                     if(messages.containsKey(msg.getCountry().toLowerCase())) {
                         messages.get(msg.getCountry().toLowerCase()).add(msg.getType());
 
@@ -67,6 +67,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
 
     @Override
     public Mono<Void> prediction(UUID id, Mono<JsonNode> prediction) {
+        log.info("receiving prediction result for {}", id);
         return prediction.doOnNext(
                 msg ->  predictionService.result(id, new JSONObject(msg.toString()))
         ).thenEmpty(Mono.empty());

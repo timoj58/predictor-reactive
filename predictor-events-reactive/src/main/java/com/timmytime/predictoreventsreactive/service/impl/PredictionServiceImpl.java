@@ -5,6 +5,7 @@ import com.timmytime.predictoreventsreactive.enumerator.Predictions;
 import com.timmytime.predictoreventsreactive.model.EventOutcome;
 import com.timmytime.predictoreventsreactive.model.PredictionLine;
 import com.timmytime.predictoreventsreactive.request.Prediction;
+import com.timmytime.predictoreventsreactive.request.TensorflowPrediction;
 import com.timmytime.predictoreventsreactive.service.EventOutcomeService;
 import com.timmytime.predictoreventsreactive.service.EventService;
 import com.timmytime.predictoreventsreactive.service.PredictionService;
@@ -52,7 +53,7 @@ public class PredictionServiceImpl implements PredictionService {
         log.info("starting predictions for {}", country);
         Flux.fromStream(
                 CountryCompetitions.valueOf(country).getCompetitions().stream()
-        ).delayElements(Duration.ofMinutes(competitionDelay))
+        ).delayElements(Duration.ofSeconds(competitionDelay))
                 .subscribe(competition ->
                     eventService.getEvents(competition)
                             .subscribe(event ->
@@ -71,9 +72,11 @@ public class PredictionServiceImpl implements PredictionService {
                                                                     .build()
                                                     ).subscribe(eventOutcome ->
                                                             tensorflowPredictionService.predict(
-                                                                    predict,
-                                                                    new Prediction(eventOutcome),
-                                                                    eventOutcome.getCountry()
+                                                                    TensorflowPrediction.builder()
+                                                                            .predictions(predict)
+                                                                            .country(eventOutcome.getCountry())
+                                                                            .prediction(new Prediction(eventOutcome))
+                                                                            .build()
                                                             )
                                                     )
                                             )

@@ -51,7 +51,9 @@ public class BetwayService implements ProviderService {
 
         Flux.fromStream(
                events.stream()
-        ).subscribe(event -> {
+        )
+                .delayElements(Duration.ofSeconds(1))
+                .subscribe(event -> {
 
             Optional<Team> homeTeam = teamService.find(event.getString("HomeTeamName"), details.getString("competition"));
             Optional<Team> awayTeam = teamService.find(event.getString("AwayTeamName"), details.getString("competition"));
@@ -119,6 +121,9 @@ public class BetwayService implements ProviderService {
         if (LocalDateTime.now().getDayOfWeek()
                 .equals(DayOfWeek.TUESDAY)) {
             return 3;
+        }
+        if(LocalDate.now().getDayOfWeek().equals(DayOfWeek.THURSDAY)){
+            return 5;
         }
         return 4;
     }

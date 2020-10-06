@@ -3,6 +3,7 @@ package com.timmytime.predictorclientreactive.service.impl;
 import com.timmytime.predictorclientreactive.facade.IS3Facade;
 import com.timmytime.predictorclientreactive.facade.S3Facade;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,6 +21,11 @@ class CompetitionServiceImplTest {
         @Override
         public void put(String key, String json) {
            result = json;
+
+        }
+
+        @Override
+        public void archive() {
 
         }
     }

@@ -34,6 +34,8 @@ public class PlayersMatchServiceImpl implements ILoadService {
     private final ShutdownService shutdownService;
 
     private final Integer delay;
+    private final String playersHost;
+    private final String eventDataHost;
 
     private final Map<Competition, List<MatchSelectionsResponse>> byCompetition = new HashMap<>();
     private final MatchSelectionResponseTransformer matchSelectionResponseTransformer = new MatchSelectionResponseTransformer();
@@ -50,11 +52,15 @@ public class PlayersMatchServiceImpl implements ILoadService {
 
     @Autowired
     public PlayersMatchServiceImpl(
+            @Value("${event.data.host}") String eventDataHost,
+            @Value("${players.host}") String playersHost,
             @Value("${delay}") Integer delay,
             S3Facade s3Facade,
             WebClientFacade webClientFacade,
             ShutdownService shutdownService
     ) {
+        this.eventDataHost = eventDataHost;
+        this.playersHost = playersHost;
         this.delay = delay;
         this.s3Facade = s3Facade;
         this.webClientFacade = webClientFacade;
@@ -78,13 +84,13 @@ public class PlayersMatchServiceImpl implements ILoadService {
     private void create(Competition league) {
         byCompetition.put(league, new ArrayList<>());
 
-        webClientFacade.getUpcomingEvents(league.name().toLowerCase())
+        webClientFacade.getUpcomingEvents(eventDataHost + "/events/" + league.name().toLowerCase())
                 .doOnNext(event -> {
                     log.info("processing {} vs {}", event.getHome(), event.getAway());
                     List<PlayerResponse> playerResponses = new ArrayList<>();
-                    webClientFacade.getPlayers("")
+                    webClientFacade.getPlayers(playersHost+"/players/match/"+league+"?home="+event.getHome()+"&away="+event.getAway()) //need players by teams...
                             .doOnNext(player ->
-                                    webClientFacade.getPlayer("")
+                                    webClientFacade.getPlayer(playersHost+"//player/"+player.getId()) //get player response
                                     .subscribe(playerResponse -> playerResponses.add(playerResponse))
                             ) //get the appearance and stats set up, create a player response
                             .doFinally(match -> Mono.just(playerResponses)
@@ -113,7 +119,7 @@ public class PlayersMatchServiceImpl implements ILoadService {
                 .stream()
                 .forEach(event -> {
                     try {
-                        s3Facade.put("TODO",
+                        s3Facade.put("player-events/"+competition,
                                 new ObjectMapper().writeValueAsString(
                                         event
                                 ));
@@ -142,7 +148,7 @@ public class PlayersMatchServiceImpl implements ILoadService {
                 .forEach(topSelectionsResponse ->
         {
             try {
-                s3Facade.put("TODO",
+                s3Facade.put("top-performers/"+competition,
                         new ObjectMapper().writeValueAsString(
                                 topSelectionsGoalsResponse
                         ));

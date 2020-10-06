@@ -50,7 +50,7 @@ class BetwayServiceTest {
         when(teamService.find(any(), any())).thenReturn(Optional.of(team));
         betwayService.receive(message);
 
-        Thread.sleep(1000L);
+        Thread.sleep(10000L);
 
         verify(eventOddsService, atLeastOnce()).create(any());
     }
@@ -69,7 +69,7 @@ class BetwayServiceTest {
         when(teamService.find(any(), any())).thenReturn(Optional.of(team));
         betwayService.receive(message);
 
-        Thread.sleep(1000L);
+        Thread.sleep(10000L);
 
         verify(eventOddsService, never()).create(any());
     }

@@ -11,6 +11,8 @@ import com.timmytime.predictorclientreactive.service.ILoadService;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import com.timmytime.predictorclientreactive.service.TeamService;
 import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,6 +120,18 @@ public class PreviousFixtureServiceImpl implements ILoadService {
                 +"&date="+ eventOutcome.getDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
     }
 
+    private String legacyShit(EventOutcome eventOutcome){
+
+        try{
+            JSONArray results = new JSONObject(eventOutcome.getPrediction()).getJSONArray("result");
+            return eventOutcome.getPrediction();
+        }catch (Exception e){
+            return new JSONObject().put(
+                    "result", new JSONArray(eventOutcome.getPrediction())
+            ).toString();
+        }
+    }
+
 
 
     private PreviousFixtureResponse transform(EventOutcome event) {
@@ -133,7 +147,7 @@ public class PreviousFixtureServiceImpl implements ILoadService {
                 PreviousFixtureOutcome.builder()
                         .eventType(event.getEventType())
                         .success(event.getSuccess())
-                        .predictions(event.getPrediction())
+                        .predictions(legacyShit(event))
                         .build()
         );
         return previousFixtureResponse;

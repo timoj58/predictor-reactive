@@ -111,7 +111,7 @@ public class BetwayService implements BookmakerService {
                         )
                 ).doFinally(end ->
                                 Mono.just(ScraperTypeKeys.BETWAY_ODDS.name())
-                                        .delayElement(Duration.ofMinutes(delay))
+                                        .delayElement(Duration.ofMinutes(5))
                                         .subscribe(provider -> messageService.send(provider, league))
                 ).subscribe()
         );

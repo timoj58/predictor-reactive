@@ -120,6 +120,7 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
         try{
             JSONObject json = new JSONObject(eventOutcome.getPrediction());
         }catch (Exception e){
+            log.info("{}", eventOutcome.getPrediction());
             eventOutcome.setPrediction(
                     new JSONObject().put("result", new JSONArray(eventOutcome.getPrediction()))
                             .toString()

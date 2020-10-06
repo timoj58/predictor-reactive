@@ -196,7 +196,7 @@ public class PlayerResponseServiceImpl implements PlayerResponseService {
                             (data) -> playerMatches.add(data)
                     ))
             .doFinally(start -> Mono.just(fantasyOutcome)
-                    .delayElement(Duration.ofMinutes(delay))
+                    .delayElement(Duration.ofSeconds(10 * delay))
                     .subscribe(outcome -> load(outcome.getPlayerId(), playerMatches)))
             .subscribe();
 

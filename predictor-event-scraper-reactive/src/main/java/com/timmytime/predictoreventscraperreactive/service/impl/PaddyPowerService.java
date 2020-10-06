@@ -117,7 +117,7 @@ public class PaddyPowerService implements BookmakerService {
                                     })
                                     .doFinally(end ->
                                             Mono.just(ScraperTypeKeys.PADDYPOWER_ODDS.name())
-                                                    .delayElement(Duration.ofSeconds(30))
+                                                    .delayElement(Duration.ofMinutes(5))
                                                     .subscribe(provider -> messageService.send(provider, appKey.getId())))
                                     .subscribe();
 

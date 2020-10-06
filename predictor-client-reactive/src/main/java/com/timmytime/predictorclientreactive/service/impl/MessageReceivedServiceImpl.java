@@ -28,15 +28,15 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
             BetServiceImpl betService,
             FixtureServiceImpl fixtureService,
             PreviousFixtureServiceImpl previousFixtureService,
-            PlayersMatchServiceImpl matchService,
+            PlayersMatchServiceImpl playersMatchService,
             TeamsMatchServiceImpl teamsMatchService,
             PreviousOutcomesServiceImpl previousOutcomesService
     ){
         this.loaders.add(competitionService);
-       // this.loaders.add(betService);
+        this.loaders.add(betService);
         this.loaders.add(fixtureService);
         this.loaders.add(previousFixtureService);
-       // this.loaders.add(matchService);
+        this.loaders.add(playersMatchService);
         this.loaders.add(teamsMatchService);
         this.loaders.add(previousOutcomesService);
 

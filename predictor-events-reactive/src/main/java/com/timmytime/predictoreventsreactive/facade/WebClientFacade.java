@@ -6,6 +6,8 @@ import com.timmytime.predictoreventsreactive.model.Match;
 import com.timmytime.predictoreventsreactive.request.Prediction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -20,6 +22,7 @@ public class WebClientFacade {
         WebClient.builder().build()
                 .post()
                 .uri(url)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(Mono.just(payload), JsonNode.class)
                 .exchange()
                 .subscribe();

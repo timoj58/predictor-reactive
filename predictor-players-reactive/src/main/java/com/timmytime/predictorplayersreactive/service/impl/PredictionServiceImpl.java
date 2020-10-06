@@ -5,6 +5,7 @@ import com.timmytime.predictorplayersreactive.enumerator.FantasyEventTypes;
 import com.timmytime.predictorplayersreactive.model.FantasyOutcome;
 import com.timmytime.predictorplayersreactive.model.Prediction;
 import com.timmytime.predictorplayersreactive.request.PlayerEventOutcomeCsv;
+import com.timmytime.predictorplayersreactive.request.TensorflowPrediction;
 import com.timmytime.predictorplayersreactive.service.*;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -12,12 +13,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service("predictionService")
@@ -44,6 +43,12 @@ public class PredictionServiceImpl implements PredictionService {
         this.playerResponseService = playerResponseService;
         this.tensorflowPredictionService = tensorflowPredictionService;
         this.fantasyOutcomeService = fantasyOutcomeService;
+
+        //init machine
+        Flux.fromStream(
+                Arrays.asList("assists",  "conceded",  "goals",  "minutes",  "red",  "saves",  "yellow").stream()
+        ).subscribe(type -> tensorflowPredictionService.init(type));
+
     }
 
     @Override
@@ -51,19 +56,21 @@ public class PredictionServiceImpl implements PredictionService {
 
         log.info("starting {}", country);
 
+        //need to init all the types.
         Flux.fromStream(
                 ApplicableFantasyLeagues.findByCountry(country).stream()
         ).doOnNext(competition ->
                 eventsService.get(competition.name().toLowerCase())
-                        .delayElements(Duration.ofSeconds(1))
                         .subscribe(event -> {
+
                             log.info("processing {} v {}", event.getHome(), event.getAway());
-                             processPlayers(competition.name().toLowerCase(), event.getDate(), event.getHome(), event.getAway(), Boolean.TRUE);
-                             processPlayers(competition.name().toLowerCase(), event.getDate(), event.getAway(), event.getHome(), Boolean.FALSE);
+                            processPlayers(competition.name().toLowerCase(), event.getDate(), event.getHome(), event.getAway(), Boolean.TRUE);
+                            processPlayers(competition.name().toLowerCase(), event.getDate(), event.getAway(), event.getHome(), Boolean.FALSE);
                         })
         )
-        .doFinally(finish -> {})  //TODO
-        .subscribe();
+                .doFinally(finish -> {
+                })  //TODO hmm.
+                .subscribe();
 
     }
 
@@ -83,19 +90,21 @@ public class PredictionServiceImpl implements PredictionService {
 
     }
 
-    private void processPlayers(String competition, LocalDateTime date, UUID team, UUID opponent, Boolean home){
+
+    private Boolean processPlayers(String competition, LocalDateTime date, UUID team, UUID opponent, Boolean home) {
         Flux.fromStream(
                 playerService.get(competition, team).stream()
-        ).delayElements(Duration.ofMillis(100))
+        )
+                .limitRate(5)
                 .subscribe(player ->
-                Flux.fromStream(
-                        Arrays.asList(FantasyEventTypes.values())
-                        .stream()
-                        .filter(f -> f.getPredict() == Boolean.TRUE)
-                ).delayElements(Duration.ofMillis(100))
-                        .subscribe(fantasyEvent ->
+                        Flux.fromStream(
+                                Arrays.asList(FantasyEventTypes.values())
+                                        .stream()
+                                        .filter(f -> f.getPredict() == Boolean.TRUE)
+                        ).subscribe(fantasyEvent ->
                                 fantasyOutcomeService.save(
                                         FantasyOutcome.builder()
+                                                .id(UUID.randomUUID())
                                                 .eventDate(date)
                                                 .opponent(opponent)
                                                 .playerId(player.getId())
@@ -103,19 +112,26 @@ public class PredictionServiceImpl implements PredictionService {
                                                 .home(home ? "home" : "away") //not sure why its like this
                                                 .build()
                                 ).subscribe(fantasyOutcome ->
-                                        tensorflowPredictionService.predict(fantasyEvent,
-                                                new PlayerEventOutcomeCsv(
-                                                        fantasyOutcome.getId(),
-                                                        player.getId(),
-                                                        opponent,
-                                                        fantasyOutcome.getHome())
+                                        tensorflowPredictionService.predict(
+                                                TensorflowPrediction.builder()
+                                                        .fantasyEventTypes(fantasyEvent)
+                                                        .playerEventOutcomeCsv(
+                                                                new PlayerEventOutcomeCsv(
+                                                                        fantasyOutcome.getId(),
+                                                                        player.getId(),
+                                                                        opponent,
+                                                                        fantasyOutcome.getHome()))
+                                                        .build()
+
                                         )
                                 )
                         )
-        );
+                );
+
+        return Boolean.TRUE;
     }
 
-    private List<Prediction> normalize(JSONObject result){
+    private List<Prediction> normalize(JSONObject result) {
 
         //get our keys.
         Map<String, List<Double>> byIndex = new HashMap<>();

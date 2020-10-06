@@ -1,5 +1,7 @@
 package com.timmytime.predictorplayersreactive.handler;
 
+import com.timmytime.predictorplayersreactive.model.Player;
+import com.timmytime.predictorplayersreactive.model.PlayerResponse;
 import com.timmytime.predictorplayersreactive.service.PlayerResponseService;
 import com.timmytime.predictorplayersreactive.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,20 +28,20 @@ public class PlayerHandler {
 
     public Mono<ServerResponse> getPlayers(ServerRequest request) {
 
-        return ServerResponse.ok().bodyValue(
+        return ServerResponse.ok().body(
                 playerService.byMatch(
                         request.pathVariable("competition"),
                         UUID.fromString(request.queryParam("home").get()),
                         UUID.fromString(request.queryParam("away").get()))
-        );
+        , Player.class);
     }
 
     public Mono<ServerResponse> getPlayer(ServerRequest request) {
 
-        return ServerResponse.ok().bodyValue(
+        return ServerResponse.ok().body(
                 playerResponseService.getPlayer(
                         UUID.fromString(request.pathVariable("id"))
-                )
+                ), PlayerResponse.class
         );
     }
 }

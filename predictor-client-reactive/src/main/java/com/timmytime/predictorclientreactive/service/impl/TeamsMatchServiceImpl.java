@@ -112,6 +112,7 @@ public class TeamsMatchServiceImpl implements ILoadService {
             try{
                 JSONObject json = new JSONObject(event.getPrediction());
             }catch (Exception e){
+                log.info("{}", event.getPrediction());
                 event.setPrediction(
                         new JSONObject().put("result", new JSONArray(event.getPrediction()))
                         .toString()

@@ -5,7 +5,9 @@ import com.timmytime.predictorclientreactive.facade.LambdaFacade;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,6 +41,10 @@ public class ShutdownServiceImpl implements ShutdownService {
 
     @Override
     public void shutdown() {
-        lambdaFacade.invoke(LambdaFunctions.SHUTDOWN.getFunctionName());
+        lambdaFacade.invoke(LambdaFunctions.PROXY_STOP.getFunctionName());
+
+        Mono.just("exit").delayElement(Duration.ofMinutes(5))
+                .subscribe(s -> lambdaFacade.invoke(LambdaFunctions.SHUTDOWN.getFunctionName())
+                );
     }
 }

@@ -3,12 +3,18 @@ package com.timmytime.predictorplayersreactive.service.impl;
 import com.timmytime.predictorplayersreactive.enumerator.FantasyEventTypes;
 import com.timmytime.predictorplayersreactive.facade.WebClientFacade;
 import com.timmytime.predictorplayersreactive.request.PlayerEventOutcomeCsv;
+import com.timmytime.predictorplayersreactive.request.TensorflowPrediction;
 import com.timmytime.predictorplayersreactive.service.TensorflowPredictionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
+
+import java.time.Duration;
+import java.util.function.Consumer;
 
 @Service("tensorflowPredictionService")
 public class TensorflowPredictionServiceImpl implements TensorflowPredictionService {
@@ -27,6 +33,11 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
     private final String destroyUrl;
 
     private final WebClientFacade webClientFacade;
+
+
+    private final Flux<TensorflowPrediction> receiver;
+    private Consumer<TensorflowPrediction> consumer;
+
 
     @Autowired
     public TensorflowPredictionServiceImpl(
@@ -55,21 +66,15 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
 
         this.webClientFacade = webClientFacade;
 
-        //need to init service.
+        this.receiver
+                = Flux.push(sink -> consumer = (t) -> sink.next(t), FluxSink.OverflowStrategy.DROP);
+        this.receiver.delayElements(Duration.ofMillis(200)).subscribe(this::process);
 
     }
 
     @Override
-    public void predict(FantasyEventTypes fantasyEventTypes, PlayerEventOutcomeCsv playerEventOutcomeCsv) {
-        log.info("predicting {} {}",  playerEventOutcomeCsv.getPlayer(), playerEventOutcomeCsv.getOpponent());
-
-        webClientFacade.predict(
-                trainingHost
-                +getUrl(fantasyEventTypes)
-                        .replace("<receipt>", playerEventOutcomeCsv.getId().toString())
-                        .replace("<init>", "false"),
-                playerEventOutcomeCsv
-                );
+    public void predict(TensorflowPrediction tensorflowPrediction) {
+        consumer.accept(tensorflowPrediction);
     }
 
     @Override
@@ -85,6 +90,18 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
                 trainingHost
                         +destroyUrl.replace("<type>", type));
 
+    }
+
+    private void process(TensorflowPrediction tensorflowPrediction){
+        log.info("predicting {} {}",  tensorflowPrediction.getPlayerEventOutcomeCsv().getPlayer(), tensorflowPrediction.getPlayerEventOutcomeCsv().getOpponent());
+
+        webClientFacade.predict(
+                trainingHost
+                        +getUrl(tensorflowPrediction.getFantasyEventTypes())
+                        .replace("<receipt>", tensorflowPrediction.getPlayerEventOutcomeCsv().getId().toString())
+                        .replace("<init>", "false"),
+                tensorflowPrediction.getPlayerEventOutcomeCsv()
+        );
     }
 
 

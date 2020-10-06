@@ -53,7 +53,7 @@ class PaddyPowerServiceTest {
         when(teamService.find(any(), any())).thenReturn(Optional.of(team));
         paddyPowerService.receive(message);
 
-        Thread.sleep(1000L);
+        Thread.sleep(10000L);
 
         verify(eventOddsService, atLeastOnce()).create(any());
     }
@@ -72,7 +72,7 @@ class PaddyPowerServiceTest {
         when(teamService.find(any(), any())).thenReturn(Optional.of(team));
         paddyPowerService.receive(message);
 
-        Thread.sleep(1000L);
+        Thread.sleep(10000L);
 
         verify(eventOddsService, never()).create(any());
     }

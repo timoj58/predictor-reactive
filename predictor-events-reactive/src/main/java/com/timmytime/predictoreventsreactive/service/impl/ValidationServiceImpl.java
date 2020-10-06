@@ -85,7 +85,7 @@ public class ValidationServiceImpl implements ValidationService {
 
     private String predictionResult(EventOutcome eventOutcome){
 
-        JSONArray results = new JSONObject(eventOutcome.getPrediction()).getJSONArray("result");
+        JSONArray results = legacyShit(eventOutcome.getPrediction());
 
         if (Predictions.valueOf(eventOutcome.getEventType()).equals(Predictions.PREDICT_GOALS)) {
             Double weightedGoals = 0.0;
@@ -127,6 +127,15 @@ public class ValidationServiceImpl implements ValidationService {
             default:
                 return Boolean.FALSE;
 
+        }
+    }
+
+    private JSONArray legacyShit(String prediction){
+        try{
+            return new JSONObject(prediction).getJSONArray("result");
+
+        }catch (Exception e){
+            return new JSONArray(prediction);
         }
     }
 }

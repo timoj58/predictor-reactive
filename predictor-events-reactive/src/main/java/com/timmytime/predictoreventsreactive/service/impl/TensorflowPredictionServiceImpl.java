@@ -3,6 +3,7 @@ package com.timmytime.predictoreventsreactive.service.impl;
 import com.timmytime.predictoreventsreactive.enumerator.Predictions;
 import com.timmytime.predictoreventsreactive.facade.WebClientFacade;
 import com.timmytime.predictoreventsreactive.request.Prediction;
+import com.timmytime.predictoreventsreactive.request.TensorflowPrediction;
 import com.timmytime.predictoreventsreactive.service.TensorflowPredictionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,9 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
 
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 @Service("tensorflowPredictionService")
 public class TensorflowPredictionServiceImpl implements TensorflowPredictionService {
@@ -23,6 +26,8 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
     private final String resultsUrl;
     private final String goalsUrl;
 
+    private final Flux<TensorflowPrediction> receiver;
+    private Consumer<TensorflowPrediction> consumer;
 
     private final WebClientFacade webClientFacade;
 
@@ -37,18 +42,26 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
         this.resultsUrl = resultsUrl;
         this.goalsUrl = goalsUrl;
         this.webClientFacade = webClientFacade;
+
+        this.receiver
+                = Flux.push(sink -> consumer = (t) -> sink.next(t), FluxSink.OverflowStrategy.DROP);
+        this.receiver.delayElements(Duration.ofSeconds(5)).subscribe(this::process);
     }
 
 
     @Override
-    public void predict(Predictions predictions, Prediction prediction, String country) {
-        log.info("predicting id {} {} {}", prediction.getId(), prediction.getHome(), prediction.getAway());
+    public void predict(TensorflowPrediction tensorflowPrediction) {
+        consumer.accept(tensorflowPrediction);
+    }
+
+    private void process(TensorflowPrediction tensorflowPrediction){
+        log.info("predicting id {} {} {}", tensorflowPrediction.getPrediction().getId(), tensorflowPrediction.getPrediction().getHome(), tensorflowPrediction.getPrediction().getAway());
 
         webClientFacade.predict(
-                    trainingHost + getUrl(predictions)
-                            .replace("<receipt>", prediction.getId().toString())
-                            .replace("<country>", country),
-                    prediction
+                trainingHost + getUrl(tensorflowPrediction.getPredictions())
+                        .replace("<receipt>", tensorflowPrediction.getPrediction().getId().toString())
+                        .replace("<country>", tensorflowPrediction.getCountry()),
+                tensorflowPrediction.getPrediction()
         );
     }
 

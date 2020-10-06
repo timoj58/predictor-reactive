@@ -2,6 +2,7 @@ package com.timmytime.predictorclientreactive.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.timmytime.predictorclientreactive.enumerator.Competition;
 import com.timmytime.predictorclientreactive.facade.S3Facade;
 import com.timmytime.predictorclientreactive.facade.WebClientFacade;
 import com.timmytime.predictorclientreactive.model.UpcomingCompetitionEventsResponse;
@@ -59,7 +60,7 @@ public class FixtureServiceImpl implements ILoadService {
                         log.info("processing {}", competition);
                         UpcomingCompetitionEventsResponse upcomingCompetitionEventsResponse =
                                 new UpcomingCompetitionEventsResponse(
-                                        competition,
+                                        Competition.valueOf(competition.toLowerCase()),
                                         new ArrayList<>());
                         webClientFacade.getUpcomingEvents(eventDataHost + "/events/" + competition)
                                 .doOnNext(event ->

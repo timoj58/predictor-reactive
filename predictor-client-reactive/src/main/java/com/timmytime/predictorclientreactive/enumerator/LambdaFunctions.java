@@ -4,10 +4,11 @@ public enum LambdaFunctions {
     /*
      cloud watch: starts config server and then this service.
      */
-    INIT(""), //starts DB + proxy
-    PRE_START(""), //starts data + scrapers + machine learning
-    START(""), //starts everything else. (data events, teams, players, events)
-    SHUTDOWN("") //shuts down all the instances
+    DATABASE("arn:aws:lambda:us-east-1:842788105885:function:predictor-init"), //starts DB
+    PRE_START("arn:aws:lambda:us-east-1:842788105885:function:pre-start"), //starts data + scrapers + machine learning
+    START("arn:aws:lambda:us-east-1:842788105885:function:start"), //starts everything else. (data events, teams, players, events)
+    PROXY_STOP("arn:aws:lambda:us-east-1:842788105885:function:proxy-stop"),
+    SHUTDOWN("arn:aws:lambda:us-east-1:842788105885:function:predictor-destroy") //shuts down all the instances
     ;
 
     public String getFunctionName() {

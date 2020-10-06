@@ -42,7 +42,7 @@ class PredictionServiceImplTest {
         predictionService.start("TURKEY");
         Thread.sleep(2000);
 
-        verify(tensorflowPredictionService, atLeastOnce()).predict(any(), any(), any());
+        verify(tensorflowPredictionService, atLeastOnce()).predict(any());
     }
 
 }
