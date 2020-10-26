@@ -77,7 +77,7 @@ public class PlayerResponseServiceImpl implements PlayerResponseService {
         this.playerResponseRepo = playerResponseRepo;
 
         this.receiver
-                = Flux.push(sink -> consumer = (t) -> sink.next(t), FluxSink.OverflowStrategy.DROP);
+                = Flux.push(sink -> consumer = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
 
         this.receiver.subscribe(this::process);
 
@@ -85,6 +85,7 @@ public class PlayerResponseServiceImpl implements PlayerResponseService {
 
     @Override
     public void addResult(FantasyOutcome fantasyOutcome) {
+        log.info("adding completed fantasy outcome");
         consumer.accept(fantasyOutcome);
     }
 

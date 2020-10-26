@@ -18,6 +18,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service("predictionService")
 public class PredictionServiceImpl implements PredictionService {
@@ -62,10 +63,8 @@ public class PredictionServiceImpl implements PredictionService {
         ).doOnNext(competition ->
                 eventsService.get(competition.name().toLowerCase())
                         .subscribe(event -> {
-
                             log.info("processing {} v {}", event.getHome(), event.getAway());
-                            processPlayers(competition.name().toLowerCase(), event.getDate(), event.getHome(), event.getAway(), Boolean.TRUE);
-                            processPlayers(competition.name().toLowerCase(), event.getDate(), event.getAway(), event.getHome(), Boolean.FALSE);
+                            processPlayers(competition.name().toLowerCase(), event.getDate(), event.getHome(), event.getAway());
                         })
         )
                 .doFinally(finish -> {
@@ -83,6 +82,8 @@ public class PredictionServiceImpl implements PredictionService {
                             normalize(result).toString()
                     );
 
+                    log.info("saving prediction {} id: {}", fantasyOutcome.getFantasyEventType(), fantasyOutcome.getId());
+
                     fantasyOutcomeService.save(fantasyOutcome).subscribe(
                             outcome -> playerResponseService.addResult(outcome)
                     );
@@ -91,25 +92,27 @@ public class PredictionServiceImpl implements PredictionService {
     }
 
 
-    private Boolean processPlayers(String competition, LocalDateTime date, UUID team, UUID opponent, Boolean home) {
+    private Boolean processPlayers(String competition, LocalDateTime date, UUID homeTeam, UUID awayTeam) {
         Flux.fromStream(
-                playerService.get(competition, team).stream()
+                Stream.concat(
+                        playerService.get(competition, homeTeam).stream(),
+                        playerService.get(competition, awayTeam).stream())
         )
-                .limitRate(5)
                 .subscribe(player ->
                         Flux.fromStream(
                                 Arrays.asList(FantasyEventTypes.values())
                                         .stream()
                                         .filter(f -> f.getPredict() == Boolean.TRUE)
-                        ).subscribe(fantasyEvent ->
+                        )
+                                .subscribe(fantasyEvent ->
                                 fantasyOutcomeService.save(
                                         FantasyOutcome.builder()
                                                 .id(UUID.randomUUID())
                                                 .eventDate(date)
-                                                .opponent(opponent)
+                                                .opponent(player.getLatestTeam().equals(homeTeam) ? awayTeam : homeTeam)
                                                 .playerId(player.getId())
                                                 .fantasyEventType(fantasyEvent)
-                                                .home(home ? "home" : "away") //not sure why its like this
+                                                .home(player.getLatestTeam().equals(homeTeam) ? "home" : "away") //not sure why its like this
                                                 .build()
                                 ).subscribe(fantasyOutcome ->
                                         tensorflowPredictionService.predict(
@@ -119,7 +122,7 @@ public class PredictionServiceImpl implements PredictionService {
                                                                 new PlayerEventOutcomeCsv(
                                                                         fantasyOutcome.getId(),
                                                                         player.getId(),
-                                                                        opponent,
+                                                                        player.getLatestTeam().equals(homeTeam) ? awayTeam : homeTeam,
                                                                         fantasyOutcome.getHome()))
                                                         .build()
 

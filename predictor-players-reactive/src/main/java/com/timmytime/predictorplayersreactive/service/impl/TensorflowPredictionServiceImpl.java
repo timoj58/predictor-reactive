@@ -67,9 +67,8 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
         this.webClientFacade = webClientFacade;
 
         this.receiver
-                = Flux.push(sink -> consumer = (t) -> sink.next(t), FluxSink.OverflowStrategy.DROP);
-        this.receiver.delayElements(Duration.ofMillis(200)).subscribe(this::process);
-
+                = Flux.push(sink -> consumer = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
+        this.receiver.delayElements(Duration.ofMillis(250)).subscribe(this::process);
     }
 
     @Override

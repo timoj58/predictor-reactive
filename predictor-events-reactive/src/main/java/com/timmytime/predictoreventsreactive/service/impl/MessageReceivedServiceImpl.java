@@ -54,16 +54,17 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     public Mono<Void> receive(Mono<Message> message) {
         return message.doOnNext(
                 msg -> {
-                    log.info("received {}", msg.getType());
+                    log.info("received {} {}", msg.getType(), msg.getCountry());
                     messages.get(msg.getCountry()).add(msg.getType());
 
                     if(messages.get(msg.getCountry()).containsAll(Arrays.asList(Messages.values()))){
 
-                        validationService.resetLast(msg.getCountry())
-                        .subscribe(then -> {
-                            validationService.validate(msg.getCountry());
-                            webClientFacade.sendMessage(playersHost+"/message", createMessage(msg.getCountry()));
-                            predictionService.start(msg.getCountry());
+                        log.info("processing {}", msg.getCountry());
+                        validationService.resetLast(msg.getCountry(), (country) -> {
+                            log.info("starting predictions {}", country);
+                            validationService.validate(country);
+                            webClientFacade.sendMessage(playersHost+"/message", createMessage(country));
+                            predictionService.start(country);
                         });
 
                     }

@@ -21,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service("validationService")
@@ -75,13 +76,17 @@ public class ValidationServiceImpl implements ValidationService {
     }
 
     @Override
-    public Flux<EventOutcome> resetLast(String country) {
+    public void resetLast(String country, Consumer<String> doFinally) {
 
-        return eventOutcomeService.lastEvents(country)
+        log.info("resetting last outcome for {}", country);
+
+        eventOutcomeService.lastEvents(country)
                 .doOnNext(previousEvent -> {
                     previousEvent.setPreviousEvent(Boolean.FALSE);
                     eventOutcomeService.save(previousEvent).subscribe();
-                });
+                })
+                .doFinally(then -> doFinally.accept(country))
+                .subscribe();
     }
 
 

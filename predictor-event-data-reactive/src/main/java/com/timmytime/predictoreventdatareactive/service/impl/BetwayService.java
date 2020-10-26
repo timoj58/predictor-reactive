@@ -52,7 +52,7 @@ public class BetwayService implements ProviderService {
         Flux.fromStream(
                events.stream()
         )
-                .delayElements(Duration.ofSeconds(1))
+                .limitRate(1)
                 .subscribe(event -> {
 
             Optional<Team> homeTeam = teamService.find(event.getString("HomeTeamName"), details.getString("competition"));

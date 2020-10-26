@@ -53,7 +53,7 @@ public class PredictionServiceImpl implements PredictionService {
         log.info("starting predictions for {}", country);
         Flux.fromStream(
                 CountryCompetitions.valueOf(country).getCompetitions().stream()
-        ).delayElements(Duration.ofSeconds(competitionDelay))
+        )
                 .subscribe(competition ->
                     eventService.getEvents(competition)
                             .subscribe(event ->
@@ -91,6 +91,7 @@ public class PredictionServiceImpl implements PredictionService {
         eventOutcomeService.find(id)
                 .subscribe(eventOutcome -> {
                     eventOutcome.setPrediction(normalize(result).toString());
+                    log.info("saving {}", eventOutcome.getId());
                     eventOutcomeService.save(eventOutcome).subscribe();
                 });
 

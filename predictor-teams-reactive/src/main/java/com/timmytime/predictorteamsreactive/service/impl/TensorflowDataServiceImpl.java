@@ -38,7 +38,7 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
                 .forEach(country -> data.put(country.name().toLowerCase(), new ArrayList<>()));
 
         this.receiver
-                = Flux.push(sink -> consumer = (t) -> sink.next(t), FluxSink.OverflowStrategy.DROP);
+                = Flux.push(sink -> consumer = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
 
         this.receiver.subscribe(this::process);
 

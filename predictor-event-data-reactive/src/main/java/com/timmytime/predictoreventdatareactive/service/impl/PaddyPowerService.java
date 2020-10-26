@@ -55,7 +55,7 @@ public class PaddyPowerService implements ProviderService {
         Flux.fromStream(
                 events.stream()
         )
-                .delayElements(Duration.ofSeconds(1))
+                .limitRate(1)
                 .subscribe(event -> {
             List<JSONObject> eventOutcomes = new ArrayList<>();
 
