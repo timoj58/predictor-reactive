@@ -69,4 +69,9 @@ public class EventOutcomeServiceImpl implements EventOutcomeService {
                 eventOutcomeRepo.findByAwayOrderByDateDesc(team).take(6)
         );
     }
+
+    @Override
+    public Flux<EventOutcome> toFix() {
+        return eventOutcomeRepo.findByPredictionNull();
+    }
 }

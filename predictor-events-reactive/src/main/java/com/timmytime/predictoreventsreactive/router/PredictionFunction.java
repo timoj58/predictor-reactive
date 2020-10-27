@@ -1,0 +1,24 @@
+package com.timmytime.predictoreventsreactive.router;
+
+import com.timmytime.predictoreventsreactive.handler.EventsHandler;
+import com.timmytime.predictoreventsreactive.handler.PredictionHandler;
+import com.timmytime.predictoreventsreactive.service.PredictionService;
+import org.springdoc.core.annotations.RouterOperation;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.server.RequestPredicates;
+import org.springframework.web.reactive.function.server.RouterFunction;
+import org.springframework.web.reactive.function.server.ServerResponse;
+
+import static org.springframework.web.reactive.function.server.RouterFunctions.route;
+
+@Component
+public class PredictionFunction {
+
+    @Bean
+    @RouterOperation(beanClass = PredictionService.class, beanMethod = "fix")
+    RouterFunction<ServerResponse> fix(PredictionHandler predictionHandler) {
+        return route(RequestPredicates.GET("/fix-predictions")
+                , predictionHandler::fix);
+    }
+}

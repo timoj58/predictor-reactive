@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -91,6 +92,24 @@ public class PredictionServiceImpl implements PredictionService {
 
     }
 
+    @Override
+    public Mono<Void> fix() {
+        return fantasyOutcomeService.toFix()
+                .doOnNext(fantasyOutcome ->
+                        tensorflowPredictionService.predict(
+                                TensorflowPrediction.builder()
+                                        .fantasyEventTypes(fantasyOutcome.getFantasyEventType())
+                                        .playerEventOutcomeCsv(
+                                                new PlayerEventOutcomeCsv(
+                                                        fantasyOutcome.getId(),
+                                                        fantasyOutcome.getPlayerId(),
+                                                        fantasyOutcome.getOpponent(),
+                                                        fantasyOutcome.getHome()))
+                                        .build())
+                )
+                .thenEmpty(Mono.empty());
+    }
+
 
     private Boolean processPlayers(String competition, LocalDateTime date, UUID homeTeam, UUID awayTeam) {
         Flux.fromStream(
@@ -102,7 +121,7 @@ public class PredictionServiceImpl implements PredictionService {
                         Flux.fromStream(
                                 Arrays.asList(FantasyEventTypes.values())
                                         .stream()
-                                        .filter(f -> f.getPredict() == Boolean.TRUE)
+                                        .filter(f -> f.getPredict() == Boolean.TRUE) //need to remove saves...TODO
                         )
                                 .subscribe(fantasyEvent ->
                                 fantasyOutcomeService.save(

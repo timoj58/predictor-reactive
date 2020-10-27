@@ -63,7 +63,8 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                     }
 
                 }
-        ).thenEmpty(Mono.empty()); }
+        ).thenEmpty(Mono.empty());
+    }
 
     @Override
     public Mono<Void> prediction(UUID id, Mono<JsonNode> prediction) {

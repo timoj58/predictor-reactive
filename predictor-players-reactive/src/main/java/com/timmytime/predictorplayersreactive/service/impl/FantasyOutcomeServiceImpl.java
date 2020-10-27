@@ -39,7 +39,12 @@ public class FantasyOutcomeServiceImpl implements FantasyOutcomeService {
         return fantasyOutcomeRepo.findByPlayerId(id);
     }
 
-   //TODO @PostConstruct
+    @Override
+    public Flux<FantasyOutcome> toFix() {
+        return fantasyOutcomeRepo.findByPredictionNull();
+    }
+
+    //TODO @PostConstruct
     private void init(){
         //no longer validating for now, so simply turn them all off when rebooting system.
         //but not until its live.  need data for now ;)

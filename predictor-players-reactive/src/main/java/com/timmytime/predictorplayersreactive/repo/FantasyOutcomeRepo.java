@@ -11,4 +11,5 @@ import java.util.UUID;
 public interface FantasyOutcomeRepo extends ReactiveMongoRepository<FantasyOutcome, UUID> {
     Flux<FantasyOutcome> findByPlayerId(UUID player);
     Flux<FantasyOutcome> findByCurrent(Boolean current);
+    Flux<FantasyOutcome> findByPredictionNull();
 }

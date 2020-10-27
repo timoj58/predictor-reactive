@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
 import java.time.Duration;
@@ -95,6 +96,19 @@ public class PredictionServiceImpl implements PredictionService {
                     eventOutcomeService.save(eventOutcome).subscribe();
                 });
 
+    }
+
+    @Override
+    public Mono<Void> fix() {
+        return eventOutcomeService.toFix().doOnNext(eventOutcome ->
+                tensorflowPredictionService.predict(
+                        TensorflowPrediction.builder()
+                                .predictions(Predictions.valueOf(eventOutcome.getEventType()))
+                                .country(eventOutcome.getCountry())
+                                .prediction(new Prediction(eventOutcome))
+                                .build()
+                )
+        ).thenEmpty(Mono.empty());
     }
 
     private List<PredictionLine> normalize(JSONObject result){

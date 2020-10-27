@@ -9,5 +9,6 @@ public interface FantasyOutcomeService {
     Mono<FantasyOutcome> save(FantasyOutcome fantasyOutcome);
     Mono<FantasyOutcome> find(UUID id);
     Flux<FantasyOutcome> findByPlayer(UUID id);
+    Flux<FantasyOutcome> toFix();
 
 }
