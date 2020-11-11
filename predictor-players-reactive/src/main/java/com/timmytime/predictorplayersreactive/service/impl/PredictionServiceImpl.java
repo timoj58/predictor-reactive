@@ -18,6 +18,7 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -76,6 +77,7 @@ public class PredictionServiceImpl implements PredictionService {
 
     @Override
     public void result(UUID id, JSONObject result) {
+        CompletableFuture.runAsync(() ->
         fantasyOutcomeService.find(id)
                 .subscribe(fantasyOutcome -> {
                     fantasyOutcome.setCurrent(Boolean.TRUE);
@@ -84,18 +86,19 @@ public class PredictionServiceImpl implements PredictionService {
                     );
 
                     log.info("saving prediction {} id: {}", fantasyOutcome.getFantasyEventType(), fantasyOutcome.getId());
-
                     fantasyOutcomeService.save(fantasyOutcome).subscribe(
-                            outcome -> playerResponseService.addResult(outcome)
-                    );
-                });
+                            outcome -> playerResponseService.addResult(outcome));
 
+                })
+        );
     }
 
     @Override
     public Mono<Void> fix() {
-        return fantasyOutcomeService.toFix()
-                .doOnNext(fantasyOutcome ->
+        log.info("fixing predictions");
+
+         fantasyOutcomeService.toFix()
+                .subscribe(fantasyOutcome ->
                         tensorflowPredictionService.predict(
                                 TensorflowPrediction.builder()
                                         .fantasyEventTypes(fantasyOutcome.getFantasyEventType())
@@ -106,8 +109,11 @@ public class PredictionServiceImpl implements PredictionService {
                                                         fantasyOutcome.getOpponent(),
                                                         fantasyOutcome.getHome()))
                                         .build())
-                )
-                .thenEmpty(Mono.empty());
+                );
+
+         log.info("returning");
+
+         return Mono.empty();
     }
 
 

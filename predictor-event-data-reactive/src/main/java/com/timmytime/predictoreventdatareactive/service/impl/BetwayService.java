@@ -70,11 +70,12 @@ public class BetwayService implements ProviderService {
                     IntStream.range(0, event.getJSONArray("bets").length()).forEach(
                             bet -> bets.add(event.getJSONArray("bets").getJSONObject(bet)));
 
+                    //reality.  filter out player / event odds.  we just want match type odds. i have data to do this.
+                    //also saves hammering the DB.  best solution for now.
+
                             Flux.fromStream(
                                     bets.stream()
-                            )
-                                 //   .delayElements(Duration.ofSeconds(1))
-                                    .subscribe(bet -> {
+                            ).limitRate(1).subscribe(bet -> {
                                 Double odds = bet.getDouble("OddsDecimal");
 
                                 JSONObject eventName = new JSONObject();
@@ -91,7 +92,7 @@ public class BetwayService implements ProviderService {
                                         Arrays.asList(homeTeam.get().getId(), awayTeam.get().getId())
                                 )
                                         .switchIfEmpty(Mono.just(new EventOdds()))
-                                        .delayElement(Duration.ofSeconds(1))
+                                        .delayElement(Duration.ofMillis(10))
                                         .subscribe(eventOdds -> {
                                             if(eventOdds.getId() == null){
                                                 eventOdds.setId(UUID.randomUUID());

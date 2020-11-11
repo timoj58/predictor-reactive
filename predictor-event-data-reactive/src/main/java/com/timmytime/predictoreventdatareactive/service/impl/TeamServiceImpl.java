@@ -38,13 +38,14 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public Optional<Team> find(String label, String competition) {
-        List<Team> teamsByCompetition = teams.get(competition).values().stream().collect(Collectors.toList());
-        SpecialCase specialCase = specialCasesFactory.getSpecialCase(label).orElse(new SpecialCase(label));
 
-        return teamsByCompetition
-                .stream()
-                .filter(f -> f.getLabel().equals(specialCase.getName()))
-                .findFirst();
+        return findByLabelLike(
+                specialCasesFactory.getSpecialCase(
+                        label)
+                        .orElse(
+                                new SpecialCase(label)
+                        ).getName(),
+                CountryCompetitions.findByCompetition(competition).name());
     }
 
     @Override
@@ -72,6 +73,79 @@ public class TeamServiceImpl implements TeamService {
                 }
         );
 
+    }
+
+    private Optional<Team> findByLabelLike(String label, String competition) {
+        if (label.contains(" ")) {
+            Optional<Team> team = findByLabelIgnoreCaseAndCountry(label, competition);
+
+            if (team.isEmpty()) {
+                StringBuilder regex = new StringBuilder();
+
+                List<String> words = Arrays.asList(label.split(" "));
+                int counter = 0;
+                for (String word : words) {
+                    regex.append(word + (counter < (words.size() - 1) ? ".*" : ""));
+                    counter++;
+                }
+
+                Optional<Team> regexMatch1 = findByLabelRegexIgnoreCaseAndCountry(regex.toString(), competition);
+
+                if (regexMatch1.isEmpty()) {
+                    //regex each letter in the last word due to fucking abbreviations.  plus same other langs.
+                    //and probably first word too. Atl. Madrid = Athletic
+                    //but for now, as i havent seen all cases and can do it nicely.  just use first letter.
+                    regex = new StringBuilder();
+
+                    counter = 0;
+                    for (String word : words) {
+                        regex.append((counter < (word.length() - 1) ?
+                                word : word.charAt(0) + ".*")
+                                + (counter < (word.length() - 1) ? ".*" : ""));
+                        counter++;
+                    }
+
+                    return findByLabelRegexIgnoreCaseAndCountry(regex.toString(), competition);
+                } else {
+                    return regexMatch1;
+                }
+
+            }
+            return team;
+        } else {
+            //direct match first.
+            Optional<Team> team = findByLabelIgnoreCaseAndCountry(label, competition);
+            return team.isPresent() ?
+                    team
+                    :
+                    findByLabelLikeIgnoreCaseAndCountry(label, competition);
+        }
+    }
+
+
+    private Optional<Team> findByLabelRegexIgnoreCaseAndCountry(String regex, String competition){
+        log.info("regex {}", regex);
+        return teams.get(competition)
+                .values()
+                .stream()
+                .filter(f -> f.getLabel().toLowerCase().matches(regex.toLowerCase()))
+                .findFirst();
+    };
+
+    private Optional<Team> findByLabelIgnoreCaseAndCountry(String label, String competition){
+        return teams.get(competition)
+                .values()
+                .stream()
+                .filter(f -> f.getLabel().equalsIgnoreCase(label))
+                .findFirst();
+    }
+
+    private Optional<Team> findByLabelLikeIgnoreCaseAndCountry(String label, String competition){
+        return teams.get(competition)
+                .values()
+                .stream()
+                .filter(f -> f.getLabel().toLowerCase().contains(label.toLowerCase()))
+                .findFirst();
     }
 
 }

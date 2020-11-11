@@ -23,6 +23,8 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Service("playersMatchService")
 public class PlayersMatchServiceImpl implements ILoadService {
@@ -46,8 +48,9 @@ public class PlayersMatchServiceImpl implements ILoadService {
                     .map(m -> m.getMatchSelectionResponses())
                     .flatMap(List::stream)
                     .filter(f -> f.getEvent().equals(fantasyEventTypes.name().toLowerCase()))
-                    .findFirst()
-                    .orElse(new MatchSelectionResponse()).getPlayerResponses();
+                    .map(m -> m.getPlayerResponses())
+                    .flatMap(List::stream)
+                    .collect(Collectors.toList());
 
 
     @Autowired
@@ -119,7 +122,7 @@ public class PlayersMatchServiceImpl implements ILoadService {
                 .stream()
                 .forEach(event -> {
                     try {
-                        s3Facade.put("player-events/"+competition,
+                        s3Facade.put("player-events/"+competition+"/"+event.getHome()+"/"+event.getAway(),
                                 new ObjectMapper().writeValueAsString(
                                         event
                                 ));
@@ -148,7 +151,7 @@ public class PlayersMatchServiceImpl implements ILoadService {
                 .forEach(topSelectionsResponse ->
         {
             try {
-                s3Facade.put("top-performers/"+competition,
+                s3Facade.put("top-performers/"+competition+"/"+topSelectionsResponse.getEvent(),
                         new ObjectMapper().writeValueAsString(
                                 topSelectionsGoalsResponse
                         ));

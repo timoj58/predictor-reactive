@@ -83,9 +83,12 @@ public class PaddyPowerService implements ProviderService {
                         Flux.fromStream(
                                 Arrays.asList(homeEvent, awayEvent, drawEvent).stream()
                         )
-                                //.delayElements(Duration.ofSeconds(1))
+                                .limitRate(1)
                                 .subscribe(bet -> {
-                            JSONObject eventDetails = new JSONObject().put("type", bet.get("type"));
+                                    //reality.  filter out player / event odds.  we just want match type odds. i have data to do this.
+                                    //also saves hammering the DB.  best solution for now.
+
+                                    JSONObject eventDetails = new JSONObject().put("type", bet.get("type"));
                             eventOddsService.findEvent(
                                     Providers.PADDYPOWER_ODDS.name(),
                                     eventDetails.toString(),
@@ -93,7 +96,7 @@ public class PaddyPowerService implements ProviderService {
                                     bet.getDouble("decimalOdds"),
                                     Arrays.asList(homeTeam.get().getId(), awayTeam.get().getId()))
                                     .switchIfEmpty(Mono.just(new EventOdds()))
-                                    .delayElement(Duration.ofSeconds(1))
+                                    .delayElement(Duration.ofMillis(10))
                                     .subscribe(newBet -> {
                                         if (newBet.getId() == null) {
                                             newBet.setId(UUID.randomUUID());

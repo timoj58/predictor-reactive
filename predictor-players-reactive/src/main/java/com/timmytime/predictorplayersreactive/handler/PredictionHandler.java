@@ -1,6 +1,5 @@
 package com.timmytime.predictorplayersreactive.handler;
 
-import com.timmytime.predictorplayersreactive.request.Message;
 import com.timmytime.predictorplayersreactive.service.PredictionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
