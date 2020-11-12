@@ -48,7 +48,7 @@ public class PredictionServiceImpl implements PredictionService {
         this.tensorflowPredictionService = tensorflowPredictionService;
         this.fantasyOutcomeService = fantasyOutcomeService;
 
-        this.tensorflowPredictionService.setReceiptConsumer(receipt -> receipts.add(receipt));
+        this.tensorflowPredictionService.setReceiptConsumer(id -> receipts.add(id));
 
         //init machine
         Flux.fromStream(
@@ -82,7 +82,7 @@ public class PredictionServiceImpl implements PredictionService {
                 hasElements -> {
 
                     if(!hasElements && !receipts.isEmpty()){
-                        fix();
+                        fix().subscribe();
                     }
 
                     fantasyOutcomeService.find(id)
