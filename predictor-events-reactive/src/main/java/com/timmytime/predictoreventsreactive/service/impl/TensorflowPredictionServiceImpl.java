@@ -12,9 +12,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
+import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 @Service("tensorflowPredictionService")
@@ -28,6 +30,7 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
 
     private final Flux<TensorflowPrediction> receiver;
     private Consumer<TensorflowPrediction> consumer;
+    private Consumer<UUID> receiptConsumer;
 
     private final WebClientFacade webClientFacade;
 
@@ -54,9 +57,20 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
         consumer.accept(tensorflowPrediction);
     }
 
+    @Override
+    public void setReceiptConsumer(Consumer<UUID> receiptConsumer) {
+        this.receiptConsumer = receiptConsumer;
+    }
+
+    @Override
+    public Mono<Boolean> hasElements() {
+        return this.receiver.hasElements();
+    }
+
     private void process(TensorflowPrediction tensorflowPrediction){
         log.info("predicting id {} {} {}", tensorflowPrediction.getPrediction().getId(), tensorflowPrediction.getPrediction().getHome(), tensorflowPrediction.getPrediction().getAway());
 
+        receiptConsumer.accept(tensorflowPrediction.getPrediction().getId());
         webClientFacade.predict(
                 trainingHost + getUrl(tensorflowPrediction.getPredictions())
                         .replace("<receipt>", tensorflowPrediction.getPrediction().getId().toString())

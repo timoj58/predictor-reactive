@@ -9,4 +9,5 @@ public interface PredictionService {
     void start(String country);
     void result(UUID id, JSONObject result);
     Mono<Void> fix();
+    Mono<Long> toFix();
 }

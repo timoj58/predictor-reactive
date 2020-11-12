@@ -9,11 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.aggregation.DateOperators;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
+import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 @Service("tensorflowPredictionService")
@@ -37,6 +40,8 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
 
     private final Flux<TensorflowPrediction> receiver;
     private Consumer<TensorflowPrediction> consumer;
+    private Consumer<UUID> receiptConsumer;
+
 
 
     @Autowired
@@ -68,7 +73,7 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
 
         this.receiver
                 = Flux.push(sink -> consumer = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
-        this.receiver.delayElements(Duration.ofSeconds(1)).limitRate(1).subscribe(this::process);
+        this.receiver.delayElements(Duration.ofMillis(600)).limitRate(1).subscribe(this::process);
     }
 
     @Override
@@ -84,6 +89,16 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
     }
 
     @Override
+    public void setReceiptConsumer(Consumer<UUID> receiptConsumer) {
+        this.receiptConsumer = receiptConsumer;
+    }
+
+    @Override
+    public Mono<Boolean> hasElements() {
+        return this.receiver.hasElements();
+    }
+
+    @Override
     public void destroy(String type) {
         webClientFacade.config(
                 trainingHost
@@ -92,8 +107,12 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
     }
 
     private void process(TensorflowPrediction tensorflowPrediction){
-        log.info("predicting {} {}",  tensorflowPrediction.getPlayerEventOutcomeCsv().getPlayer(), tensorflowPrediction.getPlayerEventOutcomeCsv().getOpponent());
+        log.info("predicting id: {} {} {}",
+                tensorflowPrediction.getPlayerEventOutcomeCsv().getId(),
+                tensorflowPrediction.getPlayerEventOutcomeCsv().getPlayer(),
+                tensorflowPrediction.getPlayerEventOutcomeCsv().getOpponent());
 
+        receiptConsumer.accept(tensorflowPrediction.getPlayerEventOutcomeCsv().getId());
         webClientFacade.predict(
                 trainingHost
                         +getUrl(tensorflowPrediction.getFantasyEventTypes())

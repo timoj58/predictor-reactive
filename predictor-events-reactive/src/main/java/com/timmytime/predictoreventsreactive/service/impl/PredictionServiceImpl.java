@@ -36,6 +36,8 @@ public class PredictionServiceImpl implements PredictionService {
 
     private final Integer competitionDelay;
 
+    private final Set<UUID> receipts = new HashSet<>();
+
     @Autowired
     public PredictionServiceImpl(
             @Value("${competition.delay}") Integer competitionDelay,
@@ -47,6 +49,7 @@ public class PredictionServiceImpl implements PredictionService {
         this.eventService = eventService;
         this.tensorflowPredictionService = tensorflowPredictionService;
         this.eventOutcomeService = eventOutcomeService;
+        this.tensorflowPredictionService.setReceiptConsumer(id -> receipts.add(id));
     }
 
     @Override
@@ -89,12 +92,20 @@ public class PredictionServiceImpl implements PredictionService {
     @Override
     public void result(UUID id, JSONObject result) {
         log.info("received a result {}", id.toString());
-        eventOutcomeService.find(id)
-                .subscribe(eventOutcome -> {
-                    eventOutcome.setPrediction(normalize(result).toString());
-                    log.info("saving {}", eventOutcome.getId());
-                    eventOutcomeService.save(eventOutcome).subscribe();
-                });
+        receipts.remove(id);
+
+        tensorflowPredictionService.hasElements().subscribe(hasElements -> {
+            if(!hasElements && !receipts.isEmpty()){
+                //need to keep going.
+                fix().subscribe();
+            }
+            eventOutcomeService.find(id)
+                    .subscribe(eventOutcome -> {
+                        eventOutcome.setPrediction(normalize(result).toString());
+                        log.info("saving {}", eventOutcome.getId());
+                        eventOutcomeService.save(eventOutcome).subscribe();
+                    });
+        });
 
     }
 
@@ -109,6 +120,11 @@ public class PredictionServiceImpl implements PredictionService {
                                 .build()
                 )
         ).thenEmpty(Mono.empty());
+    }
+
+    @Override
+    public Mono<Long> toFix() {
+        return Mono.from(eventOutcomeService.toFix().count());
     }
 
     private List<PredictionLine> normalize(JSONObject result){

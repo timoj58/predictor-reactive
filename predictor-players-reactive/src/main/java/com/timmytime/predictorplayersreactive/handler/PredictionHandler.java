@@ -20,9 +20,10 @@ public class PredictionHandler {
     }
 
     public Mono<ServerResponse> fix(ServerRequest request) {
+        return ServerResponse.ok().build(predictionService.fix());
+    }
 
-        return ServerResponse.ok().build(
-                predictionService.fix()
-        );
+    public Mono<ServerResponse> toFix(ServerRequest request) {
+        return ServerResponse.ok().bodyValue(predictionService.toFix());
     }
 }
