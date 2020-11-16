@@ -10,5 +10,5 @@ import java.util.function.Consumer;
 
 public interface TensorflowPredictionService {
     void predict(TensorflowPrediction tensorflowPrediction);
-    void setReplayConsumer(Consumer<UUID> replay);
+    Boolean receiptsEmpty();
 }

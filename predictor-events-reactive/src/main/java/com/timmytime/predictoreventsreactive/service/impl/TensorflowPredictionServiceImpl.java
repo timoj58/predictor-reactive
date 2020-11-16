@@ -16,6 +16,8 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -32,9 +34,10 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
 
     private final Flux<TensorflowPrediction> receiver;
     private Consumer<TensorflowPrediction> consumer;
-    private Consumer<UUID> replay;
 
     private final WebClientFacade webClientFacade;
+
+    private final Set<UUID> receipts = new HashSet<>();
 
     @Autowired
     public TensorflowPredictionServiceImpl(
@@ -54,29 +57,26 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
                 = Flux.push(sink -> consumer = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
         this.receiver.delayElements(Duration.ofSeconds(delay*2))
                 .limitRate(1)
-                .doOnNext(this::process)
-        .doFinally(end ->
-            Mono.just(UUID.randomUUID())
-                    .delayElement(Duration.ofMinutes(delay))
-                    .subscribe(replay)
-        ).subscribe();
+                .subscribe(this::process);
     }
 
 
     @Override
     public void predict(TensorflowPrediction tensorflowPrediction) {
+        receipts.add(tensorflowPrediction.getPrediction().getId());
+        //and return count for the queue.  so whens its empty.  run it again.  better.
         consumer.accept(tensorflowPrediction);
     }
 
     @Override
-    public void setReplayConsumer(Consumer<UUID> replay) {
-         this.replay = replay;
+    public Boolean receiptsEmpty() {
+        return receipts.isEmpty();
     }
 
 
     private void process(TensorflowPrediction tensorflowPrediction){
         log.info("predicting id {} {} {}", tensorflowPrediction.getPrediction().getId(), tensorflowPrediction.getPrediction().getHome(), tensorflowPrediction.getPrediction().getAway());
-
+        receipts.remove(tensorflowPrediction.getPrediction().getId());
         webClientFacade.predict(
                 trainingHost + getUrl(tensorflowPrediction.getPredictions())
                         .replace("<receipt>", tensorflowPrediction.getPrediction().getId().toString())

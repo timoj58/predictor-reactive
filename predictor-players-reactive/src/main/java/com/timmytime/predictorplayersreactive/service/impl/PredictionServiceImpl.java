@@ -52,7 +52,6 @@ public class PredictionServiceImpl implements PredictionService {
                 Arrays.asList("assists",  "conceded",  "goals",  "minutes",  "red",  "saves",  "yellow").stream()
         ).subscribe(type -> tensorflowPredictionService.init(type));
 
-        this.tensorflowPredictionService.setReplayConsumer(id -> processFix());
     }
 
     @Override
@@ -86,6 +85,14 @@ public class PredictionServiceImpl implements PredictionService {
                                 log.info("saving prediction {} id: {}", fantasyOutcome.getFantasyEventType(), fantasyOutcome.getId());
                                 fantasyOutcomeService.save(fantasyOutcome).subscribe(
                                         outcome -> playerResponseService.addResult(outcome));
+
+                                Mono.just(tensorflowPredictionService.receiptsEmpty())
+                                        .delayElement(Duration.ofMinutes(1))
+                                        .subscribe(empty -> { //check again.
+                                            if(empty && tensorflowPredictionService.receiptsEmpty()){
+                                                processFix();
+                                            }
+                                        });
 
                             })
         );

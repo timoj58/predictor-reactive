@@ -47,7 +47,6 @@ public class PredictionServiceImpl implements PredictionService {
         this.eventService = eventService;
         this.tensorflowPredictionService = tensorflowPredictionService;
         this.eventOutcomeService = eventOutcomeService;
-        this.tensorflowPredictionService.setReplayConsumer(id -> processFix());
     }
 
     @Override
@@ -90,13 +89,23 @@ public class PredictionServiceImpl implements PredictionService {
     @Override
     public void result(UUID id, JSONObject result) {
         log.info("received a result {}", id.toString());
+        CompletableFuture.runAsync(() ->
         //need to sort out the fix stuff.  to do.  on end of stream i guess. makes more sense...
             eventOutcomeService.find(id)
                     .subscribe(eventOutcome -> {
                         eventOutcome.setPrediction(normalize(result).toString());
                         log.info("saving {}", eventOutcome.getId());
                         eventOutcomeService.save(eventOutcome).subscribe();
-                    });
+
+                        Mono.just(tensorflowPredictionService.receiptsEmpty())
+                                .delayElement(Duration.ofMinutes(competitionDelay))
+                                .subscribe(empty -> { //check again.
+                                   if(empty && tensorflowPredictionService.receiptsEmpty()){
+                                       processFix();
+                                   }
+                                });
+                    })
+        );
     }
 
     @Override

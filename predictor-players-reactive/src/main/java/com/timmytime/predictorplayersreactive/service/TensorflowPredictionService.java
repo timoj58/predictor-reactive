@@ -13,5 +13,5 @@ public interface TensorflowPredictionService {
     void predict(TensorflowPrediction tensorflowPrediction);
     void init(String type);
     void destroy(String type);
-    void setReplayConsumer(Consumer<UUID> replay);
+    Boolean receiptsEmpty();
 }

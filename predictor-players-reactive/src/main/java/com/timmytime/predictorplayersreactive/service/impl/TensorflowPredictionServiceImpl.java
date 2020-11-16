@@ -2,20 +2,19 @@ package com.timmytime.predictorplayersreactive.service.impl;
 
 import com.timmytime.predictorplayersreactive.enumerator.FantasyEventTypes;
 import com.timmytime.predictorplayersreactive.facade.WebClientFacade;
-import com.timmytime.predictorplayersreactive.request.PlayerEventOutcomeCsv;
 import com.timmytime.predictorplayersreactive.request.TensorflowPrediction;
 import com.timmytime.predictorplayersreactive.service.TensorflowPredictionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.mongodb.core.aggregation.DateOperators;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
-import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -37,11 +36,10 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
 
     private final WebClientFacade webClientFacade;
 
-
     private final Flux<TensorflowPrediction> receiver;
     private Consumer<TensorflowPrediction> consumer;
-    private Consumer<UUID> replay;
 
+    private final Set<UUID> receipts = new HashSet<>();
 
 
     @Autowired
@@ -73,19 +71,16 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
 
         this.receiver
                 = Flux.push(sink -> consumer = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
-        this.receiver.delayElements(Duration.ofMillis(600))
+        this.receiver.delayElements(Duration.ofMillis(500))
                 .limitRate(1)
-                .doOnNext(this::process)
-                .doFinally(end ->
-                        Mono.just(UUID.randomUUID())
-                                .delayElement(Duration.ofMinutes(1))
-                                .subscribe(replay)
-                ).subscribe();
+                .subscribe(this::process);
+
     }
 
     @Override
     public void predict(TensorflowPrediction tensorflowPrediction) {
         consumer.accept(tensorflowPrediction);
+        receipts.add(tensorflowPrediction.getPlayerEventOutcomeCsv().getId());
     }
 
     @Override
@@ -96,8 +91,8 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
     }
 
     @Override
-    public void setReplayConsumer(Consumer<UUID> replay) {
-        this.replay = replay;
+    public Boolean receiptsEmpty() {
+        return receipts.isEmpty();
     }
 
 
@@ -114,6 +109,8 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
                 tensorflowPrediction.getPlayerEventOutcomeCsv().getId(),
                 tensorflowPrediction.getPlayerEventOutcomeCsv().getPlayer(),
                 tensorflowPrediction.getPlayerEventOutcomeCsv().getOpponent());
+
+        receipts.remove(tensorflowPrediction.getPlayerEventOutcomeCsv().getId());
 
         webClientFacade.predict(
                 trainingHost
