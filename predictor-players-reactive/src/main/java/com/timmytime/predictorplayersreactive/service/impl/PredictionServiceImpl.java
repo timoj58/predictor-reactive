@@ -32,7 +32,6 @@ public class PredictionServiceImpl implements PredictionService {
     private final PlayerResponseService playerResponseService;
     private final TensorflowPredictionService tensorflowPredictionService;
     private final FantasyOutcomeService fantasyOutcomeService;
-    private final Set<UUID> receipts = new HashSet<>();
 
     @Autowired
     public PredictionServiceImpl(
@@ -48,13 +47,12 @@ public class PredictionServiceImpl implements PredictionService {
         this.tensorflowPredictionService = tensorflowPredictionService;
         this.fantasyOutcomeService = fantasyOutcomeService;
 
-        this.tensorflowPredictionService.setReceiptConsumer(id -> receipts.add(id));
-
         //init machine
         Flux.fromStream(
                 Arrays.asList("assists",  "conceded",  "goals",  "minutes",  "red",  "saves",  "yellow").stream()
         ).subscribe(type -> tensorflowPredictionService.init(type));
 
+        this.tensorflowPredictionService.setReplayConsumer(id -> processFix());
     }
 
     @Override
@@ -76,14 +74,7 @@ public class PredictionServiceImpl implements PredictionService {
 
     @Override
     public void result(UUID id, JSONObject result) {
-        receipts.remove(id);
         CompletableFuture.runAsync(() ->
-        tensorflowPredictionService.hasElements().subscribe(
-                hasElements -> {
-
-                    if(!hasElements && !receipts.isEmpty()){
-                        fix().subscribe();
-                    }
 
                     fantasyOutcomeService.find(id)
                             .subscribe(fantasyOutcome -> {
@@ -93,25 +84,26 @@ public class PredictionServiceImpl implements PredictionService {
                                 );
 
                                 log.info("saving prediction {} id: {}", fantasyOutcome.getFantasyEventType(), fantasyOutcome.getId());
-                                fantasyOutcomeService.save(fantasyOutcome).doOnNext(
-                                        outcome -> playerResponseService.addResult(outcome))
-                                .doFinally(then -> {
-                                    if(!hasElements && receipts.isEmpty()){
-                                        //send message to client services that we have finished.
-                                    }
-                                })
-                                .subscribe();
+                                fantasyOutcomeService.save(fantasyOutcome).subscribe(
+                                        outcome -> playerResponseService.addResult(outcome));
 
-                            });
-                }
-        ));
+                            })
+        );
     }
 
     @Override
     public Mono<Void> fix() {
         log.info("fixing predictions");
+         processFix();
+         log.info("returning");
 
-         fantasyOutcomeService.toFix()
+         return Mono.empty();
+    }
+
+    private void processFix(){
+        log.info("processing to fix");
+        //if we have no records left, then we should send a message to client service.  TODO. for automation.
+        fantasyOutcomeService.toFix()
                 .subscribe(fantasyOutcome ->
                         tensorflowPredictionService.predict(
                                 TensorflowPrediction.builder()
@@ -124,17 +116,6 @@ public class PredictionServiceImpl implements PredictionService {
                                                         fantasyOutcome.getHome()))
                                         .build())
                 );
-
-         log.info("returning");
-
-         return Mono.empty();
-    }
-
-    @Override
-    public Mono<Long> toFix() {
-        return Mono.from(
-                fantasyOutcomeService.toFix().count()
-        );
     }
 
 

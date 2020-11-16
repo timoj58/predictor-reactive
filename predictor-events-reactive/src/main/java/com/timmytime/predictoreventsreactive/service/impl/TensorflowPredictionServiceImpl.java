@@ -28,9 +28,11 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
     private final String resultsUrl;
     private final String goalsUrl;
 
+    private final Integer delay;
+
     private final Flux<TensorflowPrediction> receiver;
     private Consumer<TensorflowPrediction> consumer;
-    private Consumer<UUID> receiptConsumer;
+    private Consumer<UUID> replay;
 
     private final WebClientFacade webClientFacade;
 
@@ -39,16 +41,25 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
             @Value("${training.host}") String trainingHost,
             @Value("${ml.predict.result.url}") String resultsUrl,
             @Value("${ml.predict.goals.url}") String goalsUrl,
+            @Value("${competition.delay}") Integer delay,
             WebClientFacade webClientFacade
     ){
         this.trainingHost = trainingHost;
         this.resultsUrl = resultsUrl;
         this.goalsUrl = goalsUrl;
+        this.delay = delay;
         this.webClientFacade = webClientFacade;
 
         this.receiver
                 = Flux.push(sink -> consumer = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
-        this.receiver.delayElements(Duration.ofSeconds(2)).limitRate(1).subscribe(this::process);
+        this.receiver.delayElements(Duration.ofSeconds(delay*2))
+                .limitRate(1)
+                .doOnNext(this::process)
+        .doFinally(end ->
+            Mono.just(UUID.randomUUID())
+                    .delayElement(Duration.ofMinutes(delay))
+                    .subscribe(replay)
+        ).subscribe();
     }
 
 
@@ -58,19 +69,14 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
     }
 
     @Override
-    public void setReceiptConsumer(Consumer<UUID> receiptConsumer) {
-        this.receiptConsumer = receiptConsumer;
+    public void setReplayConsumer(Consumer<UUID> replay) {
+         this.replay = replay;
     }
 
-    @Override
-    public Mono<Boolean> hasElements() {
-        return this.receiver.hasElements();
-    }
 
     private void process(TensorflowPrediction tensorflowPrediction){
         log.info("predicting id {} {} {}", tensorflowPrediction.getPrediction().getId(), tensorflowPrediction.getPrediction().getHome(), tensorflowPrediction.getPrediction().getAway());
 
-        receiptConsumer.accept(tensorflowPrediction.getPrediction().getId());
         webClientFacade.predict(
                 trainingHost + getUrl(tensorflowPrediction.getPredictions())
                         .replace("<receipt>", tensorflowPrediction.getPrediction().getId().toString())

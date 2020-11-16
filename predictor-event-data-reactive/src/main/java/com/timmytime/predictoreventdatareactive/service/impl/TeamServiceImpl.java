@@ -45,7 +45,7 @@ public class TeamServiceImpl implements TeamService {
                         .orElse(
                                 new SpecialCase(label)
                         ).getName(),
-                CountryCompetitions.findByCompetition(competition).name());
+                competition);
     }
 
     @Override
@@ -76,8 +76,8 @@ public class TeamServiceImpl implements TeamService {
     }
 
     private Optional<Team> findByLabelLike(String label, String competition) {
+        Optional<Team> team = findByLabelIgnoreCaseAndCountry(label, competition);
         if (label.contains(" ")) {
-            Optional<Team> team = findByLabelIgnoreCaseAndCountry(label, competition);
 
             if (team.isEmpty()) {
                 StringBuilder regex = new StringBuilder();
@@ -114,7 +114,6 @@ public class TeamServiceImpl implements TeamService {
             return team;
         } else {
             //direct match first.
-            Optional<Team> team = findByLabelIgnoreCaseAndCountry(label, competition);
             return team.isPresent() ?
                     team
                     :

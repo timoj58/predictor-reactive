@@ -10,6 +10,5 @@ import java.util.function.Consumer;
 
 public interface TensorflowPredictionService {
     void predict(TensorflowPrediction tensorflowPrediction);
-    void setReceiptConsumer(Consumer<UUID> receiptConsumer);
-    Mono<Boolean> hasElements();
+    void setReplayConsumer(Consumer<UUID> replay);
 }

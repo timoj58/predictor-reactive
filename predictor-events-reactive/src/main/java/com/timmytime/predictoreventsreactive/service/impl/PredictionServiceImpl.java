@@ -23,6 +23,7 @@ import reactor.core.publisher.Mono;
 import javax.annotation.PostConstruct;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service("predictionService")
@@ -33,10 +34,7 @@ public class PredictionServiceImpl implements PredictionService {
     private final EventService eventService;
     private final TensorflowPredictionService tensorflowPredictionService;
     private final EventOutcomeService eventOutcomeService;
-
     private final Integer competitionDelay;
-
-    private final Set<UUID> receipts = new HashSet<>();
 
     @Autowired
     public PredictionServiceImpl(
@@ -49,7 +47,7 @@ public class PredictionServiceImpl implements PredictionService {
         this.eventService = eventService;
         this.tensorflowPredictionService = tensorflowPredictionService;
         this.eventOutcomeService = eventOutcomeService;
-        this.tensorflowPredictionService.setReceiptConsumer(id -> receipts.add(id));
+        this.tensorflowPredictionService.setReplayConsumer(id -> processFix());
     }
 
     @Override
@@ -92,26 +90,25 @@ public class PredictionServiceImpl implements PredictionService {
     @Override
     public void result(UUID id, JSONObject result) {
         log.info("received a result {}", id.toString());
-        receipts.remove(id);
-
-        tensorflowPredictionService.hasElements().subscribe(hasElements -> {
-            if(!hasElements && !receipts.isEmpty()){
-                //need to keep going.
-                fix().subscribe();
-            }
+        //need to sort out the fix stuff.  to do.  on end of stream i guess. makes more sense...
             eventOutcomeService.find(id)
                     .subscribe(eventOutcome -> {
                         eventOutcome.setPrediction(normalize(result).toString());
                         log.info("saving {}", eventOutcome.getId());
                         eventOutcomeService.save(eventOutcome).subscribe();
                     });
-        });
-
     }
 
     @Override
     public Mono<Void> fix() {
-        return eventOutcomeService.toFix().doOnNext(eventOutcome ->
+        processFix();
+        return Mono.empty();
+    }
+
+
+    private void processFix(){
+        log.info("processing records to fix");
+        eventOutcomeService.toFix().subscribe(eventOutcome ->
                 tensorflowPredictionService.predict(
                         TensorflowPrediction.builder()
                                 .predictions(Predictions.valueOf(eventOutcome.getEventType()))
@@ -119,12 +116,7 @@ public class PredictionServiceImpl implements PredictionService {
                                 .prediction(new Prediction(eventOutcome))
                                 .build()
                 )
-        ).thenEmpty(Mono.empty());
-    }
-
-    @Override
-    public Mono<Long> toFix() {
-        return Mono.from(eventOutcomeService.toFix().count());
+        );
     }
 
     private List<PredictionLine> normalize(JSONObject result){

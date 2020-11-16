@@ -13,6 +13,5 @@ public interface TensorflowPredictionService {
     void predict(TensorflowPrediction tensorflowPrediction);
     void init(String type);
     void destroy(String type);
-    void setReceiptConsumer(Consumer<UUID> receiptConsumer);
-    Mono<Boolean> hasElements();
+    void setReplayConsumer(Consumer<UUID> replay);
 }

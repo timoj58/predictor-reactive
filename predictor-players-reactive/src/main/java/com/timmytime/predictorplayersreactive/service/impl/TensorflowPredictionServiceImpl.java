@@ -40,7 +40,7 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
 
     private final Flux<TensorflowPrediction> receiver;
     private Consumer<TensorflowPrediction> consumer;
-    private Consumer<UUID> receiptConsumer;
+    private Consumer<UUID> replay;
 
 
 
@@ -73,7 +73,14 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
 
         this.receiver
                 = Flux.push(sink -> consumer = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
-        this.receiver.delayElements(Duration.ofMillis(600)).limitRate(1).subscribe(this::process);
+        this.receiver.delayElements(Duration.ofMillis(600))
+                .limitRate(1)
+                .doOnNext(this::process)
+                .doFinally(end ->
+                        Mono.just(UUID.randomUUID())
+                                .delayElement(Duration.ofMinutes(1))
+                                .subscribe(replay)
+                ).subscribe();
     }
 
     @Override
@@ -89,14 +96,10 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
     }
 
     @Override
-    public void setReceiptConsumer(Consumer<UUID> receiptConsumer) {
-        this.receiptConsumer = receiptConsumer;
+    public void setReplayConsumer(Consumer<UUID> replay) {
+        this.replay = replay;
     }
 
-    @Override
-    public Mono<Boolean> hasElements() {
-        return this.receiver.hasElements();
-    }
 
     @Override
     public void destroy(String type) {
@@ -112,7 +115,6 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
                 tensorflowPrediction.getPlayerEventOutcomeCsv().getPlayer(),
                 tensorflowPrediction.getPlayerEventOutcomeCsv().getOpponent());
 
-        receiptConsumer.accept(tensorflowPrediction.getPlayerEventOutcomeCsv().getId());
         webClientFacade.predict(
                 trainingHost
                         +getUrl(tensorflowPrediction.getFantasyEventTypes())

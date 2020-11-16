@@ -22,10 +22,4 @@ public class PredictionFunction {
                 , predictionHandler::fix);
     }
 
-    @Bean
-    @RouterOperation(beanClass = PredictionService.class, beanMethod = "toFix")
-    RouterFunction<ServerResponse> toFix(PredictionHandler predictionHandler) {
-        return route(RequestPredicates.GET("/to-fix-predictions")
-                , predictionHandler::toFix);
-    }
 }

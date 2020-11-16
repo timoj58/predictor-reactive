@@ -93,8 +93,8 @@ public class TeamServiceImpl implements TeamService {
 
 
     private Optional<Team> findByLabelLike(String label, String country) {
+        Optional<Team> team = findByLabelIgnoreCaseAndCountry(label, country);
         if (label.contains(" ")) {
-            Optional<Team> team = findByLabelIgnoreCaseAndCountry(label, country);
 
             if (team.isEmpty()) {
                 StringBuilder regex = new StringBuilder();
@@ -131,7 +131,6 @@ public class TeamServiceImpl implements TeamService {
             return team;
         } else {
             //direct match first.
-            Optional<Team> team = findByLabelIgnoreCaseAndCountry(label, country);
             return team.isPresent() ?
                     team
                     :

@@ -23,7 +23,4 @@ public class PredictionHandler {
         return ServerResponse.ok().build(predictionService.fix());
     }
 
-    public Mono<ServerResponse> toFix(ServerRequest request) {
-        return ServerResponse.ok().bodyValue(predictionService.toFix());
-    }
 }
