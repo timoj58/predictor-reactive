@@ -42,7 +42,7 @@ public class StartupServiceImpl implements StartupService {
    // @PostConstruct
     public void start() throws InterruptedException {
 
-        Mono.just(1).subscribe(s -> s3Facade.archive());
+        //TODO review this in future. Mono.just(1).subscribe(s -> s3Facade.archive());
 
         lambdaFacade.invoke(LambdaFunctions.DATABASE.getFunctionName());
         Thread.sleep(Duration.ofMinutes(3).toMillis());

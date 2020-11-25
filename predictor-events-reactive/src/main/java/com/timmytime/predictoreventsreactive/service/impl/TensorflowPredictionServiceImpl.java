@@ -1,5 +1,6 @@
 package com.timmytime.predictoreventsreactive.service.impl;
 
+import com.timmytime.predictoreventsreactive.cache.ReceiptCache;
 import com.timmytime.predictoreventsreactive.enumerator.Predictions;
 import com.timmytime.predictoreventsreactive.facade.WebClientFacade;
 import com.timmytime.predictoreventsreactive.request.Prediction;
@@ -36,8 +37,8 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
     private Consumer<TensorflowPrediction> consumer;
 
     private final WebClientFacade webClientFacade;
+    private final ReceiptCache receiptCache;
 
-    private final Set<UUID> receipts = new HashSet<>();
 
     @Autowired
     public TensorflowPredictionServiceImpl(
@@ -45,13 +46,15 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
             @Value("${ml.predict.result.url}") String resultsUrl,
             @Value("${ml.predict.goals.url}") String goalsUrl,
             @Value("${competition.delay}") Integer delay,
-            WebClientFacade webClientFacade
+            WebClientFacade webClientFacade,
+            ReceiptCache receiptCache
     ){
         this.trainingHost = trainingHost;
         this.resultsUrl = resultsUrl;
         this.goalsUrl = goalsUrl;
         this.delay = delay;
         this.webClientFacade = webClientFacade;
+        this.receiptCache = receiptCache;
 
         this.receiver
                 = Flux.push(sink -> consumer = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
@@ -63,20 +66,16 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
 
     @Override
     public void predict(TensorflowPrediction tensorflowPrediction) {
-        receipts.add(tensorflowPrediction.getPrediction().getId());
+        receiptCache.addReceipt(tensorflowPrediction.getPrediction().getId());
         //and return count for the queue.  so whens its empty.  run it again.  better.
         consumer.accept(tensorflowPrediction);
     }
 
-    @Override
-    public Boolean receiptsEmpty() {
-        return receipts.isEmpty();
-    }
 
 
     private void process(TensorflowPrediction tensorflowPrediction){
         log.info("predicting id {} {} {}", tensorflowPrediction.getPrediction().getId(), tensorflowPrediction.getPrediction().getHome(), tensorflowPrediction.getPrediction().getAway());
-        receipts.remove(tensorflowPrediction.getPrediction().getId());
+        receiptCache.processReceipt(tensorflowPrediction.getPrediction().getId());
         webClientFacade.predict(
                 trainingHost + getUrl(tensorflowPrediction.getPredictions())
                         .replace("<receipt>", tensorflowPrediction.getPrediction().getId().toString())

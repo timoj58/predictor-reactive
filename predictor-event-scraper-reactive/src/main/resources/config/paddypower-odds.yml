@@ -70,7 +70,7 @@ bookmakerScrapers: [
                                  {\"key\": \"winRunnerOdds:trueOdds:decimalOdds:decimalOdds\"}]}"
  },
  {type: "competitions",
-  id: "spain_1",
+  id: "spain_2",
   url: "https://mga.paddypower.com/www/sports/navigation/facet/v1.0/search",
   active: "true",
   payload: "{\"textQuery\":{\"query\":\"segunda division\",\"facetsToSearch\":[\"COMPETITION\"]},
@@ -83,7 +83,7 @@ bookmakerScrapers: [
  {type: "app-key",
   id: "spain_2",
   order: "102",
-  url: "https://www.paddypower.com/football/segunda-division",
+  url: "https://www.paddypower.com/football/spanish-segunda-division",
   active: "true",
   payload: "",
   keys: ["{\"key\": \"appKey\"}"],
@@ -97,7 +97,7 @@ bookmakerScrapers: [
                                  {\"key\": \"winRunnerOdds:trueOdds:decimalOdds:decimalOdds\"}]}"
  },
  {type: "competitions",
-  id: "spain_2",
+  id: "spain_1",
   url: "https://mga.paddypower.com/www/sports/navigation/facet/v1.0/search",
   active: "true",
   payload: "{\"textQuery\":{\"query\":\"spanish la liga\",\"facetsToSearch\":[\"COMPETITION\"]},

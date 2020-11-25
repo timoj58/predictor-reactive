@@ -12,6 +12,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.function.Consumer;
 
 import static com.timmytime.predictoreventdatareactive.enumerator.Providers.BETWAY_ODDS;
@@ -40,7 +41,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         this.results = Flux.push(sink ->
                MessageReceivedServiceImpl.this.receive = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
 
-        this.results.subscribe(this::process);
+        this.results.limitRate(1).delayElements(Duration.ofMillis(500)).subscribe(this::process);
     }
 
     @Override

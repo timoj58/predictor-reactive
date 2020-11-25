@@ -13,5 +13,4 @@ public interface TensorflowPredictionService {
     void predict(TensorflowPrediction tensorflowPrediction);
     void init(String type);
     void destroy(String type);
-    Boolean receiptsEmpty();
 }

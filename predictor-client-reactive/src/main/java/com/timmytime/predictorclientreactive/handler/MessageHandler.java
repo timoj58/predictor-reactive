@@ -26,4 +26,13 @@ public class MessageHandler {
                 messageReceivedService.test()
         );
     }
+
+    public Mono<ServerResponse> receive(ServerRequest request) {
+
+        Mono<Message> message = request.bodyToMono(Message.class);
+
+        return ServerResponse.ok().build(
+                messageReceivedService.receive(message)
+        );
+    }
 }

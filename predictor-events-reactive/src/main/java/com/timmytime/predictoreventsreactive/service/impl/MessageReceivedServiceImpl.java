@@ -8,6 +8,7 @@ import com.timmytime.predictoreventsreactive.enumerator.Messages;
 import com.timmytime.predictoreventsreactive.facade.WebClientFacade;
 import com.timmytime.predictoreventsreactive.request.Message;
 import com.timmytime.predictoreventsreactive.service.MessageReceivedService;
+import com.timmytime.predictoreventsreactive.service.PredictionResultService;
 import com.timmytime.predictoreventsreactive.service.PredictionService;
 import com.timmytime.predictoreventsreactive.service.ValidationService;
 import org.json.JSONObject;
@@ -27,6 +28,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     private final Map<String, List<Messages>> messages = new HashMap<>();
 
     private final PredictionService predictionService;
+    private final PredictionResultService predictionResultService;
     private final ValidationService validationService;
     private final WebClientFacade webClientFacade;
 
@@ -36,11 +38,13 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     public MessageReceivedServiceImpl(
             @Value("${players.host}") String playersHost,
             PredictionService predictionService,
+            PredictionResultService predictionResultService,
             ValidationService validationService,
             WebClientFacade webClientFacade
     ){
         this.playersHost = playersHost;
         this.predictionService = predictionService;
+        this.predictionResultService = predictionResultService;
         this.validationService = validationService;
         this.webClientFacade = webClientFacade;
 
@@ -62,6 +66,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                         log.info("processing {}", msg.getCountry());
                         validationService.resetLast(msg.getCountry(), (country) -> {
                             log.info("starting predictions {}", country);
+                            predictionResultService.addCountry(country);
                             validationService.validate(country);
                             webClientFacade.sendMessage(playersHost+"/message", createMessage(country));
                             predictionService.start(country);
@@ -77,7 +82,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     @Override
     public Mono<Void> prediction(UUID id, Mono<JsonNode> prediction) {
         return prediction.doOnNext(
-                msg ->  predictionService.result(id, new JSONObject(msg.toString()))
+                msg ->  predictionResultService.result(id, new JSONObject(msg.toString()), c -> predictionService.retryMissing())
         ).thenEmpty(Mono.empty());
     }
 

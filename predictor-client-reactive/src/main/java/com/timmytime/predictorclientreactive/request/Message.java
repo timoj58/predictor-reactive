@@ -10,5 +10,4 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Message {
     private Messages type;
-    private String country;
 }

@@ -28,8 +28,7 @@ public class ScraperFunction {
     @RouterOperation(beanClass = ScraperService.class, beanMethod = "scrape")
     RouterFunction<ServerResponse> scrape() {
 
-        return route(RequestPredicates.POST("/scrape")
-                        .and(RequestPredicates.accept(MediaType.APPLICATION_STREAM_JSON)),
+        return route(RequestPredicates.POST("/scrape"),
                 (scrape) -> ServerResponse.ok().build(scraperService.scrape()));
     }
 }

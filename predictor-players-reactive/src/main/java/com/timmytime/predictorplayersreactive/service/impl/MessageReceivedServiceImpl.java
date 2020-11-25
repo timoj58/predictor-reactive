@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.timmytime.predictorplayersreactive.enumerator.ApplicableFantasyLeagues;
 import com.timmytime.predictorplayersreactive.enumerator.Messages;
 import com.timmytime.predictorplayersreactive.request.Message;
-import com.timmytime.predictorplayersreactive.service.MessageReceivedService;
-import com.timmytime.predictorplayersreactive.service.PlayersTrainingHistoryService;
-import com.timmytime.predictorplayersreactive.service.PredictionService;
-import com.timmytime.predictorplayersreactive.service.TrainingService;
+import com.timmytime.predictorplayersreactive.service.*;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,16 +23,19 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     private final Map<String, List<Messages>> messages = new HashMap<>();
 
     private final PredictionService predictionService;
+    private final PredictionResultService predictionResultService;
     private final TrainingService trainingService;
     private final PlayersTrainingHistoryService playersTrainingHistoryService;
 
     @Autowired
     public MessageReceivedServiceImpl(
             PredictionService predictionService,
+            PredictionResultService predictionResultService,
             TrainingService trainingService,
             PlayersTrainingHistoryService playersTrainingHistoryService
     ){
         this.predictionService = predictionService;
+        this.predictionResultService = predictionResultService;
         this.trainingService = trainingService;
         this.playersTrainingHistoryService = playersTrainingHistoryService;
 
@@ -58,6 +58,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
 
                         if (messages.get(msg.getCountry().toLowerCase()).containsAll(Arrays.asList(Messages.values()))) {
                             predictionService.start(msg.getCountry().toLowerCase());
+                            predictionResultService.addCountry(msg.getCountry().toLowerCase());
                         }
                     }else {
                         log.info("skipping {} not applicable", msg.getCountry());
@@ -71,7 +72,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     public Mono<Void> prediction(UUID id, Mono<JsonNode> prediction) {
         log.info("receiving prediction result for {}", id);
         return prediction.doOnNext(
-                msg ->  predictionService.result(id, new JSONObject(msg.toString()))
+                msg ->  predictionResultService.result(id, new JSONObject(msg.toString()), c -> predictionService.retryMissing())
         ).thenEmpty(Mono.empty());
 
     }

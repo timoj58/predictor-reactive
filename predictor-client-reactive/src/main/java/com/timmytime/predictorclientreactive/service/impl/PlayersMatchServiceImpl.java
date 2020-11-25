@@ -93,7 +93,7 @@ public class PlayersMatchServiceImpl implements ILoadService {
                     List<PlayerResponse> playerResponses = new ArrayList<>();
                     webClientFacade.getPlayers(playersHost+"/players/match/"+league+"?home="+event.getHome()+"&away="+event.getAway()) //need players by teams...
                             .doOnNext(player ->
-                                    webClientFacade.getPlayer(playersHost+"//player/"+player.getId()) //get player response
+                                    webClientFacade.getPlayer(playersHost+"/player/"+player.getId()) //get player response
                                     .subscribe(playerResponse -> playerResponses.add(playerResponse))
                             ) //get the appearance and stats set up, create a player response
                             .doFinally(match -> Mono.just(playerResponses)
@@ -119,7 +119,6 @@ public class PlayersMatchServiceImpl implements ILoadService {
         log.info("saving {}", competition);
 
         byCompetition.get(competition)
-                .stream()
                 .forEach(event -> {
                     try {
                         s3Facade.put("player-events/"+competition+"/"+event.getHome()+"/"+event.getAway(),
@@ -147,13 +146,12 @@ public class PlayersMatchServiceImpl implements ILoadService {
         topSelectionsYellowsResponse.process(process.apply(byCompetition.get(competition), FantasyEventTypes.YELLOW_CARD));
 
         Arrays.asList(topSelectionsAssistsResponse, topSelectionsGoalsResponse, topSelectionsSavesResponse, topSelectionsYellowsResponse)
-                .stream()
                 .forEach(topSelectionsResponse ->
         {
             try {
                 s3Facade.put("top-performers/"+competition+"/"+topSelectionsResponse.getEvent(),
                         new ObjectMapper().writeValueAsString(
-                                topSelectionsGoalsResponse
+                                topSelectionsResponse
                         ));
             } catch (JsonProcessingException e) {
                 log.error("json", e);

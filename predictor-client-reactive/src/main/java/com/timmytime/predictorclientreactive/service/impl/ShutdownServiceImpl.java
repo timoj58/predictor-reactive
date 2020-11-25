@@ -3,6 +3,7 @@ package com.timmytime.predictorclientreactive.service.impl;
 import com.timmytime.predictorclientreactive.enumerator.LambdaFunctions;
 import com.timmytime.predictorclientreactive.facade.LambdaFacade;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -13,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service("shutdownService")
+@Slf4j
 public class ShutdownServiceImpl implements ShutdownService {
 
     private final LambdaFacade lambdaFacade;
@@ -27,7 +29,9 @@ public class ShutdownServiceImpl implements ShutdownService {
 
     @Override
     public void receive(String service) {
+        log.info("receiving shutdown message for {}", service);
         received.add(service);
+
         if(received.containsAll(Arrays.asList(
                 BetServiceImpl.class.getName(),
                 CompetitionServiceImpl.class.getName(),
@@ -41,6 +45,7 @@ public class ShutdownServiceImpl implements ShutdownService {
 
     @Override
     public void shutdown() {
+        log.info("shutting down");
         lambdaFacade.invoke(LambdaFunctions.PROXY_STOP.getFunctionName());
 
         Mono.just("exit").delayElement(Duration.ofMinutes(5))

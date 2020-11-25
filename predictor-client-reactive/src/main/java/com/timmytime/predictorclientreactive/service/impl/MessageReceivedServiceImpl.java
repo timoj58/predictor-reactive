@@ -4,7 +4,6 @@ import com.timmytime.predictorclientreactive.enumerator.Messages;
 import com.timmytime.predictorclientreactive.request.Message;
 import com.timmytime.predictorclientreactive.service.ILoadService;
 import com.timmytime.predictorclientreactive.service.MessageReceivedService;
-import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @Service("messageReceivedService")
 public class MessageReceivedServiceImpl implements MessageReceivedService {
@@ -20,7 +20,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     private final Logger log = LoggerFactory.getLogger(MessageReceivedServiceImpl.class);
 
     private final List<ILoadService> loaders = new ArrayList<>();
-    private final Map<String, List<Messages>> received = new HashMap<>();
+    private final List<Messages> received = new ArrayList<>();
 
     @Autowired
     public MessageReceivedServiceImpl(
@@ -40,10 +40,6 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         this.loaders.add(teamsMatchService);
         this.loaders.add(previousOutcomesService);
 
-        Arrays.asList(
-                CountryCompetitions.values()
-        ).stream()
-                .forEach(country -> received.put(country.name(), new ArrayList<>()));
     }
 
 
@@ -53,11 +49,11 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         return message.doOnNext(
                 msg -> {
                     log.info("received {}", msg.getType());
-                    received.get(msg.getCountry()).add(msg.getType());
+                    received.add(msg.getType());
 
                     if(ready()){
                         log.info("all messages received");
-                        load();
+                        CompletableFuture.runAsync(() -> load());
                     }
                 }
         ).thenEmpty(Mono.empty());
@@ -78,13 +74,6 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     }
 
     private Boolean ready(){
-        Iterator<String> keys = received.keySet().iterator();
-        while (keys.hasNext()){
-            if(!received.get(keys.next()).containsAll(Arrays.asList(Messages.values()))){
-                return Boolean.FALSE;
-            }
-        }
-
-        return Boolean.TRUE;
+       return received.containsAll(Arrays.asList(Messages.values()));
     }
 }

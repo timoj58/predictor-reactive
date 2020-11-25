@@ -1,5 +1,6 @@
 package com.timmytime.predictoreventsreactive.service.impl;
 
+import com.timmytime.predictoreventsreactive.cache.ReceiptCache;
 import com.timmytime.predictoreventsreactive.enumerator.Predictions;
 import com.timmytime.predictoreventsreactive.facade.WebClientFacade;
 import com.timmytime.predictoreventsreactive.model.Event;
@@ -9,6 +10,7 @@ import com.timmytime.predictoreventsreactive.request.TensorflowPrediction;
 import com.timmytime.predictoreventsreactive.service.EventOutcomeService;
 import com.timmytime.predictoreventsreactive.service.EventService;
 import com.timmytime.predictoreventsreactive.service.TensorflowPredictionService;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -25,13 +27,14 @@ import java.util.stream.IntStream;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-//@Disabled
+@Disabled
 class PredictionServiceImplTest {
 
     private final EventService eventService = mock(EventService.class);
     private final WebClientFacade webClientFacade = mock(WebClientFacade.class);
+    private static final ReceiptCache receiptCache = mock(ReceiptCache.class);
     private final TensorflowPredictionService tensorflowPredictionService = new TensorflowPredictionServiceImpl(
-            "", "", "", 0, webClientFacade
+            "", "", "", 0, webClientFacade, receiptCache
     );
     private static final EventOutcomeService eventOutcomeService = mock(EventOutcomeService.class);
 
@@ -41,17 +44,30 @@ class PredictionServiceImplTest {
                     0,
                     eventService,
             tensorflowPredictionService,
-            eventOutcomeService
+            eventOutcomeService,
+            receiptCache
     );
+
+    private static final UUID event1 = UUID.randomUUID();
+    private static final UUID event2 = UUID.randomUUID();
+    private static final UUID event3 = UUID.randomUUID();
+    private static final UUID replay1 = UUID.randomUUID();
+
 
     @BeforeAll
     public static void setUp(){
+
+        when(receiptCache.isEmpty(event1)).thenReturn(Boolean.FALSE);
+        when(receiptCache.isEmpty(event2)).thenReturn(Boolean.FALSE);
+        when(receiptCache.isEmpty(event3)).thenReturn(Boolean.TRUE);
+        when(receiptCache.isEmpty(replay1)).thenReturn(Boolean.FALSE);
+
 
         //this will cause a loop in this test obviously....to resolve.
         when(eventOutcomeService.toFix()).thenReturn(
                 Flux.fromStream(Arrays.asList(
                         EventOutcome.builder().eventType(Predictions.PREDICT_GOALS.name())
-                                .id(UUID.randomUUID())
+                                .id(replay1)
                                 .build()
                 ).stream())
         );
@@ -64,51 +80,26 @@ class PredictionServiceImplTest {
         when(eventService.getEvents(any())).thenReturn(
                 Flux.fromStream(Arrays.asList(new Event()).stream())
         );
+        //issue we run two at a time.  this could actually be the issue.
         when(eventOutcomeService.save(any())).thenReturn(Mono.just(EventOutcome.builder()
-                .id(UUID.randomUUID())
+                .id(event1)
                 .competition("turkey_1").build()));
 
         predictionService.start("TURKEY");
         Thread.sleep(4000);
 
+        //now fire some results back...to test the mechanism on finish.
+        predictionService.result(event1, new JSONObject());
+        predictionService.result(event2, new JSONObject());
+        predictionService.result(event3, new JSONObject());
+
+
+        //not mow....
+
+        //sleep again.
+
         verify(webClientFacade, atLeastOnce()).predict(anyString(), any());
 
-    }
-
-    private Flux<Integer> receiver;
-    private Consumer<Integer> consumer;
-
-    Boolean flag = Boolean.FALSE;
-
-    @Test
-    public void sanity() throws InterruptedException {
-        this.receiver
-                = Flux.push(sink -> consumer = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
-
-        this.receiver
-                .limitRate(1)
-                .doOnNext(this::process)
-                .doFinally(end -> replay()
-                ).subscribe();
-
-
-        IntStream.range(0, 50).forEach(i -> consumer.accept(i));
-
-        Thread.sleep(1000);
-
-    }
-
-    private void process(Integer i){
-        System.out.println(i);
-
-        if(i>100){flag = Boolean.TRUE;}
-    }
-
-    private void replay(){
-        System.out.println("replay");
-        if(!flag) {
-            IntStream.range(100, 200).forEach(i -> consumer.accept(i));
-        }
     }
 
 }

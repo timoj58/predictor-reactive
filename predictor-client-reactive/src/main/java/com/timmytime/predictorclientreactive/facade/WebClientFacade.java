@@ -1,6 +1,9 @@
 package com.timmytime.predictorclientreactive.facade;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.timmytime.predictorclientreactive.model.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -57,7 +60,11 @@ public class WebClientFacade {
 
 
     public void startScraper(String url){
-
+        WebClient.builder().build()
+                .post()
+                .uri(url)
+                .exchange()
+                .subscribe();
     }
 
     public Mono<Match> getMatch(String url){

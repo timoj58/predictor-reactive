@@ -10,5 +10,4 @@ import java.util.function.Consumer;
 
 public interface TensorflowPredictionService {
     void predict(TensorflowPrediction tensorflowPrediction);
-    Boolean receiptsEmpty();
 }

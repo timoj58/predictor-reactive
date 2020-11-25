@@ -15,6 +15,15 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 @Component
 public class MessageFunction {
 
+
+    @Bean
+    @RouterOperation(beanClass = MessageReceivedService.class, beanMethod = "receive")
+    RouterFunction<ServerResponse> receive(MessageHandler messageHandler) {
+        return route(RequestPredicates.POST("/message")
+                        .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON))
+                , messageHandler::receive);
+    }
+
     @Bean
     @RouterOperation(beanClass = MessageReceivedService.class, beanMethod = "test")
     RouterFunction<ServerResponse> scrape(MessageHandler messageHandler) {

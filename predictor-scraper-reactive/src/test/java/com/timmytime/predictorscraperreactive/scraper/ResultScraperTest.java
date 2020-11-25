@@ -19,7 +19,7 @@ class ResultScraperTest {
             = new ResultScraper(sportsScraperConfigurationFactory);
 
     @Test
-    public void resultScraperTest(){
+    public void resultScraperTest() throws InterruptedException {
 
         LocalDate date = LocalDate.parse("2018-01-01", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
@@ -33,6 +33,7 @@ class ResultScraperTest {
                         .findFirst()
                         .get();
 
+        Thread.sleep(1000);
 
         assertEquals(5, resultScraper.scrape(england1, date).size());
     }

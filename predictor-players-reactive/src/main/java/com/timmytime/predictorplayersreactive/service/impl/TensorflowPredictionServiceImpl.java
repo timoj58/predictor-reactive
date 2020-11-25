@@ -1,5 +1,6 @@
 package com.timmytime.predictorplayersreactive.service.impl;
 
+import com.timmytime.predictorplayersreactive.cache.ReceiptCache;
 import com.timmytime.predictorplayersreactive.enumerator.FantasyEventTypes;
 import com.timmytime.predictorplayersreactive.facade.WebClientFacade;
 import com.timmytime.predictorplayersreactive.request.TensorflowPrediction;
@@ -13,9 +14,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 
 import java.time.Duration;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 
 @Service("tensorflowPredictionService")
@@ -35,11 +34,10 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
     private final String destroyUrl;
 
     private final WebClientFacade webClientFacade;
+    private final ReceiptCache receiptCache;
 
     private final Flux<TensorflowPrediction> receiver;
     private Consumer<TensorflowPrediction> consumer;
-
-    private final Set<UUID> receipts = new HashSet<>();
 
 
     @Autowired
@@ -54,7 +52,8 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
             @Value("${ml.predict.yellow.url}") String yellowUrl,
             @Value("${ml.predict.init.url}") String initUrl,
             @Value("${ml.predict.destroy.url}") String destroyUrl,
-            WebClientFacade webClientFacade
+            WebClientFacade webClientFacade,
+            ReceiptCache receiptCache
     ){
         this.trainingHost = trainingHost;
         this.goalsUrl = goalsUrl;
@@ -68,10 +67,11 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
         this.destroyUrl = destroyUrl;
 
         this.webClientFacade = webClientFacade;
+        this.receiptCache = receiptCache;
 
         this.receiver
                 = Flux.push(sink -> consumer = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
-        this.receiver.delayElements(Duration.ofMillis(500))
+        this.receiver.delayElements(Duration.ofMillis(750))
                 .limitRate(1)
                 .subscribe(this::process);
 
@@ -80,7 +80,7 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
     @Override
     public void predict(TensorflowPrediction tensorflowPrediction) {
         consumer.accept(tensorflowPrediction);
-        receipts.add(tensorflowPrediction.getPlayerEventOutcomeCsv().getId());
+        receiptCache.addReceipt(tensorflowPrediction.getPlayerEventOutcomeCsv().getId());
     }
 
     @Override
@@ -88,11 +88,6 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
         webClientFacade.config(
                 trainingHost
                         +initUrl.replace("<type>", type));
-    }
-
-    @Override
-    public Boolean receiptsEmpty() {
-        return receipts.isEmpty();
     }
 
 
@@ -110,7 +105,7 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
                 tensorflowPrediction.getPlayerEventOutcomeCsv().getPlayer(),
                 tensorflowPrediction.getPlayerEventOutcomeCsv().getOpponent());
 
-        receipts.remove(tensorflowPrediction.getPlayerEventOutcomeCsv().getId());
+        receiptCache.processReceipt(tensorflowPrediction.getPlayerEventOutcomeCsv().getId());
 
         webClientFacade.predict(
                 trainingHost

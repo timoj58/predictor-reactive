@@ -45,9 +45,9 @@ public class PlayerServiceImpl implements PlayerService {
         //only interested in players active in the last two years
         String date = LocalDate.now().minusYears(2).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
-        Arrays.asList(
+        Arrays.stream(
                 ApplicableFantasyLeagues.values()
-        ).stream()
+        )
                 .forEach(league -> {
 
                     players.put(league.name().toLowerCase(), new ArrayList<>());

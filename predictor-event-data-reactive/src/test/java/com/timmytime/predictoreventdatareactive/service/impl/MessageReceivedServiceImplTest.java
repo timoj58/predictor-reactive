@@ -41,7 +41,7 @@ class MessageReceivedServiceImplTest {
                 )
         ).subscribe();
 
-        Thread.sleep(1000L);
+        Thread.sleep(2000L);
 
         verify(paddyPowerService, atLeastOnce()).receive(any());
         verify(betwayService, atLeastOnce()).receive(any());

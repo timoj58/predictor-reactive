@@ -30,4 +30,13 @@ public enum ApplicableFantasyLeagues {
                 .filter(f -> f.getCountry().equalsIgnoreCase(country))
                 .collect(Collectors.toList());
     }
+
+    public static List<String> getCountries(){
+        return Arrays.asList(
+                ApplicableFantasyLeagues.values()
+        ).stream()
+                .map(m -> m.getCountry())
+                .distinct()
+                .collect(Collectors.toList());
+    }
 }

@@ -3,6 +3,7 @@ package com.timmytime.predictorplayersreactive.request;
 
 import com.timmytime.predictorplayersreactive.model.PlayerMatch;
 import com.timmytime.predictorplayersreactive.model.StatMetric;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

@@ -1,5 +1,6 @@
 package com.timmytime.predictorplayersreactive.service.impl;
 
+import com.timmytime.predictorplayersreactive.cache.ReceiptCache;
 import com.timmytime.predictorplayersreactive.model.Event;
 import com.timmytime.predictorplayersreactive.model.FantasyOutcome;
 import com.timmytime.predictorplayersreactive.model.Player;
@@ -23,10 +24,11 @@ class PredictionServiceImplTest {
     private static final PlayerService playerService = mock(PlayerService.class);
     private static final PlayerResponseService playerResponseService = mock(PlayerResponseService.class);
     private static final TensorflowPredictionService tensorflowPredictionService = mock(TensorflowPredictionService.class);
+    private final ReceiptCache receiptCache = mock(ReceiptCache.class);
 
     private final PredictionServiceImpl predictionService
             = new PredictionServiceImpl(
-                    eventsService, playerService, playerResponseService, tensorflowPredictionService, fantasyEventOutcomeService
+                    eventsService, playerService, playerResponseService, tensorflowPredictionService, fantasyEventOutcomeService, receiptCache
     );
 
     @BeforeAll

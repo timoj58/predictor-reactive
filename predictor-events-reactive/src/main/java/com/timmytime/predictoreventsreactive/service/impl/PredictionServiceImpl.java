@@ -1,7 +1,12 @@
 package com.timmytime.predictoreventsreactive.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.timmytime.predictoreventsreactive.cache.ReceiptCache;
 import com.timmytime.predictoreventsreactive.enumerator.CountryCompetitions;
 import com.timmytime.predictoreventsreactive.enumerator.Predictions;
+import com.timmytime.predictoreventsreactive.facade.WebClientFacade;
 import com.timmytime.predictoreventsreactive.model.EventOutcome;
 import com.timmytime.predictoreventsreactive.model.PredictionLine;
 import com.timmytime.predictoreventsreactive.request.Prediction;
@@ -25,6 +30,7 @@ import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service("predictionService")
 public class PredictionServiceImpl implements PredictionService {
@@ -34,16 +40,13 @@ public class PredictionServiceImpl implements PredictionService {
     private final EventService eventService;
     private final TensorflowPredictionService tensorflowPredictionService;
     private final EventOutcomeService eventOutcomeService;
-    private final Integer competitionDelay;
 
     @Autowired
     public PredictionServiceImpl(
-            @Value("${competition.delay}") Integer competitionDelay,
             EventService eventService,
             TensorflowPredictionService tensorflowPredictionService,
             EventOutcomeService eventOutcomeService
     ){
-        this.competitionDelay = competitionDelay;
         this.eventService = eventService;
         this.tensorflowPredictionService = tensorflowPredictionService;
         this.eventOutcomeService = eventOutcomeService;
@@ -55,12 +58,12 @@ public class PredictionServiceImpl implements PredictionService {
         Flux.fromStream(
                 CountryCompetitions.valueOf(country).getCompetitions().stream()
         )
+                .delayElements(Duration.ofMinutes(1))
                 .subscribe(competition ->
                     eventService.getEvents(competition)
                             .subscribe(event ->
-                                    Flux.fromStream(
-                                            Arrays.asList(Predictions.values()).stream()
-                                    )
+                                    Flux.fromArray(Predictions.values())
+                                            .limitRate(1)
                                             .subscribe(predict ->
                                                     eventOutcomeService.save(
                                                             EventOutcome.builder()
@@ -86,36 +89,16 @@ public class PredictionServiceImpl implements PredictionService {
 
     }
 
-    @Override
-    public void result(UUID id, JSONObject result) {
-        log.info("received a result {}", id.toString());
-        CompletableFuture.runAsync(() ->
-        //need to sort out the fix stuff.  to do.  on end of stream i guess. makes more sense...
-            eventOutcomeService.find(id)
-                    .subscribe(eventOutcome -> {
-                        eventOutcome.setPrediction(normalize(result).toString());
-                        log.info("saving {}", eventOutcome.getId());
-                        eventOutcomeService.save(eventOutcome).subscribe();
-
-                        Mono.just(tensorflowPredictionService.receiptsEmpty())
-                                .delayElement(Duration.ofMinutes(competitionDelay))
-                                .subscribe(empty -> { //check again.
-                                   if(empty && tensorflowPredictionService.receiptsEmpty()){
-                                       processFix();
-                                   }
-                                });
-                    })
-        );
-    }
 
     @Override
     public Mono<Void> fix() {
-        processFix();
+        retryMissing();
         return Mono.empty();
     }
 
 
-    private void processFix(){
+    @Override
+    public void retryMissing(){
         log.info("processing records to fix");
         eventOutcomeService.toFix().subscribe(eventOutcome ->
                 tensorflowPredictionService.predict(
@@ -128,38 +111,5 @@ public class PredictionServiceImpl implements PredictionService {
         );
     }
 
-    private List<PredictionLine> normalize(JSONObject result){
-        //get our keys.
-        Map<String, List<Double>> byIndex = new HashMap<>();
-
-
-        Iterator<String> keys = result.keys();
-        while (keys.hasNext()) {
-            String key = keys.next();
-
-            String keyLabel = result.getJSONObject(key).get("label").toString();
-            if (!byIndex.containsKey(keyLabel)) {
-                byIndex.put(keyLabel, new ArrayList<>());
-            }
-
-            byIndex.get(keyLabel).add(Double.valueOf(result.getJSONObject(key).get("score").toString()));
-        }
-
-
-        List<PredictionLine> normalized = new ArrayList<>();
-
-        byIndex.keySet().stream().forEach(
-                key -> normalized.add(
-                        new PredictionLine(key,
-                                byIndex.get(key)
-                                        .stream()
-                                        .mapToDouble(m -> m).average().getAsDouble()))
-        );
-
-        return normalized
-                .stream()
-                .sorted((o1, o2) -> o2.getScore().compareTo(o1.getScore()))
-                .collect(Collectors.toList());
-    }
 
 }
