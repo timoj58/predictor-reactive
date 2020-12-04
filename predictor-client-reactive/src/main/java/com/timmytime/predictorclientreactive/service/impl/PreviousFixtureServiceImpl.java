@@ -2,6 +2,7 @@ package com.timmytime.predictorclientreactive.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
 import com.timmytime.predictorclientreactive.facade.S3Facade;
 import com.timmytime.predictorclientreactive.facade.WebClientFacade;
 import com.timmytime.predictorclientreactive.model.EventOutcome;
@@ -10,7 +11,6 @@ import com.timmytime.predictorclientreactive.model.PreviousFixtureResponse;
 import com.timmytime.predictorclientreactive.service.ILoadService;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import com.timmytime.predictorclientreactive.service.TeamService;
-import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -76,34 +76,34 @@ public class PreviousFixtureServiceImpl implements ILoadService {
                             log.info("processing {}", competition);
                             byCompetition.put(competition, new ArrayList<>());
                             List<EventOutcome> eventOutcomes = new ArrayList<>();
-                            webClientFacade.getPreviousEventOutcomes(eventsHost+"/previous-events/"+competition)
+                            webClientFacade.getPreviousEventOutcomes(eventsHost + "/previous-events/" + competition)
                                     .doOnNext(event -> eventOutcomes.add(event))
                                     .doFinally(transform ->
                                             Flux.fromStream(
-                                                   eventOutcomes.stream()
+                                                    eventOutcomes.stream()
                                             ).doOnNext(event ->
-                                                            webClientFacade.getMatch(getMatchUrl(event))
-                                                                    .subscribe(match -> byCompetition.get(competition).add(transform(event).withScore(match)))
-                                                    )
-                                            .doFinally(save ->
-                                                    Mono.just(competition).delayElement(Duration.ofMinutes(delay)).subscribe(key -> save(key)))
-                                            .subscribe()
+                                                    webClientFacade.getMatch(getMatchUrl(event))
+                                                            .subscribe(match -> byCompetition.get(competition).add(transform(event).withScore(match)))
+                                            )
+                                                    .doFinally(save ->
+                                                            Mono.just(competition).delayElement(Duration.ofMinutes(delay)).subscribe(key -> save(key)))
+                                                    .subscribe()
                                     ).subscribe();
                         }));
 
     }
 
-    private void save(String competition){
+    private void save(String competition) {
         log.info("saving {}", competition);
         try {
 
-            s3Facade.put("previous-fixtures/"+competition,
+            s3Facade.put("previous-fixtures/" + competition,
                     new ObjectMapper().writeValueAsString(
                             normalize(byCompetition.get(competition))
                     ));
             byCompetition.remove(competition);
 
-            if(byCompetition.keySet().isEmpty()){
+            if (byCompetition.keySet().isEmpty()) {
                 log.info("completed all competitions");
                 shutdownService.receive(PreviousFixtureServiceImpl.class.getName());
             }
@@ -113,25 +113,24 @@ public class PreviousFixtureServiceImpl implements ILoadService {
         }
     }
 
-    private String getMatchUrl(EventOutcome eventOutcome){
-       return dataHost+"/match?home="
-                +eventOutcome.getHome()+"&away="
-                +eventOutcome.getAway()
-                +"&date="+ eventOutcome.getDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+    private String getMatchUrl(EventOutcome eventOutcome) {
+        return dataHost + "/match?home="
+                + eventOutcome.getHome() + "&away="
+                + eventOutcome.getAway()
+                + "&date=" + eventOutcome.getDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
     }
 
-    private String legacyShit(EventOutcome eventOutcome){
+    private String legacyShit(EventOutcome eventOutcome) {
 
-        try{
+        try {
             JSONArray results = new JSONObject(eventOutcome.getPrediction()).getJSONArray("result");
             return eventOutcome.getPrediction();
-        }catch (Exception e){
+        } catch (Exception e) {
             return new JSONObject().put(
                     "result", new JSONArray(eventOutcome.getPrediction())
             ).toString();
         }
     }
-
 
 
     private PreviousFixtureResponse transform(EventOutcome event) {
@@ -153,7 +152,7 @@ public class PreviousFixtureServiceImpl implements ILoadService {
         return previousFixtureResponse;
     }
 
-    private List<PreviousFixtureResponse> normalize(List<PreviousFixtureResponse> previousFixtureResponses){
+    private List<PreviousFixtureResponse> normalize(List<PreviousFixtureResponse> previousFixtureResponses) {
 
         //TODO FIX ME - this fails, mainly as the data is broken
 
@@ -165,33 +164,33 @@ public class PreviousFixtureServiceImpl implements ILoadService {
                         f.getPreviousFixtureOutcomes()
                                 .stream()
                                 .filter(e -> e.getEventType().equals("PREDICT_RESULTS"))
-                        .findFirst().isPresent()
+                                .findFirst().isPresent()
                 ).forEach(result -> {
 
-                    result.getPreviousFixtureOutcomes().add(
-                          previousFixtureResponses
-                                    .stream()
-                                  .filter(f -> f.getHome().equals(result.getHome()))
-                                  .filter(f -> f.getAway().equals(result.getAway()))
-                                  .filter(f -> f.getEventDate().equals(result.getEventDate()))
-                                  .filter(f ->
-                                            f.getPreviousFixtureOutcomes()
-                                                    .stream()
-                                                    .filter(e -> e.getEventType().equals("PREDICT_GOALS"))
-                                                    .findFirst()
+            result.getPreviousFixtureOutcomes().add(
+                    previousFixtureResponses
+                            .stream()
+                            .filter(f -> f.getHome().equals(result.getHome()))
+                            .filter(f -> f.getAway().equals(result.getAway()))
+                            .filter(f -> f.getEventDate().equals(result.getEventDate()))
+                            .filter(f ->
+                                    f.getPreviousFixtureOutcomes()
+                                            .stream()
+                                            .filter(e -> e.getEventType().equals("PREDICT_GOALS"))
+                                            .findFirst()
                                             .isPresent())
                             .findFirst().get().getPreviousFixtureOutcomes().stream().findFirst().get()
-                    );
+            );
 
-                    result.getPreviousFixtureOutcomes().stream()
-                            .forEach(type -> type.setTotalGoals(
-                                    result.getHomeScore()+result.getAwayScore()
-                            ));
+            result.getPreviousFixtureOutcomes().stream()
+                    .forEach(type -> type.setTotalGoals(
+                            result.getHomeScore() + result.getAwayScore()
+                    ));
 
-                    toSave.add(result);
+            toSave.add(result);
         });
 
         return toSave;
-    };
+    }
 
 }

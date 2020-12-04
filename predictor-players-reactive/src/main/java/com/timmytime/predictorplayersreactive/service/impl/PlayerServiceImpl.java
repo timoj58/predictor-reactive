@@ -31,7 +31,7 @@ public class PlayerServiceImpl implements PlayerService {
     public PlayerServiceImpl(
             @Value("${data.host}") String dataHost,
             WebClientFacade webClientFacade
-    ){
+    ) {
         this.dataHost = dataHost;
         this.webClientFacade = webClientFacade;
     }
@@ -54,7 +54,7 @@ public class PlayerServiceImpl implements PlayerService {
                     webClientFacade.getPlayers(dataHost
                             + "/players/competition/"
                             + league.name().toLowerCase()
-                            + "?date="+date+"&fantasy=true")
+                            + "?date=" + date + "&fantasy=true")
                             .subscribe(player -> players.get(league.name().toLowerCase()).add(player));
                 });
 

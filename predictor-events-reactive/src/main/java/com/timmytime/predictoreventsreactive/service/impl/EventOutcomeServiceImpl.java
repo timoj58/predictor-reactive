@@ -20,7 +20,7 @@ public class EventOutcomeServiceImpl implements EventOutcomeService {
     @Autowired
     public EventOutcomeServiceImpl(
             EventOutcomeRepo eventOutcomeRepo
-    ){
+    ) {
         this.eventOutcomeRepo = eventOutcomeRepo;
     }
 

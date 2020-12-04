@@ -12,7 +12,8 @@ import reactor.core.publisher.FluxSink;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -28,7 +29,7 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
 
     @Autowired
     public TensorflowDataServiceImpl(
-    ){
+    ) {
         this.receiver
                 = Flux.push(sink -> consumer = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
 
@@ -36,7 +37,7 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
     }
 
 
-    private void process(PlayerMatch playerMatch){
+    private void process(PlayerMatch playerMatch) {
         playerMatches.add(playerMatch);
     }
 

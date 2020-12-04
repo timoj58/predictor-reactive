@@ -10,5 +10,6 @@ import java.util.UUID;
 public interface PlayerResponseService {
 
     Mono<PlayerResponse> getPlayer(@PathVariable UUID id);
+
     void addResult(FantasyOutcome fantasyOutcome);
 }

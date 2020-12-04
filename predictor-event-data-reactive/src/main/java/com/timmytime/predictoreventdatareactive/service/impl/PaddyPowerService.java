@@ -36,7 +36,7 @@ public class PaddyPowerService implements ProviderService {
     public PaddyPowerService(
             TeamService teamService,
             EventOddsService eventOddsService
-    ){
+    ) {
         this.teamService = teamService;
         this.eventOddsService = eventOddsService;
     }
@@ -57,67 +57,67 @@ public class PaddyPowerService implements ProviderService {
         )
                 .limitRate(1)
                 .subscribe(event -> {
-            List<JSONObject> eventOutcomes = new ArrayList<>();
+                    List<JSONObject> eventOutcomes = new ArrayList<>();
 
-            IntStream.range(0, event.getJSONObject("results").getJSONArray("outcomes").length()).forEach(
-                    i -> eventOutcomes.add(event.getJSONObject("results").getJSONArray("outcomes").getJSONObject(i))
-            );
-            //some empty responses can skip as no data to process..
-            if(!eventOutcomes.isEmpty()) {
+                    IntStream.range(0, event.getJSONObject("results").getJSONArray("outcomes").length()).forEach(
+                            i -> eventOutcomes.add(event.getJSONObject("results").getJSONArray("outcomes").getJSONObject(i))
+                    );
+                    //some empty responses can skip as no data to process..
+                    if (!eventOutcomes.isEmpty()) {
 
-                String date = event.getJSONObject("results").getString("marketTime");
+                        String date = event.getJSONObject("results").getString("marketTime");
 
-                LocalDateTime eventDate = LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
+                        LocalDateTime eventDate = LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
 
-                if (eventDate.isBefore(LocalDateTime.now().plusDays(daysInAdvance()))) {
+                        if (eventDate.isBefore(LocalDateTime.now().plusDays(daysInAdvance()))) {
 
-                    JSONObject homeEvent = eventOutcomes.stream().filter(f -> f.getString("type").equals("HOME")).findFirst().get();
-                    JSONObject awayEvent = eventOutcomes.stream().filter(f -> f.getString("type").equals("AWAY")).findFirst().get();
-                    JSONObject drawEvent = eventOutcomes.stream().filter(f -> f.getString("type").equals("DRAW")).findFirst().get();
+                            JSONObject homeEvent = eventOutcomes.stream().filter(f -> f.getString("type").equals("HOME")).findFirst().get();
+                            JSONObject awayEvent = eventOutcomes.stream().filter(f -> f.getString("type").equals("AWAY")).findFirst().get();
+                            JSONObject drawEvent = eventOutcomes.stream().filter(f -> f.getString("type").equals("DRAW")).findFirst().get();
 
 
-                    Optional<Team> homeTeam = teamService.find(homeEvent.getString("runnerName"), details.getString("competition"));
-                    Optional<Team> awayTeam = teamService.find(awayEvent.getString("runnerName"), details.getString("competition"));
+                            Optional<Team> homeTeam = teamService.find(homeEvent.getString("runnerName"), details.getString("competition"));
+                            Optional<Team> awayTeam = teamService.find(awayEvent.getString("runnerName"), details.getString("competition"));
 
-                    if (homeTeam.isPresent() && awayTeam.isPresent()) {
-                        Flux.fromStream(
-                                Arrays.asList(homeEvent, awayEvent, drawEvent).stream()
-                        )
-                                .limitRate(1)
-                                .subscribe(bet -> {
-                                    //reality.  filter out player / event odds.  we just want match type odds. i have data to do this.
-                                    //also saves hammering the DB.  best solution for now.
+                            if (homeTeam.isPresent() && awayTeam.isPresent()) {
+                                Flux.fromStream(
+                                        Arrays.asList(homeEvent, awayEvent, drawEvent).stream()
+                                )
+                                        .limitRate(1)
+                                        .subscribe(bet -> {
+                                                    //reality.  filter out player / event odds.  we just want match type odds. i have data to do this.
+                                                    //also saves hammering the DB.  best solution for now.
 
-                                    JSONObject eventDetails = new JSONObject().put("type", bet.get("type"));
-                            eventOddsService.findEvent(
-                                    Providers.PADDYPOWER_ODDS.name(),
-                                    eventDetails.toString(),
-                                    eventDate,
-                                    bet.getDouble("decimalOdds"),
-                                    Arrays.asList(homeTeam.get().getId(), awayTeam.get().getId()))
-                                    .switchIfEmpty(Mono.just(new EventOdds()))
-                                    .delayElement(Duration.ofMillis(10))
-                                    .subscribe(newBet -> {
-                                        if (newBet.getId() == null) {
-                                            newBet.setId(UUID.randomUUID());
-                                            newBet.setProvider(Providers.PADDYPOWER_ODDS.name());
-                                            newBet.setPrice(bet.getDouble("decimalOdds"));
-                                            newBet.setEventDate(eventDate);
-                                            newBet.setCompetition(details.getString("competition"));
-                                            newBet.setTeams(Arrays.asList(homeTeam.get().getId(), awayTeam.get().getId()));
-                                            newBet.setEvent(eventDetails.toString());
+                                                    JSONObject eventDetails = new JSONObject().put("type", bet.get("type"));
+                                                    eventOddsService.findEvent(
+                                                            Providers.PADDYPOWER_ODDS.name(),
+                                                            eventDetails.toString(),
+                                                            eventDate,
+                                                            bet.getDouble("decimalOdds"),
+                                                            Arrays.asList(homeTeam.get().getId(), awayTeam.get().getId()))
+                                                            .switchIfEmpty(Mono.just(new EventOdds()))
+                                                            .delayElement(Duration.ofMillis(10))
+                                                            .subscribe(newBet -> {
+                                                                if (newBet.getId() == null) {
+                                                                    newBet.setId(UUID.randomUUID());
+                                                                    newBet.setProvider(Providers.PADDYPOWER_ODDS.name());
+                                                                    newBet.setPrice(bet.getDouble("decimalOdds"));
+                                                                    newBet.setEventDate(eventDate);
+                                                                    newBet.setCompetition(details.getString("competition"));
+                                                                    newBet.setTeams(Arrays.asList(homeTeam.get().getId(), awayTeam.get().getId()));
+                                                                    newBet.setEvent(eventDetails.toString());
 
-                                            eventOddsService.create(newBet).subscribe();
-                                        }
-                                    });
-                                }
-                        );
-                    } else {
-                        log.info("one or more teams is nof : {}", event.toString());
+                                                                    eventOddsService.create(newBet).subscribe();
+                                                                }
+                                                            });
+                                                }
+                                        );
+                            } else {
+                                log.info("one or more {} teams is nof : {}", details.getString("competition"), event.toString());
+                            }
+                        }
                     }
-                }
-            }
-        });
+                });
     }
 
     private Integer daysInAdvance() {
@@ -129,7 +129,7 @@ public class PaddyPowerService implements ProviderService {
     }
 
     @PostConstruct
-    private void init(){
+    private void init() {
         eventOddsService.delete(Providers.PADDYPOWER_ODDS).subscribe();
     }
 

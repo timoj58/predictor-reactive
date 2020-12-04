@@ -3,17 +3,14 @@ package com.timmytime.predictorclientreactive.model;
 
 import lombok.*;
 
-import java.io.Serializable;
-import java.util.Date;
 import java.util.Objects;
-import java.util.UUID;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UpcomingEventResponse{
+public class UpcomingEventResponse {
 
     private Team home;
     private Team away;

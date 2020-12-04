@@ -1,7 +1,5 @@
 package com.timmytime.predictoreventsreactive.handler;
 
-import com.timmytime.predictoreventsreactive.model.EventOutcome;
-import com.timmytime.predictoreventsreactive.request.Message;
 import com.timmytime.predictoreventsreactive.service.PredictionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,7 +15,7 @@ public class PredictionHandler {
     @Autowired
     public PredictionHandler(
             PredictionService predictionService
-    ){
+    ) {
         this.predictionService = predictionService;
     }
 

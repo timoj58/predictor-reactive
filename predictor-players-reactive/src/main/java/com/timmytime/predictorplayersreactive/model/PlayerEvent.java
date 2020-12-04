@@ -16,7 +16,7 @@ public class PlayerEvent implements Serializable {
     private String label;
     private Integer value = 0;
 
-    public PlayerEvent(FantasyEventTypes eventType, Integer value){
+    public PlayerEvent(FantasyEventTypes eventType, Integer value) {
         this.eventType = eventType;
         this.label = eventType.name().toLowerCase();
         this.value = value;
@@ -46,9 +46,9 @@ public class PlayerEvent implements Serializable {
 ]
      */
 
-    public PlayerEvent(StatMetric statMetric){
+    public PlayerEvent(StatMetric statMetric) {
 
-        switch (statMetric.getLabel()){
+        switch (statMetric.getLabel()) {
             case "Red Card":
                 this.eventType = FantasyEventTypes.RED_CARD;
                 break;

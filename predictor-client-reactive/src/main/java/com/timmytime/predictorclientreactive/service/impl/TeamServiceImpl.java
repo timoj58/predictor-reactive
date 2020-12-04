@@ -1,8 +1,8 @@
 package com.timmytime.predictorclientreactive.service.impl;
 
+import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
 import com.timmytime.predictorclientreactive.model.Team;
 import com.timmytime.predictorclientreactive.service.TeamService;
-import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +22,13 @@ public class TeamServiceImpl implements TeamService {
 
     private final String dataHost;
 
-    private Map<String, Map<UUID, Team>> teams = new HashMap<>();
+    private final Map<String, Map<UUID, Team>> teams = new HashMap<>();
 
 
     @Autowired
     public TeamServiceImpl(
             @Value("${data.host}") String dataHost
-    ){
+    ) {
         this.dataHost = dataHost;
     }
 

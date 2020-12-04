@@ -9,11 +9,18 @@ import java.util.UUID;
 
 public interface EventOutcomeService {
     Mono<EventOutcome> save(EventOutcome eventOutcome);
+
     Mono<EventOutcome> find(UUID id);
+
     Flux<EventOutcome> toValidate(String country);
+
     Flux<EventOutcome> lastEvents(String country);
+
     Flux<EventOutcome> previousEvents(@PathVariable String competition);
+
     Flux<EventOutcome> currentEvents(@PathVariable String competition);
+
     Flux<EventOutcome> previousEventsByTeam(@PathVariable UUID team);
+
     Flux<EventOutcome> toFix();
 }

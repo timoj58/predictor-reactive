@@ -22,7 +22,7 @@ public class EventsServiceImpl implements EventsService {
     public EventsServiceImpl(
             @Value("${event.data.host}") String eventDataHost,
             WebClientFacade webClientFacade
-    ){
+    ) {
         this.eventDataHost = eventDataHost;
         this.webClientFacade = webClientFacade;
     }

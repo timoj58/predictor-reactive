@@ -1,7 +1,6 @@
 package com.timmytime.predictorplayersreactive.service.impl;
 
 import com.timmytime.predictorplayersreactive.enumerator.FantasyEventTypes;
-import com.timmytime.predictorplayersreactive.facade.WebClientFacade;
 import com.timmytime.predictorplayersreactive.model.*;
 import com.timmytime.predictorplayersreactive.repo.PlayerResponseRepo;
 import com.timmytime.predictorplayersreactive.service.*;
@@ -68,7 +67,7 @@ public class PlayerResponseServiceImpl implements PlayerResponseService {
             TeamService teamService,
             PlayerMatchService playerMatchService,
             PlayerResponseRepo playerResponseRepo
-    ){
+    ) {
         this.delay = delay;
         this.playerService = playerService;
         this.fantasyOutcomeService = fantasyOutcomeService;
@@ -109,77 +108,74 @@ public class PlayerResponseServiceImpl implements PlayerResponseService {
         List<FantasyOutcome> fantasyOutcomes = new ArrayList<>();
 
         fantasyOutcomeService.findByPlayer(player.getId())
-               .doOnNext(fantasyOutcome -> {
-                   if(fantasyOutcome.getCurrent())
-                   {
-                       fantasyOutcomes.add(fantasyOutcome);
-                   }
-                   else {
-                       fantasyOutcomesValidated.add(fantasyOutcome);
-                   }
-               })
-               .doFinally(save -> {
-                   if(!fantasyOutcomesValidated.isEmpty()) {
-                       Arrays.asList(FantasyEventTypes.values())
-                               .stream()
-                               .filter(f -> f.getPredict() == Boolean.TRUE)
-                               .forEach(event -> {
-                                   List<FantasyOutcome> filtered = fantasyOutcomesValidated.stream().filter(f -> f.getFantasyEventType().equals(event)).collect(Collectors.toList());
-                                   playerResponse.getAverages().add(new FantasyEvent(fantasyResponseTransformer.total.apply(filtered, event) / filtered.size(), event.name().toLowerCase()));
-                               });
-                   }
+                .doOnNext(fantasyOutcome -> {
+                    if (fantasyOutcome.getCurrent()) {
+                        fantasyOutcomes.add(fantasyOutcome);
+                    } else {
+                        fantasyOutcomesValidated.add(fantasyOutcome);
+                    }
+                })
+                .doFinally(save -> {
+                    if (!fantasyOutcomesValidated.isEmpty()) {
+                        Arrays.asList(FantasyEventTypes.values())
+                                .stream()
+                                .filter(f -> f.getPredict() == Boolean.TRUE)
+                                .forEach(event -> {
+                                    List<FantasyOutcome> filtered = fantasyOutcomesValidated.stream().filter(f -> f.getFantasyEventType().equals(event)).collect(Collectors.toList());
+                                    playerResponse.getAverages().add(new FantasyEvent(fantasyResponseTransformer.total.apply(filtered, event) / filtered.size(), event.name().toLowerCase()));
+                                });
+                    }
 
-                   //also need to work out, set
-                   playerResponse.setAppearances(playerMatches.size());
-                   //need to sort these out at some point.  needs util to do it.
-                   playerResponse.setGoals(getTotals.apply(playerMatches, FantasyEventTypes.GOALS));
-                   playerResponse.setAssists(getTotals.apply(playerMatches, FantasyEventTypes.ASSISTS));
-                   playerResponse.setRedCards(getTotals.apply(playerMatches, FantasyEventTypes.RED_CARD));
-                   playerResponse.setYellowCards(getTotals.apply(playerMatches, FantasyEventTypes.YELLOW_CARD));
-                   playerResponse.setSaves(getTotals.apply(playerMatches, FantasyEventTypes.SAVES));
+                    //also need to work out, set
+                    playerResponse.setAppearances(playerMatches.size());
+                    //need to sort these out at some point.  needs util to do it.
+                    playerResponse.setGoals(getTotals.apply(playerMatches, FantasyEventTypes.GOALS));
+                    playerResponse.setAssists(getTotals.apply(playerMatches, FantasyEventTypes.ASSISTS));
+                    playerResponse.setRedCards(getTotals.apply(playerMatches, FantasyEventTypes.RED_CARD));
+                    playerResponse.setYellowCards(getTotals.apply(playerMatches, FantasyEventTypes.YELLOW_CARD));
+                    playerResponse.setSaves(getTotals.apply(playerMatches, FantasyEventTypes.SAVES));
 
-                   //set our current status flags too (historic is worked out in app).
-                   List<PlayerMatch> recent = playerMatches
-                           .stream()
-                           .filter(f -> f.getDate().toLocalDate().isAfter(LocalDate.now().minusYears(1)))
-                           .collect(Collectors.toList());
+                    //set our current status flags too (historic is worked out in app).
+                    List<PlayerMatch> recent = playerMatches
+                            .stream()
+                            .filter(f -> f.getDate().toLocalDate().isAfter(LocalDate.now().minusYears(1)))
+                            .collect(Collectors.toList());
 
-                   if(!recent.isEmpty()) {
-                       playerResponse.setHardmanYellow((getTotals.apply(recent, FantasyEventTypes.YELLOW_CARD).doubleValue() / (double)recent.size()) * 100.0);
-                       playerResponse.setHardmanRed((getTotals.apply(recent, FantasyEventTypes.RED_CARD).doubleValue() / (double)recent.size()) * 100.0);
-                       playerResponse.setWizard( (getTotals.apply(recent, FantasyEventTypes.ASSISTS).doubleValue() / (double)recent.size()) * 100.0);
-                       playerResponse.setMarksman((getTotals.apply(recent, FantasyEventTypes.GOALS).doubleValue() / (double)recent.size()) * 100.0);
-                   }
+                    if (!recent.isEmpty()) {
+                        playerResponse.setHardmanYellow((getTotals.apply(recent, FantasyEventTypes.YELLOW_CARD).doubleValue() / (double) recent.size()) * 100.0);
+                        playerResponse.setHardmanRed((getTotals.apply(recent, FantasyEventTypes.RED_CARD).doubleValue() / (double) recent.size()) * 100.0);
+                        playerResponse.setWizard((getTotals.apply(recent, FantasyEventTypes.ASSISTS).doubleValue() / (double) recent.size()) * 100.0);
+                        playerResponse.setMarksman((getTotals.apply(recent, FantasyEventTypes.GOALS).doubleValue() / (double) recent.size()) * 100.0);
+                    }
 
-                   if(!fantasyOutcomes.isEmpty()) {
+                    if (!fantasyOutcomes.isEmpty()) {
 
-                       fantasyOutcomes.stream().collect(groupingBy(FantasyOutcome::getOpponent))
-                               .values()
-                               .stream()
-                               .forEach(match -> {
-                                   FantasyResponse fantasyResponse = fantasyResponseTransformer.transform.apply(match);
+                        fantasyOutcomes.stream().collect(groupingBy(FantasyOutcome::getOpponent))
+                                .values()
+                                .stream()
+                                .forEach(match -> {
+                                    FantasyResponse fantasyResponse = fantasyResponseTransformer.transform.apply(match);
 
-                                   UUID opponent = match.stream().map(m -> m.getOpponent()).distinct().findFirst().get();
-                                   Boolean isHome = match.stream().map(m -> m.getHome()).distinct().findFirst().get().contentEquals("home");
+                                    UUID opponent = match.stream().map(m -> m.getOpponent()).distinct().findFirst().get();
+                                    Boolean isHome = match.stream().map(m -> m.getHome()).distinct().findFirst().get().contentEquals("home");
 
-                                   fantasyResponse.setOpponent(teamService.getTeam(opponent).getLabel());
-                                   fantasyResponse.setIsHome(isHome);
+                                    fantasyResponse.setOpponent(teamService.getTeam(opponent).getLabel());
+                                    fantasyResponse.setIsHome(isHome);
 
-                                   playerResponse.getFantasyResponse().add(fantasyResponse);
-                               });
+                                    playerResponse.getFantasyResponse().add(fantasyResponse);
+                                });
 
 
-                   }
+                    }
 
-                   playerResponseRepo.save(playerResponse).subscribe();
-               })
-               .subscribe();
+                    playerResponseRepo.save(playerResponse).subscribe();
+                })
+                .subscribe();
 
     }
 
 
-
-    private void process(FantasyOutcome fantasyOutcome){
+    private void process(FantasyOutcome fantasyOutcome) {
         if (!byPlayer.containsKey(fantasyOutcome.getPlayerId())) {
             byPlayer.put(fantasyOutcome.getPlayerId(), new ArrayList<>());
         }
@@ -187,7 +183,7 @@ public class PlayerResponseServiceImpl implements PlayerResponseService {
 
         List<PlayerMatch> playerMatches = new ArrayList<>();
 
-        if(byPlayer.get(fantasyOutcome.getPlayerId()).containsAll(ALL_EVENTS)){
+        if (byPlayer.get(fantasyOutcome.getPlayerId()).containsAll(ALL_EVENTS)) {
             log.info("loading player {}, all predictions available", fantasyOutcome.getPlayerId());
             Mono.just(fantasyOutcome.getPlayerId())
                     .doOnNext(player -> playerMatchService.create(
@@ -196,16 +192,16 @@ public class PlayerResponseServiceImpl implements PlayerResponseService {
                             LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
                             (data) -> playerMatches.add(data)
                     ))
-            .doFinally(start -> Mono.just(fantasyOutcome)
-                    .delayElement(Duration.ofSeconds(10 * delay))
-                    .subscribe(outcome -> load(outcome.getPlayerId(), playerMatches)))
-            .subscribe();
+                    .doFinally(start -> Mono.just(fantasyOutcome)
+                            .delayElement(Duration.ofSeconds(10 * delay))
+                            .subscribe(outcome -> load(outcome.getPlayerId(), playerMatches)))
+                    .subscribe();
 
         }
     }
 
     @PostConstruct
-    private void init(){
+    private void init() {
         playerResponseRepo.deleteAll();
     }
 

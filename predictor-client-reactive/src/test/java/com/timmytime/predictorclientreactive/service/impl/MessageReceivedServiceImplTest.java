@@ -40,7 +40,6 @@ class MessageReceivedServiceImplTest {
         ).stream()
                 .forEach(country -> {
                     Message message = new Message();
-                    message.setCountry(country.name());
                     message.setType(Messages.MATCH_PREDICTIONS);
 
                     messageReceivedService.receive(Mono.just(message)).subscribe();
@@ -63,7 +62,6 @@ class MessageReceivedServiceImplTest {
     @Test
     public void notReadyTest() throws InterruptedException {
         Message message = new Message();
-        message.setCountry("ENGLAND");
         message.setType(Messages.MATCH_PREDICTIONS);
 
         messageReceivedService.receive(Mono.just(message)).subscribe();

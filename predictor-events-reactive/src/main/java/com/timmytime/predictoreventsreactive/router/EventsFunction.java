@@ -1,12 +1,9 @@
 package com.timmytime.predictoreventsreactive.router;
 
 import com.timmytime.predictoreventsreactive.handler.EventsHandler;
-import com.timmytime.predictoreventsreactive.handler.MessageHandler;
 import com.timmytime.predictoreventsreactive.service.EventOutcomeService;
-import com.timmytime.predictoreventsreactive.service.MessageReceivedService;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;

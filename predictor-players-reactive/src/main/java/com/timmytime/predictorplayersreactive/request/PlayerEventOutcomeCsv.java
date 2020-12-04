@@ -3,12 +3,10 @@ package com.timmytime.predictorplayersreactive.request;
 
 import com.timmytime.predictorplayersreactive.model.PlayerMatch;
 import com.timmytime.predictorplayersreactive.model.StatMetric;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -30,14 +28,14 @@ public class PlayerEventOutcomeCsv {
     private Integer yellow = 0;
 
 
-    public PlayerEventOutcomeCsv(UUID id, UUID player, UUID opponent, String home){
+    public PlayerEventOutcomeCsv(UUID id, UUID player, UUID opponent, String home) {
         this.id = id;
         this.player = player;
         this.opponent = opponent;
         this.home = home;
     }
 
-    public PlayerEventOutcomeCsv(PlayerMatch playerMatch){
+    public PlayerEventOutcomeCsv(PlayerMatch playerMatch) {
         this.id = playerMatch.getPlayerId();
         this.player = playerMatch.getPlayerId();
 

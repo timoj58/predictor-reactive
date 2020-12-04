@@ -4,11 +4,15 @@ import com.timmytime.predictorplayersreactive.enumerator.FantasyEventTypes;
 import com.timmytime.predictorplayersreactive.enumerator.Messages;
 import com.timmytime.predictorplayersreactive.model.PlayersTrainingHistory;
 import com.timmytime.predictorplayersreactive.request.Message;
-import com.timmytime.predictorplayersreactive.service.PlayersTrainingHistoryService;
-import com.timmytime.predictorplayersreactive.service.PredictionService;
-import com.timmytime.predictorplayersreactive.service.TrainingService;
+import com.timmytime.predictorplayersreactive.service.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
@@ -20,12 +24,27 @@ import static org.mockito.Mockito.*;
 
 class MessageReceivedServiceImplTest {
 
-    private final PredictionService predictionService = mock(PredictionService.class);
-    private final TrainingService trainingService = mock(TrainingService.class);
-    private final PlayersTrainingHistoryService playersTrainingHistoryService = mock(PlayersTrainingHistoryService.class);
+    @Mock
+    private PredictionService predictionService;
+    @Mock
+    private PredictionResultService predictionResultService;
+    @Mock
+    private TrainingService trainingService;
 
-    private final MessageReceivedServiceImpl messageReceivedService
-            = new MessageReceivedServiceImpl(predictionService, trainingService, playersTrainingHistoryService);
+    @Mock
+    private PlayersTrainingHistoryService playersTrainingHistoryService;
+
+    @Mock
+    private PredictionMonitorService predictionMonitorService;
+
+    @InjectMocks
+    private MessageReceivedServiceImpl messageReceivedService;
+
+    @BeforeEach
+    public void init(){
+        MockitoAnnotations.initMocks(this);
+    }
+
 
     @Test
     public void messageProcessTest(){

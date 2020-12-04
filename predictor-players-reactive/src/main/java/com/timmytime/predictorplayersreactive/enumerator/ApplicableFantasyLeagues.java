@@ -17,13 +17,13 @@ public enum ApplicableFantasyLeagues {
         return country;
     }
 
-    private String country;
+    private final String country;
 
-    ApplicableFantasyLeagues(String country){
+    ApplicableFantasyLeagues(String country) {
         this.country = country;
     }
 
-    public static List<ApplicableFantasyLeagues> findByCountry(String country){
+    public static List<ApplicableFantasyLeagues> findByCountry(String country) {
         return Arrays.asList(
                 ApplicableFantasyLeagues.values()
         ).stream()
@@ -31,7 +31,7 @@ public enum ApplicableFantasyLeagues {
                 .collect(Collectors.toList());
     }
 
-    public static List<String> getCountries(){
+    public static List<String> getCountries() {
         return Arrays.asList(
                 ApplicableFantasyLeagues.values()
         ).stream()

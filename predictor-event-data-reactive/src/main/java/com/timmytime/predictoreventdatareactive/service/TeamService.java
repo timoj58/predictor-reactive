@@ -6,5 +6,6 @@ import java.util.Optional;
 
 public interface TeamService {
     Optional<Team> find(String label, String competition);
+
     void loadTeams();
 }

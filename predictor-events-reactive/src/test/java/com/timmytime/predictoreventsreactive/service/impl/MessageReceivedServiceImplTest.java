@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.timmytime.predictoreventsreactive.enumerator.Messages;
 import com.timmytime.predictoreventsreactive.facade.WebClientFacade;
 import com.timmytime.predictoreventsreactive.request.Message;
+import com.timmytime.predictoreventsreactive.service.PredictionMonitorService;
+import com.timmytime.predictoreventsreactive.service.PredictionResultService;
 import com.timmytime.predictoreventsreactive.service.PredictionService;
 import com.timmytime.predictoreventsreactive.service.ValidationService;
 import org.json.JSONObject;
@@ -20,11 +22,12 @@ import static org.mockito.Mockito.*;
 class MessageReceivedServiceImplTest {
 
     private final PredictionService predictionService = mock(PredictionService.class);
+    private final PredictionResultService predictionResultService = mock(PredictionResultService.class);
     private final WebClientFacade webClientFacade = mock(WebClientFacade.class);
     private final ValidationService validationService = mock(ValidationService.class);
 
     private final MessageReceivedServiceImpl messageReceivedService
-            = new MessageReceivedServiceImpl("dummy", predictionService, validationService, webClientFacade);
+            = new MessageReceivedServiceImpl("dummy", predictionService, predictionResultService, mock(PredictionMonitorService.class), validationService, webClientFacade);
 
     @Test
     @Disabled

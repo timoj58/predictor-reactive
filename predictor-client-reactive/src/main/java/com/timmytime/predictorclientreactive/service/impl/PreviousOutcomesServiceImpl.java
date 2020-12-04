@@ -7,7 +7,6 @@ import com.timmytime.predictorclientreactive.facade.S3Facade;
 import com.timmytime.predictorclientreactive.facade.WebClientFacade;
 import com.timmytime.predictorclientreactive.model.EventOutcome;
 import com.timmytime.predictorclientreactive.model.PredictionOutcomeResponse;
-import com.timmytime.predictorclientreactive.model.PreviousFixtureOutcome;
 import com.timmytime.predictorclientreactive.model.Team;
 import com.timmytime.predictorclientreactive.service.ILoadService;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
@@ -20,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
@@ -52,7 +50,7 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
             S3Facade s3Facade,
             TeamService teamService,
             ShutdownService shutdownService
-    ){
+    ) {
         this.eventsHost = eventsHost;
         this.dataHost = dataHost;
         this.delay = delay;
@@ -64,11 +62,11 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
         Arrays.asList(
                 CountryCompetitions.values()
         ).stream().forEach(country -> {
-            teamsByCountry.put(country.name().toLowerCase(), new ArrayList<>());
-            teamService.get(country.name().toLowerCase())
-                    .stream()
-                    .forEach(team -> teamsByCountry.get(country.name().toLowerCase()).add(team.getId()));
-        }
+                    teamsByCountry.put(country.name().toLowerCase(), new ArrayList<>());
+                    teamService.get(country.name().toLowerCase())
+                            .stream()
+                            .forEach(team -> teamsByCountry.get(country.name().toLowerCase()).add(team.getId()));
+                }
         );
 
         teamsByCountry.keySet().stream().forEach(key -> log.info("added {}", key));
@@ -82,27 +80,27 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
                 Arrays.asList(
                         CountryCompetitions.values()
                 ).stream()
-        ).delayElements(Duration.ofSeconds(delay*20))
-        .subscribe(country ->
-            Flux.fromStream(
-                    teamService.get(country.name().toLowerCase()).stream()
-            ).delayElements(Duration.ofSeconds(delay))
-                    .subscribe(
-                    team -> {
-                        log.info("processing {}", team.getLabel());
-                        webClientFacade.getPreviousEventOutcomesByTeam(eventsHost+"/previous-events-by-team/"+team.getId())
-                                .delayElements(Duration.ofMillis(100))
-                                .doOnNext(outcome -> saveOutcome(team, outcome))
-                                .doFinally(finish -> finish(country.name().toLowerCase(), team.getId()))
-                                .subscribe();
-                    }
+        ).delayElements(Duration.ofSeconds(delay * 20))
+                .subscribe(country ->
+                        Flux.fromStream(
+                                teamService.get(country.name().toLowerCase()).stream()
+                        ).delayElements(Duration.ofSeconds(delay))
+                                .subscribe(
+                                        team -> {
+                                            log.info("processing {}", team.getLabel());
+                                            webClientFacade.getPreviousEventOutcomesByTeam(eventsHost + "/previous-events-by-team/" + team.getId())
+                                                    .delayElements(Duration.ofMillis(100))
+                                                    .doOnNext(outcome -> saveOutcome(team, outcome))
+                                                    .doFinally(finish -> finish(country.name().toLowerCase(), team.getId()))
+                                                    .subscribe();
+                                        }
 
-            )
-        );
+                                )
+                );
 
     }
 
-    private void saveOutcome(Team team, EventOutcome eventOutcome){
+    private void saveOutcome(Team team, EventOutcome eventOutcome) {
 
         PredictionOutcomeResponse predictionOutcomeResponse = new PredictionOutcomeResponse();
 
@@ -117,9 +115,9 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
                 eventOutcome.getDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
         );
 
-        try{
+        try {
             JSONObject json = new JSONObject(eventOutcome.getPrediction());
-        }catch (Exception e){
+        } catch (Exception e) {
             log.info("{}", eventOutcome.getPrediction());
             eventOutcome.setPrediction(
                     new JSONObject().put("result", new JSONArray(eventOutcome.getPrediction()))
@@ -133,13 +131,13 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
         webClientFacade.getMatch(getMatchUrl(eventOutcome))
                 .subscribe(match -> {
                     try {
-                        predictionOutcomeResponse.setScore(match.getHomeScore()+" - "+match.getAwayScore());
+                        predictionOutcomeResponse.setScore(match.getHomeScore() + " - " + match.getAwayScore());
                         s3Facade.put(
                                 "previous-events/"
-                                        +team.getCompetition()
-                                        +"/"+team.getId()+"/"
-                                        +eventOutcome.getEventType()+
-                                "/"+eventOutcome.getId(),
+                                        + team.getCompetition()
+                                        + "/" + team.getId() + "/"
+                                        + eventOutcome.getEventType() +
+                                        "/" + eventOutcome.getId(),
                                 new ObjectMapper().writeValueAsString(predictionOutcomeResponse)
                         );
                     } catch (JsonProcessingException e) {
@@ -150,14 +148,14 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
 
     }
 
-    private String getMatchUrl(EventOutcome eventOutcome){
-        return dataHost+"/match?home="
-                +eventOutcome.getHome()+"&away="
-                +eventOutcome.getAway()
-                +"&date="+ eventOutcome.getDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+    private String getMatchUrl(EventOutcome eventOutcome) {
+        return dataHost + "/match?home="
+                + eventOutcome.getHome() + "&away="
+                + eventOutcome.getAway()
+                + "&date=" + eventOutcome.getDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
     }
 
-    private void finish(String country, UUID team){
+    private void finish(String country, UUID team) {
         log.info("called finish {} {}", country, team);
         /* doesnt ducking work.. FIX ME and add a test it.  its odd.  clearly the key exists.
         teamsByCountry.get(country).remove(team);

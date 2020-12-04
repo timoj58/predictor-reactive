@@ -8,8 +8,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.annotation.PostConstruct;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service("fantasyOutcomeService")
@@ -20,7 +18,7 @@ public class FantasyOutcomeServiceImpl implements FantasyOutcomeService {
     @Autowired
     public FantasyOutcomeServiceImpl(
             FantasyOutcomeRepo fantasyOutcomeRepo
-    ){
+    ) {
         this.fantasyOutcomeRepo = fantasyOutcomeRepo;
     }
 
@@ -45,7 +43,7 @@ public class FantasyOutcomeServiceImpl implements FantasyOutcomeService {
     }
 
     //TODO @PostConstruct
-    private void init(){
+    private void init() {
         //no longer validating for now, so simply turn them all off when rebooting system.
         //but not until its live.  need data for now ;)
         fantasyOutcomeRepo.findByCurrent(Boolean.TRUE)

@@ -16,7 +16,7 @@ public class EventServiceImpl implements EventService {
     @Autowired
     public EventServiceImpl(
             @Value("${event.data.host}") String eventDataHost
-    ){
+    ) {
         this.eventDataHost = eventDataHost;
     }
 
@@ -24,7 +24,7 @@ public class EventServiceImpl implements EventService {
     public Flux<Event> getEvents(String competition) {
         return WebClient.builder().build()
                 .get()
-                .uri(eventDataHost+"/events/"+competition)
+                .uri(eventDataHost + "/events/" + competition)
                 .retrieve()
                 .bodyToFlux(Event.class);
     }

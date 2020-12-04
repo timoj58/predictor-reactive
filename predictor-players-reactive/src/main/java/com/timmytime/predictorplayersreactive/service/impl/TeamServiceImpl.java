@@ -1,7 +1,6 @@
 package com.timmytime.predictorplayersreactive.service.impl;
 
 import com.timmytime.predictorplayersreactive.enumerator.ApplicableFantasyLeagues;
-import com.timmytime.predictorplayersreactive.enumerator.CountryCompetitions;
 import com.timmytime.predictorplayersreactive.model.Team;
 import com.timmytime.predictorplayersreactive.service.TeamService;
 import org.slf4j.Logger;
@@ -13,8 +12,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
 import javax.annotation.PostConstruct;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @Service("teamService")
 public class TeamServiceImpl implements TeamService {
@@ -23,13 +24,13 @@ public class TeamServiceImpl implements TeamService {
 
     private final String dataHost;
 
-    private Map<UUID, Team> teams = new HashMap<>();
+    private final Map<UUID, Team> teams = new HashMap<>();
 
 
     @Autowired
     public TeamServiceImpl(
             @Value("${data.host}") String dataHost
-    ){
+    ) {
         this.dataHost = dataHost;
     }
 
@@ -56,7 +57,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public Team getTeam( UUID id) {
+    public Team getTeam(UUID id) {
         return teams.get(id);
     }
 

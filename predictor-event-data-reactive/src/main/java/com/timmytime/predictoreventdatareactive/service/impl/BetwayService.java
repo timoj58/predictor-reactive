@@ -33,7 +33,7 @@ public class BetwayService implements ProviderService {
     public BetwayService(
             TeamService teamService,
             EventOddsService eventOddsService
-    ){
+    ) {
         this.teamService = teamService;
         this.eventOddsService = eventOddsService;
     }
@@ -50,28 +50,28 @@ public class BetwayService implements ProviderService {
         IntStream.range(0, data.length()).forEach(i -> events.add(data.getJSONObject(i)));
 
         Flux.fromStream(
-               events.stream()
+                events.stream()
         )
                 .limitRate(1)
                 .subscribe(event -> {
 
-            Optional<Team> homeTeam = teamService.find(event.getString("HomeTeamName"), details.getString("competition"));
-            Optional<Team> awayTeam = teamService.find(event.getString("AwayTeamName"), details.getString("competition"));
+                    Optional<Team> homeTeam = teamService.find(event.getString("HomeTeamName"), details.getString("competition"));
+                    Optional<Team> awayTeam = teamService.find(event.getString("AwayTeamName"), details.getString("competition"));
 
-            if(homeTeam.isPresent() && awayTeam.isPresent()){
+                    if (homeTeam.isPresent() && awayTeam.isPresent()) {
 
-                LocalDateTime eventDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(
-                        event.getLong("Milliseconds")
-                ), ZoneId.systemDefault());
-                //dont have these details...TBC
-                if (eventDate.isBefore(LocalDateTime.now().plusDays(daysInAdvance()))) {
+                        LocalDateTime eventDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(
+                                event.getLong("Milliseconds")
+                        ), ZoneId.systemDefault());
+                        //dont have these details...TBC
+                        if (eventDate.isBefore(LocalDateTime.now().plusDays(daysInAdvance()))) {
 
-                    List<JSONObject> bets = new ArrayList<>();
-                    IntStream.range(0, event.getJSONArray("bets").length()).forEach(
-                            bet -> bets.add(event.getJSONArray("bets").getJSONObject(bet)));
+                            List<JSONObject> bets = new ArrayList<>();
+                            IntStream.range(0, event.getJSONArray("bets").length()).forEach(
+                                    bet -> bets.add(event.getJSONArray("bets").getJSONObject(bet)));
 
-                    //reality.  filter out player / event odds.  we just want match type odds. i have data to do this.
-                    //also saves hammering the DB.  best solution for now.
+                            //reality.  filter out player / event odds.  we just want match type odds. i have data to do this.
+                            //also saves hammering the DB.  best solution for now.
 
                             Flux.fromStream(
                                     bets.stream()
@@ -94,7 +94,7 @@ public class BetwayService implements ProviderService {
                                         .switchIfEmpty(Mono.just(new EventOdds()))
                                         .delayElement(Duration.ofMillis(10))
                                         .subscribe(eventOdds -> {
-                                            if(eventOdds.getId() == null){
+                                            if (eventOdds.getId() == null) {
                                                 eventOdds.setId(UUID.randomUUID());
                                                 eventOdds.setProvider(Providers.BETWAY_ODDS.name());
                                                 eventOdds.setTeams(Arrays.asList(homeTeam.get().getId(), awayTeam.get().getId()));
@@ -109,12 +109,12 @@ public class BetwayService implements ProviderService {
 
                             });
 
-                }
+                        }
 
-            }else{
-                log.info("one or more teams not on file: {}", event.toString());
-            }
-        });
+                    } else {
+                        log.info("one or more {} teams nof : {}", details.getString("competition"), event.toString());
+                    }
+                });
 
     }
 
@@ -123,14 +123,14 @@ public class BetwayService implements ProviderService {
                 .equals(DayOfWeek.TUESDAY)) {
             return 3;
         }
-        if(LocalDate.now().getDayOfWeek().equals(DayOfWeek.THURSDAY)){
+        if (LocalDate.now().getDayOfWeek().equals(DayOfWeek.THURSDAY)) {
             return 5;
         }
         return 4;
     }
 
     @PostConstruct
-    private void init(){
+    private void init() {
         eventOddsService.delete(Providers.BETWAY_ODDS).subscribe();
     }
 }

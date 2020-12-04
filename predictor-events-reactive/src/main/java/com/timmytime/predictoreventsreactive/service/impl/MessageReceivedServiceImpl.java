@@ -7,10 +7,7 @@ import com.timmytime.predictoreventsreactive.enumerator.CountryCompetitions;
 import com.timmytime.predictoreventsreactive.enumerator.Messages;
 import com.timmytime.predictoreventsreactive.facade.WebClientFacade;
 import com.timmytime.predictoreventsreactive.request.Message;
-import com.timmytime.predictoreventsreactive.service.MessageReceivedService;
-import com.timmytime.predictoreventsreactive.service.PredictionResultService;
-import com.timmytime.predictoreventsreactive.service.PredictionService;
-import com.timmytime.predictoreventsreactive.service.ValidationService;
+import com.timmytime.predictoreventsreactive.service.*;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +28,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     private final PredictionResultService predictionResultService;
     private final ValidationService validationService;
     private final WebClientFacade webClientFacade;
+    private final PredictionMonitorService predictionMonitorService;
 
     private final String playersHost;
 
@@ -39,12 +37,14 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
             @Value("${players.host}") String playersHost,
             PredictionService predictionService,
             PredictionResultService predictionResultService,
+            PredictionMonitorService predictionMonitorService,
             ValidationService validationService,
             WebClientFacade webClientFacade
-    ){
+    ) {
         this.playersHost = playersHost;
         this.predictionService = predictionService;
         this.predictionResultService = predictionResultService;
+        this.predictionMonitorService = predictionMonitorService;
         this.validationService = validationService;
         this.webClientFacade = webClientFacade;
 
@@ -61,14 +61,14 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                     log.info("received {} {}", msg.getType(), msg.getCountry());
                     messages.get(msg.getCountry()).add(msg.getType());
 
-                    if(messages.get(msg.getCountry()).containsAll(Arrays.asList(Messages.values()))){
+                    if (messages.get(msg.getCountry()).containsAll(Arrays.asList(Messages.values()))) {
 
                         log.info("processing {}", msg.getCountry());
                         validationService.resetLast(msg.getCountry(), (country) -> {
                             log.info("starting predictions {}", country);
-                            predictionResultService.addCountry(country);
+                            predictionMonitorService.addCountry(country.toUpperCase());
                             validationService.validate(country);
-                            webClientFacade.sendMessage(playersHost+"/message", createMessage(country));
+                            webClientFacade.sendMessage(playersHost + "/message", createMessage(country));
                             predictionService.start(country);
                         });
 
@@ -82,15 +82,15 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     @Override
     public Mono<Void> prediction(UUID id, Mono<JsonNode> prediction) {
         return prediction.doOnNext(
-                msg ->  predictionResultService.result(id, new JSONObject(msg.toString()), c -> predictionService.retryMissing())
+                msg -> predictionResultService.result(id, new JSONObject(msg.toString()), c -> predictionService.reProcess())
         ).thenEmpty(Mono.empty());
     }
 
-    private JsonNode createMessage(String country){
+    private JsonNode createMessage(String country) {
         try {
             return new ObjectMapper().readTree(
                     new JSONObject().put("country", country)
-                    .put("type", "EVENTS_LOADED").toString()
+                            .put("type", "EVENTS_LOADED").toString()
             );
         } catch (JsonProcessingException e) {
             log.error("message failed", e);

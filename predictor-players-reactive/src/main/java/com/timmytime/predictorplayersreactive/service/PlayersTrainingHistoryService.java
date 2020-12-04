@@ -8,6 +8,8 @@ import java.util.UUID;
 
 public interface PlayersTrainingHistoryService {
     Mono<PlayersTrainingHistory> find(UUID id);
+
     Mono<PlayersTrainingHistory> save(PlayersTrainingHistory trainingHistory);
+
     Mono<PlayersTrainingHistory> find(FantasyEventTypes type);
 }

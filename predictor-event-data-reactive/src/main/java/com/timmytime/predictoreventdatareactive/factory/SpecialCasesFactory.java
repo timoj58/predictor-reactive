@@ -37,7 +37,7 @@ public class SpecialCasesFactory {
             String yml = FileUtils.readFileToString(fileSystemResource.getFile());
 
             final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-            return  mapper.readValue(yml, SpecialCasesConfiguration.class);
+            return mapper.readValue(yml, SpecialCasesConfiguration.class);
 
 
         } catch (IOException e) {
@@ -46,7 +46,7 @@ public class SpecialCasesFactory {
         return null;
     }
 
-    public SpecialCasesConfiguration getSpecialCasesConfiguration(){
+    public SpecialCasesConfiguration getSpecialCasesConfiguration() {
         return specialCasesConfiguration;
     }
 

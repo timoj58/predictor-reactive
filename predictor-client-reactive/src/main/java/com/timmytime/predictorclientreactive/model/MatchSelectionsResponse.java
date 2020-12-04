@@ -20,7 +20,7 @@ public class MatchSelectionsResponse {
             UUID home,
             UUID away,
             List<MatchSelectionResponse> matchSelectionResponses
-    ){
+    ) {
         this.home = home;
         this.away = away;
         this.matchSelectionResponses = matchSelectionResponses;

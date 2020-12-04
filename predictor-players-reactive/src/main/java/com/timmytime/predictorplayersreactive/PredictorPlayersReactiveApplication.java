@@ -10,8 +10,8 @@ import org.springframework.web.reactive.config.EnableWebFlux;
 @EnableReactiveMongoRepositories
 public class PredictorPlayersReactiveApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(PredictorPlayersReactiveApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(PredictorPlayersReactiveApplication.class, args);
+    }
 
 }

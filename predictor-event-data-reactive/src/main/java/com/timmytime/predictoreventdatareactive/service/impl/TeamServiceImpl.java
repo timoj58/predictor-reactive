@@ -15,7 +15,6 @@ import reactor.core.publisher.Flux;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service("teamService")
 public class TeamServiceImpl implements TeamService {
@@ -24,14 +23,14 @@ public class TeamServiceImpl implements TeamService {
 
     private final SpecialCasesFactory specialCasesFactory;
 
-    private Map<String, Map<UUID, Team>> teams = new HashMap<>();
+    private final Map<String, Map<UUID, Team>> teams = new HashMap<>();
     private final String dataHost;
 
     @Autowired
     public TeamServiceImpl(
             @Value("${data.host}") String dataHost,
             SpecialCasesFactory specialCasesFactory
-    ){
+    ) {
         this.specialCasesFactory = specialCasesFactory;
         this.dataHost = dataHost;
     }
@@ -122,16 +121,16 @@ public class TeamServiceImpl implements TeamService {
     }
 
 
-    private Optional<Team> findByLabelRegexIgnoreCaseAndCountry(String regex, String competition){
+    private Optional<Team> findByLabelRegexIgnoreCaseAndCountry(String regex, String competition) {
         log.info("regex {}", regex);
         return teams.get(competition)
                 .values()
                 .stream()
                 .filter(f -> f.getLabel().toLowerCase().matches(regex.toLowerCase()))
                 .findFirst();
-    };
+    }
 
-    private Optional<Team> findByLabelIgnoreCaseAndCountry(String label, String competition){
+    private Optional<Team> findByLabelIgnoreCaseAndCountry(String label, String competition) {
         return teams.get(competition)
                 .values()
                 .stream()
@@ -139,7 +138,7 @@ public class TeamServiceImpl implements TeamService {
                 .findFirst();
     }
 
-    private Optional<Team> findByLabelLikeIgnoreCaseAndCountry(String label, String competition){
+    private Optional<Team> findByLabelLikeIgnoreCaseAndCountry(String label, String competition) {
         return teams.get(competition)
                 .values()
                 .stream()

@@ -13,7 +13,10 @@ import java.util.UUID;
 
 public interface EventOddsService {
     Mono<EventOdds> create(EventOdds eventOdds);
+
     Mono<EventOdds> findEvent(String provider, String event, LocalDateTime eventDate, Double price, List<UUID> teams);
+
     Mono<Void> delete(Providers providers);
+
     Flux<Event> getEvents(@PathVariable String competition);
 }

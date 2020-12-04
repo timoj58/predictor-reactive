@@ -2,12 +2,9 @@ package com.timmytime.predictoreventsreactive.model;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 @Getter
@@ -30,7 +27,7 @@ public class EventOutcome {
     private String eventType = "PREDICT_RESULTS";
     private Boolean previousEvent = Boolean.FALSE; //as in it was the last set of events per competition
 
-    public String getCountry(){
+    public String getCountry() {
         return competition.split("_")[0];
     }
 }

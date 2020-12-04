@@ -19,13 +19,13 @@ public class TopSelectionsResponse {
     private String event;
     private List<PlayerResponse> playerResponses = new ArrayList<>();
 
-    public TopSelectionsResponse(FantasyEventTypes fantasyEventTypes, List<PlayerResponse> playerResponses){
+    public TopSelectionsResponse(FantasyEventTypes fantasyEventTypes, List<PlayerResponse> playerResponses) {
         this.event = fantasyEventTypes.name().toLowerCase();
         this.order = fantasyEventTypes.getOrder();
         this.playerResponses = playerResponses;
     }
 
-    public void process(List<PlayerResponse> toProcess){
+    public void process(List<PlayerResponse> toProcess) {
 
         this.playerResponses.addAll(toProcess);
         this.playerResponses =

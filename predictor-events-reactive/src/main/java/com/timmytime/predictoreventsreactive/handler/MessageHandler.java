@@ -19,7 +19,7 @@ public class MessageHandler {
     @Autowired
     public MessageHandler(
             MessageReceivedService messageReceivedService
-    ){
+    ) {
         this.messageReceivedService = messageReceivedService;
     }
 

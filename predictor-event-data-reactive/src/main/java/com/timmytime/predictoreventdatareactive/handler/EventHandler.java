@@ -1,6 +1,5 @@
 package com.timmytime.predictoreventdatareactive.handler;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.timmytime.predictoreventdatareactive.response.Event;
 import com.timmytime.predictoreventdatareactive.service.EventOddsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,7 @@ public class EventHandler {
     @Autowired
     public EventHandler(
             EventOddsService eventOddsService
-    ){
+    ) {
         this.eventOddsService = eventOddsService;
     }
 

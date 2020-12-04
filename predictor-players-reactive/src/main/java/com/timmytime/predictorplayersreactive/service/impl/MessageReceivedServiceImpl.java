@@ -12,9 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDate;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 
 @Service("messageReceivedService")
 public class MessageReceivedServiceImpl implements MessageReceivedService {
@@ -26,18 +24,21 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     private final PredictionResultService predictionResultService;
     private final TrainingService trainingService;
     private final PlayersTrainingHistoryService playersTrainingHistoryService;
+    private final PredictionMonitorService predictionMonitorService;
 
     @Autowired
     public MessageReceivedServiceImpl(
             PredictionService predictionService,
             PredictionResultService predictionResultService,
             TrainingService trainingService,
-            PlayersTrainingHistoryService playersTrainingHistoryService
-    ){
+            PlayersTrainingHistoryService playersTrainingHistoryService,
+            PredictionMonitorService predictionMonitorService
+    ) {
         this.predictionService = predictionService;
         this.predictionResultService = predictionResultService;
         this.trainingService = trainingService;
         this.playersTrainingHistoryService = playersTrainingHistoryService;
+        this.predictionMonitorService = predictionMonitorService;
 
         Arrays.asList(
                 ApplicableFantasyLeagues.values()
@@ -45,6 +46,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                 .map(ApplicableFantasyLeagues::getCountry)
                 .distinct()
                 .forEach(country -> messages.put(country.toLowerCase(), new ArrayList<>()));
+
     }
 
     @Override
@@ -53,14 +55,14 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         return message.doOnNext(
                 msg -> {
                     log.info("received {} {}", msg.getType(), msg.getCountry());
-                    if(messages.containsKey(msg.getCountry().toLowerCase())) {
+                    if (messages.containsKey(msg.getCountry().toLowerCase())) {
                         messages.get(msg.getCountry().toLowerCase()).add(msg.getType());
 
                         if (messages.get(msg.getCountry().toLowerCase()).containsAll(Arrays.asList(Messages.values()))) {
                             predictionService.start(msg.getCountry().toLowerCase());
-                            predictionResultService.addCountry(msg.getCountry().toLowerCase());
+                            predictionMonitorService.addCountry(msg.getCountry().toLowerCase());
                         }
-                    }else {
+                    } else {
                         log.info("skipping {} not applicable", msg.getCountry());
                     }
 
@@ -72,16 +74,16 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     public Mono<Void> prediction(UUID id, Mono<JsonNode> prediction) {
         log.info("receiving prediction result for {}", id);
         return prediction.doOnNext(
-                msg ->  predictionResultService.result(id, new JSONObject(msg.toString()), c -> predictionService.retryMissing())
+                msg -> predictionResultService.result(id, new JSONObject(msg.toString()), c -> predictionService.reProcess())
         ).thenEmpty(Mono.empty());
 
     }
 
     @Override
     public Mono<Void> training(UUID id) {
-       return playersTrainingHistoryService.find(id)
-               .doOnNext(history -> trainingService.train(history))
-               .thenEmpty(Mono.empty());
+        return playersTrainingHistoryService.find(id)
+                .doOnNext(history -> trainingService.train(history))
+                .thenEmpty(Mono.empty());
     }
 
     @Override

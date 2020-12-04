@@ -3,14 +3,14 @@ package com.timmytime.predictorclientreactive.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.timmytime.predictorclientreactive.enumerator.Competition;
-import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
 import com.timmytime.predictorclientreactive.enumerator.FantasyEventTypes;
 import com.timmytime.predictorclientreactive.facade.S3Facade;
 import com.timmytime.predictorclientreactive.facade.WebClientFacade;
-import com.timmytime.predictorclientreactive.model.*;
+import com.timmytime.predictorclientreactive.model.MatchSelectionsResponse;
+import com.timmytime.predictorclientreactive.model.PlayerResponse;
+import com.timmytime.predictorclientreactive.model.TopSelectionsResponse;
 import com.timmytime.predictorclientreactive.service.ILoadService;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
-import com.timmytime.predictorclientreactive.service.TeamService;
 import com.timmytime.predictorclientreactive.util.MatchSelectionResponseTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,6 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.util.*;
 import java.util.function.BiFunction;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service("playersMatchService")
@@ -42,7 +41,7 @@ public class PlayersMatchServiceImpl implements ILoadService {
     private final Map<Competition, List<MatchSelectionsResponse>> byCompetition = new HashMap<>();
     private final MatchSelectionResponseTransformer matchSelectionResponseTransformer = new MatchSelectionResponseTransformer();
 
-    private BiFunction<List<MatchSelectionsResponse>, FantasyEventTypes, List<PlayerResponse>> process = (matchSelectionsResponses, fantasyEventTypes) ->
+    private final BiFunction<List<MatchSelectionsResponse>, FantasyEventTypes, List<PlayerResponse>> process = (matchSelectionsResponses, fantasyEventTypes) ->
             matchSelectionsResponses
                     .stream()
                     .map(m -> m.getMatchSelectionResponses())
@@ -91,26 +90,26 @@ public class PlayersMatchServiceImpl implements ILoadService {
                 .doOnNext(event -> {
                     log.info("processing {} vs {}", event.getHome(), event.getAway());
                     List<PlayerResponse> playerResponses = new ArrayList<>();
-                    webClientFacade.getPlayers(playersHost+"/players/match/"+league+"?home="+event.getHome()+"&away="+event.getAway()) //need players by teams...
+                    webClientFacade.getPlayers(playersHost + "/players/match/" + league + "?home=" + event.getHome() + "&away=" + event.getAway()) //need players by teams...
                             .doOnNext(player ->
-                                    webClientFacade.getPlayer(playersHost+"/player/"+player.getId()) //get player response
-                                    .subscribe(playerResponse -> playerResponses.add(playerResponse))
+                                    webClientFacade.getPlayer(playersHost + "/player/" + player.getId()) //get player response
+                                            .subscribe(playerResponse -> playerResponses.add(playerResponse))
                             ) //get the appearance and stats set up, create a player response
                             .doFinally(match -> Mono.just(playerResponses)
                                     .delayElement(Duration.ofMinutes(delay))
                                     .subscribe(players -> {
-                                            MatchSelectionsResponse matchSelectionsResponse
-                                                    = new MatchSelectionsResponse(
-                                                    event.getHome(),
-                                                    event.getAway(),
-                                                    matchSelectionResponseTransformer.transform(players)
-                                            );
+                                        MatchSelectionsResponse matchSelectionsResponse
+                                                = new MatchSelectionsResponse(
+                                                event.getHome(),
+                                                event.getAway(),
+                                                matchSelectionResponseTransformer.transform(players)
+                                        );
 
-                                            byCompetition.get(league).add(matchSelectionsResponse);
-                                        })
+                                        byCompetition.get(league).add(matchSelectionsResponse);
+                                    })
                             ).subscribe();
                 })
-                .doFinally(save -> Mono.just(league).delayElement(Duration.ofMinutes(delay*2)).subscribe(key -> save(key)))
+                .doFinally(save -> Mono.just(league).delayElement(Duration.ofMinutes(delay * 2)).subscribe(key -> save(key)))
                 .subscribe();
 
     }
@@ -121,7 +120,7 @@ public class PlayersMatchServiceImpl implements ILoadService {
         byCompetition.get(competition)
                 .forEach(event -> {
                     try {
-                        s3Facade.put("player-events/"+competition+"/"+event.getHome()+"/"+event.getAway(),
+                        s3Facade.put("player-events/" + competition + "/" + event.getHome() + "/" + event.getAway(),
                                 new ObjectMapper().writeValueAsString(
                                         event
                                 ));
@@ -147,16 +146,16 @@ public class PlayersMatchServiceImpl implements ILoadService {
 
         Arrays.asList(topSelectionsAssistsResponse, topSelectionsGoalsResponse, topSelectionsSavesResponse, topSelectionsYellowsResponse)
                 .forEach(topSelectionsResponse ->
-        {
-            try {
-                s3Facade.put("top-performers/"+competition+"/"+topSelectionsResponse.getEvent(),
-                        new ObjectMapper().writeValueAsString(
-                                topSelectionsResponse
-                        ));
-            } catch (JsonProcessingException e) {
-                log.error("json", e);
-            }
-        });
+                {
+                    try {
+                        s3Facade.put("top-performers/" + competition + "/" + topSelectionsResponse.getEvent(),
+                                new ObjectMapper().writeValueAsString(
+                                        topSelectionsResponse
+                                ));
+                    } catch (JsonProcessingException e) {
+                        log.error("json", e);
+                    }
+                });
 
         byCompetition.remove(competition);
 

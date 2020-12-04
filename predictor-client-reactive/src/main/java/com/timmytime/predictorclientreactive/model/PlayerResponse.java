@@ -1,6 +1,5 @@
 package com.timmytime.predictorclientreactive.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -40,7 +39,7 @@ public class PlayerResponse implements Serializable {
     private List<FantasyResponse> fantasyResponse = new ArrayList<>();
     private List<FantasyEvent> averages = new ArrayList<>();
 
-    public PlayerResponse(PlayerResponse playerResponse, FantasyEvent fantasyEvent){
+    public PlayerResponse(PlayerResponse playerResponse, FantasyEvent fantasyEvent) {
         this.label = playerResponse.getLabel();
         this.id = playerResponse.getId();
         this.currentTeam = playerResponse.getCurrentTeam();

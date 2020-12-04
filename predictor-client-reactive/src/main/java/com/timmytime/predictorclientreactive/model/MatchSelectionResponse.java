@@ -17,7 +17,7 @@ public class MatchSelectionResponse {
     private String event;
     private List<PlayerResponse> playerResponses = new ArrayList<>();
 
-    public MatchSelectionResponse(FantasyEventTypes fantasyEventTypes, List<PlayerResponse> playerResponses){
+    public MatchSelectionResponse(FantasyEventTypes fantasyEventTypes, List<PlayerResponse> playerResponses) {
         this.event = fantasyEventTypes.name().toLowerCase();
         this.order = fantasyEventTypes.getOrder();
         this.playerResponses = playerResponses;

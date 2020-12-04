@@ -2,7 +2,6 @@ package com.timmytime.predictoreventsreactive.service.impl;
 
 import com.timmytime.predictoreventsreactive.enumerator.Predictions;
 import com.timmytime.predictoreventsreactive.facade.WebClientFacade;
-import com.timmytime.predictoreventsreactive.model.Event;
 import com.timmytime.predictoreventsreactive.model.EventOutcome;
 import com.timmytime.predictoreventsreactive.model.Match;
 import com.timmytime.predictoreventsreactive.service.EventOutcomeService;
@@ -14,15 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.UUID;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 @Service("validationService")
 public class ValidationServiceImpl implements ValidationService {
@@ -38,7 +31,7 @@ public class ValidationServiceImpl implements ValidationService {
             @Value("${data.host}") String dataHost,
             EventOutcomeService eventOutcomeService,
             WebClientFacade webClientFacade
-    ){
+    ) {
         this.dataHost = dataHost;
         this.eventOutcomeService = eventOutcomeService;
         this.webClientFacade = webClientFacade;
@@ -51,27 +44,27 @@ public class ValidationServiceImpl implements ValidationService {
 
         eventOutcomeService.toValidate(country)
                 .subscribe(eventOutcome ->
-                        webClientFacade.getMatch(dataHost+"/match?home="
-                                +eventOutcome.getHome()+"&away="
-                                +eventOutcome.getAway()
-                                +"&date="+ eventOutcome.getDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
-                        .subscribe(match -> {
+                        webClientFacade.getMatch(dataHost + "/match?home="
+                                + eventOutcome.getHome() + "&away="
+                                + eventOutcome.getAway()
+                                + "&date=" + eventOutcome.getDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+                                .subscribe(match -> {
 
-                            String prediction = predictionResult(eventOutcome);
+                                    String prediction = predictionResult(eventOutcome);
 
-                            switch (Predictions.valueOf(eventOutcome.getEventType())){
-                                case PREDICT_RESULTS:
-                                    eventOutcome.setSuccess(validateResult(prediction, match));
-                                    break;
-                                case PREDICT_GOALS:
-                                    eventOutcome.setSuccess(validateGoals(prediction, match));
-                                    break;
-                            }
+                                    switch (Predictions.valueOf(eventOutcome.getEventType())) {
+                                        case PREDICT_RESULTS:
+                                            eventOutcome.setSuccess(validateResult(prediction, match));
+                                            break;
+                                        case PREDICT_GOALS:
+                                            eventOutcome.setSuccess(validateGoals(prediction, match));
+                                            break;
+                                    }
 
-                            eventOutcome.setPreviousEvent(Boolean.TRUE);
-                            eventOutcomeService.save(eventOutcome).subscribe();
+                                    eventOutcome.setPreviousEvent(Boolean.TRUE);
+                                    eventOutcomeService.save(eventOutcome).subscribe();
 
-                        })
+                                })
                 );
     }
 
@@ -90,13 +83,13 @@ public class ValidationServiceImpl implements ValidationService {
     }
 
 
-    private String predictionResult(EventOutcome eventOutcome){
+    private String predictionResult(EventOutcome eventOutcome) {
 
         JSONArray results = legacyShit(eventOutcome.getPrediction());
 
         if (Predictions.valueOf(eventOutcome.getEventType()).equals(Predictions.PREDICT_GOALS)) {
             Double weightedGoals = 0.0;
-            for(int i=0;i<results.length();i++){
+            for (int i = 0; i < results.length(); i++) {
                 if (results.getJSONObject(i).getDouble("score") > 0.0) {
                     weightedGoals += (results.getJSONObject(i).getDouble("key") * (results.getJSONObject(i).getDouble("score") / 100));
                 }
@@ -110,19 +103,19 @@ public class ValidationServiceImpl implements ValidationService {
 
     }
 
-    private Boolean validateGoals(String prediction, Match match){
+    private Boolean validateGoals(String prediction, Match match) {
 
         boolean over = Double.valueOf(prediction) >= 2.5;
 
-        if(over){
-            return match.getHomeScore()+match.getAwayScore() >= 2.5;
-        }else{
-            return match.getHomeScore()+match.getAwayScore() < 2.5;
+        if (over) {
+            return match.getHomeScore() + match.getAwayScore() >= 2.5;
+        } else {
+            return match.getHomeScore() + match.getAwayScore() < 2.5;
         }
 
-    };
+    }
 
-    private Boolean validateResult(String prediction, Match match){
+    private Boolean validateResult(String prediction, Match match) {
 
         switch (prediction) {
             case "homeWin":
@@ -137,11 +130,11 @@ public class ValidationServiceImpl implements ValidationService {
         }
     }
 
-    private JSONArray legacyShit(String prediction){
-        try{
+    private JSONArray legacyShit(String prediction) {
+        try {
             return new JSONObject(prediction).getJSONArray("result");
 
-        }catch (Exception e){
+        } catch (Exception e) {
             return new JSONArray(prediction);
         }
     }

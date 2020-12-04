@@ -1,6 +1,5 @@
 package com.timmytime.predictorplayersreactive.service.impl;
 
-import com.timmytime.predictorplayersreactive.cache.ReceiptCache;
 import com.timmytime.predictorplayersreactive.enumerator.FantasyEventTypes;
 import com.timmytime.predictorplayersreactive.facade.WebClientFacade;
 import com.timmytime.predictorplayersreactive.request.TensorflowPrediction;
@@ -14,7 +13,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 @Service("tensorflowPredictionService")
@@ -34,7 +33,6 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
     private final String destroyUrl;
 
     private final WebClientFacade webClientFacade;
-    private final ReceiptCache receiptCache;
 
     private final Flux<TensorflowPrediction> receiver;
     private Consumer<TensorflowPrediction> consumer;
@@ -52,9 +50,8 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
             @Value("${ml.predict.yellow.url}") String yellowUrl,
             @Value("${ml.predict.init.url}") String initUrl,
             @Value("${ml.predict.destroy.url}") String destroyUrl,
-            WebClientFacade webClientFacade,
-            ReceiptCache receiptCache
-    ){
+            WebClientFacade webClientFacade
+    ) {
         this.trainingHost = trainingHost;
         this.goalsUrl = goalsUrl;
         this.assistsUrl = assistsUrl;
@@ -67,7 +64,6 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
         this.destroyUrl = destroyUrl;
 
         this.webClientFacade = webClientFacade;
-        this.receiptCache = receiptCache;
 
         this.receiver
                 = Flux.push(sink -> consumer = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
@@ -79,15 +75,14 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
 
     @Override
     public void predict(TensorflowPrediction tensorflowPrediction) {
-        consumer.accept(tensorflowPrediction);
-        receiptCache.addReceipt(tensorflowPrediction.getPlayerEventOutcomeCsv().getId());
+        CompletableFuture.runAsync(() -> consumer.accept(tensorflowPrediction));
     }
 
     @Override
     public void init(String type) {
         webClientFacade.config(
                 trainingHost
-                        +initUrl.replace("<type>", type));
+                        + initUrl.replace("<type>", type));
     }
 
 
@@ -95,21 +90,19 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
     public void destroy(String type) {
         webClientFacade.config(
                 trainingHost
-                        +destroyUrl.replace("<type>", type));
+                        + destroyUrl.replace("<type>", type));
 
     }
 
-    private void process(TensorflowPrediction tensorflowPrediction){
+    private void process(TensorflowPrediction tensorflowPrediction) {
         log.info("predicting id: {} {} {}",
                 tensorflowPrediction.getPlayerEventOutcomeCsv().getId(),
                 tensorflowPrediction.getPlayerEventOutcomeCsv().getPlayer(),
                 tensorflowPrediction.getPlayerEventOutcomeCsv().getOpponent());
 
-        receiptCache.processReceipt(tensorflowPrediction.getPlayerEventOutcomeCsv().getId());
-
         webClientFacade.predict(
                 trainingHost
-                        +getUrl(tensorflowPrediction.getFantasyEventTypes())
+                        + getUrl(tensorflowPrediction.getFantasyEventTypes())
                         .replace("<receipt>", tensorflowPrediction.getPlayerEventOutcomeCsv().getId().toString())
                         .replace("<init>", "false"),
                 tensorflowPrediction.getPlayerEventOutcomeCsv()

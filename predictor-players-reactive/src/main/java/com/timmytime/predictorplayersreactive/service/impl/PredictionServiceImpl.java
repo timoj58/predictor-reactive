@@ -1,31 +1,23 @@
 package com.timmytime.predictorplayersreactive.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.timmytime.predictorplayersreactive.cache.ReceiptCache;
 import com.timmytime.predictorplayersreactive.enumerator.ApplicableFantasyLeagues;
 import com.timmytime.predictorplayersreactive.enumerator.FantasyEventTypes;
-import com.timmytime.predictorplayersreactive.facade.WebClientFacade;
 import com.timmytime.predictorplayersreactive.model.FantasyOutcome;
-import com.timmytime.predictorplayersreactive.model.Prediction;
 import com.timmytime.predictorplayersreactive.request.PlayerEventOutcomeCsv;
 import com.timmytime.predictorplayersreactive.request.TensorflowPrediction;
 import com.timmytime.predictorplayersreactive.service.*;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service("predictionService")
@@ -52,7 +44,7 @@ public class PredictionServiceImpl implements PredictionService {
 
         //init machine
         Flux.fromStream(
-                Arrays.asList("assists",  "conceded",  "goals",  "minutes",  "red",  "saves",  "yellow").stream()
+                Arrays.asList("assists", "conceded", "goals", "minutes", "red", "saves", "yellow").stream()
         ).subscribe(type -> tensorflowPredictionService.init(type));
 
     }
@@ -67,25 +59,25 @@ public class PredictionServiceImpl implements PredictionService {
         )
                 .delayElements(Duration.ofMinutes(1))
                 .subscribe(competition ->
-                eventsService.get(competition.name().toLowerCase())
-                        .subscribe(event -> {
-                            log.info("processing {} v {}", event.getHome(), event.getAway());
-                            processPlayers(competition.name().toLowerCase(), event.getDate(), event.getHome(), event.getAway());
-                        })
-        );
+                        eventsService.get(competition.name().toLowerCase())
+                                .subscribe(event -> {
+                                    log.info("processing {} v {}", event.getHome(), event.getAway());
+                                    processPlayers(competition.name().toLowerCase(), event.getDate(), event.getHome(), event.getAway());
+                                })
+                );
     }
 
     @Override
     public Mono<Void> fix() {
         log.info("fixing predictions");
-        retryMissing();
+        reProcess();
         log.info("returning");
 
-         return Mono.empty();
+        return Mono.empty();
     }
 
     @Override
-    public void retryMissing(){
+    public void reProcess() {
 
         log.info("processing to fix");
         //if we have no records left, then we should send a message to client service.  TODO. for automation.
@@ -105,6 +97,11 @@ public class PredictionServiceImpl implements PredictionService {
         );
     }
 
+    @Override
+    public Mono<Long> outstanding() {
+        return fantasyOutcomeService.toFix().count();
+    }
+
 
     private Boolean processPlayers(String competition, LocalDateTime date, UUID homeTeam, UUID awayTeam) {
         Flux.fromStream(
@@ -115,33 +112,33 @@ public class PredictionServiceImpl implements PredictionService {
                 .subscribe(player ->
                         Flux.fromArray(FantasyEventTypes.values())
                                 .filter(f -> f.getPredict() == Boolean.TRUE)
-                              //HARD.  TODO / IGNORE.  would save 30 minutes tho  .filter(f -> (f == FantasyEventTypes.SAVES && player.getIsGoalkeeper()) || f != FantasyEventTypes.SAVES)
+                                //HARD.  TODO / IGNORE.  would save 30 minutes tho  .filter(f -> (f == FantasyEventTypes.SAVES && player.getIsGoalkeeper()) || f != FantasyEventTypes.SAVES)
                                 .limitRate(1)
                                 .subscribe(fantasyEvent ->
-                                fantasyOutcomeService.save(
-                                        FantasyOutcome.builder()
-                                                .id(UUID.randomUUID())
-                                                .eventDate(date)
-                                                .opponent(player.getLatestTeam().equals(homeTeam) ? awayTeam : homeTeam)
-                                                .playerId(player.getId())
-                                                .fantasyEventType(fantasyEvent)
-                                                .home(player.getLatestTeam().equals(homeTeam) ? "home" : "away") //not sure why its like this
-                                                .build()
-                                ).subscribe(fantasyOutcome ->
-                                        tensorflowPredictionService.predict(
-                                                TensorflowPrediction.builder()
-                                                        .fantasyEventTypes(fantasyEvent)
-                                                        .playerEventOutcomeCsv(
-                                                                new PlayerEventOutcomeCsv(
-                                                                        fantasyOutcome.getId(),
-                                                                        player.getId(),
-                                                                        player.getLatestTeam().equals(homeTeam) ? awayTeam : homeTeam,
-                                                                        fantasyOutcome.getHome()))
+                                        fantasyOutcomeService.save(
+                                                FantasyOutcome.builder()
+                                                        .id(UUID.randomUUID())
+                                                        .eventDate(date)
+                                                        .opponent(player.getLatestTeam().equals(homeTeam) ? awayTeam : homeTeam)
+                                                        .playerId(player.getId())
+                                                        .fantasyEventType(fantasyEvent)
+                                                        .home(player.getLatestTeam().equals(homeTeam) ? "home" : "away") //not sure why its like this
                                                         .build()
+                                        ).subscribe(fantasyOutcome ->
+                                                tensorflowPredictionService.predict(
+                                                        TensorflowPrediction.builder()
+                                                                .fantasyEventTypes(fantasyEvent)
+                                                                .playerEventOutcomeCsv(
+                                                                        new PlayerEventOutcomeCsv(
+                                                                                fantasyOutcome.getId(),
+                                                                                player.getId(),
+                                                                                player.getLatestTeam().equals(homeTeam) ? awayTeam : homeTeam,
+                                                                                fantasyOutcome.getHome()))
+                                                                .build()
 
+                                                )
                                         )
                                 )
-                        )
                 );
 
         return Boolean.TRUE;

@@ -6,6 +6,6 @@ public enum Providers {
     UNIBET_ODDS,
     BETFRED_ODDS,
     BET888_ODDS,
-    BETWAY_ODDS;
+    BETWAY_ODDS
 
 }

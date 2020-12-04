@@ -6,7 +6,6 @@ import com.timmytime.predictorplayersreactive.model.Match;
 import com.timmytime.predictorplayersreactive.model.PlayerMatch;
 import com.timmytime.predictorplayersreactive.model.StatMetric;
 import com.timmytime.predictorplayersreactive.service.PlayerMatchService;
-import com.timmytime.predictorplayersreactive.service.TensorflowDataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +15,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -80,11 +75,11 @@ public class PlayerMatchServiceImpl implements PlayerMatchService {
                                                     PlayerMatch.builder()
                                                             .date(match.getDate())
                                                             .playerId(player)
-                                                             .opponent(appearance.getTeamId().equals(match.getHomeTeam()) ? match.getAwayTeam() : match.getHomeTeam())
-                                                             .home(appearance.getTeamId().equals(match.getHomeTeam()) ? Boolean.TRUE : Boolean.FALSE)
-                                                             .minutes(appearance.getAppearance() < 0 ? 0 :  appearance.getAppearance() > 90 ? 90 : appearance.getAppearance())
-                                                             .stats(new ArrayList<>())
-                                                             .conceded(appearance.getTeamId().equals(match.getHomeTeam()) ? match.getAwayScore() : match.getHomeScore())
+                                                            .opponent(appearance.getTeamId().equals(match.getHomeTeam()) ? match.getAwayTeam() : match.getHomeTeam())
+                                                            .home(appearance.getTeamId().equals(match.getHomeTeam()) ? Boolean.TRUE : Boolean.FALSE)
+                                                            .minutes(appearance.getAppearance() < 0 ? 0 : appearance.getAppearance() > 90 ? 90 : appearance.getAppearance())
+                                                            .stats(new ArrayList<>())
+                                                            .conceded(appearance.getTeamId().equals(match.getHomeTeam()) ? match.getAwayScore() : match.getHomeScore())
                                                             .build();
 
                                             getStats(match.getId(), player)

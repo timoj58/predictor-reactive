@@ -6,5 +6,6 @@ import java.util.UUID;
 
 public interface TeamService {
     void loadTeams();
+
     Team getTeam(UUID id);
 }

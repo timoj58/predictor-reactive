@@ -13,7 +13,7 @@ public class LambdaFacade {
 
     public void invoke(String functionName) {
         InvokeRequest invokeRequest = new InvokeRequest()
-                .withFunctionName("arn:aws:lambda:us-east-1:842788105885:function:"+functionName);
+                .withFunctionName("arn:aws:lambda:us-east-1:842788105885:function:" + functionName);
 
         InvokeResult invokeResult = null;
 

@@ -6,24 +6,19 @@ import com.timmytime.predictorplayersreactive.model.*;
 import com.timmytime.predictorplayersreactive.request.PlayerEventOutcomeCsv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 public class WebClientFacade {
 
     private final Logger log = LoggerFactory.getLogger(WebClientFacade.class);
 
-    public void sendMessage(String url, JsonNode payload){
+    public void sendMessage(String url, JsonNode payload) {
         WebClient.builder().build()
                 .post()
                 .uri(url)
@@ -35,7 +30,7 @@ public class WebClientFacade {
 
     public Flux<Player> getPlayers(
             String url
-    ){
+    ) {
         return WebClient.builder().build()
                 .get()
                 .uri(url)
@@ -46,7 +41,7 @@ public class WebClientFacade {
 
     public Flux<LineupPlayer> getAppearances(
             String url
-    ){
+    ) {
         return WebClient.builder().build()
                 .get()
                 .uri(url)
@@ -57,7 +52,7 @@ public class WebClientFacade {
 
     public Mono<Match> getMatch(
             String url
-    ){
+    ) {
         return WebClient.builder().build()
                 .get()
                 .uri(url)
@@ -68,7 +63,7 @@ public class WebClientFacade {
 
     public Flux<StatMetric> getStats(
             String url
-    ){
+    ) {
         return WebClient.builder().build()
                 .get()
                 .uri(url)
@@ -87,19 +82,19 @@ public class WebClientFacade {
                 .bodyToFlux(Event.class);
     }
 
-    public void predict(String url, PlayerEventOutcomeCsv playerEventOutcomeCsv){
+    public void predict(String url, PlayerEventOutcomeCsv playerEventOutcomeCsv) {
         WebClient.builder().build()
                 .post()
                 .uri(url)
                 .body(Mono.just(
                         new ObjectMapper().convertValue(
-                        playerEventOutcomeCsv, JsonNode.class)
+                                playerEventOutcomeCsv, JsonNode.class)
                 ), JsonNode.class)
                 .exchange()
                 .subscribe();
     }
 
-    public void train(String url){
+    public void train(String url) {
         log.info("url post {}", url);
         WebClient.builder().build()
                 .post()
@@ -108,7 +103,7 @@ public class WebClientFacade {
                 .subscribe();
     }
 
-    public void config(String url){
+    public void config(String url) {
         WebClient.builder().build()
                 .put()
                 .uri(url)

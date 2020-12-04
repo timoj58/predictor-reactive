@@ -15,9 +15,6 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.util.function.Consumer;
 
-import static com.timmytime.predictoreventdatareactive.enumerator.Providers.BETWAY_ODDS;
-import static com.timmytime.predictoreventdatareactive.enumerator.Providers.PADDYPOWER_ODDS;
-
 
 @Service("messageReceivedService")
 public class MessageReceivedServiceImpl implements MessageReceivedService {
@@ -39,7 +36,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         this.paddyPowerService = paddyPowerService;
 
         this.results = Flux.push(sink ->
-               MessageReceivedServiceImpl.this.receive = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
+                MessageReceivedServiceImpl.this.receive = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
 
         this.results.limitRate(1).delayElements(Duration.ofMillis(500)).subscribe(this::process);
     }
@@ -58,11 +55,11 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         return Mono.empty();
     }
 
-    private void process(JsonNode received){
+    private void process(JsonNode received) {
         String provider = received.get("provider").textValue();
         log.info("received message from {}", provider);
 
-        switch (Providers.valueOf(provider)){
+        switch (Providers.valueOf(provider)) {
             case PADDYPOWER_ODDS:
                 paddyPowerService.receive(received);
                 break;

@@ -1,6 +1,5 @@
 package com.timmytime.predictoreventsreactive.service.impl;
 
-import com.timmytime.predictoreventsreactive.cache.ReceiptCache;
 import com.timmytime.predictoreventsreactive.enumerator.Predictions;
 import com.timmytime.predictoreventsreactive.facade.WebClientFacade;
 import com.timmytime.predictoreventsreactive.model.Event;
@@ -32,21 +31,17 @@ class PredictionServiceImplTest {
 
     private final EventService eventService = mock(EventService.class);
     private final WebClientFacade webClientFacade = mock(WebClientFacade.class);
-    private static final ReceiptCache receiptCache = mock(ReceiptCache.class);
     private final TensorflowPredictionService tensorflowPredictionService = new TensorflowPredictionServiceImpl(
-            "", "", "", 0, webClientFacade, receiptCache
+            "", "", "", 0, webClientFacade
     );
     private static final EventOutcomeService eventOutcomeService = mock(EventOutcomeService.class);
 
 
     private final PredictionServiceImpl predictionService
             = new PredictionServiceImpl(
-                    0,
                     eventService,
             tensorflowPredictionService,
-            eventOutcomeService,
-            receiptCache
-    );
+            eventOutcomeService);
 
     private static final UUID event1 = UUID.randomUUID();
     private static final UUID event2 = UUID.randomUUID();
@@ -56,11 +51,6 @@ class PredictionServiceImplTest {
 
     @BeforeAll
     public static void setUp(){
-
-        when(receiptCache.isEmpty(event1)).thenReturn(Boolean.FALSE);
-        when(receiptCache.isEmpty(event2)).thenReturn(Boolean.FALSE);
-        when(receiptCache.isEmpty(event3)).thenReturn(Boolean.TRUE);
-        when(receiptCache.isEmpty(replay1)).thenReturn(Boolean.FALSE);
 
 
         //this will cause a loop in this test obviously....to resolve.
@@ -88,10 +78,6 @@ class PredictionServiceImplTest {
         predictionService.start("TURKEY");
         Thread.sleep(4000);
 
-        //now fire some results back...to test the mechanism on finish.
-        predictionService.result(event1, new JSONObject());
-        predictionService.result(event2, new JSONObject());
-        predictionService.result(event3, new JSONObject());
 
 
         //not mow....

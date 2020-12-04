@@ -19,7 +19,7 @@ public class EventsHandler {
     @Autowired
     public EventsHandler(
             EventOutcomeService eventOutcomeService
-    ){
+    ) {
         this.eventOutcomeService = eventOutcomeService;
     }
 

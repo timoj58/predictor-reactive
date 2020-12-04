@@ -1,8 +1,6 @@
 package com.timmytime.predictorplayersreactive.handler;
 
-import com.timmytime.predictorplayersreactive.request.PlayerEventOutcomeCsv;
 import com.timmytime.predictorplayersreactive.service.TensorflowDataService;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -17,7 +15,7 @@ public class DataHandler {
     @Autowired
     public DataHandler(
             TensorflowDataService tensorflowDataService
-    ){
+    ) {
         this.tensorflowDataService = tensorflowDataService;
     }
 

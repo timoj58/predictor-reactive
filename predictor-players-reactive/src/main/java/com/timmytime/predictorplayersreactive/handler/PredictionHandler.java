@@ -15,7 +15,7 @@ public class PredictionHandler {
     @Autowired
     public PredictionHandler(
             PredictionService predictionService
-    ){
+    ) {
         this.predictionService = predictionService;
     }
 

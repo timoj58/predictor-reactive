@@ -1,6 +1,5 @@
 package com.timmytime.predictorplayersreactive;
 
-import com.timmytime.predictorplayersreactive.cache.ReceiptCache;
 import com.timmytime.predictorplayersreactive.facade.WebClientFacade;
 import com.timmytime.predictorplayersreactive.model.Event;
 import com.timmytime.predictorplayersreactive.model.FantasyOutcome;
@@ -31,7 +30,6 @@ public class MachineLearningTest {
     private static final EventsService eventsService = mock(EventsService.class);
     private static final PlayerResponseService playerResponseService = mock(PlayerResponseService.class);
     private static final PlayerService playerService = new PlayerServiceImpl("http://localhost:8092", new WebClientFacade());
-    private static final ReceiptCache receiptCache = mock(ReceiptCache.class);
     private static final TensorflowPredictionService tensorflowPredictionService =
             new TensorflowPredictionServiceImpl(
                     "ec2-54-162-22-91.compute-1.amazonaws.com:5000",
@@ -44,18 +42,15 @@ public class MachineLearningTest {
                     "/predict/yellow-card/<init>/<receipt>",
                     "/predict/init/<type>",
                     "/predict/clear-down/<type>",
-                    new WebClientFacade(),
-                    receiptCache
+                    new WebClientFacade()
             );
 
     private final PredictionServiceImpl predictionService
             = new PredictionServiceImpl(
                     eventsService,
             playerService,
-            playerResponseService,
             tensorflowPredictionService,
-            fantasyEventOutcomeService,
-            receiptCache
+            fantasyEventOutcomeService
     );
 
     @BeforeAll

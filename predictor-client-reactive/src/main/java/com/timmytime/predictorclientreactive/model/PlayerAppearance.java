@@ -26,7 +26,7 @@ public class PlayerAppearance implements Serializable {
     private List<PlayerEvent> statMetrics = new ArrayList<>();
     private Integer duration;
 
-    public PlayerAppearance(){
+    public PlayerAppearance() {
 
     }
 

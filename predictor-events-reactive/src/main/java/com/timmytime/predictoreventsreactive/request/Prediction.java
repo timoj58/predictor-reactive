@@ -19,7 +19,7 @@ public class Prediction {
 
     public Prediction(
             EventOutcome eventOutcome
-    ){
+    ) {
         this.id = eventOutcome.getId();
         this.home = eventOutcome.getHome();
         this.away = eventOutcome.getAway();

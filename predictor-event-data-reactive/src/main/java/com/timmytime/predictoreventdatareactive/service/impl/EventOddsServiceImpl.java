@@ -23,7 +23,7 @@ public class EventOddsServiceImpl implements EventOddsService {
     @Autowired
     public EventOddsServiceImpl(
             EventOddsRepo eventOddsRepo
-    ){
+    ) {
         this.eventOddsRepo = eventOddsRepo;
     }
 
@@ -44,8 +44,8 @@ public class EventOddsServiceImpl implements EventOddsService {
 
     @Override
     public Flux<Event> getEvents(String competition) {
-       return eventOddsRepo.findByCompetition(competition)
-               .distinct(EventOdds::getTeams)
-               .map(Event::new);
+        return eventOddsRepo.findByCompetition(competition)
+                .distinct(EventOdds::getTeams)
+                .map(Event::new);
     }
 }

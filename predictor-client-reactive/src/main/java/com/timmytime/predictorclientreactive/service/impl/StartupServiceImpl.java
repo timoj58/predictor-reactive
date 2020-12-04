@@ -8,7 +8,6 @@ import com.timmytime.predictorclientreactive.service.StartupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 
@@ -29,7 +28,7 @@ public class StartupServiceImpl implements StartupService {
             LambdaFacade lambdaFacade,
             WebClientFacade webClientFacade,
             S3Facade s3Facade
-    ){
+    ) {
         this.dataScraperHost = dataScraperHost;
         this.eventScraperHost = eventScraperHost;
         this.lambdaFacade = lambdaFacade;
@@ -39,7 +38,7 @@ public class StartupServiceImpl implements StartupService {
 
 
     @Override
-   // @PostConstruct
+    // @PostConstruct
     public void start() throws InterruptedException {
 
         //TODO review this in future. Mono.just(1).subscribe(s -> s3Facade.archive());
@@ -51,7 +50,7 @@ public class StartupServiceImpl implements StartupService {
         lambdaFacade.invoke(LambdaFunctions.START.getFunctionName());
         Thread.sleep(Duration.ofMinutes(3).toMillis());
 
-        webClientFacade.startScraper(dataScraperHost+"/scrape");
-        webClientFacade.startScraper(eventScraperHost+"/scrape");
+        webClientFacade.startScraper(dataScraperHost + "/scrape");
+        webClientFacade.startScraper(eventScraperHost + "/scrape");
     }
 }

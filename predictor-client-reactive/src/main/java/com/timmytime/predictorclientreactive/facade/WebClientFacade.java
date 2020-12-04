@@ -1,9 +1,6 @@
 package com.timmytime.predictorclientreactive.facade;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.timmytime.predictorclientreactive.model.*;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -14,7 +11,7 @@ import java.util.List;
 @Component
 public class WebClientFacade {
 
-    public List<Team> getTeams(String url){
+    public List<Team> getTeams(String url) {
         return null;
     }
 
@@ -59,7 +56,7 @@ public class WebClientFacade {
     }
 
 
-    public void startScraper(String url){
+    public void startScraper(String url) {
         WebClient.builder().build()
                 .post()
                 .uri(url)
@@ -67,7 +64,7 @@ public class WebClientFacade {
                 .subscribe();
     }
 
-    public Mono<Match> getMatch(String url){
+    public Mono<Match> getMatch(String url) {
         return WebClient.builder().build()
                 .get()
                 .uri(url)
@@ -76,7 +73,7 @@ public class WebClientFacade {
 
     }
 
-    public Flux<Player> getPlayers(String url){
+    public Flux<Player> getPlayers(String url) {
         return WebClient.builder().build()
                 .get()
                 .uri(url)
@@ -84,7 +81,7 @@ public class WebClientFacade {
                 .bodyToFlux(Player.class);
     }
 
-    public Mono<PlayerResponse> getPlayer(String url){
+    public Mono<PlayerResponse> getPlayer(String url) {
         return WebClient.builder().build()
                 .get()
                 .uri(url)

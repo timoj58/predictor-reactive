@@ -3,15 +3,9 @@ package com.timmytime.predictorclientreactive.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import netscape.javascript.JSObject;
-import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Setter

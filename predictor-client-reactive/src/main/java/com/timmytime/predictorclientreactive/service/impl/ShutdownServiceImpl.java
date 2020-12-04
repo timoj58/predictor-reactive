@@ -23,7 +23,7 @@ public class ShutdownServiceImpl implements ShutdownService {
     @Autowired
     public ShutdownServiceImpl(
             LambdaFacade lambdaFacade
-    ){
+    ) {
         this.lambdaFacade = lambdaFacade;
     }
 
@@ -32,13 +32,13 @@ public class ShutdownServiceImpl implements ShutdownService {
         log.info("receiving shutdown message for {}", service);
         received.add(service);
 
-        if(received.containsAll(Arrays.asList(
+        if (received.containsAll(Arrays.asList(
                 BetServiceImpl.class.getName(),
                 CompetitionServiceImpl.class.getName(),
                 PlayersMatchServiceImpl.class.getName(),
                 FixtureServiceImpl.class.getName(),
                 PreviousFixtureServiceImpl.class.getName()
-        ))){
+        ))) {
             shutdown();
         }
     }

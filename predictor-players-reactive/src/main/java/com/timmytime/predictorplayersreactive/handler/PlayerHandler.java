@@ -21,7 +21,7 @@ public class PlayerHandler {
     public PlayerHandler(
             PlayerService playerService,
             PlayerResponseService playerResponseService
-    ){
+    ) {
         this.playerService = playerService;
         this.playerResponseService = playerResponseService;
     }
@@ -33,7 +33,7 @@ public class PlayerHandler {
                         request.pathVariable("competition"),
                         UUID.fromString(request.queryParam("home").get()),
                         UUID.fromString(request.queryParam("away").get()))
-        , Player.class);
+                , Player.class);
     }
 
     public Mono<ServerResponse> getPlayer(ServerRequest request) {

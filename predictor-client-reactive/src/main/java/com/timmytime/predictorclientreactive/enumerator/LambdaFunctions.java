@@ -15,9 +15,9 @@ public enum LambdaFunctions {
         return functionName;
     }
 
-    private String functionName;
+    private final String functionName;
 
-    LambdaFunctions(String functionName){
+    LambdaFunctions(String functionName) {
         this.functionName = functionName;
     }
 }

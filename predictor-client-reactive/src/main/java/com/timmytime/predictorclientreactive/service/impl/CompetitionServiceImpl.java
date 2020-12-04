@@ -2,14 +2,14 @@ package com.timmytime.predictorclientreactive.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.timmytime.predictorclientreactive.enumerator.Competition;
+import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
 import com.timmytime.predictorclientreactive.facade.IS3Facade;
 import com.timmytime.predictorclientreactive.model.CompetitionResponse;
 import com.timmytime.predictorclientreactive.model.CountryAndCompetitionResponse;
 import com.timmytime.predictorclientreactive.model.CountryResponse;
 import com.timmytime.predictorclientreactive.service.ILoadService;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
-import com.timmytime.predictorclientreactive.enumerator.Competition;
-import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class CompetitionServiceImpl implements ILoadService {
     public CompetitionServiceImpl(
             IS3Facade s3Facade,
             ShutdownService shutdownService
-    ){
+    ) {
         this.s3Facade = s3Facade;
         this.shutdownService = shutdownService;
 
@@ -73,7 +73,7 @@ public class CompetitionServiceImpl implements ILoadService {
             }
 
         })
-        .subscribe();
+                .subscribe();
 
     }
 

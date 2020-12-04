@@ -12,9 +12,13 @@ import java.util.UUID;
 @Repository
 public interface EventOutcomeRepo extends ReactiveMongoRepository<EventOutcome, UUID> {
     Flux<EventOutcome> findByCompetitionInAndSuccessNull(List<String> competition);
+
     Flux<EventOutcome> findByCompetitionInAndPreviousEventTrue(List<String> competition);
+
     Flux<EventOutcome> findByHomeOrderByDateDesc(UUID team);
+
     Flux<EventOutcome> findByAwayOrderByDateDesc(UUID team);
+
     Flux<EventOutcome> findByPredictionNull();
 
 

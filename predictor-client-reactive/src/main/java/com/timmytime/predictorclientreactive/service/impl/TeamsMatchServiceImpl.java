@@ -2,6 +2,7 @@ package com.timmytime.predictorclientreactive.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
 import com.timmytime.predictorclientreactive.facade.S3Facade;
 import com.timmytime.predictorclientreactive.facade.WebClientFacade;
 import com.timmytime.predictorclientreactive.model.EventOutcome;
@@ -9,7 +10,6 @@ import com.timmytime.predictorclientreactive.model.EventOutcomeResponse;
 import com.timmytime.predictorclientreactive.service.ILoadService;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import com.timmytime.predictorclientreactive.service.TeamService;
-import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -47,7 +47,7 @@ public class TeamsMatchServiceImpl implements ILoadService {
             S3Facade s3Facade,
             TeamService teamService,
             ShutdownService shutdownService
-    ){
+    ) {
         this.eventsHost = eventsHost;
         this.delay = delay;
         this.webClientFacade = webClientFacade;
@@ -69,7 +69,7 @@ public class TeamsMatchServiceImpl implements ILoadService {
                             log.info("processing {}", competition);
                             byCompetition.put(competition, new ArrayList<>());
 
-                            webClientFacade.getUpcomingEventOutcomes(eventsHost+"/events/"+competition)
+                            webClientFacade.getUpcomingEventOutcomes(eventsHost + "/events/" + competition)
                                     .doOnNext(event -> byCompetition.get(competition).add(transform(event)))
                                     .doFinally(save ->
                                             Mono.just(competition).delayElement(Duration.ofMinutes(delay)).subscribe(key -> save(key)))
@@ -79,53 +79,53 @@ public class TeamsMatchServiceImpl implements ILoadService {
         );
     }
 
-    private void save(String competition){
+    private void save(String competition) {
         log.info("saving {}", competition);
 
-            byCompetition.get(competition)
-                    .stream()
-                    .forEach(event -> {
-                        try{
-                        s3Facade.put("upcoming-events/"+competition+"/"+event.getHome().getId()+"/"+event.getAway().getId()+"/"+event.getEventType(),
+        byCompetition.get(competition)
+                .stream()
+                .forEach(event -> {
+                    try {
+                        s3Facade.put("upcoming-events/" + competition + "/" + event.getHome().getId() + "/" + event.getAway().getId() + "/" + event.getEventType(),
                                 new ObjectMapper().writeValueAsString(
                                         event
                                 ));
 
-                        } catch (JsonProcessingException e) {
-                            log.error("json processing error");
-                        }
-                    });
+                    } catch (JsonProcessingException e) {
+                        log.error("json processing error");
+                    }
+                });
 
-            byCompetition.remove(competition);
+        byCompetition.remove(competition);
 
-            if(byCompetition.keySet().isEmpty()){
-                log.info("completed all competitions");
-                shutdownService.receive(TeamsMatchServiceImpl.class.getName());
-            }
+        if (byCompetition.keySet().isEmpty()) {
+            log.info("completed all competitions");
+            shutdownService.receive(TeamsMatchServiceImpl.class.getName());
+        }
 
     }
 
 
-    private EventOutcomeResponse transform(EventOutcome event){
+    private EventOutcomeResponse transform(EventOutcome event) {
 
-            //legacy stuff.
-            try{
-                JSONObject json = new JSONObject(event.getPrediction());
-            }catch (Exception e){
-                log.info("{}", event.getPrediction());
-                event.setPrediction(
-                        new JSONObject().put("result", new JSONArray(event.getPrediction()))
-                        .toString()
-                );
-            }
+        //legacy stuff.
+        try {
+            JSONObject json = new JSONObject(event.getPrediction());
+        } catch (Exception e) {
+            log.info("{}", event.getPrediction());
+            event.setPrediction(
+                    new JSONObject().put("result", new JSONArray(event.getPrediction()))
+                            .toString()
+            );
+        }
 
-            EventOutcomeResponse eventOutcomeResponse = new EventOutcomeResponse(event);
-            eventOutcomeResponse.setHome(teamService.getTeam(event.getCountry(), event.getHome()));
-            eventOutcomeResponse.setAway(teamService.getTeam(event.getCountry(), event.getAway()));
+        EventOutcomeResponse eventOutcomeResponse = new EventOutcomeResponse(event);
+        eventOutcomeResponse.setHome(teamService.getTeam(event.getCountry(), event.getHome()));
+        eventOutcomeResponse.setAway(teamService.getTeam(event.getCountry(), event.getAway()));
 
-            log.info("processing {}", event.getId());
+        log.info("processing {}", event.getId());
 
-            return eventOutcomeResponse;
+        return eventOutcomeResponse;
 
     }
 }

@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Service("messageReceivedService")
@@ -31,7 +33,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
             PlayersMatchServiceImpl playersMatchService,
             TeamsMatchServiceImpl teamsMatchService,
             PreviousOutcomesServiceImpl previousOutcomesService
-    ){
+    ) {
         this.loaders.add(competitionService);
         this.loaders.add(betService);
         this.loaders.add(fixtureService);
@@ -51,7 +53,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                     log.info("received {}", msg.getType());
                     received.add(msg.getType());
 
-                    if(ready()){
+                    if (ready()) {
                         log.info("all messages received");
                         CompletableFuture.runAsync(() -> load());
                     }
@@ -66,14 +68,14 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         return Mono.empty();
     }
 
-    private void load(){
+    private void load() {
         log.info("loading");
         Flux.fromStream(
                 loaders.stream()
         ).subscribe(ILoadService::load);
     }
 
-    private Boolean ready(){
-       return received.containsAll(Arrays.asList(Messages.values()));
+    private Boolean ready() {
+        return received.containsAll(Arrays.asList(Messages.values()));
     }
 }

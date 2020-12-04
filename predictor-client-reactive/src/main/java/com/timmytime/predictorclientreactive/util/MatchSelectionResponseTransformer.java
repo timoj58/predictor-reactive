@@ -1,13 +1,13 @@
 package com.timmytime.predictorclientreactive.util;
 
 import com.timmytime.predictorclientreactive.enumerator.FantasyEventTypes;
-import com.timmytime.predictorclientreactive.model.*;
-import com.timmytime.predictorclientreactive.service.TeamService;
+import com.timmytime.predictorclientreactive.model.FantasyEvent;
+import com.timmytime.predictorclientreactive.model.MatchSelectionResponse;
+import com.timmytime.predictorclientreactive.model.PlayerResponse;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -17,30 +17,29 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 public class MatchSelectionResponseTransformer {
     private static final Logger log = LoggerFactory.getLogger(MatchSelectionResponseTransformer.class);
 
-    private Function<Map<Integer, Double>, Double> score = predictions -> {
+    private final Function<Map<Integer, Double>, Double> score = predictions -> {
 
-        if(predictions.isEmpty()){
+        if (predictions.isEmpty()) {
             return 0.0;
         }
 
         return predictions.values().stream().mapToDouble(m -> m).sum();
     };
 
-    private BiFunction<List<PlayerEventScore>, FantasyEventTypes, MatchSelectionResponse> create = (playerEventScores, fantasyEventTypes) ->
+    private final BiFunction<List<PlayerEventScore>, FantasyEventTypes, MatchSelectionResponse> create = (playerEventScores, fantasyEventTypes) ->
             new MatchSelectionResponse(
                     fantasyEventTypes,
                     playerEventScores.stream()
                             .filter(f -> f.score > 0.0)
                             .sorted(Comparator.comparing(PlayerEventScore::getScore).reversed())
                             .map(m -> new PlayerResponse(
-                                    m.getPlayerResponse(),
-                                    new FantasyEvent(m.score, fantasyEventTypes.name().toLowerCase())
+                                            m.getPlayerResponse(),
+                                            new FantasyEvent(m.score, fantasyEventTypes.name().toLowerCase())
                                     )
                             )
                             .collect(Collectors.toList()));
@@ -63,8 +62,8 @@ public class MatchSelectionResponseTransformer {
 
                     goals.add(
                             new PlayerEventScore(player, player.getFantasyResponse()
-                            .stream()
-                            .mapToDouble(m -> score.apply(m.getGoals())).findFirst().orElse(0.0))
+                                    .stream()
+                                    .mapToDouble(m -> score.apply(m.getGoals())).findFirst().orElse(0.0))
                     );
 
                     assists.add(
@@ -73,7 +72,7 @@ public class MatchSelectionResponseTransformer {
                                     .mapToDouble(m -> score.apply(m.getAssists())).findFirst().orElse(0.0))
                     );
 
-                    if(player.getSaves() != null) {
+                    if (player.getSaves() != null) {
                         saves.add(
                                 new PlayerEventScore(player, player.getFantasyResponse()
                                         .stream()
@@ -90,18 +89,17 @@ public class MatchSelectionResponseTransformer {
                 });
 
 
-
         matchSelectionResponses.add(create.apply(goals, FantasyEventTypes.GOALS));
         matchSelectionResponses.add(create.apply(assists, FantasyEventTypes.ASSISTS));
         matchSelectionResponses.add(create.apply(yellows, FantasyEventTypes.YELLOW_CARD));
         matchSelectionResponses.add(create.apply(saves, FantasyEventTypes.SAVES));
 
         return matchSelectionResponses.stream().sorted(Comparator.comparing(MatchSelectionResponse::getOrder)).collect(Collectors.toList());
-    };
+    }
 
     @Getter
     @Setter
-    private class PlayerEventScore{
+    private class PlayerEventScore {
 
         private PlayerResponse playerResponse;
         private Double score;
@@ -109,7 +107,7 @@ public class MatchSelectionResponseTransformer {
         public PlayerEventScore(
                 PlayerResponse playerResponse,
                 Double score
-        ){
+        ) {
             this.playerResponse = playerResponse;
             this.score = score;
         }

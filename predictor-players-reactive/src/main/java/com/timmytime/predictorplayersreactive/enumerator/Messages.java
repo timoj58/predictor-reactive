@@ -1,6 +1,6 @@
 package com.timmytime.predictorplayersreactive.enumerator;
 
 public enum Messages {
-   EVENTS_LOADED,
-   DATA_LOADED
+    EVENTS_LOADED,
+    DATA_LOADED
 }

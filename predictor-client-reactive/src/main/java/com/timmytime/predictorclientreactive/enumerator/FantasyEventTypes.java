@@ -27,10 +27,10 @@ public enum FantasyEventTypes {
 
      */
 
-    private Boolean predict;
-    private Integer order;
+    private final Boolean predict;
+    private final Integer order;
 
-    FantasyEventTypes(Boolean predict, Integer order){
+    FantasyEventTypes(Boolean predict, Integer order) {
         this.predict = predict;
         this.order = order;
     }
@@ -39,7 +39,9 @@ public enum FantasyEventTypes {
         return predict;
     }
 
-    public Integer getOrder(){return order;}
+    public Integer getOrder() {
+        return order;
+    }
 
 
 }

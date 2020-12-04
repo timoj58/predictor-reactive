@@ -17,7 +17,7 @@ public class CompetitionResponse implements Serializable {
     private String label;
     private Boolean fantasyLeague;
 
-    public CompetitionResponse(String country, Competition competition){
+    public CompetitionResponse(String country, Competition competition) {
         this.competition = competition.name();
         this.label = competition.getLabel();
         this.country = country;

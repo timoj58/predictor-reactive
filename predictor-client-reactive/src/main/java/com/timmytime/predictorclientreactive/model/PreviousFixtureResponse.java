@@ -6,7 +6,6 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -24,13 +23,13 @@ public class PreviousFixtureResponse implements Serializable {
 
     private List<PreviousFixtureOutcome> previousFixtureOutcomes = new ArrayList<>();
 
-    public PreviousFixtureResponse withScore(Match match){
+    public PreviousFixtureResponse withScore(Match match) {
 
         this.setHomeScore(match.getHomeScore());
         this.setAwayScore(match.getAwayScore());
 
         return this;
 
-    };
+    }
 
 }

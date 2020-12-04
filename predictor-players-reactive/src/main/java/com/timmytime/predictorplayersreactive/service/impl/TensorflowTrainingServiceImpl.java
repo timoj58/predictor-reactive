@@ -2,7 +2,6 @@ package com.timmytime.predictorplayersreactive.service.impl;
 
 import com.timmytime.predictorplayersreactive.enumerator.FantasyEventTypes;
 import com.timmytime.predictorplayersreactive.facade.WebClientFacade;
-import com.timmytime.predictorplayersreactive.model.PlayersTrainingHistory;
 import com.timmytime.predictorplayersreactive.service.PlayersTrainingHistoryService;
 import com.timmytime.predictorplayersreactive.service.TensorflowTrainingService;
 import org.slf4j.Logger;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
@@ -43,7 +41,7 @@ public class TensorflowTrainingServiceImpl implements TensorflowTrainingService 
             @Value("${ml.train.yellow.url}") String yellowUrl,
             PlayersTrainingHistoryService playersTrainingHistoryService,
             WebClientFacade webClientFacade
-    ){
+    ) {
         this.trainingHost = trainingHost;
         this.goalsUrl = goalsUrl;
         this.assistsUrl = assistsUrl;
@@ -57,14 +55,14 @@ public class TensorflowTrainingServiceImpl implements TensorflowTrainingService 
     }
 
     @Override
-    public void train( UUID id) {
+    public void train(UUID id) {
         log.info("training started {}", id);
 
         playersTrainingHistoryService.find(id)
                 .subscribe(history ->
                         webClientFacade.train(
                                 trainingHost
-                                        +getUrl(history.getType())
+                                        + getUrl(history.getType())
                                         .replace("<from>", history.getFromDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
                                         .replace("<to>", history.getToDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
                                         .replace("<receipt>", id.toString())

@@ -4,8 +4,6 @@ import com.timmytime.predictorplayersreactive.enumerator.FantasyEventTypes;
 import com.timmytime.predictorplayersreactive.model.PlayersTrainingHistory;
 import com.timmytime.predictorplayersreactive.repo.PlayersTrainingHistoryRepo;
 import com.timmytime.predictorplayersreactive.service.PlayersTrainingHistoryService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -20,7 +18,7 @@ public class PlayersTrainingHistoryServiceImpl implements PlayersTrainingHistory
     @Autowired
     public PlayersTrainingHistoryServiceImpl(
             PlayersTrainingHistoryRepo playersTrainingHistoryRepo
-    ){
+    ) {
         this.playersTrainingHistoryRepo = playersTrainingHistoryRepo;
     }
 

@@ -10,7 +10,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -18,7 +17,7 @@ public class WebClientFacade {
 
     private final Logger log = LoggerFactory.getLogger(WebClientFacade.class);
 
-    public void sendMessage(String url, JsonNode payload){
+    public void sendMessage(String url, JsonNode payload) {
         WebClient.builder().build()
                 .post()
                 .uri(url)
@@ -28,7 +27,7 @@ public class WebClientFacade {
                 .subscribe();
     }
 
-    public void predict(String url, Prediction prediction){
+    public void predict(String url, Prediction prediction) {
 
         WebClient.builder().build()
                 .post()
@@ -42,7 +41,7 @@ public class WebClientFacade {
 
     }
 
-    public Mono<Match> getMatch(String url){
+    public Mono<Match> getMatch(String url) {
         return WebClient.builder().build()
                 .get()
                 .uri(url)

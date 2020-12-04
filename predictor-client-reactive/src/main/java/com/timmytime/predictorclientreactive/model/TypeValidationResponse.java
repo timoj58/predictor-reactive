@@ -18,7 +18,7 @@ public class TypeValidationResponse implements Serializable {
 
     public TypeValidationResponse(String type, String key, String value) {
         this.type = type;
-        if(value != null && !value.trim().isEmpty()) {
+        if (value != null && !value.trim().isEmpty()) {
             this.validations.put(key, value);
         }
     }

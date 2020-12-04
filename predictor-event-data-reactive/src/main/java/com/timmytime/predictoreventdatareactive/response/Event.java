@@ -17,7 +17,7 @@ public class Event {
     private String competition;
     private LocalDateTime date;
 
-    public Event(EventOdds eventOdds){
+    public Event(EventOdds eventOdds) {
         this.home = eventOdds.getTeams().get(0);
         this.away = eventOdds.getTeams().get(1);
 
