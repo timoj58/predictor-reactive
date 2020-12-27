@@ -24,7 +24,7 @@ clients:
   ml-train-conceded.: /train/conceded/<from>/<to>/<receipt>
   ml-train-red: /train/red-card/<from>/<to>/<receipt>
   ml-train-yellow: /train/yellow-card/<from>/<to>/<receipt>
-  ml-predictinit: /predict/init/<type>
+  ml-predict-init: /predict/init/<type>
   ml-predict-destroy: /predict/clear-down/<type>
 
 

@@ -1,7 +1,10 @@
 package com.timmytime.predictorplayerseventsreactive.facade;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.timmytime.predictorplayerseventsreactive.model.*;
+import com.timmytime.predictorplayerseventsreactive.model.LineupPlayer;
+import com.timmytime.predictorplayerseventsreactive.model.Match;
+import com.timmytime.predictorplayerseventsreactive.model.Player;
+import com.timmytime.predictorplayerseventsreactive.model.StatMetric;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -69,15 +72,6 @@ public class WebClientFacade {
 
     }
 
-    public Flux<Event> getEvents(
-            String url
-    ) {
-        return WebClient.builder().build()
-                .get()
-                .uri(url)
-                .retrieve()
-                .bodyToFlux(Event.class);
-    }
 
     public void train(String url) {
         log.info("url post {}", url);
