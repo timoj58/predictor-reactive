@@ -55,7 +55,7 @@ public class PlayersMatchServiceImpl implements ILoadService {
     public PlayersMatchServiceImpl(
             @Value("${clients.event-data}") String eventDataHost,
             @Value("${clients.players}") String playersHost,
-            @Value("${delay}") Integer delay,
+            @Value("${delays.delay}") Integer delay,
             S3Facade s3Facade,
             WebClientFacade webClientFacade,
             ShutdownService shutdownService

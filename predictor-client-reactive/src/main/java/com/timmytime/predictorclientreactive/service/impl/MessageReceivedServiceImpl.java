@@ -25,7 +25,6 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     @Autowired
     public MessageReceivedServiceImpl(
             CompetitionServiceImpl competitionService,
-            BetServiceImpl betService,
             FixtureServiceImpl fixtureService,
             PreviousFixtureServiceImpl previousFixtureService,
             PlayersMatchServiceImpl playersMatchService,
@@ -33,7 +32,6 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
             PreviousOutcomesServiceImpl previousOutcomesService
     ) {
         this.loaders.add(competitionService);
-        this.loaders.add(betService);
         this.loaders.add(fixtureService);
         this.loaders.add(previousFixtureService);
         this.loaders.add(playersMatchService);

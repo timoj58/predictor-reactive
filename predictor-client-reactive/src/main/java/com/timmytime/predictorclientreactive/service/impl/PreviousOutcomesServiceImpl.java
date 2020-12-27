@@ -47,7 +47,7 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
     public PreviousOutcomesServiceImpl(
             @Value("${clients.event}") String eventsHost,
             @Value("${clients.data}") String dataHost,
-            @Value("${delay}") Integer delay,
+            @Value("${delays.delay}") Integer delay,
             WebClientFacade webClientFacade,
             S3Facade s3Facade,
             TeamService teamService,

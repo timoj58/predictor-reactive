@@ -11,6 +11,7 @@
         <module>predictor-data-reactive</module>
         <module>predictor-event-data-reactive</module>
         <module>predictor-players-reactive</module>
+        <module>predictor-players-events-reactive</module>
         <module>predictor-teams-reactive</module>
         <module>predictor-events-reactive</module>
         <module>predictor-scraper-reactive</module>

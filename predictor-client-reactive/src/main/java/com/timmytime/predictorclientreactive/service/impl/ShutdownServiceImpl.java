@@ -33,11 +33,12 @@ public class ShutdownServiceImpl implements ShutdownService {
         received.add(service);
 
         if (received.containsAll(Arrays.asList(
-                BetServiceImpl.class.getName(),
                 CompetitionServiceImpl.class.getName(),
                 PlayersMatchServiceImpl.class.getName(),
                 FixtureServiceImpl.class.getName(),
-                PreviousFixtureServiceImpl.class.getName()
+                PreviousFixtureServiceImpl.class.getName(),
+                TeamsMatchServiceImpl.class.getName(),
+                PreviousOutcomesServiceImpl.class.getName()
         ))) {
             shutdown();
         }

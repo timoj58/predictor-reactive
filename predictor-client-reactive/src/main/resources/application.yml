@@ -13,4 +13,6 @@ clients:
   data-scraper:
   event-scraper:
 
-delay: 1
+delays:
+  delay: 1
+  start: 3

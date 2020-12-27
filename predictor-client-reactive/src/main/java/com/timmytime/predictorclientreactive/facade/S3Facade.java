@@ -58,12 +58,13 @@ public class S3Facade implements IS3Facade {
 
 
     @Override
-    public void archive() {
+    public void archive(String prefix) {
         final AmazonS3 s3 = amazonS3Supplier.get();
 
 
         ListObjectsV2Request listObjectsRequest = new ListObjectsV2Request()
                 .withBucketName("predictor-client-data")
+                .withPrefix(prefix+"/")
                 .withMaxKeys(250);
         ListObjectsV2Result result;
 
@@ -74,7 +75,6 @@ public class S3Facade implements IS3Facade {
             result = s3.listObjectsV2(listObjectsRequest);
             result.getObjectSummaries()
                     .stream()
-                    .filter(f -> !f.getKey().contains("archive"))
                     .forEach(summary ->
                             Mono.just(summary)
                                     .doOnNext(details ->

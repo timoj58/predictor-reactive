@@ -28,7 +28,7 @@ class CompetitionServiceImplTest {
         }
 
         @Override
-        public void archive() {
+        public void archive(String directory) {
 
         }
     }

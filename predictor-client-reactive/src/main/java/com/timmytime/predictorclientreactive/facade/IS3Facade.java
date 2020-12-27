@@ -5,5 +5,5 @@ public interface IS3Facade {
 
     void delete(String folder);
 
-    void archive();
+    void archive(String prefix);
 }

@@ -48,7 +48,7 @@ public class PreviousFixtureServiceImpl implements ILoadService {
     public PreviousFixtureServiceImpl(
             @Value("${clients.event}") String eventsHost,
             @Value("${clients.data}") String dataHost,
-            @Value("${delay}") Integer delay,
+            @Value("${delays.delay}") Integer delay,
             S3Facade s3Facade,
             WebClientFacade webClientFacade,
             ShutdownService shutdownService,
