@@ -43,13 +43,15 @@ class BetwayServiceTest {
         when(eventOddsService.findEvent(any(), any(), any(), any(), any()))
                 .thenReturn(Mono.empty());
 
+        when(eventOddsService.create(any())).thenReturn(Mono.just(new EventOdds()));
+
         Team team = new Team();
         team.setLabel("test");
 
         when(teamService.find(any(), any())).thenReturn(Optional.of(team));
         betwayService.receive(message);
 
-        Thread.sleep(10000L);
+        Thread.sleep(1000L);
 
         verify(eventOddsService, atLeastOnce()).create(any());
     }
@@ -67,8 +69,10 @@ class BetwayServiceTest {
 
         when(teamService.find(any(), any())).thenReturn(Optional.of(team));
         betwayService.receive(message);
+        betwayService.receive(message);
+        betwayService.receive(message);
 
-        Thread.sleep(10000L);
+        Thread.sleep(1000L);
 
         verify(eventOddsService, never()).create(any());
     }

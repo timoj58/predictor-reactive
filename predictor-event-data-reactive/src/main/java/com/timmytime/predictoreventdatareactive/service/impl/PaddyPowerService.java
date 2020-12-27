@@ -11,8 +11,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
@@ -21,6 +23,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
@@ -31,8 +34,32 @@ public class PaddyPowerService implements ProviderService {
     private final TeamService teamService;
     private final EventOddsService eventOddsService;
 
+    private Consumer<JsonNode> receive;
+    private final Flux<JsonNode> events;
+
+    @Autowired
+    public PaddyPowerService(
+            TeamService teamService,
+            EventOddsService eventOddsService
+    )
+    {
+        this.teamService = teamService;
+        this.eventOddsService = eventOddsService;
+
+        this.events = Flux.push(sink ->
+                PaddyPowerService.this.receive = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
+
+        this.events.limitRate(1).subscribe(this::process);
+
+    }
+
     @Override
     public void receive(JsonNode message) {
+        receive.accept(message);
+    }
+
+    private void process(JsonNode message) {
+        log.info("processing {}", message.toString());
 
         JSONObject details = new JSONObject(message.toString());
 
@@ -45,7 +72,7 @@ public class PaddyPowerService implements ProviderService {
         Flux.fromStream(
                 events.stream()
         )
-                .limitRate(1)
+                .limitRate(5)
                 .subscribe(event -> {
                     List<JSONObject> eventOutcomes = new ArrayList<>();
 
@@ -73,7 +100,6 @@ public class PaddyPowerService implements ProviderService {
                                 Flux.fromStream(
                                         Arrays.asList(homeEvent, awayEvent, drawEvent).stream()
                                 )
-                                        .limitRate(1)
                                         .subscribe(bet -> {
                                                     //reality.  filter out player / event odds.  we just want match type odds. i have data to do this.
                                                     //also saves hammering the DB.  best solution for now.

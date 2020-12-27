@@ -11,16 +11,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
 import java.time.*;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
-@RequiredArgsConstructor
 @Slf4j
 @Service("betwayService")
 public class BetwayService implements ProviderService {
@@ -28,8 +30,31 @@ public class BetwayService implements ProviderService {
     private final TeamService teamService;
     private final EventOddsService eventOddsService;
 
+    private Consumer<JsonNode> receive;
+    private final Flux<JsonNode> events;
+
+    @Autowired
+    public BetwayService(
+            TeamService teamService,
+            EventOddsService eventOddsService
+    )
+    {
+        this.teamService = teamService;
+        this.eventOddsService = eventOddsService;
+
+        this.events = Flux.push(sink ->
+                BetwayService.this.receive = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
+
+        this.events.limitRate(1).subscribe(this::process);
+    }
+
     @Override
     public void receive(JsonNode message) {
+        receive.accept(message);
+    }
+
+    private void process(JsonNode message) {
+        log.info("processing {}", message.toString());
 
         JSONObject details = new JSONObject(message.toString());
 
@@ -42,7 +67,7 @@ public class BetwayService implements ProviderService {
         Flux.fromStream(
                 events.stream()
         )
-                .limitRate(1)
+                .limitRate(5)
                 .subscribe(event -> {
 
                     Optional<Team> homeTeam = teamService.find(event.getString("HomeTeamName"), details.getString("competition"));
@@ -92,8 +117,6 @@ public class BetwayService implements ProviderService {
                                                 eventOdds.setEventDate(eventDate);
                                                 eventOdds.setEvent(eventName.toString());
                                                 eventOdds.setCompetition(details.getString("competition"));
-                                                //make a host stream.  simples.  then limit rate better.  or put tests in place.
-                                                //then review this all TODO...
 
                                                 eventOddsService.create(eventOdds).subscribe();
                                             }
