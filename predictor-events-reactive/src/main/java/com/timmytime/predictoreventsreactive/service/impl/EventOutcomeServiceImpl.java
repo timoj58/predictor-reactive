@@ -4,25 +4,20 @@ import com.timmytime.predictoreventsreactive.enumerator.CountryCompetitions;
 import com.timmytime.predictoreventsreactive.model.EventOutcome;
 import com.timmytime.predictoreventsreactive.repo.EventOutcomeRepo;
 import com.timmytime.predictoreventsreactive.service.EventOutcomeService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.UUID;
 
+@RequiredArgsConstructor
 @Service("eventOutcomeService")
 public class EventOutcomeServiceImpl implements EventOutcomeService {
 
     private final EventOutcomeRepo eventOutcomeRepo;
-
-    @Autowired
-    public EventOutcomeServiceImpl(
-            EventOutcomeRepo eventOutcomeRepo
-    ) {
-        this.eventOutcomeRepo = eventOutcomeRepo;
-    }
 
     @Override
     public Mono<EventOutcome> save(EventOutcome eventOutcome) {
@@ -65,9 +60,11 @@ public class EventOutcomeServiceImpl implements EventOutcomeService {
     @Override
     public Flux<EventOutcome> previousEventsByTeam(UUID team) {
         return Flux.concat(
-                eventOutcomeRepo.findByHomeOrderByDateDesc(team).take(6),
-                eventOutcomeRepo.findByAwayOrderByDateDesc(team).take(6)
-        );
+                eventOutcomeRepo.findByHomeOrderByDateDesc(team),
+                eventOutcomeRepo.findByAwayOrderByDateDesc(team)
+        ).sort(Comparator.comparing(EventOutcome::getDate)
+                .reversed()
+        ).take(6);
     }
 
     @Override

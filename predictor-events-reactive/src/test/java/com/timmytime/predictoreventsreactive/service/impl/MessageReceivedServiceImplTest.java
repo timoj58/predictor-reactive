@@ -1,7 +1,6 @@
 package com.timmytime.predictoreventsreactive.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.timmytime.predictoreventsreactive.enumerator.Messages;
 import com.timmytime.predictoreventsreactive.facade.WebClientFacade;
 import com.timmytime.predictoreventsreactive.request.Message;
@@ -9,14 +8,10 @@ import com.timmytime.predictoreventsreactive.service.PredictionMonitorService;
 import com.timmytime.predictoreventsreactive.service.PredictionResultService;
 import com.timmytime.predictoreventsreactive.service.PredictionService;
 import com.timmytime.predictoreventsreactive.service.ValidationService;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class MessageReceivedServiceImplTest {
@@ -57,7 +52,6 @@ class MessageReceivedServiceImplTest {
 
         messageReceivedService.receive(
                 Mono.just(message3)).subscribe();
-
 
 
         Thread.sleep(1000L);

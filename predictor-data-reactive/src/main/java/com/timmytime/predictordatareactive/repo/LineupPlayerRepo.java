@@ -12,6 +12,8 @@ import java.util.UUID;
 @Repository
 public interface LineupPlayerRepo extends ReactiveMongoRepository<LineupPlayer, UUID> {
     Mono<Void> deleteByMatchId(UUID matchId);
+
     Flux<LineupPlayer> findByPlayerAndDateBetween(UUID player, LocalDateTime from, LocalDateTime to);
+
     Flux<LineupPlayer> findByPlayer(UUID player);
 }

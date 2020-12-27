@@ -1,8 +1,13 @@
 package com.timmytime.predictordatareactive.service.impl;
 
-import com.timmytime.predictordatareactive.model.*;
+import com.timmytime.predictordatareactive.model.Match;
+import com.timmytime.predictordatareactive.model.Result;
+import com.timmytime.predictordatareactive.model.ResultData;
+import com.timmytime.predictordatareactive.model.Team;
 import com.timmytime.predictordatareactive.repo.ResultRepo;
-import com.timmytime.predictordatareactive.service.*;
+import com.timmytime.predictordatareactive.service.LineupPlayerService;
+import com.timmytime.predictordatareactive.service.MatchService;
+import com.timmytime.predictordatareactive.service.StatMetricService;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -13,7 +18,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class MatchCreationServiceImplTest {
@@ -26,7 +30,7 @@ class MatchCreationServiceImplTest {
     private static ResultData resultData;
     private final MatchCreationServiceImpl matchCreationService
             = new MatchCreationServiceImpl(
-                    matchService,
+            matchService,
             statMetricService,
             lineupPlayerService,
             resultRepo

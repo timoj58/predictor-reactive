@@ -4,7 +4,7 @@ import com.timmytime.predictordatareactive.model.LineupPlayer;
 import com.timmytime.predictordatareactive.model.Player;
 import com.timmytime.predictordatareactive.service.LineupPlayerService;
 import com.timmytime.predictordatareactive.service.PlayerService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -12,22 +12,14 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
+@RequiredArgsConstructor
 @Component
 public class PlayerHandler {
 
     private final PlayerService playerService;
     private final LineupPlayerService lineupPlayerService;
 
-    @Autowired
-    public PlayerHandler(
-            PlayerService playerService,
-            LineupPlayerService lineupPlayerService
-    ){
-        this.playerService = playerService;
-        this.lineupPlayerService = lineupPlayerService;
-    }
-
-    public Mono<ServerResponse> getByCompetition(ServerRequest serverRequest){
+    public Mono<ServerResponse> getByCompetition(ServerRequest serverRequest) {
 
         return ServerResponse.ok().body(
                 playerService.findByCompetition(
@@ -38,7 +30,7 @@ public class PlayerHandler {
         );
     }
 
-    public Mono<ServerResponse> findFantasyFootballers(ServerRequest serverRequest){
+    public Mono<ServerResponse> findFantasyFootballers(ServerRequest serverRequest) {
 
         return ServerResponse.ok().body(
                 playerService.findFantasyFootballers(),
@@ -46,7 +38,7 @@ public class PlayerHandler {
         );
     }
 
-    public Mono<ServerResponse> getAppearances(ServerRequest serverRequest){
+    public Mono<ServerResponse> getAppearances(ServerRequest serverRequest) {
 
         return ServerResponse.ok().body(
                 lineupPlayerService.find(
@@ -58,7 +50,7 @@ public class PlayerHandler {
         );
     }
 
-    public Mono<ServerResponse> getTotalAppearances(ServerRequest serverRequest){
+    public Mono<ServerResponse> getTotalAppearances(ServerRequest serverRequest) {
 
         return ServerResponse.ok().body(
                 lineupPlayerService.totalAppearances(

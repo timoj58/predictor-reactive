@@ -14,7 +14,9 @@ import java.util.UUID;
 
 public interface StatMetricService {
     void delete(UUID id);
+
     Mono<StatMetric> save(StatMetric match);
+
     List<Mono<StatMetric>> createTeamMetrics(
             UUID matchId,
             Team team,

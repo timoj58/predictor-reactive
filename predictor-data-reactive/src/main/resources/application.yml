@@ -1,0 +1,15 @@
+# general properties
+server:
+  port: 8092
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/predictor-db
+
+config:
+  dir: ./src/main/resources/config/

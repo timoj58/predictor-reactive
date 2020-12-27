@@ -1,0 +1,28 @@
+# general properties
+server:
+  port: 8094
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+clients:
+  data: http://localhost:8092
+  training: http://localhost
+  event-data: http://localhost:8093
+  players: http://localhost:8095
+  client: http://localhost:8100
+  ml-predict-result: /predict/result/<country>/<receipt>
+  ml-predict-goals: /predict/goals/<country>/<receipt>
+
+#MongoDB Properties
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/predictor-db
+
+
+delays:
+  competition: 1
+
+
+

@@ -4,8 +4,7 @@ import com.timmytime.predictoreventsreactive.enumerator.Predictions;
 import com.timmytime.predictoreventsreactive.facade.WebClientFacade;
 import com.timmytime.predictoreventsreactive.request.TensorflowPrediction;
 import com.timmytime.predictoreventsreactive.service.TensorflowPredictionService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,10 +15,9 @@ import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
+@Slf4j
 @Service("tensorflowPredictionService")
 public class TensorflowPredictionServiceImpl implements TensorflowPredictionService {
-
-    private static final Logger log = LoggerFactory.getLogger(TensorflowPredictionServiceImpl.class);
 
     private final String trainingHost;
     private final String resultsUrl;
@@ -35,10 +33,10 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
 
     @Autowired
     public TensorflowPredictionServiceImpl(
-            @Value("${training.host}") String trainingHost,
-            @Value("${ml.predict.result.url}") String resultsUrl,
-            @Value("${ml.predict.goals.url}") String goalsUrl,
-            @Value("${competition.delay}") Integer delay,
+            @Value("${clients.training}") String trainingHost,
+            @Value("${clients.ml-predict-result}") String resultsUrl,
+            @Value("${clients.ml-predict-goals}") String goalsUrl,
+            @Value("${delays.competition}") Integer delay,
             WebClientFacade webClientFacade
     ) {
         this.trainingHost = trainingHost;

@@ -16,7 +16,7 @@ class MessageServiceImplTest {
             = new MessageServiceImpl("dummy", "dummy", webClientFacade);
 
     @Test
-    public void dontSendMessageTest(){
+    public void dontSendMessageTest() {
 
         messageService.send(ScraperTypeKeys.PADDYPOWER_ODDS.name(), "england_1");
 
@@ -25,7 +25,7 @@ class MessageServiceImplTest {
     }
 
     @Test
-    public void sendMessageTest(){
+    public void sendMessageTest() {
 
         messageService.send(ScraperTypeKeys.PADDYPOWER_ODDS.name(), "italy_1");
         messageService.send(ScraperTypeKeys.PADDYPOWER_ODDS.name(), "italy_2");
@@ -35,7 +35,7 @@ class MessageServiceImplTest {
     }
 
     @Test
-    public void dontSendMessageTest2(){
+    public void dontSendMessageTest2() {
 
         messageService.send(ScraperTypeKeys.BETWAY_ODDS.name(), "england_1");
 
@@ -44,7 +44,7 @@ class MessageServiceImplTest {
     }
 
     @Test
-    public void sendMessageTest2(){
+    public void sendMessageTest2() {
 
         messageService.send(ScraperTypeKeys.BETWAY_ODDS.name(), "italy_1");
         messageService.send(ScraperTypeKeys.BETWAY_ODDS.name(), "italy_2");

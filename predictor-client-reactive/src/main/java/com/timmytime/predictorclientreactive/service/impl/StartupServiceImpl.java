@@ -23,8 +23,8 @@ public class StartupServiceImpl implements StartupService {
 
     @Autowired
     public StartupServiceImpl(
-            @Value("${data.scraper.host}") String dataScraperHost,
-            @Value("${event.scraper.host}") String eventScraperHost,
+            @Value("${clients.data-scraper}") String dataScraperHost,
+            @Value("${clients.event-scraper}") String eventScraperHost,
             LambdaFacade lambdaFacade,
             WebClientFacade webClientFacade,
             S3Facade s3Facade

@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
 @Component
 public class WebClientFacade {
 
-    public void send(String url, JsonNode payload){
+    public void send(String url, JsonNode payload) {
         WebClient.builder().build()
                 .post()
                 .uri(url)

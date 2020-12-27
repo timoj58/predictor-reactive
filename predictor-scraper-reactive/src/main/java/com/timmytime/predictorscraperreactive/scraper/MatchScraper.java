@@ -8,11 +8,10 @@ import com.timmytime.predictorscraperreactive.enumerator.ScraperTypeKeys;
 import com.timmytime.predictorscraperreactive.factory.SportsScraperConfigurationFactory;
 import com.timmytime.predictorscraperreactive.model.Match;
 import com.timmytime.predictorscraperreactive.util.ScraperUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 
@@ -23,14 +22,14 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
+@Slf4j
 public class MatchScraper implements IScraper<Match> {
-    private final Logger log = LoggerFactory.getLogger(MatchScraper.class);
     private final SportsScraperConfigurationFactory sportsScraperConfigurationFactory;
     private final RestTemplate restTemplate = new RestTemplate();
 
     public MatchScraper(
             SportsScraperConfigurationFactory sportsScraperConfigurationFactory
-    ){
+    ) {
         this.sportsScraperConfigurationFactory = sportsScraperConfigurationFactory;
     }
 

@@ -12,8 +12,7 @@ import com.timmytime.predictorclientreactive.model.TopSelectionsResponse;
 import com.timmytime.predictorclientreactive.service.ILoadService;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import com.timmytime.predictorclientreactive.util.MatchSelectionResponseTransformer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -24,11 +23,11 @@ import java.time.Duration;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+@Slf4j
 @Service("playersMatchService")
 public class PlayersMatchServiceImpl implements ILoadService {
-
-    private final Logger log = LoggerFactory.getLogger(PlayersMatchServiceImpl.class);
 
     private final S3Facade s3Facade;
     private final WebClientFacade webClientFacade;
@@ -54,8 +53,8 @@ public class PlayersMatchServiceImpl implements ILoadService {
 
     @Autowired
     public PlayersMatchServiceImpl(
-            @Value("${event.data.host}") String eventDataHost,
-            @Value("${players.host}") String playersHost,
+            @Value("${clients.event-data}") String eventDataHost,
+            @Value("${clients.players}") String playersHost,
             @Value("${delay}") Integer delay,
             S3Facade s3Facade,
             WebClientFacade webClientFacade,
@@ -72,15 +71,9 @@ public class PlayersMatchServiceImpl implements ILoadService {
 
     @Override
     public void load() {
-
-        Flux.fromStream(
-                Arrays.asList(
-                        Competition.values()
-                ).stream().filter(f -> f.getFantasyLeague() == Boolean.TRUE)
-        ).subscribe(
-                league -> create(league)
-        );
-
+        Flux.fromStream(Stream.of(Competition.values())
+                .filter(f -> f.getFantasyLeague() == Boolean.TRUE))
+                .subscribe(this::create);
     }
 
     private void create(Competition league) {
@@ -109,7 +102,7 @@ public class PlayersMatchServiceImpl implements ILoadService {
                                     })
                             ).subscribe();
                 })
-                .doFinally(save -> Mono.just(league).delayElement(Duration.ofMinutes(delay * 2)).subscribe(key -> save(key)))
+                .doFinally(save -> Mono.just(league).delayElement(Duration.ofMinutes(delay * 2)).subscribe(this::save))
                 .subscribe();
 
     }

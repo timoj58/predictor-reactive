@@ -11,23 +11,25 @@ import com.timmytime.predictorclientreactive.model.Team;
 import com.timmytime.predictorclientreactive.service.ILoadService;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import com.timmytime.predictorclientreactive.service.TeamService;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
+@Slf4j
 @Service("previousOutcomesService")
 public class PreviousOutcomesServiceImpl implements ILoadService {
-
-    private final Logger log = LoggerFactory.getLogger(PreviousOutcomesServiceImpl.class);
 
     private final WebClientFacade webClientFacade;
     private final S3Facade s3Facade;
@@ -43,8 +45,8 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
 
     @Autowired
     public PreviousOutcomesServiceImpl(
-            @Value("${event.host}") String eventsHost,
-            @Value("${data.host}") String dataHost,
+            @Value("${clients.event}") String eventsHost,
+            @Value("${clients.data}") String dataHost,
             @Value("${delay}") Integer delay,
             WebClientFacade webClientFacade,
             S3Facade s3Facade,
@@ -58,49 +60,41 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
         this.s3Facade = s3Facade;
         this.teamService = teamService;
         this.shutdownService = shutdownService;
-
-        Arrays.asList(
-                CountryCompetitions.values()
-        ).stream().forEach(country -> {
-                    teamsByCountry.put(country.name().toLowerCase(), new ArrayList<>());
-                    teamService.get(country.name().toLowerCase())
-                            .stream()
-                            .forEach(team -> teamsByCountry.get(country.name().toLowerCase()).add(team.getId()));
-                }
-        );
-
-        teamsByCountry.keySet().stream().forEach(key -> log.info("added {}", key));
     }
 
 
     @Override
     public void load() {
 
-        Flux.fromStream(
-                Arrays.asList(
-                        CountryCompetitions.values()
-                ).stream()
-        ).delayElements(Duration.ofSeconds(delay * 20))
-                .subscribe(country ->
-                        Flux.fromStream(
-                                teamService.get(country.name().toLowerCase()).stream()
-                        ).delayElements(Duration.ofSeconds(delay))
-                                .subscribe(
-                                        team -> {
-                                            log.info("processing {}", team.getLabel());
-                                            webClientFacade.getPreviousEventOutcomesByTeam(eventsHost + "/previous-events-by-team/" + team.getId())
-                                                    .delayElements(Duration.ofMillis(100))
-                                                    .doOnNext(outcome -> saveOutcome(team, outcome))
-                                                    .doFinally(finish -> finish(country.name().toLowerCase(), team.getId()))
-                                                    .subscribe();
-                                        }
+        CompletableFuture.runAsync(() -> init())
+                .thenRun(() -> Mono.just(1).delayElement(Duration.ofMinutes(5)) //takes a while to delete all the files
+                        .subscribe(then ->
 
-                                )
+                                Flux.fromStream(Stream.of(CountryCompetitions.values()))
+                                        .delayElements(Duration.ofSeconds(delay * 20))
+                                        .subscribe(country ->
+                                                Flux.fromStream(
+                                                        teamService.get(country.name().toLowerCase()).stream()
+                                                ).delayElements(Duration.ofSeconds(delay))
+                                                        .subscribe(
+                                                                team -> {
+                                                                    AtomicInteger index = new AtomicInteger(0);
+                                                                    log.info("processing {}", team.getLabel());
+                                                                    webClientFacade.getPreviousEventOutcomesByTeam(eventsHost + "/previous-events-by-team/" + team.getId())
+                                                                            //   .delayElements(Duration.ofMillis(10))
+                                                                            .sort((o1, o2) -> o2.getDate().compareTo(o1.getDate()))
+                                                                            .doOnNext(outcome -> saveOutcome(team, outcome, index.getAndIncrement()))
+                                                                            .doFinally(finish -> finish(country.name().toLowerCase(), team.getId()))
+                                                                            .subscribe();
+                                                                }
+
+                                                        ))
+                        )
                 );
 
     }
 
-    private void saveOutcome(Team team, EventOutcome eventOutcome) {
+    private void saveOutcome(Team team, EventOutcome eventOutcome, Integer index) {
 
         PredictionOutcomeResponse predictionOutcomeResponse = new PredictionOutcomeResponse();
 
@@ -134,10 +128,11 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
                         predictionOutcomeResponse.setScore(match.getHomeScore() + " - " + match.getAwayScore());
                         s3Facade.put(
                                 "previous-events/"
-                                        + team.getCompetition()
-                                        + "/" + team.getId() + "/"
-                                        + eventOutcome.getEventType() +
-                                        "/" + eventOutcome.getId(),
+                                        + team.getCompetition() + "/"
+                                        + team.getId() + "/"
+                                        + eventOutcome.getEventType() + "/"
+                                        + index + "/"
+                                        + eventOutcome.getId(),
                                 new ObjectMapper().writeValueAsString(predictionOutcomeResponse)
                         );
                     } catch (JsonProcessingException e) {
@@ -155,19 +150,34 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
                 + "&date=" + eventOutcome.getDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
     }
 
+    private void init() {
+        Flux.fromArray(
+                CountryCompetitions.values()
+        ).subscribe(country -> {
+                    teamsByCountry.put(country.name().toLowerCase(), new ArrayList<>());
+                    teamService.get(country.name().toLowerCase())
+                            .stream()
+                            .forEach(team -> {
+                                log.info("processing {}", team.getLabel());
+                                teamsByCountry.get(country.name().toLowerCase()).add(team.getId());
+                                s3Facade.delete("previous-events/" + team.getCompetition() + "/" + team.getId() + "/");
+                            });
+                }
+        );
+    }
+
     private void finish(String country, UUID team) {
         log.info("called finish {} {}", country, team);
-        /* doesnt ducking work.. FIX ME and add a test it.  its odd.  clearly the key exists.
         teamsByCountry.get(country).remove(team);
 
-        if(teamsByCountry.get(country).isEmpty()){
+        if (teamsByCountry.get(country).isEmpty()) {
             log.info("completed {}", country);
             teamsByCountry.remove(country);
         }
 
-        if(teamsByCountry.isEmpty()){
+        if (teamsByCountry.isEmpty()) {
             log.info("completed all countries");
             shutdownService.receive(PreviousOutcomesServiceImpl.class.getName());
-        } */
+        }
     }
 }

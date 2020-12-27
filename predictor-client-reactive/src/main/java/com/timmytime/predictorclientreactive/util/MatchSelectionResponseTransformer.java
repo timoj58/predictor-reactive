@@ -6,8 +6,7 @@ import com.timmytime.predictorclientreactive.model.MatchSelectionResponse;
 import com.timmytime.predictorclientreactive.model.PlayerResponse;
 import lombok.Getter;
 import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -18,9 +17,9 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 public class MatchSelectionResponseTransformer {
-    private static final Logger log = LoggerFactory.getLogger(MatchSelectionResponseTransformer.class);
 
     private final Function<Map<Integer, Double>, Double> score = predictions -> {
 

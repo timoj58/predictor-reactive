@@ -1,18 +1,17 @@
 package com.timmytime.predictorclientreactive.service.impl;
 
+import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
 import com.timmytime.predictorclientreactive.facade.S3Facade;
 import com.timmytime.predictorclientreactive.facade.WebClientFacade;
 import com.timmytime.predictorclientreactive.model.Event;
 import com.timmytime.predictorclientreactive.model.Team;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import com.timmytime.predictorclientreactive.service.TeamService;
-import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,7 +31,7 @@ class FixtureServiceImplTest {
 
     private final FixtureServiceImpl fixtureService
             = new FixtureServiceImpl(
-                    "", s3Facade, webClientFacade,shutdownService, teamService
+            "", s3Facade, webClientFacade, shutdownService, teamService
     );
 
     @Test
@@ -55,9 +54,6 @@ class FixtureServiceImplTest {
                 .stream()
                 .forEach(c ->
                         when(webClientFacade.getUpcomingEvents("/events/" + c)).thenReturn(Flux.fromStream(Arrays.asList(event).stream())));
-
-
-
 
 
         fixtureService.load();

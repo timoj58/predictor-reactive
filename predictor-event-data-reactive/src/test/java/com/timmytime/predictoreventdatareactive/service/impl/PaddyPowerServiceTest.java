@@ -16,13 +16,10 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.never;
 
 class PaddyPowerServiceTest {
-
 
     private final TeamService teamService = mock(TeamService.class);
     private static final EventOddsService eventOddsService = mock(EventOddsService.class);

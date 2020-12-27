@@ -1,0 +1,16 @@
+# general properties
+server:
+  port: 8100
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+clients:
+  data: http://localhost:8092
+  event: http://localhost:8093
+  event-data: http://localhost:8094
+  players: http://localhost:8095
+  data-scraper:
+  event-scraper:
+
+delay: 1

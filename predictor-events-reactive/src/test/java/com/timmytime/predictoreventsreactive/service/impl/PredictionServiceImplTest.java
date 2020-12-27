@@ -4,26 +4,18 @@ import com.timmytime.predictoreventsreactive.enumerator.Predictions;
 import com.timmytime.predictoreventsreactive.facade.WebClientFacade;
 import com.timmytime.predictoreventsreactive.model.Event;
 import com.timmytime.predictoreventsreactive.model.EventOutcome;
-import com.timmytime.predictoreventsreactive.request.Prediction;
-import com.timmytime.predictoreventsreactive.request.TensorflowPrediction;
 import com.timmytime.predictoreventsreactive.service.EventOutcomeService;
 import com.timmytime.predictoreventsreactive.service.EventService;
 import com.timmytime.predictoreventsreactive.service.TensorflowPredictionService;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.UUID;
-import java.util.function.Consumer;
-import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @Disabled
@@ -39,7 +31,7 @@ class PredictionServiceImplTest {
 
     private final PredictionServiceImpl predictionService
             = new PredictionServiceImpl(
-                    eventService,
+            eventService,
             tensorflowPredictionService,
             eventOutcomeService);
 
@@ -50,7 +42,7 @@ class PredictionServiceImplTest {
 
 
     @BeforeAll
-    public static void setUp(){
+    public static void setUp() {
 
 
         //this will cause a loop in this test obviously....to resolve.
@@ -77,7 +69,6 @@ class PredictionServiceImplTest {
 
         predictionService.start("TURKEY");
         Thread.sleep(4000);
-
 
 
         //not mow....

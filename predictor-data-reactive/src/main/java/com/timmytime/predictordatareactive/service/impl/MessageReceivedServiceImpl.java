@@ -1,12 +1,9 @@
 package com.timmytime.predictordatareactive.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.timmytime.predictordatareactive.model.Result;
-import com.timmytime.predictordatareactive.repo.ResultRepo;
 import com.timmytime.predictordatareactive.service.MessageReceivedService;
 import com.timmytime.predictordatareactive.service.ResultService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -16,10 +13,10 @@ import reactor.core.publisher.Mono;
 import java.util.function.Consumer;
 
 
+@Slf4j
 @Service("messageReceivedService")
 public class MessageReceivedServiceImpl implements MessageReceivedService {
 
-    private final Logger log = LoggerFactory.getLogger(MessageReceivedServiceImpl.class);
 
     private final ResultService resultService;
 
@@ -37,7 +34,6 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
 
         this.results.subscribe(this::process);
     }
-
 
 
     @Override

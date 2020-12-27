@@ -5,7 +5,6 @@ import com.timmytime.predictoreventsreactive.facade.WebClientFacade;
 import com.timmytime.predictoreventsreactive.model.EventOutcome;
 import com.timmytime.predictoreventsreactive.model.Match;
 import com.timmytime.predictoreventsreactive.service.EventOutcomeService;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -13,7 +12,6 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -26,7 +24,7 @@ class ValidationServiceImplTest {
             = new ValidationServiceImpl("", eventOutcomeService, webClientFacade);
 
     @Test
-    public void validateResult(){
+    public void validateResult() {
 
         EventOutcome eventOutcome = new EventOutcome();
         eventOutcome.setEventType(Predictions.PREDICT_GOALS.name());

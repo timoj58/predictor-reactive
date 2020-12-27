@@ -7,11 +7,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class BetwayScraperFactory {
 
-    public BetwayEventsScraper getEventsScraper(){
+    public BetwayEventsScraper getEventsScraper() {
         return new BetwayEventsScraper();
     }
 
-    public BetwayEventSpecificScraper getEventScraper(){
+    public BetwayEventSpecificScraper getEventScraper() {
         return new BetwayEventSpecificScraper();
     }
 }

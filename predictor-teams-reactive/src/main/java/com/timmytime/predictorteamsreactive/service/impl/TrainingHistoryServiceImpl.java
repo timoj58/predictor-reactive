@@ -2,13 +2,11 @@ package com.timmytime.predictorteamsreactive.service.impl;
 
 import com.timmytime.predictorteamsreactive.enumerator.CountryCompetitions;
 import com.timmytime.predictorteamsreactive.enumerator.Training;
-import com.timmytime.predictorteamsreactive.model.Message;
 import com.timmytime.predictorteamsreactive.model.TrainingHistory;
 import com.timmytime.predictorteamsreactive.repo.TrainingHistoryRepo;
 import com.timmytime.predictorteamsreactive.service.TrainingHistoryService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -17,18 +15,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.UUID;
 
+@RequiredArgsConstructor
+@Slf4j
 @Service("trainingHistoryService")
 public class TrainingHistoryServiceImpl implements TrainingHistoryService {
 
-    private static final Logger log = LoggerFactory.getLogger(TrainingHistoryServiceImpl.class);
     private final TrainingHistoryRepo trainingHistoryRepo;
 
-    @Autowired
-    public TrainingHistoryServiceImpl(
-            TrainingHistoryRepo trainingHistoryRepo
-    ) {
-        this.trainingHistoryRepo = trainingHistoryRepo;
-    }
 
     @Override
     public TrainingHistory find(UUID id) {
@@ -71,7 +64,7 @@ public class TrainingHistoryServiceImpl implements TrainingHistoryService {
             Arrays.asList(
                     CountryCompetitions.values()
             ).stream()
-                    .forEach(country -> {
+                    .forEach(country ->
                                 Arrays.asList(Training.values())
                                         .stream()
                                         .forEach(type -> {
@@ -83,8 +76,7 @@ public class TrainingHistoryServiceImpl implements TrainingHistoryService {
 
                                             trainingHistory.setCompleted(Boolean.TRUE);
                                             trainingHistoryRepo.save(trainingHistory);
-                                        });
-                            }
+                                        })
                     );
 
 

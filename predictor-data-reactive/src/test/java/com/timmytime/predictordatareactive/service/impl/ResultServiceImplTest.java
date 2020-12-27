@@ -4,13 +4,8 @@ import com.timmytime.predictordatareactive.factory.MatchFactory;
 import com.timmytime.predictordatareactive.model.Result;
 import com.timmytime.predictordatareactive.repo.ResultRepo;
 import org.junit.jupiter.api.Test;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class ResultServiceImplTest {
@@ -19,7 +14,7 @@ class ResultServiceImplTest {
     private final MatchFactory matchFactory = mock(MatchFactory.class);
     private final ResultRepo resultRepo = mock(ResultRepo.class);
     private final ResultServiceImpl resultService
-            = new ResultServiceImpl(resultRepo,matchFactory);
+            = new ResultServiceImpl(resultRepo, matchFactory);
 
     @Test
     public void processReadyTest() throws InterruptedException {

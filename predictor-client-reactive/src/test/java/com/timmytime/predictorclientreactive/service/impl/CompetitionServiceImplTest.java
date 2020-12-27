@@ -1,12 +1,10 @@
 package com.timmytime.predictorclientreactive.service.impl;
 
 import com.timmytime.predictorclientreactive.facade.IS3Facade;
-import com.timmytime.predictorclientreactive.facade.S3Facade;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 class CompetitionServiceImplTest {
@@ -16,11 +14,16 @@ class CompetitionServiceImplTest {
 
     private String result;
 
-    private class TestFacade implements IS3Facade{
+    private class TestFacade implements IS3Facade {
 
         @Override
         public void put(String key, String json) {
-           result = json;
+            result = json;
+
+        }
+
+        @Override
+        public void delete(String folder) {
 
         }
 
@@ -36,7 +39,7 @@ class CompetitionServiceImplTest {
             = new CompetitionServiceImpl(testFacade, shutdownService);
 
     @Test
-    public void competitionTest(){
+    public void competitionTest() {
 
         competitionService.load();
 

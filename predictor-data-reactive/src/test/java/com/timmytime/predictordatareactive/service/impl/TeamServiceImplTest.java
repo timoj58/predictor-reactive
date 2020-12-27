@@ -11,14 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class TeamServiceImplTest {
 
     private final SpecialCasesFactory
-    specialCasesFactory = new SpecialCasesFactory("./src/main/resources/config/");
+            specialCasesFactory = new SpecialCasesFactory("./src/main/resources/config/");
 
     private static final TeamRepo teamRepo = mock(TeamRepo.class);
 
@@ -30,7 +30,7 @@ class TeamServiceImplTest {
     private static final UUID teamToFind = UUID.randomUUID();
 
     @BeforeAll
-    public static void setUp(){
+    public static void setUp() {
         List<Team> teams = new ArrayList<>();
 
         Team test = new Team();

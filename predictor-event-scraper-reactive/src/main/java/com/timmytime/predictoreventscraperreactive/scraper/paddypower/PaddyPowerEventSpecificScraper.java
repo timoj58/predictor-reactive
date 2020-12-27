@@ -8,34 +8,29 @@ import com.timmytime.predictoreventscraperreactive.facade.ScraperProxyFacade;
 import com.timmytime.predictoreventscraperreactive.model.ScraperModel;
 import com.timmytime.predictoreventscraperreactive.request.ScraperRequest;
 import com.timmytime.predictoreventscraperreactive.scraper.IScraper;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.BiFunction;
 import java.util.stream.IntStream;
 
+@Slf4j
 public class PaddyPowerEventSpecificScraper implements IScraper {
-
-    private static final Logger log = LoggerFactory.getLogger(PaddyPowerEventSpecificScraper.class);
 
     private final ScraperProxyFacade scraperProxyFacade;
 
     public PaddyPowerEventSpecificScraper(
             ScraperProxyFacade scraperProxyFacade
-    ){
+    ) {
         this.scraperProxyFacade = scraperProxyFacade;
     }
 
     @Override
-    public ScraperModel scrape(BookmakerSiteRules bookmakerSiteRules, JSONObject event,  String competition) {
+    public ScraperModel scrape(BookmakerSiteRules bookmakerSiteRules, JSONObject event, String competition) {
         ScraperModel scraperModel = new ScraperModel();
         scraperModel.setProvider(ScraperTypeKeys.PADDYPOWER_ODDS.name());
         scraperModel.setCompetition(competition);
@@ -62,15 +57,15 @@ public class PaddyPowerEventSpecificScraper implements IScraper {
                         log.info("url " + url);
                         //sort this mess out!
 
-                                extractEvent(
-                                        new JSONObject(
-                                                scraperProxyFacade
-                                                        .scrape(
-                                                                "response",
-                                                                "get",
-                                                                new ScraperRequest(url, null))
-                                                        .getResponse().toString())
-                                        , bookmakerSiteRules.getExtractConfig())
+                        extractEvent(
+                                new JSONObject(
+                                        scraperProxyFacade
+                                                .scrape(
+                                                        "response",
+                                                        "get",
+                                                        new ScraperRequest(url, null))
+                                                .getResponse().toString())
+                                , bookmakerSiteRules.getExtractConfig())
                                 .stream()
                                 .forEach(e -> events.put(e));
                     }
@@ -122,7 +117,7 @@ public class PaddyPowerEventSpecificScraper implements IScraper {
         }
     }
 
-    private List<JSONObject> extractEvent(JSONObject event, String extractConfig){
+    private List<JSONObject> extractEvent(JSONObject event, String extractConfig) {
         List<JSONObject> responses = new ArrayList<>();
 
          /*

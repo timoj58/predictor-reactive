@@ -5,22 +5,21 @@ import com.timmytime.predictorteamsreactive.model.CountryMatch;
 import com.timmytime.predictorteamsreactive.model.Match;
 import com.timmytime.predictorteamsreactive.response.CompetitionEventOutcomeCsv;
 import com.timmytime.predictorteamsreactive.service.TensorflowDataService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service("tensorflowService")
 public class TensorflowDataServiceImpl implements TensorflowDataService {
-
-    private static final Logger log = LoggerFactory.getLogger(TensorflowDataServiceImpl.class);
 
     private final Map<String, List<Match>> data = new HashMap<>();
 
@@ -30,7 +29,7 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
     @Autowired
     public TensorflowDataServiceImpl(
 
-    ){
+    ) {
 
         Arrays.asList(
                 CountryCompetitions.values()
@@ -47,7 +46,7 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
 
     @Override
     public void load(CountryMatch match) {
-      this.consumer.accept(match);
+        this.consumer.accept(match);
     }
 
     @Override
@@ -67,16 +66,16 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
 
     @Override
     public void clear(String country) {
-        if(data.containsKey(country)) {
+        if (data.containsKey(country)) {
             data.get(country).clear();
-        }else {
+        } else {
             log.info("no data to clear for {}", country);
         }
 
     }
 
 
-    private void process(CountryMatch countryMatch){
+    private void process(CountryMatch countryMatch) {
         data.get(countryMatch.getCountry()).add(countryMatch.getMatch());
     }
 

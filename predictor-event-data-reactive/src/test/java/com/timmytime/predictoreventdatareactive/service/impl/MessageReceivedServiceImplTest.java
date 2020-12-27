@@ -8,7 +8,6 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class MessageReceivedServiceImplTest {
@@ -19,7 +18,7 @@ class MessageReceivedServiceImplTest {
 
     private final MessageReceivedServiceImpl messageReceivedService
             = new MessageReceivedServiceImpl(
-                    betwayService, paddyPowerService
+            betwayService, paddyPowerService
     );
 
     @Test

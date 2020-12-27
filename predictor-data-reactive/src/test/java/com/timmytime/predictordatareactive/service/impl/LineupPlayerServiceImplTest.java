@@ -4,7 +4,9 @@ import com.timmytime.predictordatareactive.model.*;
 import com.timmytime.predictordatareactive.repo.LineupPlayerRepo;
 import com.timmytime.predictordatareactive.repo.PlayerRepo;
 import com.timmytime.predictordatareactive.repo.StatMetricRepo;
-import com.timmytime.predictordatareactive.service.*;
+import com.timmytime.predictordatareactive.service.PlayerService;
+import com.timmytime.predictordatareactive.service.StatMetricService;
+import com.timmytime.predictordatareactive.service.TeamService;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.junit.jupiter.api.BeforeAll;
@@ -26,7 +28,7 @@ class LineupPlayerServiceImplTest {
     private static final StatMetricRepo statMetricRepo = mock(StatMetricRepo.class);
 
     private final PlayerService playerService =
-            new PlayerServiceImpl(mock(TeamService.class),playerRepo);
+            new PlayerServiceImpl(mock(TeamService.class), playerRepo);
     private static final LineupPlayerRepo lineupService = mock(LineupPlayerRepo.class);
     private final StatMetricService statMetricService =
             new StatMetricServiceImpl(statMetricRepo);
@@ -39,7 +41,7 @@ class LineupPlayerServiceImplTest {
 
     private final LineupPlayerServiceImpl lineupPlayerService
             = new LineupPlayerServiceImpl(
-                    playerService,
+            playerService,
             lineupService,
             statMetricService
     );

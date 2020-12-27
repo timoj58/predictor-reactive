@@ -1,11 +1,8 @@
 package com.timmytime.predictoreventscraperreactive.scraper.betway;
 
 import com.timmytime.predictoreventscraperreactive.configuration.BookmakerSiteRules;
-import com.timmytime.predictoreventscraperreactive.model.ScraperModel;
-import com.timmytime.predictoreventscraperreactive.scraper.IScraper;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -16,12 +13,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+@Slf4j
 public class BetwayEventsScraper {
 
-    private final Logger log = LoggerFactory.getLogger(BetwayEventsScraper.class);
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public List<Integer> scrape(BookmakerSiteRules rules, BookmakerSiteRules league){
+    public List<Integer> scrape(BookmakerSiteRules rules, BookmakerSiteRules league) {
 
         log.info("scraping {}", league.getId());
 
@@ -56,7 +53,9 @@ public class BetwayEventsScraper {
 
 
         return results;
-    };
+    }
+
+    ;
 
 
 }

@@ -11,8 +11,7 @@ import com.timmytime.predictorclientreactive.model.UpcomingEventResponse;
 import com.timmytime.predictorclientreactive.service.ILoadService;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import com.timmytime.predictorclientreactive.service.TeamService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,12 +19,11 @@ import reactor.core.publisher.Flux;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.stream.Stream;
 
+@Slf4j
 @Service("fixtureService")
 public class FixtureServiceImpl implements ILoadService {
-
-    private final Logger log = LoggerFactory.getLogger(FixtureServiceImpl.class);
 
     private final WebClientFacade webClientFacade;
     private final S3Facade s3Facade;
@@ -36,7 +34,7 @@ public class FixtureServiceImpl implements ILoadService {
 
     @Autowired
     public FixtureServiceImpl(
-            @Value("${event.data.host}") String eventDataHost,
+            @Value("${clients.event-data}") String eventDataHost,
             S3Facade s3Facade,
             WebClientFacade webClientFacade,
             ShutdownService shutdownService,
@@ -53,7 +51,7 @@ public class FixtureServiceImpl implements ILoadService {
     @Override
     public void load() {
         Flux.fromStream(
-                Arrays.asList(CountryCompetitions.values()).stream()
+                Stream.of(CountryCompetitions.values())
         ).doOnNext(country ->
                 Flux.fromStream(country.getCompetitions().stream())
                         .subscribe(competition -> {

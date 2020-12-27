@@ -1,23 +1,22 @@
 package com.timmytime.predictorscraperreactive.factory;
 
 import com.timmytime.predictorscraperreactive.configuration.SiteRules;
-import com.timmytime.predictorscraperreactive.configuration.SportScraper;
 import com.timmytime.predictorscraperreactive.enumerator.ScraperTypeKeys;
 import org.junit.jupiter.api.Test;
 
 import java.util.Comparator;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SportsScraperConfigurationFactoryTest {
 
     private final SportsScraperConfigurationFactory
-    sportsScraperConfigurationFactory = new
+            sportsScraperConfigurationFactory = new
             SportsScraperConfigurationFactory(
-                    "./src/main/resources/config/");
+            "./src/main/resources/config/");
 
     @Test
-    public void loadTests(){
+    public void loadTests() {
 
 
         assertEquals(1, sportsScraperConfigurationFactory.getConfig(ScraperTypeKeys.RESULTS).getSportScrapers().size());

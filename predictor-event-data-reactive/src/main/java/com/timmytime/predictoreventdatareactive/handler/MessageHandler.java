@@ -2,26 +2,19 @@ package com.timmytime.predictoreventdatareactive.handler;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.timmytime.predictoreventdatareactive.service.MessageReceivedService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+@RequiredArgsConstructor
+@Slf4j
 @Component
 public class MessageHandler {
 
-    private final Logger log = LoggerFactory.getLogger(MessageHandler.class);
     private final MessageReceivedService messageReceivedService;
-
-    @Autowired
-    public MessageHandler(
-            MessageReceivedService messageReceivedService
-    ) {
-        this.messageReceivedService = messageReceivedService;
-    }
 
     public Mono<ServerResponse> receive(ServerRequest request) {
 

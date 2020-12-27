@@ -4,13 +4,10 @@ import com.timmytime.predictorscraperreactive.service.ScraperService;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
-
-import java.util.concurrent.CompletableFuture;
 
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
@@ -22,7 +19,7 @@ public class ScrapeFunction {
     @Autowired
     public ScrapeFunction(
             ScraperService scraperService
-    ){
+    ) {
         this.scraperService = scraperService;
     }
 

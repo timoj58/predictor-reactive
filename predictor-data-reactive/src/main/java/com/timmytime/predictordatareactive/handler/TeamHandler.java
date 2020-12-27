@@ -1,9 +1,8 @@
 package com.timmytime.predictordatareactive.handler;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.timmytime.predictordatareactive.model.Team;
 import com.timmytime.predictordatareactive.service.TeamService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -11,17 +10,11 @@ import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Component
 public class TeamHandler {
 
     private final TeamService teamService;
-
-    @Autowired
-    public TeamHandler(
-            TeamService teamService
-    ){
-        this.teamService = teamService;
-    }
 
     public Mono<ServerResponse> alias(ServerRequest request) {
 
@@ -37,7 +30,7 @@ public class TeamHandler {
 
     }
 
-    public Mono<ServerResponse> findByCountry(ServerRequest serverRequest){
+    public Mono<ServerResponse> findByCountry(ServerRequest serverRequest) {
 
         return ServerResponse.ok().bodyValue(
                 teamService.getTeams(serverRequest.pathVariable("country"))

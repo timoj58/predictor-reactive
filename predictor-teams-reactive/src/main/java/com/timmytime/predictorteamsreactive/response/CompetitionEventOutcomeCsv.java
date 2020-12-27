@@ -20,13 +20,13 @@ public class CompetitionEventOutcomeCsv {
 
     public CompetitionEventOutcomeCsv(
             Match match
-    ){
+    ) {
         this.home = match.getHomeTeam();
         this.away = match.getAwayTeam();
         this.goals = match.getHomeScore() + match.getAwayScore();
 
-       this.outcome =  match.getAwayScore() == match.getHomeScore() ? "draw"
-               : match.getHomeScore() > match.getAwayScore() ? "homeWin" : "awayWin";
+        this.outcome = match.getAwayScore() == match.getHomeScore() ? "draw"
+                : match.getHomeScore() > match.getAwayScore() ? "homeWin" : "awayWin";
 
     }
 

@@ -1,6 +1,5 @@
 package com.timmytime.predictordatareactive.handler;
 
-import com.timmytime.predictordatareactive.model.Match;
 import com.timmytime.predictordatareactive.model.StatMetric;
 import com.timmytime.predictordatareactive.service.StatMetricService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +18,11 @@ public class StatsHandler {
     @Autowired
     public StatsHandler(
             StatMetricService statMetricService
-    ){
+    ) {
         this.statMetricService = statMetricService;
     }
 
-    public Mono<ServerResponse> getMatchStats(ServerRequest serverRequest){
+    public Mono<ServerResponse> getMatchStats(ServerRequest serverRequest) {
 
         return ServerResponse.ok().body(
                 statMetricService.find(
@@ -34,7 +33,7 @@ public class StatsHandler {
         );
     }
 
-    public Mono<ServerResponse> getPlayerStats(ServerRequest serverRequest){
+    public Mono<ServerResponse> getPlayerStats(ServerRequest serverRequest) {
 
         return ServerResponse.ok().body(
                 statMetricService.getPlayerStats(

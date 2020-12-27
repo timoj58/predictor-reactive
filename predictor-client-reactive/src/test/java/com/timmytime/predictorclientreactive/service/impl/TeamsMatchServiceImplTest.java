@@ -1,12 +1,12 @@
 package com.timmytime.predictorclientreactive.service.impl;
 
+import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
 import com.timmytime.predictorclientreactive.facade.S3Facade;
 import com.timmytime.predictorclientreactive.facade.WebClientFacade;
 import com.timmytime.predictorclientreactive.model.EventOutcome;
 import com.timmytime.predictorclientreactive.model.Team;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import com.timmytime.predictorclientreactive.service.TeamService;
-import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
@@ -27,7 +27,7 @@ class TeamsMatchServiceImplTest {
 
     private final TeamsMatchServiceImpl teamsMatchService
             = new TeamsMatchServiceImpl(
-                    "", 0, webClientFacade, s3Facade, teamService, shutdownService
+            "", 0, webClientFacade, s3Facade, teamService, shutdownService
     );
 
     @Test
@@ -42,7 +42,7 @@ class TeamsMatchServiceImplTest {
                 .collect(Collectors.toList())
                 .stream()
                 .forEach(c ->
-                        when(webClientFacade.getUpcomingEventOutcomes("/events/"+c))
+                        when(webClientFacade.getUpcomingEventOutcomes("/events/" + c))
                                 .thenReturn(Flux.fromStream(Arrays.asList(new EventOutcome()).stream()
                                 )));
 

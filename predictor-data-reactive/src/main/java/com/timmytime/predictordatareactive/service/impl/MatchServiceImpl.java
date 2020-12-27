@@ -5,7 +5,7 @@ import com.timmytime.predictordatareactive.model.Team;
 import com.timmytime.predictordatareactive.repo.MatchRepo;
 import com.timmytime.predictordatareactive.service.MatchService;
 import com.timmytime.predictordatareactive.service.TeamService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -17,21 +17,13 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.groupingBy;
-
+@RequiredArgsConstructor
 @Service("matchService")
 public class MatchServiceImpl implements MatchService {
 
     private final MatchRepo matchRepo;
     private final TeamService teamService;
 
-    @Autowired
-    public MatchServiceImpl(
-            MatchRepo matchRepo,
-            TeamService teamService) {
-        this.matchRepo = matchRepo;
-        this.teamService = teamService;
-    }
 
     @Override
     public Mono<Match> find(UUID uuid) {
@@ -49,7 +41,7 @@ public class MatchServiceImpl implements MatchService {
     public Mono<Match> getMatch(UUID home, UUID away, String date) {
         LocalDate filter = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
-        return matchRepo.findByHomeTeamAndAwayTeam(home,away)
+        return matchRepo.findByHomeTeamAndAwayTeam(home, away)
                 .filter(f -> f.getDate().toLocalDate().equals(filter))
                 .next();
     }
@@ -66,8 +58,8 @@ public class MatchServiceImpl implements MatchService {
                         .next()
                 :
                 matchRepo.findByHomeTeam(opponent)
-                .filter(f -> f.getDate().toLocalDate().equals(filter))
-                .next();
+                        .filter(f -> f.getDate().toLocalDate().equals(filter))
+                        .next();
     }
 
     @Override
@@ -95,7 +87,6 @@ public class MatchServiceImpl implements MatchService {
     public void delete(UUID id) {
         matchRepo.deleteById(id).subscribe();
     }
-
 
 
 }

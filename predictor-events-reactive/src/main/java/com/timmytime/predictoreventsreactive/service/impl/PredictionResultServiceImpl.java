@@ -1,12 +1,10 @@
 package com.timmytime.predictoreventsreactive.service.impl;
 
-import com.timmytime.predictoreventsreactive.facade.WebClientFacade;
 import com.timmytime.predictoreventsreactive.model.PredictionLine;
 import com.timmytime.predictoreventsreactive.service.EventOutcomeService;
 import com.timmytime.predictoreventsreactive.service.PredictionResultService;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,20 +14,17 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service("predictionResultService")
 public class PredictionResultServiceImpl implements PredictionResultService {
 
-    private static final Logger log = LoggerFactory.getLogger(PredictionResultServiceImpl.class);
-
     private final EventOutcomeService eventOutcomeService;
-
     private final Integer competitionDelay;
 
     @Autowired
     public PredictionResultServiceImpl(
-            @Value("${competition.delay}") Integer competitionDelay,
-            EventOutcomeService eventOutcomeService,
-            WebClientFacade webClientFacade
+            @Value("${delays.competition}") Integer competitionDelay,
+            EventOutcomeService eventOutcomeService
     ) {
         this.competitionDelay = competitionDelay;
         this.eventOutcomeService = eventOutcomeService;

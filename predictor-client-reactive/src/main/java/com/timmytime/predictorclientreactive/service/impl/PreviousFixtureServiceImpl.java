@@ -11,10 +11,9 @@ import com.timmytime.predictorclientreactive.model.PreviousFixtureResponse;
 import com.timmytime.predictorclientreactive.service.ILoadService;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import com.timmytime.predictorclientreactive.service.TeamService;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,12 +22,15 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
+@Slf4j
 @Service("previousFixtureService")
 public class PreviousFixtureServiceImpl implements ILoadService {
-
-    private final Logger log = LoggerFactory.getLogger(PreviousFixtureServiceImpl.class);
 
     private final S3Facade s3Facade;
     private final WebClientFacade webClientFacade;
@@ -44,8 +46,8 @@ public class PreviousFixtureServiceImpl implements ILoadService {
 
     @Autowired
     public PreviousFixtureServiceImpl(
-            @Value("${event.host}") String eventsHost,
-            @Value("${data.host}") String dataHost,
+            @Value("${clients.event}") String eventsHost,
+            @Value("${clients.data}") String dataHost,
             @Value("${delay}") Integer delay,
             S3Facade s3Facade,
             WebClientFacade webClientFacade,
@@ -65,9 +67,9 @@ public class PreviousFixtureServiceImpl implements ILoadService {
     public void load() {
 
         Flux.fromStream(
-                Arrays.asList(
+                Stream.of(
                         CountryCompetitions.values()
-                ).stream()
+                )
         ).subscribe(country ->
                 Flux.fromStream(
                         country.getCompetitions().stream()

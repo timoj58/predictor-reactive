@@ -5,6 +5,8 @@ import com.timmytime.predictorscraperreactive.request.Message;
 
 public interface MessageService {
     void send(ScraperModel scraperModel);
+
     void send(Message message);
+
     void send();
 }

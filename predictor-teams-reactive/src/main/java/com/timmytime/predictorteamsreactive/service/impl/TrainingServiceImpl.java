@@ -9,8 +9,7 @@ import com.timmytime.predictorteamsreactive.service.TensorflowDataService;
 import com.timmytime.predictorteamsreactive.service.TensorflowTrainService;
 import com.timmytime.predictorteamsreactive.service.TrainingHistoryService;
 import com.timmytime.predictorteamsreactive.service.TrainingService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,10 +22,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
+@Slf4j
 @Service("trainingService")
 public class TrainingServiceImpl implements TrainingService {
-
-    private static final Logger log = LoggerFactory.getLogger(TrainingServiceImpl.class);
 
     private final TensorflowDataService tensorflowDataService;
     private final TensorflowTrainService tensorflowTrainService;
@@ -40,9 +38,9 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Autowired
     public TrainingServiceImpl(
-            @Value("${data.host}") String dataHost,
-            @Value("${interval}") Integer interval,
-            @Value("${training.init.delay}") Integer trainingDelay,
+            @Value("${clients.data}") String dataHost,
+            @Value("${delays.interval}") Integer interval,
+            @Value("${delays.training-init}") Integer trainingDelay,
             TensorflowDataService tensorflowDataService,
             TensorflowTrainService tensorflowTrainService,
             TrainingHistoryService trainingHistoryService,
@@ -66,19 +64,19 @@ public class TrainingServiceImpl implements TrainingService {
         evaluateMode = Boolean.TRUE;
 
         Flux.fromStream(
-                        Arrays.asList(CountryCompetitions.values()).stream()
-                ).delayElements(Duration.ofMinutes(trainingDelay))
-                        .subscribe(country -> {
+                Arrays.asList(CountryCompetitions.values()).stream()
+        ).delayElements(Duration.ofMinutes(trainingDelay))
+                .subscribe(country -> {
 
-                            TrainingHistory trainingHistory = init(Training.TRAIN_RESULTS, country.name());
-                            webClientFacade.getMatches(
-                                    dataHost + "/match/country/" + trainingHistory.getCountry()
-                                            + "/" + trainingHistory.getFromDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-                                            + "/" + trainingHistory.getToDate().plusYears(interval*2).toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-                            ).doOnNext(match -> tensorflowDataService.load(new CountryMatch(trainingHistory.getCountry(), match)))
-                                    .doFinally(f -> tensorflowTrainService.train(trainingHistory))
-                                    .subscribe();
-                        });
+                    TrainingHistory trainingHistory = init(Training.TRAIN_RESULTS, country.name());
+                    webClientFacade.getMatches(
+                            dataHost + "/match/country/" + trainingHistory.getCountry()
+                                    + "/" + trainingHistory.getFromDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                                    + "/" + trainingHistory.getToDate().plusYears(interval * 2).toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                    ).doOnNext(match -> tensorflowDataService.load(new CountryMatch(trainingHistory.getCountry(), match)))
+                            .doFinally(f -> tensorflowTrainService.train(trainingHistory))
+                            .subscribe();
+                });
 
     }
 
@@ -88,21 +86,21 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     public Boolean train(TrainingHistory trainingHistory, Boolean init) {
-       //NEED to tidy all of this up given various states (goals/results and evaluation mode etc)
+        //NEED to tidy all of this up given various states (goals/results and evaluation mode etc)
         if (init || trainingHistory.getToDate().isBefore(LocalDate.now().atStartOfDay())) {
 
             TrainingHistory next = init ? trainingHistory :
                     trainingHistoryService.save(
-                        new TrainingHistory(
-                                trainingHistory.getType(),
-                                trainingHistory.getCountry(),
-                                trainingHistory.getToDate(),
-                                trainingHistory.getToDate().plusYears(interval).isAfter(LocalDateTime.now()) ?
-                                        LocalDateTime.now() : trainingHistory.getToDate().plusYears(interval)
-                        )
-                );
+                            new TrainingHistory(
+                                    trainingHistory.getType(),
+                                    trainingHistory.getCountry(),
+                                    trainingHistory.getToDate(),
+                                    trainingHistory.getToDate().plusYears(interval).isAfter(LocalDateTime.now()) ?
+                                            LocalDateTime.now() : trainingHistory.getToDate().plusYears(interval)
+                            )
+                    );
 
-            if(trainingHistory.getType().equals(Training.TRAIN_RESULTS)){
+            if (trainingHistory.getType().equals(Training.TRAIN_RESULTS)) {
                 //and also need to load our next section....
                 webClientFacade.getMatches(
                         dataHost + "/match/country/" + trainingHistory.getCountry()
@@ -116,8 +114,8 @@ public class TrainingServiceImpl implements TrainingService {
                                 )
                 ).doOnNext(match -> tensorflowDataService.load(new CountryMatch(next.getCountry(), match)))
                         .doFinally(f -> tensorflowTrainService.train(next))
-                .subscribe();
-            }else{
+                        .subscribe();
+            } else {
                 Mono.just(next)
                         .subscribe(history -> tensorflowTrainService.train(history));
             }

@@ -7,30 +7,24 @@ import com.timmytime.predictorteamsreactive.enumerator.CountryCompetitions;
 import com.timmytime.predictorteamsreactive.enumerator.Training;
 import com.timmytime.predictorteamsreactive.facade.WebClientFacade;
 import com.timmytime.predictorteamsreactive.model.Message;
-import com.timmytime.predictorteamsreactive.model.TrainingHistory;
-import com.timmytime.predictorteamsreactive.repo.TrainingHistoryRepo;
-import com.timmytime.predictorteamsreactive.service.*;
+import com.timmytime.predictorteamsreactive.service.MessageReceivedService;
+import com.timmytime.predictorteamsreactive.service.TensorflowDataService;
+import com.timmytime.predictorteamsreactive.service.TrainingHistoryService;
+import com.timmytime.predictorteamsreactive.service.TrainingService;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Stream;
 
+@Slf4j
 @Service("messageReceivedService")
 public class MessageReceivedServiceImpl implements MessageReceivedService {
-
-    private static final Logger log = LoggerFactory.getLogger(MessageReceivedServiceImpl.class);
 
     private final List<String> received = new ArrayList<>();
 
@@ -43,13 +37,13 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
 
     @Autowired
     public MessageReceivedServiceImpl(
-            @Value("${events.host}") String eventsHost,
-            @Value("${players.host}") String playersHost,
+            @Value("${clients.events}") String eventsHost,
+            @Value("${clients.players}") String playersHost,
             TrainingHistoryService trainingHistoryService,
             TrainingService trainingService,
             TensorflowDataService tensorflowDataService,
             WebClientFacade webClientFacade
-    ){
+    ) {
         this.eventsHost = eventsHost;
         this.playersHost = playersHost;
         this.trainingHistoryService = trainingHistoryService;
@@ -64,11 +58,11 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                 msg -> {
                     received.add(msg.getCompetition());
 
-                    if(received.containsAll(
+                    if (received.containsAll(
                             CountryCompetitions.valueOf(msg.getCountry().toUpperCase()).getCompetitions()
-                    )){
+                    )) {
                         webClientFacade.sendMessage(
-                                playersHost+"/message",
+                                playersHost + "/message",
                                 createMessage(msg.getCountry().toUpperCase(), "DATA_LOADED")
                         );
                         trainingService.train(trainingHistoryService.find(Training.TRAIN_RESULTS, msg.getCountry()), Boolean.FALSE);
@@ -86,27 +80,27 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         return Mono.just(
                 trainingHistoryService.find(id)
         ).doOnNext(history -> {
-                if(!trainingService.train(history, Boolean.FALSE)){
-                    switch (history.getType()){
-                        case TRAIN_RESULTS:
-                            //we start training goals..
-                            log.info("now training goals for {}", history.getCountry());
-                            trainingService.train(
-                                    trainingService.init(Training.TRAIN_GOALS, history.getCountry()),
-                                    Boolean.TRUE
-                            );
-                            break;
-                        case TRAIN_GOALS:
-                            log.info("finishing up {}", history.getCountry().toUpperCase());
-                            //finished.
-                            tensorflowDataService.clear(history.getCountry());
-                            webClientFacade.sendMessage(
-                                    eventsHost + "/message",
-                                    createMessage(history.getCountry().toUpperCase(), "TRAINING_COMPLETED")
-                            );
-                            break;
-                    }
+            if (!trainingService.train(history, Boolean.FALSE)) {
+                switch (history.getType()) {
+                    case TRAIN_RESULTS:
+                        //we start training goals..
+                        log.info("now training goals for {}", history.getCountry());
+                        trainingService.train(
+                                trainingService.init(Training.TRAIN_GOALS, history.getCountry()),
+                                Boolean.TRUE
+                        );
+                        break;
+                    case TRAIN_GOALS:
+                        log.info("finishing up {}", history.getCountry().toUpperCase());
+                        //finished.
+                        tensorflowDataService.clear(history.getCountry());
+                        webClientFacade.sendMessage(
+                                eventsHost + "/message",
+                                createMessage(history.getCountry().toUpperCase(), "TRAINING_COMPLETED")
+                        );
+                        break;
                 }
+            }
         }).thenEmpty(Mono.empty());
 
     }
@@ -117,7 +111,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         return Mono.empty();
     }
 
-    private JsonNode createMessage(String country, String type){
+    private JsonNode createMessage(String country, String type) {
         try {
             return new ObjectMapper().readTree(
                     new JSONObject()

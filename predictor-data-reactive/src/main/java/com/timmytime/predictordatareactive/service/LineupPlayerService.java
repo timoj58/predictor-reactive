@@ -1,7 +1,6 @@
 package com.timmytime.predictordatareactive.service;
 
 import com.timmytime.predictordatareactive.model.LineupPlayer;
-import com.timmytime.predictordatareactive.model.Player;
 import com.timmytime.predictordatareactive.model.ResultData;
 import com.timmytime.predictordatareactive.model.Team;
 import org.json.JSONArray;
@@ -22,6 +21,7 @@ public interface LineupPlayerService {
             ResultData resultData,
             String lineupType
     );
+
     Mono<Void> deleteByMatch(UUID matchId);
 
     Flux<LineupPlayer> find(

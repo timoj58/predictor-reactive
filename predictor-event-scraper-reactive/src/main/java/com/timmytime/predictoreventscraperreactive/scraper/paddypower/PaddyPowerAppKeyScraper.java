@@ -3,25 +3,23 @@ package com.timmytime.predictoreventscraperreactive.scraper.paddypower;
 import com.timmytime.predictoreventscraperreactive.configuration.BookmakerSiteRules;
 import com.timmytime.predictoreventscraperreactive.facade.ScraperProxyFacade;
 import com.timmytime.predictoreventscraperreactive.request.ScraperRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 @Component
 public class PaddyPowerAppKeyScraper {
 
-    private final Logger log = LoggerFactory.getLogger(PaddyPowerAppKeyScraper.class);
-
     private final ScraperProxyFacade scraperProxyFacade;
-    public String scrape(BookmakerSiteRules siteRules){
+
+    public String scrape(BookmakerSiteRules siteRules) {
 
         JSONObject key = new JSONObject(siteRules.getKeys().get(0));
 
@@ -44,7 +42,9 @@ public class PaddyPowerAppKeyScraper {
         }
 
         return appKey;
-    };
+    }
+
+    ;
 
     @Autowired
     public PaddyPowerAppKeyScraper(ScraperProxyFacade scraperProxyFacade) {

@@ -8,8 +8,8 @@ import org.springframework.web.reactive.config.EnableWebFlux;
 @EnableWebFlux
 public class PredictorEventScraperReactiveApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(PredictorEventScraperReactiveApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(PredictorEventScraperReactiveApplication.class, args);
+    }
 
 }

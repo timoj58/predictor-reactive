@@ -7,22 +7,18 @@ import com.timmytime.predictordatareactive.service.MatchCreationService;
 import com.timmytime.predictordatareactive.service.MatchRepairService;
 import com.timmytime.predictordatareactive.service.MatchService;
 import com.timmytime.predictordatareactive.service.TeamService;
-import com.timmytime.predictordatareactive.service.impl.TeamServiceImpl;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.FileSystemResource;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 class MatchFactoryTest {

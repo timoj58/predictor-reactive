@@ -22,12 +22,12 @@ public class Result {
     private String result;
     private Boolean processed = Boolean.FALSE;
 
-    public Result(Integer id){
+    public Result(Integer id) {
         this.matchId = id;
         this.date = LocalDate.now();
     }
 
-    public Boolean ready(){
+    public Boolean ready() {
         return lineup != null && result != null && match != null;
     }
 }

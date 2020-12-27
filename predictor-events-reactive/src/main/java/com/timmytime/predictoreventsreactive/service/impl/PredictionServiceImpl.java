@@ -9,9 +9,8 @@ import com.timmytime.predictoreventsreactive.service.EventOutcomeService;
 import com.timmytime.predictoreventsreactive.service.EventService;
 import com.timmytime.predictoreventsreactive.service.PredictionService;
 import com.timmytime.predictoreventsreactive.service.TensorflowPredictionService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -19,25 +18,15 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.util.UUID;
 
+@RequiredArgsConstructor
+@Slf4j
 @Service("predictionService")
 public class PredictionServiceImpl implements PredictionService {
 
-    private static final Logger log = LoggerFactory.getLogger(PredictionServiceImpl.class);
 
     private final EventService eventService;
     private final TensorflowPredictionService tensorflowPredictionService;
     private final EventOutcomeService eventOutcomeService;
-
-    @Autowired
-    public PredictionServiceImpl(
-            EventService eventService,
-            TensorflowPredictionService tensorflowPredictionService,
-            EventOutcomeService eventOutcomeService
-    ) {
-        this.eventService = eventService;
-        this.tensorflowPredictionService = tensorflowPredictionService;
-        this.eventOutcomeService = eventOutcomeService;
-    }
 
     @Override
     public void start(String country) {

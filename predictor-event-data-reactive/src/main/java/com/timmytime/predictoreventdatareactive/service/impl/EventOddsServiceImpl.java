@@ -5,7 +5,7 @@ import com.timmytime.predictoreventdatareactive.model.EventOdds;
 import com.timmytime.predictoreventdatareactive.repo.EventOddsRepo;
 import com.timmytime.predictoreventdatareactive.response.Event;
 import com.timmytime.predictoreventdatareactive.service.EventOddsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -15,17 +15,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+@RequiredArgsConstructor
 @Service("eventOddsService")
 public class EventOddsServiceImpl implements EventOddsService {
 
     private final EventOddsRepo eventOddsRepo;
-
-    @Autowired
-    public EventOddsServiceImpl(
-            EventOddsRepo eventOddsRepo
-    ) {
-        this.eventOddsRepo = eventOddsRepo;
-    }
 
     @Override
     public Mono<EventOdds> create(EventOdds eventOdds) {

@@ -1,15 +1,15 @@
 version: '3'
 services:
- data:
+  data:
     image: timmytime/predictor-data-reactive:latest
     container_name: predictor-data-reactive
     environment:
-     - "SPRING_PROFILES_ACTIVE=prod"
+      - "SPRING_PROFILES_ACTIVE=prod"
     ports:
-     - "8092:8092"
+      - "8092:8092"
     networks:
-     predictornet:
-      ipv4_address: 172.22.0.20
+      predictornet:
+        ipv4_address: 172.22.0.20
 networks:
   predictornet:
     driver: bridge
@@ -18,5 +18,5 @@ networks:
     ipam:
       driver: default
       config:
-      - subnet: 172.22.0.0/16
+        - subnet: 172.22.0.0/16
  

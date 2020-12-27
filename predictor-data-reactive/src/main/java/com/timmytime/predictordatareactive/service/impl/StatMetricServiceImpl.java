@@ -7,35 +7,26 @@ import com.timmytime.predictordatareactive.model.StatMetric;
 import com.timmytime.predictordatareactive.model.Team;
 import com.timmytime.predictordatareactive.repo.StatMetricRepo;
 import com.timmytime.predictordatareactive.service.StatMetricService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.jsoup.parser.Parser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.IntStream;
 
+@RequiredArgsConstructor
+@Slf4j
 @Service("scoreMetricService")
 public class StatMetricServiceImpl implements StatMetricService {
 
-    private final Logger log = LoggerFactory.getLogger(StatMetricServiceImpl.class);
-
     private final StatMetricRepo statMetricRepo;
-
-    @Autowired
-    public StatMetricServiceImpl(StatMetricRepo statMetricRepo) {
-        this.statMetricRepo = statMetricRepo;
-    }
 
     @Override
     public void delete(UUID id) {
@@ -64,24 +55,23 @@ public class StatMetricServiceImpl implements StatMetricService {
                 .forEach(index -> {
                     log.info("processing stats {}", team.getLabel());
 
-                   if(data.getJSONObject(index).getString("data-home-away").equals(label)) {
+                    if (data.getJSONObject(index).getString("data-home-away").equals(label)) {
 
-                       StatMetric statMetric = new StatMetric();
-                       statMetric.setId(UUID.randomUUID());
-                       statMetric.setTeam(team.getId());
-                       statMetric.setTimestamp(date);
-                       statMetric.setLabel(data.getJSONObject(index).getString("data-stat"));
-                       statMetric.setValue(Integer.valueOf(data.getJSONObject(index).getString("value")));
-                       statMetric.setMatchId(matchId);
+                        StatMetric statMetric = new StatMetric();
+                        statMetric.setId(UUID.randomUUID());
+                        statMetric.setTeam(team.getId());
+                        statMetric.setTimestamp(date);
+                        statMetric.setLabel(data.getJSONObject(index).getString("data-stat"));
+                        statMetric.setValue(Integer.valueOf(data.getJSONObject(index).getString("value")));
+                        statMetric.setMatchId(matchId);
 
 
-                       log.info("adding a stat {}", statMetric.getLabel());
-                       stats.add(
-                               save(statMetric)
-                       );
-                   }
+                        log.info("adding a stat {}", statMetric.getLabel());
+                        stats.add(
+                                save(statMetric)
+                        );
+                    }
                 });
-
 
 
         return stats;
@@ -106,21 +96,21 @@ public class StatMetricServiceImpl implements StatMetricService {
 
                     if (escaped != null) {
 
-                        if(player.getLabel().equalsIgnoreCase(
-                              escaped.replace("  ", " "))
-                        ){
+                        if (player.getLabel().equalsIgnoreCase(
+                                escaped.replace("  ", " "))
+                        ) {
 
-                                StatMetric statMetric = new StatMetric();
-                                statMetric.setId(UUID.randomUUID());
-                                statMetric.setTimestamp(date);
-                                statMetric.setLabel(details.getJSONObject(i).getString("text"));
-                                statMetric.setTimeOfMetric(details.getJSONObject(i).getInt("value"));
-                                statMetric.setPlayer(player.getId());  //need to fix this
-                                statMetric.setMatchId(matchId);
+                            StatMetric statMetric = new StatMetric();
+                            statMetric.setId(UUID.randomUUID());
+                            statMetric.setTimestamp(date);
+                            statMetric.setLabel(details.getJSONObject(i).getString("text"));
+                            statMetric.setTimeOfMetric(details.getJSONObject(i).getInt("value"));
+                            statMetric.setPlayer(player.getId());  //need to fix this
+                            statMetric.setMatchId(matchId);
 
-                                statMetrics.add(
-                                        save(statMetric)
-                                );
+                            statMetrics.add(
+                                    save(statMetric)
+                            );
 
                         }
                     } else {
@@ -141,29 +131,29 @@ public class StatMetricServiceImpl implements StatMetricService {
     ) {
         List<Mono<StatMetric>> statMetrics = new ArrayList<>();
 
-                        player.getStats().stream().forEach(stat -> {
+        player.getStats().stream().forEach(stat -> {
 
-                                    String key = stat.keys().next();
+            String key = stat.keys().next();
 
-                                    int value = Integer.valueOf(stat.getString(key));
+            int value = Integer.valueOf(stat.getString(key));
 
-                                    if(value > 0) {
+            if (value > 0) {
 
-                                        StatMetric statMetric = new StatMetric();
+                StatMetric statMetric = new StatMetric();
 
-                                        statMetric.setId(UUID.randomUUID());
-                                        statMetric.setTimestamp(date);
-                                        statMetric.setValue(value);
-                                        statMetric.setLabel(key);
-                                        statMetric.setPlayer(player.getId());
-                                        statMetric.setMatchId(matchId);
+                statMetric.setId(UUID.randomUUID());
+                statMetric.setTimestamp(date);
+                statMetric.setValue(value);
+                statMetric.setLabel(key);
+                statMetric.setPlayer(player.getId());
+                statMetric.setMatchId(matchId);
 
-                                        statMetrics.add(
-                                                save(statMetric)
-                                        );
+                statMetrics.add(
+                        save(statMetric)
+                );
 
-                                    }
-                                });
+            }
+        });
 
 
         return statMetrics;

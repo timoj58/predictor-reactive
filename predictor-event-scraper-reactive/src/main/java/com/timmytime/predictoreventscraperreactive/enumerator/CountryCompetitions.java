@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 
 @Getter
 public enum CountryCompetitions {
-    ENGLAND(Arrays.asList("england_1", "england_2","england_3", "england_4", "england_5")),
-    SCOTLAND(Arrays.asList("scotland_1","scotland_2", "scotland_3", "scotland_4")),
+    ENGLAND(Arrays.asList("england_1", "england_2", "england_3", "england_4", "england_5")),
+    SCOTLAND(Arrays.asList("scotland_1", "scotland_2", "scotland_3", "scotland_4")),
     ITALY(Arrays.asList("italy_1", "italy_2")),
     FRANCE(Arrays.asList("france_1", "france_2")),
     SPAIN(Arrays.asList("spain_1", "spain_2")),
@@ -27,11 +27,11 @@ public enum CountryCompetitions {
 
     List<String> competitions;
 
-    CountryCompetitions(List<String> competitions){
+    CountryCompetitions(List<String> competitions) {
         this.competitions = competitions;
     }
 
-    public static CountryCompetitions findByCompetition(String competition){
+    public static CountryCompetitions findByCompetition(String competition) {
         return Arrays.asList(
                 CountryCompetitions.values()
         ).stream()
@@ -40,11 +40,11 @@ public enum CountryCompetitions {
                 .get();
     }
 
-    public static List<String> getAllCompetitions(){
+    public static List<String> getAllCompetitions() {
         return Arrays.asList(CountryCompetitions.values())
                 .stream()
                 .map(CountryCompetitions::getCompetitions)
                 .flatMap(Collection::stream)
-        .collect(Collectors.toList());
+                .collect(Collectors.toList());
     }
 }

@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface TeamService {
     void loadTeams();
+
     List<Team> getTeams(String country);
 }

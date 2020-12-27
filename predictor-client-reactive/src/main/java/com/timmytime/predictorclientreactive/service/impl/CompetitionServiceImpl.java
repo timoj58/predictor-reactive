@@ -10,33 +10,23 @@ import com.timmytime.predictorclientreactive.model.CountryAndCompetitionResponse
 import com.timmytime.predictorclientreactive.model.CountryResponse;
 import com.timmytime.predictorclientreactive.service.ILoadService;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
+@RequiredArgsConstructor
+@Slf4j
 @Service("competitionService")
 public class CompetitionServiceImpl implements ILoadService {
-
-    private final Logger log = LoggerFactory.getLogger(CompetitionServiceImpl.class);
 
     private final IS3Facade s3Facade;
     private final ShutdownService shutdownService;
 
-    @Autowired
-    public CompetitionServiceImpl(
-            IS3Facade s3Facade,
-            ShutdownService shutdownService
-    ) {
-        this.s3Facade = s3Facade;
-        this.shutdownService = shutdownService;
-
-    }
 
     @Override
     public void load() {
@@ -44,7 +34,7 @@ public class CompetitionServiceImpl implements ILoadService {
         List<CountryAndCompetitionResponse> countryAndCompetitionResponses = new ArrayList<>();
 
         Flux.fromStream(
-                Arrays.asList(CountryCompetitions.values()).stream()
+                Stream.of(CountryCompetitions.values())
         ).doOnNext(country -> {
 
             log.info("processing {}", country.name());

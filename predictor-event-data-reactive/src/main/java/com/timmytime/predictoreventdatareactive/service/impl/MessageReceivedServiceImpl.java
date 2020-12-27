@@ -4,8 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.timmytime.predictoreventdatareactive.enumerator.Providers;
 import com.timmytime.predictoreventdatareactive.service.MessageReceivedService;
 import com.timmytime.predictoreventdatareactive.service.ProviderService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -16,10 +15,9 @@ import java.time.Duration;
 import java.util.function.Consumer;
 
 
+@Slf4j
 @Service("messageReceivedService")
 public class MessageReceivedServiceImpl implements MessageReceivedService {
-
-    private final Logger log = LoggerFactory.getLogger(MessageReceivedServiceImpl.class);
 
     private final ProviderService betwayService;
     private final ProviderService paddyPowerService;

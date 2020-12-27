@@ -7,21 +7,20 @@ import com.timmytime.predictorscraperreactive.enumerator.ScraperTypeKeys;
 import com.timmytime.predictorscraperreactive.factory.SportsScraperConfigurationFactory;
 import com.timmytime.predictorscraperreactive.model.Lineup;
 import com.timmytime.predictorscraperreactive.util.ScraperUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.stream.IntStream;
 
+@Slf4j
 public class PlayerStatsScraper implements IScraper<Lineup> {
 
-    private final Logger log = LoggerFactory.getLogger(PlayerStatsScraper.class);
     private final SportsScraperConfigurationFactory sportsScraperConfigurationFactory;
     private final RestTemplate restTemplate = new RestTemplate();
 
@@ -31,7 +30,7 @@ public class PlayerStatsScraper implements IScraper<Lineup> {
     public PlayerStatsScraper(
             SportsScraperConfigurationFactory sportsScraperConfigurationFactory,
             Lineup lineup
-    ){
+    ) {
         this.sportsScraperConfigurationFactory = sportsScraperConfigurationFactory;
         this.lineup = lineup;
     }
@@ -79,14 +78,14 @@ public class PlayerStatsScraper implements IScraper<Lineup> {
                                                         siteRules.stream().filter(f -> !f.getId().equals("players") && !f.getId().equals("events"))
                                                                 .forEach(stat -> {
 
-                                                                    String xpath =  stat.getXpath().replace("{sub}", "div");
+                                                                    String xpath = stat.getXpath().replace("{sub}", "div");
 
                                                                     JSONObject object = new JSONObject();
 
                                                                     object.put(events.getIndex(), eventIdx);
                                                                     object.put(players.getIndex(), playerIdx);
 
-                                                                    if(stat.getIndex().trim().isEmpty()
+                                                                    if (stat.getIndex().trim().isEmpty()
                                                                             || stat.getIndex().equals(String.valueOf(playerIdx))
                                                                             || (stat.getIndex().equals("greater") && playerIdx >= stat.getOccurs())) {
 
@@ -100,14 +99,14 @@ public class PlayerStatsScraper implements IScraper<Lineup> {
                                                                             //        log.info("data is {} {}", stat.getId(), data);
 
                                                                             Integer index;
-                                                                            if(eventIdx == 1){
+                                                                            if (eventIdx == 1) {
                                                                                 index = findIndex(lineupData.getJSONArray("home"), playerIdx);
-                                                                                if(index != -1) {
+                                                                                if (index != -1) {
                                                                                     lineupData.getJSONArray("home").getJSONObject(index).put(stat.getId(), data);
                                                                                 }
-                                                                            }else{
+                                                                            } else {
                                                                                 index = findIndex(lineupData.getJSONArray("away"), playerIdx);
-                                                                                if(index != -1) {
+                                                                                if (index != -1) {
                                                                                     lineupData.getJSONArray("away").getJSONObject(index).put(stat.getId(), data);
                                                                                 }
                                                                             }
@@ -115,7 +114,7 @@ public class PlayerStatsScraper implements IScraper<Lineup> {
                                                                         }
 
                                                                         //now check for any subs.
-                                                                        xpath =  stat.getXpath().replace("{sub}", "div[2]");
+                                                                        xpath = stat.getXpath().replace("{sub}", "div[2]");
 
 
                                                                         data = ScraperUtils.compile(
@@ -126,14 +125,14 @@ public class PlayerStatsScraper implements IScraper<Lineup> {
                                                                         if (data != null) {
                                                                             //        log.info("sub data is {} {}", stat.getId(), data);
                                                                             Integer index;
-                                                                            if(eventIdx == 1){
+                                                                            if (eventIdx == 1) {
                                                                                 index = findIndex(lineupData.getJSONArray("homePlayingSubs"), playerIdx);
-                                                                                if(index != -1) {
+                                                                                if (index != -1) {
                                                                                     lineupData.getJSONArray("homePlayingSubs").getJSONObject(index).put(stat.getId(), data);
                                                                                 }
-                                                                            }else{
+                                                                            } else {
                                                                                 index = findIndex(lineupData.getJSONArray("awayPlayingSubs"), playerIdx);
-                                                                                if(index != -1) {
+                                                                                if (index != -1) {
                                                                                     lineupData.getJSONArray("awayPlayingSubs").getJSONObject(index).put(stat.getId(), data);
                                                                                 }
                                                                             }
@@ -155,9 +154,9 @@ public class PlayerStatsScraper implements IScraper<Lineup> {
     }
 
 
-    private Integer findIndex(JSONArray players, Integer index){
-        for(int i=0;i<players.length();i++){
-            if(players.getJSONObject(i).getInt("index") == index){
+    private Integer findIndex(JSONArray players, Integer index) {
+        for (int i = 0; i < players.length(); i++) {
+            if (players.getJSONObject(i).getInt("index") == index) {
                 return i;
             }
         }

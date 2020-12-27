@@ -11,19 +11,19 @@ public class PaddyPowerScraperFactory {
 
     public PaddyPowerAppKeyScraper getAppKeyScraper(
             ScraperProxyFacade scraperProxyFacade
-    ){
+    ) {
         return new PaddyPowerAppKeyScraper(scraperProxyFacade);
     }
 
     public PaddyPowerEventsScraper getEventsScraper(
             ScraperProxyFacade scraperProxyFacade
-    ){
+    ) {
         return new PaddyPowerEventsScraper(scraperProxyFacade);
     }
 
     public PaddyPowerEventSpecificScraper getEventScraper(
             ScraperProxyFacade scraperProxyFacade
-    ){
+    ) {
         return new PaddyPowerEventSpecificScraper(scraperProxyFacade);
     }
 }

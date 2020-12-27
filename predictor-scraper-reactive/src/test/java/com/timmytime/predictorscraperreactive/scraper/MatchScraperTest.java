@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MatchScraperTest {
 
@@ -32,7 +32,7 @@ class MatchScraperTest {
 
         assertEquals(6,
                 matchScraper.scrape(541766)
-                .getData().size()
+                        .getData().size()
         );
 
         Thread.sleep(2000L);

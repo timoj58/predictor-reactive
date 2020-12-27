@@ -3,8 +3,7 @@ package com.timmytime.predictorclientreactive.service.impl;
 import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
 import com.timmytime.predictorclientreactive.model.Team;
 import com.timmytime.predictorclientreactive.service.TeamService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -12,13 +11,16 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
 import javax.annotation.PostConstruct;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+@Slf4j
 @Service("teamService")
 public class TeamServiceImpl implements TeamService {
-
-    private static final Logger log = LoggerFactory.getLogger(TeamServiceImpl.class);
 
     private final String dataHost;
 
@@ -27,7 +29,7 @@ public class TeamServiceImpl implements TeamService {
 
     @Autowired
     public TeamServiceImpl(
-            @Value("${data.host}") String dataHost
+            @Value("${clients.data}") String dataHost
     ) {
         this.dataHost = dataHost;
     }
@@ -37,7 +39,7 @@ public class TeamServiceImpl implements TeamService {
     public void loadTeams() {
 
         Flux.fromStream(
-                Arrays.asList(CountryCompetitions.values()).stream()
+                Stream.of(CountryCompetitions.values())
         ).subscribe(country -> {
                     teams.put(country.name().toLowerCase(), new HashMap<>());
                     WebClient.builder().build()

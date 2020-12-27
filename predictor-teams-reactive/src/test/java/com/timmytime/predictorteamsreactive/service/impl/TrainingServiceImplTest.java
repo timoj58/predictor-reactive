@@ -13,7 +13,6 @@ import reactor.core.publisher.Flux;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -54,7 +53,7 @@ class TrainingServiceImplTest {
     }
 
     @Test
-    public void trainingFinishedTest(){
+    public void trainingFinishedTest() {
 
         trainingService.train(new TrainingHistory(Training.TRAIN_RESULTS, "test", LocalDateTime.now(), LocalDateTime.now()), Boolean.FALSE);
 

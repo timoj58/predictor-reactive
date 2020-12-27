@@ -3,7 +3,7 @@ package com.timmytime.predictoreventscraperreactive.factory;
 import com.timmytime.predictoreventscraperreactive.enumerator.ScraperTypeKeys;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class BookmakerScraperConfigurationFactoryTest {
 
@@ -11,7 +11,7 @@ class BookmakerScraperConfigurationFactoryTest {
             = new BookmakerScraperConfigurationFactory("./src/main/resources/config/");
 
     @Test
-    public void configTest(){
+    public void configTest() {
 
         assertEquals(1, bookmakerScraperConfigurationFactory.getConfig(ScraperTypeKeys.BETWAY_ODDS).getBookmakerScrapers().size());
         assertEquals(1, bookmakerScraperConfigurationFactory.getConfig(ScraperTypeKeys.PADDYPOWER_ODDS).getBookmakerScrapers().size());
@@ -19,11 +19,11 @@ class BookmakerScraperConfigurationFactoryTest {
 
         assertEquals(23,
                 bookmakerScraperConfigurationFactory.getConfig(ScraperTypeKeys.BETWAY_ODDS).getBookmakerScrapers()
-        .stream()
-        .findFirst()
-        .get()
-        .getSiteRules()
-        .stream()
+                        .stream()
+                        .findFirst()
+                        .get()
+                        .getSiteRules()
+                        .stream()
                         .filter(f -> !f.getId().equals("generic") && f.getType().equals("leagues") && f.getActive())
                         .count());
 

@@ -9,55 +9,44 @@ import com.timmytime.predictorscraperreactive.repo.ScraperHistoryRepo;
 import com.timmytime.predictorscraperreactive.service.CompetitionScraperService;
 import com.timmytime.predictorscraperreactive.service.MessageService;
 import com.timmytime.predictorscraperreactive.service.ScraperService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.annotation.PostConstruct;
-import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.UUID;
 
+@Slf4j
 @Service("scraperService")
 public class ScraperServiceImpl implements ScraperService {
 
-    private final Logger log = LoggerFactory.getLogger(ScraperServiceImpl.class);
-
+    private final Integer dayDelay;
     private final SportsScraperConfigurationFactory sportsScraperConfigurationFactory;
     private final CompetitionScraperService competitionScraperService;
     private final ScraperHistoryRepo scraperHistoryRepo;
-    private final LocalDateTime defaultStartDate;
-    private final Integer dayDelay;
     private final MessageService messageService;
 
     @Autowired
     public ScraperServiceImpl(
-            @Value("${day.delay}") Integer dayDelay,
-            @Value("${results.start-date}") String defaultStartDate,
+            @Value("${delays.day}") Integer dayDelay,
             SportsScraperConfigurationFactory sportsScraperConfigurationFactory,
             CompetitionScraperService competitionScraperService,
             ScraperHistoryRepo scraperHistoryRepo,
             MessageService messageService
     ) {
         this.dayDelay = dayDelay;
-        this.defaultStartDate = LocalDate.parse(
-                defaultStartDate, DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        )
-                .atStartOfDay();
         this.sportsScraperConfigurationFactory = sportsScraperConfigurationFactory;
         this.competitionScraperService = competitionScraperService;
         this.scraperHistoryRepo = scraperHistoryRepo;
         this.messageService = messageService;
-    }
 
+    }
 
     @Override
     public Mono<Void> scrape() {
@@ -70,21 +59,21 @@ public class ScraperServiceImpl implements ScraperService {
         scraperHistory.setDate(LocalDateTime.now());
         scraperHistory.setDaysScraped((int)
                 Duration.between(
-                            scraperHistoryRepo.findFirstByOrderByDateDesc().getDate().toLocalDate().atStartOfDay(),
-                            LocalDate.now().atStartOfDay()
+                        scraperHistoryRepo.findFirstByOrderByDateDesc().getDate().toLocalDate().atStartOfDay(),
+                        LocalDate.now().atStartOfDay()
                 ).toDays());
 
         scraperHistoryRepo.save(scraperHistory);
 
 
-        SportScraper sportScraper =sportsScraperConfigurationFactory.getConfig(ScraperTypeKeys.RESULTS)
+        SportScraper sportScraper = sportsScraperConfigurationFactory.getConfig(ScraperTypeKeys.RESULTS)
                 .getSportScrapers()
                 .stream()
                 .findFirst()
                 .get();
 
         Mono.just(sportScraper)//there is only one...
-        .doOnNext(sport ->
+                .doOnNext(sport ->
                         Flux.fromStream(sport.getSiteRules()
                                 .stream()
                                 .filter(f -> f.getActive()
@@ -93,7 +82,7 @@ public class ScraperServiceImpl implements ScraperService {
                                 )
                         )
                                 .sort(Comparator.comparing(SiteRules::getOrder))
-                                .delayElements(Duration.ofSeconds(dayDelay * scraperHistory.getDaysScraped()+1))
+                                .delayElements(Duration.ofSeconds(dayDelay * scraperHistory.getDaysScraped() + 1))
                                 .subscribe(competition -> competitionScraperService.scrape(
                                         scraperHistory,
                                         competition))
@@ -101,13 +90,13 @@ public class ScraperServiceImpl implements ScraperService {
                 .doFinally(send ->
                         Mono.just("result")
                                 .delayElement(Duration.ofSeconds(
-                                        (dayDelay * scraperHistory.getDaysScraped()+1) + (
-                                        sportScraper.getSiteRules()
-                                        .stream()
-                                        .filter(f -> !f.getId().equals("generic"))
-                                        .filter(f -> f.getActive() == Boolean.TRUE)
-                                        .count() *
-                                                (dayDelay * scraperHistory.getDaysScraped()+1))))
+                                        (dayDelay * scraperHistory.getDaysScraped() + 1) + (
+                                                sportScraper.getSiteRules()
+                                                        .stream()
+                                                        .filter(f -> !f.getId().equals("generic"))
+                                                        .filter(f -> f.getActive() == Boolean.TRUE)
+                                                        .count() *
+                                                        (dayDelay * scraperHistory.getDaysScraped() + 1))))
                                 .subscribe(message -> messageService.send())
                 ).subscribe();
 

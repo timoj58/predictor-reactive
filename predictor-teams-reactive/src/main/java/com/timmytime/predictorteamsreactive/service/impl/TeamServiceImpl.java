@@ -3,8 +3,7 @@ package com.timmytime.predictorteamsreactive.service.impl;
 import com.timmytime.predictorteamsreactive.enumerator.CountryCompetitions;
 import com.timmytime.predictorteamsreactive.model.Team;
 import com.timmytime.predictorteamsreactive.service.TeamService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -15,14 +14,10 @@ import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service("teamService")
 public class TeamServiceImpl implements TeamService {
 
-    /*
-      not used currently
-     */
-
-    private static final Logger log = LoggerFactory.getLogger(TeamServiceImpl.class);
 
     private Map<String, Map<UUID, Team>> teams = new HashMap<>();
 
@@ -30,8 +25,8 @@ public class TeamServiceImpl implements TeamService {
 
     @Autowired
     public TeamServiceImpl(
-            @Value("${data.host}") String dataHost
-    ){
+            @Value("${clients.data}") String dataHost
+    ) {
         this.dataHost = dataHost;
     }
 
@@ -42,16 +37,16 @@ public class TeamServiceImpl implements TeamService {
         Flux.fromStream(
                 Arrays.asList(CountryCompetitions.values()).stream()
         ).subscribe(country -> {
-            teams.put(country.name().toLowerCase(), new HashMap<>());
-            WebClient.builder().build()
-                    .get()
-                    .uri(dataHost + "/teams/country/" + country.name().toLowerCase())
-                    .retrieve()
-                    .bodyToFlux(Team.class)
-                    .subscribe(team -> {
-                        log.info("adding {}", team.getLabel());
-                        teams.get(country.name().toLowerCase()).put(team.getId(), team);
-                    });
+                    teams.put(country.name().toLowerCase(), new HashMap<>());
+                    WebClient.builder().build()
+                            .get()
+                            .uri(dataHost + "/teams/country/" + country.name().toLowerCase())
+                            .retrieve()
+                            .bodyToFlux(Team.class)
+                            .subscribe(team -> {
+                                log.info("adding {}", team.getLabel());
+                                teams.get(country.name().toLowerCase()).put(team.getId(), team);
+                            });
                 }
         );
 

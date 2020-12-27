@@ -15,7 +15,7 @@ public class EventServiceImpl implements EventService {
 
     @Autowired
     public EventServiceImpl(
-            @Value("${event.data.host}") String eventDataHost
+            @Value("${clients.event-data}") String eventDataHost
     ) {
         this.eventDataHost = eventDataHost;
     }

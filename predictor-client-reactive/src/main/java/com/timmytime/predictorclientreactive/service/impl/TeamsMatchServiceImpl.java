@@ -10,10 +10,9 @@ import com.timmytime.predictorclientreactive.model.EventOutcomeResponse;
 import com.timmytime.predictorclientreactive.service.ILoadService;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import com.timmytime.predictorclientreactive.service.TeamService;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,12 +20,15 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
+@Slf4j
 @Service("teamsMatchService")
 public class TeamsMatchServiceImpl implements ILoadService {
-
-    private final Logger log = LoggerFactory.getLogger(TeamsMatchServiceImpl.class);
 
     private final WebClientFacade webClientFacade;
     private final S3Facade s3Facade;
@@ -41,7 +43,7 @@ public class TeamsMatchServiceImpl implements ILoadService {
 
     @Autowired
     public TeamsMatchServiceImpl(
-            @Value("${event.host}") String eventsHost,
+            @Value("${clients.event}") String eventsHost,
             @Value("${delay}") Integer delay,
             WebClientFacade webClientFacade,
             S3Facade s3Facade,
@@ -60,7 +62,7 @@ public class TeamsMatchServiceImpl implements ILoadService {
     public void load() {
 
         Flux.fromStream(
-                Arrays.asList(CountryCompetitions.values()).stream()
+                Stream.of(CountryCompetitions.values())
         ).subscribe(country ->
                 Flux.fromStream(
                         country.getCompetitions().stream()

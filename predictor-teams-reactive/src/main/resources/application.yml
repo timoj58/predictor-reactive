@@ -1,0 +1,27 @@
+server:
+  port: 8090
+
+clients:
+  data: http://localhost:8092
+  events: http://localhost:8091
+  players: http://localhost:8100
+  training:
+    ml-train-result: /train/results/<country>/<from>/<to>/<receipt>
+    ml-train-goals: /train/goals/<country>/<from>/<to>/<receipt>
+
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+#MongoDB Properties
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/predictor-db
+
+
+delays:
+  interval: 1
+  training: 15
+  training-init: 1

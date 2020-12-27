@@ -8,26 +8,23 @@ import com.timmytime.predictordatareactive.service.MatchCreationService;
 import com.timmytime.predictordatareactive.service.MatchRepairService;
 import com.timmytime.predictordatareactive.service.MatchService;
 import com.timmytime.predictordatareactive.service.TeamService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringEscapeUtils;
-import org.json.JSONObject;
 import org.jsoup.parser.Parser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 
+@RequiredArgsConstructor
+@Slf4j
 @Component
 public class MatchFactory {
-
-    private final Logger log = LoggerFactory.getLogger(MatchFactory.class);
 
     private final TeamService teamService;
     private final MatchService matchService;
@@ -41,18 +38,6 @@ public class MatchFactory {
                     , Boolean.TRUE
             ).trim();
 
-    @Autowired
-    public MatchFactory(
-            TeamService teamService,
-            MatchService matchService,
-            MatchCreationService matchCreationService,
-            MatchRepairService matchRepairService
-    ){
-        this.teamService = teamService;
-        this.matchService = matchService;
-        this.matchCreationService = matchCreationService;
-        this.matchRepairService = matchRepairService;
-    }
 
     public void createMatch(Result result) {
         log.info("creating match for {}", result.getMatchId());
@@ -66,7 +51,7 @@ public class MatchFactory {
         Optional<Team> homeTeam = teamService.getTeam(homeTeamLabel, resultData.getResult().getString("country"));
         Optional<Team> awayTeam = teamService.getTeam(awayTeamLabel, resultData.getResult().getString("country"));
 
-        if (homeTeam.isPresent() && awayTeam.isPresent()){
+        if (homeTeam.isPresent() && awayTeam.isPresent()) {
             //so now can process as before...
             teamService.updateCompetition(Arrays.asList(homeTeam.get(), awayTeam.get()), resultData.getResult().getString("competition"));
 
@@ -77,7 +62,7 @@ public class MatchFactory {
                     .switchIfEmpty(Mono.just(new Match()))
                     .subscribe(match ->
                     {
-                        if(match.getId() == null){
+                        if (match.getId() == null) {
                             log.info("match nof, new event");
                             matchCreationService.create(
                                     homeTeam.get(),
@@ -85,7 +70,7 @@ public class MatchFactory {
                                     eventDateLdt,
                                     resultData
                             );
-                        }else{
+                        } else {
                             log.info("a match is on file - repairing");
                             matchRepairService.repair(match);
                             matchCreationService.create(

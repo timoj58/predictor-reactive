@@ -8,9 +8,8 @@ import com.timmytime.predictoreventscraperreactive.enumerator.ScraperTypeKeys;
 import com.timmytime.predictoreventscraperreactive.facade.WebClientFacade;
 import com.timmytime.predictoreventscraperreactive.model.ScraperModel;
 import com.timmytime.predictoreventscraperreactive.service.MessageService;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,10 +19,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service("messageService")
 public class MessageServiceImpl implements MessageService {
-
-    private final Logger log = LoggerFactory.getLogger(MessageServiceImpl.class);
 
     private final String eventsDataHost;
     private final String eventsHost;
@@ -34,10 +32,10 @@ public class MessageServiceImpl implements MessageService {
 
     @Autowired
     public MessageServiceImpl(
-            @Value("${events.data.host}") String eventsDataHost,
-            @Value("${events.host}") String eventsHost,
+            @Value("${clients.event-data}") String eventsDataHost,
+            @Value("${clients.events}") String eventsHost,
             WebClientFacade webClientFacade
-            ){
+    ) {
         this.eventsDataHost = eventsDataHost;
         this.eventsHost = eventsHost;
 
@@ -52,11 +50,11 @@ public class MessageServiceImpl implements MessageService {
         log.info("provider {} finished for {}", provider, competition);
         messages.get(provider).add(competition);
 
-        CountryCompetitions countryCompetitions =  CountryCompetitions.findByCompetition(competition);
+        CountryCompetitions countryCompetitions = CountryCompetitions.findByCompetition(competition);
 
 
-        if(messages.get(provider).containsAll(countryCompetitions.getCompetitions())) {
-              log.info("all competitions received, sending notification {}", countryCompetitions.name());
+        if (messages.get(provider).containsAll(countryCompetitions.getCompetitions())) {
+            log.info("all competitions received, sending notification {}", countryCompetitions.name());
             try {
                 JsonNode message = new ObjectMapper().readTree(
                         new JSONObject()
@@ -65,7 +63,7 @@ public class MessageServiceImpl implements MessageService {
                                 .toString()
                 );
                 webClientFacade.send(
-                        eventsHost+"/message", message
+                        eventsHost + "/message", message
                 );
 
             } catch (
@@ -77,14 +75,14 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public void send(ScraperModel scraperModel) {
-        if(scraperModel.getData() == null){
+        if (scraperModel.getData() == null) {
             log.info("failed to process, skipping likely website error");
-        }else {
+        } else {
             JsonNode message = new ObjectMapper().convertValue(scraperModel, JsonNode.class);
             log.info("sending: {}", message.toString());
 
             webClientFacade.send(
-                    eventsDataHost+"/message", message
+                    eventsDataHost + "/message", message
             );
 
         }

@@ -6,10 +6,9 @@ import com.timmytime.predictoreventsreactive.model.EventOutcome;
 import com.timmytime.predictoreventsreactive.model.Match;
 import com.timmytime.predictoreventsreactive.service.EventOutcomeService;
 import com.timmytime.predictoreventsreactive.service.ValidationService;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -17,10 +16,10 @@ import org.springframework.stereotype.Service;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Consumer;
 
+@Slf4j
 @Service("validationService")
 public class ValidationServiceImpl implements ValidationService {
 
-    private final Logger log = LoggerFactory.getLogger(ValidationServiceImpl.class);
     private final EventOutcomeService eventOutcomeService;
     private final WebClientFacade webClientFacade;
 
@@ -28,7 +27,7 @@ public class ValidationServiceImpl implements ValidationService {
 
     @Autowired
     public ValidationServiceImpl(
-            @Value("${data.host}") String dataHost,
+            @Value("${clients.data}") String dataHost,
             EventOutcomeService eventOutcomeService,
             WebClientFacade webClientFacade
     ) {

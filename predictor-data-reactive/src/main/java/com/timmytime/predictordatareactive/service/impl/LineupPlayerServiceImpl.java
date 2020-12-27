@@ -4,42 +4,31 @@ import com.timmytime.predictordatareactive.model.LineupPlayer;
 import com.timmytime.predictordatareactive.model.ResultData;
 import com.timmytime.predictordatareactive.model.Team;
 import com.timmytime.predictordatareactive.repo.LineupPlayerRepo;
-import com.timmytime.predictordatareactive.service.*;
+import com.timmytime.predictordatareactive.service.LineupPlayerService;
+import com.timmytime.predictordatareactive.service.PlayerService;
+import com.timmytime.predictordatareactive.service.StatMetricService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.UUID;
 
+@RequiredArgsConstructor
+@Slf4j
 @Service("lineupPlayerService")
 public class LineupPlayerServiceImpl implements LineupPlayerService {
-
-    private final Logger log = LoggerFactory.getLogger(LineupPlayerServiceImpl.class);
 
     private final PlayerService playerService;
     private final LineupPlayerRepo lineupPlayerRepo;
     private final StatMetricService statMetricService;
 
-
-    @Autowired
-    public LineupPlayerServiceImpl(
-            PlayerService playerService,
-            LineupPlayerRepo lineupPlayerRepo,
-            StatMetricService statMetricService
-    ){
-        this.playerService = playerService;
-        this.lineupPlayerRepo = lineupPlayerRepo;
-        this.statMetricService = statMetricService;
-    }
 
     @Override
     public void processPlayers(
@@ -49,7 +38,7 @@ public class LineupPlayerServiceImpl implements LineupPlayerService {
             LocalDateTime date,
             ResultData resultData,
             String lineupType
-    ){
+    ) {
 
         playerService.process(players).stream()
                 .forEach(homePlayers ->

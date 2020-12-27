@@ -2,7 +2,7 @@ package com.timmytime.predictordatareactive.factory;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class SpecialCasesFactoryTest {
 
@@ -11,7 +11,7 @@ class SpecialCasesFactoryTest {
 
 
     @Test
-    public void loadConfigTest(){
+    public void loadConfigTest() {
         assertFalse(specialCasesFactory.getSpecialCasesConfiguration().getSpecialCases().isEmpty());
     }
 }

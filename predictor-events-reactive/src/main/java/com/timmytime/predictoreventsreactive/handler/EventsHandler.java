@@ -2,7 +2,7 @@ package com.timmytime.predictoreventsreactive.handler;
 
 import com.timmytime.predictoreventsreactive.model.EventOutcome;
 import com.timmytime.predictoreventsreactive.service.EventOutcomeService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -10,18 +10,11 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
-
+@RequiredArgsConstructor
 @Component
 public class EventsHandler {
 
     private final EventOutcomeService eventOutcomeService;
-
-    @Autowired
-    public EventsHandler(
-            EventOutcomeService eventOutcomeService
-    ) {
-        this.eventOutcomeService = eventOutcomeService;
-    }
 
     public Mono<ServerResponse> currentEvents(ServerRequest request) {
 

@@ -8,20 +8,21 @@ import com.timmytime.predictoreventsreactive.enumerator.Messages;
 import com.timmytime.predictoreventsreactive.facade.WebClientFacade;
 import com.timmytime.predictoreventsreactive.request.Message;
 import com.timmytime.predictoreventsreactive.service.*;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
+@Slf4j
 @Service("messageReceivedService")
 public class MessageReceivedServiceImpl implements MessageReceivedService {
 
-    private static final Logger log = LoggerFactory.getLogger(MessageReceivedServiceImpl.class);
     private final Map<String, List<Messages>> messages = new HashMap<>();
 
     private final PredictionService predictionService;
@@ -34,7 +35,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
 
     @Autowired
     public MessageReceivedServiceImpl(
-            @Value("${players.host}") String playersHost,
+            @Value("${clients.players}") String playersHost,
             PredictionService predictionService,
             PredictionResultService predictionResultService,
             PredictionMonitorService predictionMonitorService,
@@ -64,13 +65,17 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                     if (messages.get(msg.getCountry()).containsAll(Arrays.asList(Messages.values()))) {
 
                         log.info("processing {}", msg.getCountry());
-                        validationService.resetLast(msg.getCountry(), (country) -> {
-                            log.info("starting predictions {}", country);
-                            predictionMonitorService.addCountry(country.toUpperCase());
-                            validationService.validate(country);
-                            webClientFacade.sendMessage(playersHost + "/message", createMessage(country));
-                            predictionService.start(country);
-                        });
+                        validationService.resetLast(msg.getCountry(), (country) ->
+                                CompletableFuture.runAsync(() -> {
+                                    log.info("starting predictions {}", country);
+                                    validationService.validate(country);
+                                    webClientFacade.sendMessage(playersHost + "/message", createMessage(country));
+                                    predictionService.start(country);
+                                }).thenRun(() ->
+                                        Mono.just(country.toUpperCase())
+                                                .delayElement(Duration.ofMinutes(1))
+                                                .subscribe(v -> predictionMonitorService.addCountry(v)))
+                        );
 
                     }
 

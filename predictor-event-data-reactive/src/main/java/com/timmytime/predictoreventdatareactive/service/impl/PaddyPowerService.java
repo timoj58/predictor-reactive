@@ -7,11 +7,10 @@ import com.timmytime.predictoreventdatareactive.model.Team;
 import com.timmytime.predictoreventdatareactive.service.EventOddsService;
 import com.timmytime.predictoreventdatareactive.service.ProviderService;
 import com.timmytime.predictoreventdatareactive.service.TeamService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -24,22 +23,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.IntStream;
 
+@RequiredArgsConstructor
+@Slf4j
 @Service("paddyPowerService")
 public class PaddyPowerService implements ProviderService {
 
-    private final Logger log = LoggerFactory.getLogger(PaddyPowerService.class);
-
     private final TeamService teamService;
     private final EventOddsService eventOddsService;
-
-    @Autowired
-    public PaddyPowerService(
-            TeamService teamService,
-            EventOddsService eventOddsService
-    ) {
-        this.teamService = teamService;
-        this.eventOddsService = eventOddsService;
-    }
 
     @Override
     public void receive(JsonNode message) {

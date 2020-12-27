@@ -1,0 +1,42 @@
+# general properties
+server:
+  port: 8095
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+clients:
+  data: http://localhost:8092
+  training: http://localhost
+  event-data: http://localhost:8093
+  client: http://localhost:8100
+  ml-predict-goals: /predict/goals/<init>/<receipt>
+  ml-predict-assists: /predict/assists/<init>/<receipt>
+  ml-predict-saves: /predict/saves/<init>/<receipt>
+  ml-predict-minutes: /predict/minutes/<init>/<receipt>
+  ml-predict-conceded: /predict/conceded/<init>/<receipt>
+  ml-predict-red: /predict/red-card/<init>/<receipt>
+  ml-predict-yellow: /predict/yellow-card/<init>/<receipt>
+  ml-train-goals: =/train/goals/<from>/<to>/<receipt>
+  ml-train-assists: /train/assists/<from>/<to>/<receipt>
+  ml-train-saves: /train/saves/<from>/<to>/<receipt>
+  ml-train-minutes: /train/minutes/<from>/<to>/<receipt>
+  ml-train-conceded.: /train/conceded/<from>/<to>/<receipt>
+  ml-train-red: /train/red-card/<from>/<to>/<receipt>
+  ml-train-yellow: /train/yellow-card/<from>/<to>/<receipt>
+  ml-predictinit: /predict/init/<type>
+  ml-predict-destroy: /predict/clear-down/<type>
+
+
+#MongoDB Properties
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/predictor-db
+
+
+training:
+  interval: 1
+  player-delay: 400
+  delay: 1
+

@@ -1,12 +1,12 @@
 package com.timmytime.predictorclientreactive.service.impl;
 
+import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
 import com.timmytime.predictorclientreactive.facade.S3Facade;
 import com.timmytime.predictorclientreactive.facade.WebClientFacade;
 import com.timmytime.predictorclientreactive.model.EventOutcome;
 import com.timmytime.predictorclientreactive.model.Match;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import com.timmytime.predictorclientreactive.service.TeamService;
-import com.timmytime.predictorclientreactive.enumerator.CountryCompetitions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
@@ -26,34 +26,33 @@ class PreviousFixtureServiceImplTest {
 
     private final S3Facade s3Facade = mock(S3Facade.class);
     private final WebClientFacade webClientFacade = mock(WebClientFacade.class);
-    private final ShutdownService shutdownService=  mock(ShutdownService.class);
-    private final TeamService teamService =  mock(TeamService.class);
+    private final ShutdownService shutdownService = mock(ShutdownService.class);
+    private final TeamService teamService = mock(TeamService.class);
 
     private final PreviousFixtureServiceImpl previousFixtureService = new PreviousFixtureServiceImpl(
             "", "", 0,
             s3Facade, webClientFacade, shutdownService, teamService
     );
 
-    Supplier<List<EventOutcome>> get = () ->  Arrays.asList(new EventOutcome());
+    Supplier<List<EventOutcome>> get = () -> Arrays.asList(new EventOutcome());
 
 
     @Test
     public void loadTest() throws InterruptedException {
 
 
-       Arrays.asList(
-               CountryCompetitions.values()
-       )
-               .stream()
-               .map(f -> f.getCompetitions())
-               .flatMap(Collection::stream)
-               .collect(Collectors.toList())
-               .stream()
-               .forEach(c ->
-                       when(webClientFacade.getPreviousEventOutcomes("/previous-events/"+c))
-                               .thenReturn(Flux.fromStream(get.get().stream()
-                               )));
-
+        Arrays.asList(
+                CountryCompetitions.values()
+        )
+                .stream()
+                .map(f -> f.getCompetitions())
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList())
+                .stream()
+                .forEach(c ->
+                        when(webClientFacade.getPreviousEventOutcomes("/previous-events/" + c))
+                                .thenReturn(Flux.fromStream(get.get().stream()
+                                )));
 
 
         when(webClientFacade.getMatch(anyString())).thenReturn(Mono.just(new Match()));

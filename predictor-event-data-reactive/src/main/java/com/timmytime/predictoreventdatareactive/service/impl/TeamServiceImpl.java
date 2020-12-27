@@ -5,8 +5,7 @@ import com.timmytime.predictoreventdatareactive.enumerator.CountryCompetitions;
 import com.timmytime.predictoreventdatareactive.factory.SpecialCasesFactory;
 import com.timmytime.predictoreventdatareactive.model.Team;
 import com.timmytime.predictoreventdatareactive.service.TeamService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,10 +15,9 @@ import reactor.core.publisher.Flux;
 import javax.annotation.PostConstruct;
 import java.util.*;
 
+@Slf4j
 @Service("teamService")
 public class TeamServiceImpl implements TeamService {
-
-    private final Logger log = LoggerFactory.getLogger(TeamServiceImpl.class);
 
     private final SpecialCasesFactory specialCasesFactory;
 
@@ -28,7 +26,7 @@ public class TeamServiceImpl implements TeamService {
 
     @Autowired
     public TeamServiceImpl(
-            @Value("${data.host}") String dataHost,
+            @Value("${clients.data}") String dataHost,
             SpecialCasesFactory specialCasesFactory
     ) {
         this.specialCasesFactory = specialCasesFactory;

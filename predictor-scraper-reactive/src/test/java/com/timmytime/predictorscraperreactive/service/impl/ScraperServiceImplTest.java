@@ -1,24 +1,16 @@
 package com.timmytime.predictorscraperreactive.service.impl;
 
-import com.timmytime.predictorscraperreactive.configuration.SiteRules;
-import com.timmytime.predictorscraperreactive.enumerator.ScraperTypeKeys;
 import com.timmytime.predictorscraperreactive.factory.SportsScraperConfigurationFactory;
 import com.timmytime.predictorscraperreactive.model.ScraperHistory;
 import com.timmytime.predictorscraperreactive.repo.ScraperHistoryRepo;
 import com.timmytime.predictorscraperreactive.service.CompetitionScraperService;
 import com.timmytime.predictorscraperreactive.service.MessageService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import reactor.core.publisher.Mono;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@Disabled
 class ScraperServiceImplTest {
 
 
@@ -32,13 +24,11 @@ class ScraperServiceImplTest {
 
     private final ScraperServiceImpl scraperService
             = new ScraperServiceImpl(
-                    0,
-                    "2020-07-07",
+            0,
             sportsScraperConfigurationFactory,
             competitionScraperService,
             scraperHistoryRepo,
             messageService);
-
 
 
     @Test
@@ -51,9 +41,9 @@ class ScraperServiceImplTest {
 
         scraperService.scrape();
 
-        Thread.sleep(20000L);
+        Thread.sleep(30000L);
 
-        verify(competitionScraperService, atLeastOnce()).scrape(
+        verify(competitionScraperService, atLeast(14)).scrape(
                 any(), any());
 
         verify(messageService, atLeastOnce()).send();

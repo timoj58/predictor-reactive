@@ -13,11 +13,9 @@ import com.timmytime.predictorscraperreactive.service.MessageService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -30,9 +28,8 @@ class CompetitionScraperServiceImplTest {
     private static final ScraperFactory scraperFactory = mock(ScraperFactory.class);
 
 
-
     private final CompetitionScraperServiceImpl
-    competitionScraperService = new CompetitionScraperServiceImpl(
+            competitionScraperService = new CompetitionScraperServiceImpl(
             0,
             0,
             sportsScraperConfigurationFactory,

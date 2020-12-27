@@ -3,7 +3,6 @@ package com.timmytime.predictordatareactive.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.timmytime.predictordatareactive.model.Result;
-import com.timmytime.predictordatareactive.repo.ResultRepo;
 import com.timmytime.predictordatareactive.service.ResultService;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,7 +21,7 @@ class MessageReceivedServiceImplTest {
 
 
     @BeforeAll
-    public static void setUp(){
+    public static void setUp() {
         when(resultService.findByMatch(any())).thenReturn(Mono.just(new Result()));
 
     }
@@ -33,7 +32,7 @@ class MessageReceivedServiceImplTest {
         JSONObject message = new JSONObject().put("matchId", 2)
                 .put("type", "result");
 
-        messageService.receive(Mono.just( new ObjectMapper().readTree(message.toString()))).subscribe();
+        messageService.receive(Mono.just(new ObjectMapper().readTree(message.toString()))).subscribe();
 
         Thread.sleep(1000L);
 

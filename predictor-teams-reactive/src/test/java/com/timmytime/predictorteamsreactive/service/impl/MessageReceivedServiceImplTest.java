@@ -7,12 +7,9 @@ import com.timmytime.predictorteamsreactive.model.TrainingHistory;
 import com.timmytime.predictorteamsreactive.service.TensorflowDataService;
 import com.timmytime.predictorteamsreactive.service.TrainingHistoryService;
 import com.timmytime.predictorteamsreactive.service.TrainingService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.mockito.Mockito.*;
@@ -25,7 +22,7 @@ class MessageReceivedServiceImplTest {
 
     private final MessageReceivedServiceImpl messageReceivedService
             = new MessageReceivedServiceImpl(
-                    "dummy",
+            "dummy",
             "dummy",
             trainingHistoryService,
             trainingService,

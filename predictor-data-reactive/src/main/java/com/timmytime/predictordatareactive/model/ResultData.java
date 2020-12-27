@@ -4,8 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.json.JSONObject;
 
-import java.util.UUID;
-
 
 @Getter
 @Setter
@@ -16,7 +14,7 @@ public class ResultData {
     private JSONObject lineups;
     private JSONObject result;
 
-    public ResultData(Result result){
+    public ResultData(Result result) {
 
         this.id = result.getMatchId();
         this.result = new JSONObject(result.getResult());

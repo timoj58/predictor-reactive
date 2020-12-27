@@ -10,11 +10,17 @@ import java.util.UUID;
 
 public interface TeamService {
     Team find(UUID id, String country);
+
     void delete(UUID id);
+
     Team save(Team match);
-    Optional<Team> getTeam(@PathVariable String alias, @RequestParam  String country);
+
+    Optional<Team> getTeam(@PathVariable String alias, @RequestParam String country);
+
     void updateCompetition(List<Team> teams, String competition);
+
     List<Team> getTeams(@PathVariable String country);
+
     List<Team> getTeamsByCompetition(@PathVariable String competition);
 
 }

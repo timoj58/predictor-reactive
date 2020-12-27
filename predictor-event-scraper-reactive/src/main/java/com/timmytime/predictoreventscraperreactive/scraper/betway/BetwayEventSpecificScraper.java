@@ -6,15 +6,12 @@ import com.timmytime.predictoreventscraperreactive.configuration.BookmakerSiteRu
 import com.timmytime.predictoreventscraperreactive.enumerator.ScraperTypeKeys;
 import com.timmytime.predictoreventscraperreactive.model.ScraperModel;
 import com.timmytime.predictoreventscraperreactive.scraper.IScraper;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -22,11 +19,11 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.IntStream;
 
+@Slf4j
 public class BetwayEventSpecificScraper implements IScraper {
 
-    private final Logger log = LoggerFactory.getLogger(BetwayEventSpecificScraper.class);
     private final RestTemplate restTemplate = new RestTemplate();
-  //  private final ScraperUtils scraperUtils;
+    //  private final ScraperUtils scraperUtils;
     BiFunction<JSONArray, String, List<OutcomeKey>> getOutcomes = (markets, key) -> {
         List<OutcomeKey> outcomes = new ArrayList<>();
 

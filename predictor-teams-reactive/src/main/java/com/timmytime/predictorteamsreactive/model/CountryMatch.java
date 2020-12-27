@@ -15,7 +15,7 @@ public class CountryMatch {
     public CountryMatch(
             String country,
             Match match
-    ){
+    ) {
         this.country = country;
         this.match = match;
     }

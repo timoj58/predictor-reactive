@@ -8,31 +8,58 @@ import com.amazonaws.services.s3.model.CopyObjectRequest;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ListObjectsV2Request;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.function.Supplier;
 
+@Slf4j
 @Component
 public class S3Facade implements IS3Facade {
+
+    Supplier<AmazonS3> amazonS3Supplier = () -> AmazonS3ClientBuilder.standard()
+            .withCredentials(new InstanceProfileCredentialsProvider(false))
+            .withRegion(Regions.US_EAST_1).build();
 
     @Override
     public void put(String key, String json) {
 
-        final AmazonS3 s3 = AmazonS3ClientBuilder.standard()
-                .withCredentials(new InstanceProfileCredentialsProvider(false))
-                .withRegion(Regions.US_EAST_1).build();
-
-        s3.putObject("predictor-client-data", key, json);
+        amazonS3Supplier.get().putObject("predictor-client-data", key, json);
 
     }
 
     @Override
+    public void delete(String folder) {
+        final AmazonS3 s3 = amazonS3Supplier.get();
+
+        ListObjectsV2Request listObjectsRequest = new ListObjectsV2Request()
+                .withBucketName("predictor-client-data")
+                .withPrefix(folder)
+                .withMaxKeys(250);
+
+
+        ListObjectsV2Result result;
+        do {
+
+            log.info("deleting files");
+
+            result = s3.listObjectsV2(listObjectsRequest);
+            result.getObjectSummaries()
+                    .forEach(key -> {
+                        log.info("deleting {}", key.getKey());
+                        s3.deleteObject(key.getBucketName(), key.getKey());
+                    });
+        } while (result.isTruncated());
+
+    }
+
+
+    @Override
     public void archive() {
-        final AmazonS3 s3 = AmazonS3ClientBuilder.standard()
-                .withCredentials(new InstanceProfileCredentialsProvider(false))
-                .withRegion(Regions.US_EAST_1).build();
+        final AmazonS3 s3 = amazonS3Supplier.get();
 
 
         ListObjectsV2Request listObjectsRequest = new ListObjectsV2Request()

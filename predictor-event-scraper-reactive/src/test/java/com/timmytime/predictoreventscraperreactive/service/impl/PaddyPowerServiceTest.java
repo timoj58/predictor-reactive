@@ -3,8 +3,6 @@ package com.timmytime.predictoreventscraperreactive.service.impl;
 import com.timmytime.predictoreventscraperreactive.facade.ScraperProxyFacade;
 import com.timmytime.predictoreventscraperreactive.factory.BookmakerScraperConfigurationFactory;
 import com.timmytime.predictoreventscraperreactive.factory.PaddyPowerScraperFactory;
-import com.timmytime.predictoreventscraperreactive.scraper.betway.BetwayEventSpecificScraper;
-import com.timmytime.predictoreventscraperreactive.scraper.betway.BetwayEventsScraper;
 import com.timmytime.predictoreventscraperreactive.scraper.paddypower.PaddyPowerAppKeyScraper;
 import com.timmytime.predictoreventscraperreactive.scraper.paddypower.PaddyPowerEventSpecificScraper;
 import com.timmytime.predictoreventscraperreactive.scraper.paddypower.PaddyPowerEventsScraper;
@@ -13,9 +11,6 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -26,7 +21,7 @@ class PaddyPowerServiceTest {
 
     private final PaddyPowerService paddyPowerService
             = new PaddyPowerService(
-                    0,
+            0,
             0,
             new BookmakerScraperConfigurationFactory("./src/main/resources/config/"),
             paddyPowerScraperFactory,
@@ -35,7 +30,7 @@ class PaddyPowerServiceTest {
     );
 
     @BeforeAll
-    public static void setUp(){
+    public static void setUp() {
 
         PaddyPowerAppKeyScraper paddyPowerAppKeyScraper = mock(PaddyPowerAppKeyScraper.class);
         PaddyPowerEventsScraper paddyPowerEventsScraper = mock(PaddyPowerEventsScraper.class);

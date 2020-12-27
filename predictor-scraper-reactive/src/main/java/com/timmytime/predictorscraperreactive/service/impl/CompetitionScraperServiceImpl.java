@@ -6,13 +6,9 @@ import com.timmytime.predictorscraperreactive.factory.ScraperFactory;
 import com.timmytime.predictorscraperreactive.factory.SportsScraperConfigurationFactory;
 import com.timmytime.predictorscraperreactive.model.ScraperHistory;
 import com.timmytime.predictorscraperreactive.request.Message;
-import com.timmytime.predictorscraperreactive.scraper.LineupScraper;
-import com.timmytime.predictorscraperreactive.scraper.MatchScraper;
-import com.timmytime.predictorscraperreactive.scraper.ResultScraper;
 import com.timmytime.predictorscraperreactive.service.CompetitionScraperService;
 import com.timmytime.predictorscraperreactive.service.MessageService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,10 +19,10 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+@Slf4j
 @Service("competitionScraperService")
 public class CompetitionScraperServiceImpl implements CompetitionScraperService {
 
-    private final Logger log = LoggerFactory.getLogger(CompetitionScraperServiceImpl.class);
     private final SportsScraperConfigurationFactory sportsScraperConfigurationFactory;
     private final ScraperFactory scraperFactory;
     private final MessageService messageService;
@@ -35,8 +31,8 @@ public class CompetitionScraperServiceImpl implements CompetitionScraperService 
 
     @Autowired
     public CompetitionScraperServiceImpl(
-            @Value("${day.delay}") Integer dayDelay,
-            @Value("${match.delay}") Integer matchDelay,
+            @Value("${delays.day}") Integer dayDelay,
+            @Value("${delays.match}") Integer matchDelay,
             SportsScraperConfigurationFactory sportsScraperConfigurationFactory,
             ScraperFactory scraperFactory,
             MessageService messageService
@@ -46,6 +42,7 @@ public class CompetitionScraperServiceImpl implements CompetitionScraperService 
         this.sportsScraperConfigurationFactory = sportsScraperConfigurationFactory;
         this.scraperFactory = scraperFactory;
         this.messageService = messageService;
+
     }
 
     @Override
@@ -89,7 +86,7 @@ public class CompetitionScraperServiceImpl implements CompetitionScraperService 
                         .delayElement(Duration.ofSeconds(dayDelay))
                         .subscribe(id -> messageService.send(new Message(competition.getId())))
         )
-        .subscribe();
+                .subscribe();
 
     }
 }

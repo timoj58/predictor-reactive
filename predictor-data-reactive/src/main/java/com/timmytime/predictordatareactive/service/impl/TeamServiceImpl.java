@@ -5,21 +5,18 @@ import com.timmytime.predictordatareactive.factory.SpecialCasesFactory;
 import com.timmytime.predictordatareactive.model.Team;
 import com.timmytime.predictordatareactive.repo.TeamRepo;
 import com.timmytime.predictordatareactive.service.TeamService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 
 import java.util.*;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service("teamService")
 public class TeamServiceImpl implements TeamService {
 
-    private static final Logger log = LoggerFactory.getLogger(TeamServiceImpl.class);
 
     private final TeamRepo teamRepo;
     private final SpecialCasesFactory specialCasesFactory;
@@ -55,7 +52,7 @@ public class TeamServiceImpl implements TeamService {
 
 
     @Override
-    public Optional<Team> getTeam(String alias,String country) {
+    public Optional<Team> getTeam(String alias, String country) {
         return findByLabelLike(
                 specialCasesFactory.getSpecialCase(
                         alias)
@@ -67,10 +64,10 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public void updateCompetition(List<Team> teams, String competition) {
-            teams.stream().forEach(team -> {
-                team.setCompetition(competition);
-                teamRepo.save(team).subscribe();
-            });
+        teams.stream().forEach(team -> {
+            team.setCompetition(competition);
+            teamRepo.save(team).subscribe();
+        });
 
     }
 
@@ -139,8 +136,6 @@ public class TeamServiceImpl implements TeamService {
     }
 
 
-
-
     @Override
     public Team find(UUID id, String country) {
         return lookup.get(country).get(id);
@@ -156,16 +151,18 @@ public class TeamServiceImpl implements TeamService {
         return null;
     }
 
-    private Optional<Team> findByLabelRegexIgnoreCaseAndCountry(String regex, String country){
+    private Optional<Team> findByLabelRegexIgnoreCaseAndCountry(String regex, String country) {
         log.info("regex {}", regex);
         return lookup.get(country)
                 .values()
                 .stream()
                 .filter(f -> f.getLabel().toLowerCase().matches(regex.toLowerCase()))
                 .findFirst();
-    };
+    }
 
-    private Optional<Team> findByLabelIgnoreCaseAndCountry(String label, String country){
+    ;
+
+    private Optional<Team> findByLabelIgnoreCaseAndCountry(String label, String country) {
         return lookup.get(country)
                 .values()
                 .stream()
@@ -173,7 +170,7 @@ public class TeamServiceImpl implements TeamService {
                 .findFirst();
     }
 
-    private Optional<Team> findByLabelLikeIgnoreCaseAndCountry(String label, String country){
+    private Optional<Team> findByLabelLikeIgnoreCaseAndCountry(String label, String country) {
         return lookup.get(country)
                 .values()
                 .stream()

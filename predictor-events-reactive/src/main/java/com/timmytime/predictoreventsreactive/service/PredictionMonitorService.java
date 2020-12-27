@@ -35,7 +35,7 @@ public class PredictionMonitorService {
 
     @Autowired
     public PredictionMonitorService(
-            @Value("${client.host}") String clientHost,
+            @Value("${clients.client}") String clientHost,
             PredictionService predictionService,
             WebClientFacade webClientFacade
     ) {
@@ -45,10 +45,11 @@ public class PredictionMonitorService {
     }
 
     public void addCountry(String county) {
+        log.info("adding {}", county);
         this.countries.add(county);
     }
 
-    @Scheduled(fixedDelay = 60000L) //once per minute is fine.
+    @Scheduled(fixedDelay = 120000L) //once per two minutes..todo.  oops.
     public void predictionMonitor() {
 
         if (process.get()) {

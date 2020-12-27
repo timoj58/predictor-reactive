@@ -7,13 +7,12 @@ import com.timmytime.predictorscraperreactive.enumerator.ScraperTypeKeys;
 import com.timmytime.predictorscraperreactive.factory.SportsScraperConfigurationFactory;
 import com.timmytime.predictorscraperreactive.model.Lineup;
 import com.timmytime.predictorscraperreactive.util.ScraperUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 import us.codecraft.xsoup.XElements;
@@ -25,14 +24,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
+@Slf4j
 public class LineupScraper implements IScraper<Lineup> {
-    private final Logger log = LoggerFactory.getLogger(LineupScraper.class);
     private final SportsScraperConfigurationFactory sportsScraperConfigurationFactory;
     private final RestTemplate restTemplate = new RestTemplate();
 
     public LineupScraper(
             SportsScraperConfigurationFactory sportsScraperConfigurationFactory
-    ){
+    ) {
         this.sportsScraperConfigurationFactory = sportsScraperConfigurationFactory;
     }
 
@@ -41,7 +40,7 @@ public class LineupScraper implements IScraper<Lineup> {
 
         List<SiteRules> siteRules
                 = sportsScraperConfigurationFactory.getConfig(
-                        ScraperTypeKeys.LINEUPS
+                ScraperTypeKeys.LINEUPS
         ).getSportScrapers()
                 .stream()
                 .findFirst()

@@ -4,12 +4,11 @@ import com.timmytime.predictorscraperreactive.configuration.SiteRules;
 import com.timmytime.predictorscraperreactive.enumerator.ScraperTypeKeys;
 import com.timmytime.predictorscraperreactive.factory.SportsScraperConfigurationFactory;
 import com.timmytime.predictorscraperreactive.model.Result;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 
@@ -20,15 +19,15 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.IntStream;
 
+@Slf4j
 public class ResultScraper {
 
-    private final Logger log = LoggerFactory.getLogger(ResultScraper.class);
     private final SportsScraperConfigurationFactory sportsScraperConfigurationFactory;
     private final RestTemplate restTemplate = new RestTemplate();
 
     public ResultScraper(
             SportsScraperConfigurationFactory sportsScraperConfigurationFactory
-    ){
+    ) {
         this.sportsScraperConfigurationFactory = sportsScraperConfigurationFactory;
     }
 
@@ -37,7 +36,7 @@ public class ResultScraper {
         log.info("date is {}", date.toString());
 
         SiteRules eventRules
-                =  sportsScraperConfigurationFactory
+                = sportsScraperConfigurationFactory
                 .getConfig(ScraperTypeKeys.RESULTS)
                 .getSportScrapers()
                 .stream()
@@ -55,14 +54,14 @@ public class ResultScraper {
 
         List<Result> results = new ArrayList<>();
 
-        try{
+        try {
             results = process(url, eventRules, competition);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("first fail, trying again", e);
-            try{
+            try {
                 results = process(url, eventRules, competition);
-            }catch (Exception e2){
+            } catch (Exception e2) {
                 log.error("give up", e2);
             }
         }
@@ -146,7 +145,7 @@ public class ResultScraper {
         return null;
     }
 
-    private List<Result> process(String url, SiteRules eventRules, SiteRules competition){
+    private List<Result> process(String url, SiteRules eventRules, SiteRules competition) {
         List<Result> results = new ArrayList<>();
         //grab the payload.
         String response = restTemplate.exchange(url,

@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 @Component
 public class WebClientFacade {
 
-    public void send(String url){
+    public void send(String url) {
         WebClient.builder().build()
                 .post()
                 .uri(url)
@@ -19,7 +19,7 @@ public class WebClientFacade {
                 .subscribe();
     }
 
-    public void send(String url, Message message){
+    public void send(String url, Message message) {
         WebClient.builder().build()
                 .post()
                 .uri(url)
@@ -29,7 +29,7 @@ public class WebClientFacade {
                 .subscribe();
     }
 
-    public void send(String url, JsonNode message){
+    public void send(String url, JsonNode message) {
         WebClient.builder().build()
                 .post()
                 .uri(url)
