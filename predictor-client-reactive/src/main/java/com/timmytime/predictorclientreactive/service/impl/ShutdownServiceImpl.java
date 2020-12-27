@@ -12,6 +12,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service("shutdownService")
 @Slf4j
@@ -30,18 +31,20 @@ public class ShutdownServiceImpl implements ShutdownService {
     @Override
     public void receive(String service) {
         log.info("receiving shutdown message for {}", service);
-        received.add(service);
-
-        if (received.containsAll(Arrays.asList(
-                CompetitionServiceImpl.class.getName(),
-                PlayersMatchServiceImpl.class.getName(),
-                FixtureServiceImpl.class.getName(),
-                PreviousFixtureServiceImpl.class.getName(),
-                TeamsMatchServiceImpl.class.getName(),
-                PreviousOutcomesServiceImpl.class.getName()
-        ))) {
-            shutdown();
-        }
+        CompletableFuture.runAsync(() -> received.add(service))
+                .thenRun(() -> {
+                    log.info("checking status?...");
+                    if (received.containsAll(Arrays.asList(
+                            CompetitionServiceImpl.class.getName(),
+                            PlayersMatchServiceImpl.class.getName(),
+                            FixtureServiceImpl.class.getName(),
+                            PreviousFixtureServiceImpl.class.getName(),
+                            TeamsMatchServiceImpl.class.getName(),
+                            PreviousOutcomesServiceImpl.class.getName()
+                    ))) {
+                        shutdown();
+                    }
+                });
     }
 
     @Override
@@ -49,8 +52,8 @@ public class ShutdownServiceImpl implements ShutdownService {
         log.info("shutting down");
         lambdaFacade.invoke(LambdaFunctions.PROXY_STOP.getFunctionName());
 
-        Mono.just("exit").delayElement(Duration.ofMinutes(5))
-                .subscribe(s -> lambdaFacade.invoke(LambdaFunctions.SHUTDOWN.getFunctionName())
-                );
+        Mono.just("exit")
+                .delayElement(Duration.ofMinutes(5))
+                .subscribe(s -> lambdaFacade.invoke(LambdaFunctions.SHUTDOWN.getFunctionName()));
     }
 }

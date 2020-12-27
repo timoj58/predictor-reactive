@@ -5,6 +5,7 @@ import com.timmytime.predictorclientreactive.facade.LambdaFacade;
 import com.timmytime.predictorclientreactive.facade.S3Facade;
 import com.timmytime.predictorclientreactive.facade.WebClientFacade;
 import com.timmytime.predictorclientreactive.service.StartupService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.util.stream.Stream;
 
+@Slf4j
 @Service("startupService")
 public class StartupServiceImpl implements StartupService {
 
@@ -45,7 +47,9 @@ public class StartupServiceImpl implements StartupService {
 
     @Override
     // @PostConstruct
-    public void start() throws InterruptedException {
+    public void start(){
+
+        log.info("starting...");
 
         Flux.fromStream(
                 Stream.of(
@@ -81,6 +85,7 @@ public class StartupServiceImpl implements StartupService {
     }
 
     private void startScrapers(String url){
+        log.info("starting scrapers");
         webClientFacade.startScraper(dataScraperHost + url);
         webClientFacade.startScraper(eventScraperHost + url);
     }

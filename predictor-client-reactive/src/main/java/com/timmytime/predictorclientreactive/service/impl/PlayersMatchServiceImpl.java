@@ -154,7 +154,7 @@ public class PlayersMatchServiceImpl implements ILoadService {
 
         if (byCompetition.keySet().isEmpty()) {
             log.info("completed all competitions");
-            shutdownService.receive(TeamsMatchServiceImpl.class.getName());
+            shutdownService.receive(PlayersMatchServiceImpl.class.getName());
         }
 
 

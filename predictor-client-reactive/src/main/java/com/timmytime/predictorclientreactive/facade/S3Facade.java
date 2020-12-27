@@ -82,7 +82,7 @@ public class S3Facade implements IS3Facade {
                                                     details.getBucketName(),
                                                     details.getKey(),
                                                     details.getBucketName(),
-                                                    "archive/" + date + "/" + details.getBucketName()))
+                                                    "archive/" + date + "/" + details.getKey()))
                                     ).doFinally(delete -> s3.deleteObject(new DeleteObjectRequest(summary.getBucketName(), summary.getKey())))
                     );
 
