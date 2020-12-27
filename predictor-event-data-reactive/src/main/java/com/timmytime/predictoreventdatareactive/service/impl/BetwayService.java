@@ -93,7 +93,7 @@ public class BetwayService implements ProviderService {
                                                 eventOdds.setEvent(eventName.toString());
                                                 eventOdds.setCompetition(details.getString("competition"));
                                                 //make a host stream.  simples.  then limit rate better.  or put tests in place.
-                                                //then review this all TODO.
+                                                //then review this all TODO...
 
                                                 eventOddsService.create(eventOdds).subscribe();
                                             }
