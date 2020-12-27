@@ -6,8 +6,8 @@ clients:
   events: http://localhost:8091
   players: http://localhost:8100
   training:
-    ml-train-result: /train/results/<country>/<from>/<to>/<receipt>
-    ml-train-goals: /train/goals/<country>/<from>/<to>/<receipt>
+  ml-train-result: /train/results/<country>/<from>/<to>/<receipt>
+  ml-train-goals: /train/goals/<country>/<from>/<to>/<receipt>
 
 
 springdoc:
