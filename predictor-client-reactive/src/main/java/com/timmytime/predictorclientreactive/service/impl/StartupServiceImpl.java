@@ -48,13 +48,15 @@ public class StartupServiceImpl implements StartupService {
     public void start() throws InterruptedException {
 
         Flux.fromStream(
-                Stream.of("fixtures",
+                Stream.of(
+                        "fixtures",
                         "player-events",
                         "previous-events",
                         "previous-fixtures",
                         "top-performers",
-                        "upcoming-events")
-        ).doOnNext(directory -> s3Facade.archive(directory))
+                        "upcoming-events"
+                )
+        ).doOnNext(s3Facade::archive)
                 .doFinally(start ->
 
                         Flux.fromStream(
@@ -63,22 +65,24 @@ public class StartupServiceImpl implements StartupService {
                                         LambdaFunctions.PRE_START,
                                         LambdaFunctions.START
                                 )
-                        ).limitRate(1)
+                        )
+                                .limitRate(1)
                                 .delayElements(Duration.ofMinutes(startDelay))
-                                .doOnNext(function ->
-                                        lambdaFacade.invoke(function.getFunctionName())
-                                )
+                                .map(LambdaFunctions::getFunctionName)
+                                .doOnNext(lambdaFacade::invoke)
                                 .doFinally(wakeup ->
                                         Mono.just("/scrape")
                                                 .delayElement(Duration.ofMinutes(startDelay))
-                                                .subscribe(url -> {
-                                                    webClientFacade.startScraper(dataScraperHost + url);
-                                                    webClientFacade.startScraper(eventScraperHost + url);
-                                                }))
+                                                .subscribe(this::startScrapers))
                                 .subscribe()
                 )
                 .subscribe();
 
+    }
+
+    private void startScrapers(String url){
+        webClientFacade.startScraper(dataScraperHost + url);
+        webClientFacade.startScraper(eventScraperHost + url);
     }
 
 }
