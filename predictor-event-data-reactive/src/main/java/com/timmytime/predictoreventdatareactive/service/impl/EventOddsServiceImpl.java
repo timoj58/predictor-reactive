@@ -5,30 +5,44 @@ import com.timmytime.predictoreventdatareactive.model.EventOdds;
 import com.timmytime.predictoreventdatareactive.repo.EventOddsRepo;
 import com.timmytime.predictoreventdatareactive.response.Event;
 import com.timmytime.predictoreventdatareactive.service.EventOddsService;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
+import java.util.function.Consumer;
 
-@RequiredArgsConstructor
+@Slf4j
 @Service("eventOddsService")
 public class EventOddsServiceImpl implements EventOddsService {
 
     private final EventOddsRepo eventOddsRepo;
+    private final Flux<EventOdds> events;
+    private Consumer<EventOdds> receive;
 
-    @Override
-    public Mono<EventOdds> create(EventOdds eventOdds) {
-        return eventOddsRepo.save(eventOdds);
+    @Autowired
+    public EventOddsServiceImpl(
+            EventOddsRepo eventOddsRepo
+    ) {
+        this.eventOddsRepo = eventOddsRepo;
+
+        this.events = Flux.push(sink ->
+                EventOddsServiceImpl.this.receive = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
+
+        this.events.limitRate(1).subscribe(this::process);
+
     }
 
     @Override
-    public Mono<EventOdds> findEvent(String provider, String event, LocalDateTime eventDate, Double price, List<UUID> teams) {
-        return eventOddsRepo.findByProviderAndEventAndEventDateAndPriceAndTeamsContains(provider, event, eventDate, price, teams);
+    public void addToQueue(EventOdds eventOdds) {
+        receive.accept(eventOdds);
+    }
+
+    private Mono<EventOdds> create(EventOdds eventOdds) {
+        return eventOddsRepo.save(eventOdds);
     }
 
     @Override
@@ -41,5 +55,9 @@ public class EventOddsServiceImpl implements EventOddsService {
         return eventOddsRepo.findByCompetition(competition)
                 .distinct(EventOdds::getTeams)
                 .map(Event::new);
+    }
+
+    private void process(EventOdds eventOdds) {
+        create(eventOdds).doOnError(e -> log.error("saving error", e)).subscribe();
     }
 }

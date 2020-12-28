@@ -83,11 +83,12 @@ public class BetwayService implements BookmakerService {
 
         Flux.fromStream(
                 leagues.stream()
-        ).subscribe(league ->
+        )
+                .delayElements(Duration.ofMinutes(delay))
+                .subscribe(league ->
                 Mono.just(
                         leagueRules.stream().filter(f -> f.getId().equals(league)).findFirst().get()
                 )
-                        .delayElement(Duration.ofMinutes(delay))
                         .doOnNext(scraper ->
                                 Flux.fromStream(
                                         betwayScraperFactory.getEventsScraper().scrape(
@@ -97,7 +98,7 @@ public class BetwayService implements BookmakerService {
                                                         .findFirst()
                                                         .get()
                                                 , scraper).stream()
-                                ).delayElements(Duration.ofSeconds(5 * delay))
+                                )
                                         .subscribe(id ->
                                                 messageService.send(
                                                         betwayScraperFactory.getEventScraper().scrape(eventRules, new JSONObject().put("eventId", id), scraper.getId()))

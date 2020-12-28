@@ -3,6 +3,7 @@ package com.timmytime.predictoreventdatareactive.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.timmytime.predictoreventdatareactive.enumerator.Providers;
+import com.timmytime.predictoreventdatareactive.service.ProviderService;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -12,13 +13,12 @@ import static org.mockito.Mockito.*;
 
 class MessageReceivedServiceImplTest {
 
-    private final PaddyPowerService paddyPowerService = mock(PaddyPowerService.class);
-    private final BetwayService betwayService = mock(BetwayService.class);
+    private final ProviderService providerService = mock(ProviderService.class);
 
 
     private final MessageReceivedServiceImpl messageReceivedService
             = new MessageReceivedServiceImpl(
-            betwayService, paddyPowerService
+            providerService
     );
 
     @Test
@@ -42,8 +42,7 @@ class MessageReceivedServiceImplTest {
 
         Thread.sleep(2000L);
 
-        verify(paddyPowerService, atLeastOnce()).receive(any());
-        verify(betwayService, atLeastOnce()).receive(any());
+        verify(providerService, atLeastOnce()).receive(any());
 
 
     }

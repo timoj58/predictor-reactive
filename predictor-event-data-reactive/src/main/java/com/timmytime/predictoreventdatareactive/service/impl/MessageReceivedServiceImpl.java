@@ -5,6 +5,7 @@ import com.timmytime.predictoreventdatareactive.enumerator.Providers;
 import com.timmytime.predictoreventdatareactive.service.MessageReceivedService;
 import com.timmytime.predictoreventdatareactive.service.ProviderService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -19,19 +20,15 @@ import java.util.function.Consumer;
 @Service("messageReceivedService")
 public class MessageReceivedServiceImpl implements MessageReceivedService {
 
-    private final ProviderService betwayService;
-    private final ProviderService paddyPowerService;
-
-    private Consumer<JsonNode> receive;
+    private final ProviderService providerService;
     private final Flux<JsonNode> results;
+    private Consumer<JsonNode> receive;
 
     @Autowired
     public MessageReceivedServiceImpl(
-            BetwayService betwayService,
-            PaddyPowerService paddyPowerService
+            ProviderService providerService
     ) {
-        this.betwayService = betwayService;
-        this.paddyPowerService = paddyPowerService;
+        this.providerService = providerService;
 
         this.results = Flux.push(sink ->
                 MessageReceivedServiceImpl.this.receive = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
@@ -49,7 +46,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     @Override
     public Mono<Void> completed() {
         log.info("completed scrape message received");
-        //shut down the scraper service with lambda call.
+        //shut down the scraper service with lambda call.  (not going to implement) TODO remove this
         return Mono.empty();
     }
 
@@ -57,14 +54,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         String provider = received.get("provider").textValue();
         log.info("received message from {}", provider);
 
-        switch (Providers.valueOf(provider)) {
-            case PADDYPOWER_ODDS:
-                paddyPowerService.receive(received);
-                break;
-            case BETWAY_ODDS:
-                betwayService.receive(received);
-                break;
-        }
+        providerService.receive(Pair.of(Providers.valueOf(provider), received));
 
     }
 
