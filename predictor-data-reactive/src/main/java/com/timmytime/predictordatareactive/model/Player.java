@@ -1,9 +1,7 @@
 package com.timmytime.predictordatareactive.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.json.JSONObject;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -18,6 +16,8 @@ import java.util.UUID;
 @Setter
 @Document
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
 public class Player {
 
     @Id
@@ -26,6 +26,7 @@ public class Player {
     private UUID latestTeam;
     private LocalDate lastAppearance;
     private Boolean fantasyFootballer = Boolean.FALSE;
+    private Boolean isGoalkeeper = Boolean.FALSE;
 
     @Transient
     @JsonIgnore

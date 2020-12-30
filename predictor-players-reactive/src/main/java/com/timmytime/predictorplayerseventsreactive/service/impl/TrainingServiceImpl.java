@@ -132,12 +132,6 @@ public class TrainingServiceImpl implements TrainingService {
 
     }
 
-    @Override
-    public FantasyEventTypes first() {
-        return first;
-    }
-
-
     @PostConstruct
     private void init() {
 

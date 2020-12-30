@@ -58,10 +58,9 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
 
                         if (messages.get(msg.getCountry().toLowerCase()).containsAll(Arrays.asList(Messages.values()))) {
                             CompletableFuture.runAsync(() -> predictionService.start(msg.getCountry().toLowerCase()))
-                                    .thenRun(() -> Mono.just(msg.getCountry().toUpperCase())
+                                    .thenRun(() -> Mono.just(msg.getCountry().toLowerCase())
                                             .delayElement(Duration.ofMinutes(1))
-                                            .subscribe(v -> predictionMonitorService.addCountry(v)
-                                            )
+                                            .subscribe(v -> predictionMonitorService.addCountry(v))
                                     );
                         }
                     } else {

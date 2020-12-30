@@ -11,10 +11,6 @@ import java.util.List;
 @Component
 public class WebClientFacade {
 
-    public List<Team> getTeams(String url) {
-        return null;
-    }
-
     public Flux<Event> getUpcomingEvents(
             String url
     ) {
@@ -87,6 +83,14 @@ public class WebClientFacade {
                 .uri(url)
                 .retrieve()
                 .bodyToMono(PlayerResponse.class);
+    }
+
+    public Flux<Player> getFantasyPlayers(String url) {
+        return WebClient.builder().build()
+                .get()
+                .uri(url)
+                .retrieve()
+                .bodyToFlux(Player.class);
     }
 
 }

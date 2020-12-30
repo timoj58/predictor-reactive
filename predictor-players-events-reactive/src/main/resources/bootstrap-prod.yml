@@ -1,6 +1,6 @@
 spring:
    application:
-     name: predictor-players-reactive
+     name: predictor-players-events-reactive
    cloud:
      config:
        uri: http://ip-172-31-42-249.ec2.internal:8888

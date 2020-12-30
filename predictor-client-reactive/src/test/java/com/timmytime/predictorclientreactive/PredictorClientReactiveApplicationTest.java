@@ -9,5 +9,4 @@ class PredictorClientReactiveApplicationTest {
     @Test
     void contextLoads() {
     }
-
 }

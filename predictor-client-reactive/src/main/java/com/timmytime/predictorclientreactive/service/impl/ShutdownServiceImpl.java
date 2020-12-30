@@ -6,13 +6,14 @@ import com.timmytime.predictorclientreactive.service.ShutdownService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
+import reactor.core.publisher.Flux;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 @Service("shutdownService")
 @Slf4j
@@ -50,10 +51,14 @@ public class ShutdownServiceImpl implements ShutdownService {
     @Override
     public void shutdown() {
         log.info("shutting down");
-        lambdaFacade.invoke(LambdaFunctions.PROXY_STOP.getFunctionName());
+        Flux.fromStream(
+                Stream.of(
+                        LambdaFunctions.PROXY_STOP,
+                        LambdaFunctions.SHUTDOWN
+                )
+        ).delayElements(Duration.ofMinutes(1)) //review.  probably not required
+                .map(LambdaFunctions::getFunctionName)
+                .subscribe(lambdaFacade::invoke);
 
-        Mono.just("exit")
-                .delayElement(Duration.ofMinutes(5))
-                .subscribe(s -> lambdaFacade.invoke(LambdaFunctions.SHUTDOWN.getFunctionName()));
     }
 }

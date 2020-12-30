@@ -46,7 +46,7 @@ public class StartupServiceImpl implements StartupService {
 
 
     @Override
-    // @PostConstruct
+    // @PostConstruct //TODO put this back when ready for real
     public void start(){
 
         log.info("starting...");

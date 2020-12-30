@@ -26,9 +26,12 @@ public class S3Facade implements IS3Facade {
 
     @Override
     public void put(String key, String json) {
-
         amazonS3Supplier.get().putObject("predictor-client-data", key, json);
+    }
 
+    @Override
+    public void put(String bucket, String key, String csv) {
+        amazonS3Supplier.get().putObject(bucket, key, csv);
     }
 
     @Override

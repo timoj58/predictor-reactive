@@ -53,7 +53,7 @@ public class PredictionMonitorService {
 
             predictionService.outstanding()
                     .subscribe(count -> {
-                        log.info("we have {} waiting", count);
+                        log.info("we have {} waiting ({})", count, previousCount.get());
                         if (count != 0 && count == previousCount.get()) {
                             log.info("reprocessing");
                             predictionService.reProcess();

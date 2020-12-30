@@ -23,6 +23,11 @@ class CompetitionServiceImplTest {
         }
 
         @Override
+        public void put(String bucket, String key, String csv) {
+
+        }
+
+        @Override
         public void delete(String folder) {
 
         }

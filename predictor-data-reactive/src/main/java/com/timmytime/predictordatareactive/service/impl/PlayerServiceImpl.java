@@ -4,6 +4,7 @@ import com.timmytime.predictordatareactive.enumerator.PlayerStats;
 import com.timmytime.predictordatareactive.model.Player;
 import com.timmytime.predictordatareactive.model.Team;
 import com.timmytime.predictordatareactive.repo.PlayerRepo;
+import com.timmytime.predictordatareactive.repo.StatMetricRepo;
 import com.timmytime.predictordatareactive.service.PlayerService;
 import com.timmytime.predictordatareactive.service.TeamService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -30,6 +32,7 @@ public class PlayerServiceImpl implements PlayerService {
 
     private final TeamService teamService;
     private final PlayerRepo playerRepo;
+    private final StatMetricRepo statMetricRepo;
 
 
     @Override
@@ -75,11 +78,78 @@ public class PlayerServiceImpl implements PlayerService {
         return playerRepo.findByFantasyFootballerTrue();
     }
 
+    @Override
+    public Mono<Void> createFantasyFootballers() {
+
+        log.info("start create fantasy players");
+
+        CompletableFuture.runAsync(() ->
+
+        playerRepo.findAll()
+                .doOnNext(player -> playerRepo.save(
+                        player.toBuilder()
+                                .fantasyFootballer(Boolean.FALSE)
+                                .build()
+                ).subscribe())
+                .doFinally(create -> {
+                    log.info("now updating the players");
+                    playerRepo.findAll()
+                            .filter(p -> p.getLastAppearance() != null && p.getLastAppearance().isAfter(LocalDate.now().minusYears(1)))
+                            .subscribe(player ->
+                                    statMetricRepo.findByPlayer(player.getId())
+                                            .collectList()
+                                            .map(m -> m.size())
+                                            .filter(f -> f > 0)
+                                            .subscribe(stats -> {
+                                                log.info("adding {}", player.getLabel());
+                                                playerRepo.save(
+                                                        player
+                                                                .toBuilder()
+                                                                .fantasyFootballer(Boolean.TRUE)
+                                                                .build()
+                                                ).subscribe();
+                                            })
+
+                            );
+                })
+                .subscribe()
+        );
+
+        return Mono.empty();
+    }
+
+    @Override
+    public Mono<Void> createGoalkeepers() {
+        log.info("starting gk check");
+
+        CompletableFuture.runAsync(() ->
+        playerRepo.findByFantasyFootballerTrue()
+                .subscribe(player ->
+                        statMetricRepo.findByPlayer(player.getId())
+                        .filter(f -> f.getLabel().equalsIgnoreCase("saves"))
+                        .collectList()
+                        .map(m -> m.size())
+                        .filter(f -> f > 0)
+                        .subscribe(gk -> {
+                            log.info("adding gk {}", player.getLabel());
+                            playerRepo.save(
+                                    player.toBuilder()
+                                            .isGoalkeeper(Boolean.TRUE)
+                                            .build()
+                            ).subscribe();
+                        })
+                )
+        );
+
+        return Mono.empty();
+    }
+
+
     private List<Mono<Player>> createLineup(List<JSONObject> lineup) {
 
         List<Mono<Player>> players = new ArrayList<>();
 
-        lineup.stream().forEach(
+        lineup.forEach(
                 lineupPlayer ->
                         players.add(
                                 playerRepo.findByLabel(lineupPlayer.getString("name"))

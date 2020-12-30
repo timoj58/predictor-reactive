@@ -12,12 +12,15 @@ import com.timmytime.predictorclientreactive.service.ILoadService;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import com.timmytime.predictorclientreactive.service.TeamService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
@@ -25,6 +28,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -43,6 +47,9 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
 
     private final Integer delay;
 
+    private final Flux<Triple<EventOutcome, PredictionOutcomeResponse, Pair<Integer, Team>>> outcomes;
+    private Consumer<Triple<EventOutcome, PredictionOutcomeResponse, Pair<Integer, Team>>> receiver;
+
     @Autowired
     public PreviousOutcomesServiceImpl(
             @Value("${clients.event}") String eventsHost,
@@ -60,17 +67,24 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
         this.s3Facade = s3Facade;
         this.teamService = teamService;
         this.shutdownService = shutdownService;
+
+        this.outcomes = Flux.push(sink ->
+                PreviousOutcomesServiceImpl.this.receiver = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
+
+        this.outcomes.limitRate(1).subscribe(this::saveOutcome);
     }
 
 
     @Override
     public void load() {
 
-        CompletableFuture.runAsync(() -> init())
-                .thenRun(() -> Mono.just(1).delayElement(Duration.ofMinutes(5)) //takes a while to delete all the files
-                        .subscribe(then ->
+        //TODO.  needs a test and review why missing some files
 
-                                Flux.fromStream(Stream.of(CountryCompetitions.values()))
+        CompletableFuture.runAsync(() -> init())
+                .thenRun(() -> Mono.just(CountryCompetitions.values()).delayElement(Duration.ofMinutes(delay * 5)) //takes a while to delete all the files
+                        .subscribe(competitions ->
+
+                                Flux.fromArray(competitions)
                                         .delayElements(Duration.ofSeconds(delay * 20))
                                         .subscribe(country ->
                                                 Flux.fromStream(
@@ -81,9 +95,8 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
                                                                     AtomicInteger index = new AtomicInteger(0);
                                                                     log.info("processing {}", team.getLabel());
                                                                     webClientFacade.getPreviousEventOutcomesByTeam(eventsHost + "/previous-events-by-team/" + team.getId())
-                                                                            //   .delayElements(Duration.ofMillis(10))
                                                                             .sort((o1, o2) -> o2.getDate().compareTo(o1.getDate()))
-                                                                            .doOnNext(outcome -> saveOutcome(team, outcome, index.getAndIncrement()))
+                                                                            .doOnNext(outcome -> createOutcome(team, outcome, index.getAndIncrement()))
                                                                             .doFinally(finish -> finish(country.name().toLowerCase(), team.getId()))
                                                                             .subscribe();
                                                                 }
@@ -94,7 +107,9 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
 
     }
 
-    private void saveOutcome(Team team, EventOutcome eventOutcome, Integer index) {
+    private void createOutcome(Team team, EventOutcome eventOutcome, Integer index) {
+
+        log.info("index {}", index);
 
         PredictionOutcomeResponse predictionOutcomeResponse = new PredictionOutcomeResponse();
 
@@ -121,7 +136,17 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
 
         predictionOutcomeResponse.setPredictions(eventOutcome.getPrediction());
         predictionOutcomeResponse.setOutcome(eventOutcome.getSuccess());
-        //oops need to get score then save....
+
+        receiver.accept(Triple.of(eventOutcome, predictionOutcomeResponse, Pair.of(index, team)));
+    }
+
+    private void saveOutcome(Triple<EventOutcome, PredictionOutcomeResponse, Pair<Integer, Team>> data) {
+
+        var predictionOutcomeResponse = data.getMiddle();
+        var eventOutcome = data.getLeft();
+        var index = data.getRight().getLeft();
+        var team = data.getRight().getRight();
+
         webClientFacade.getMatch(getMatchUrl(eventOutcome))
                 .subscribe(match -> {
                     try {
@@ -139,8 +164,6 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
                         log.error("json", e);
                     }
                 });
-
-
     }
 
     private String getMatchUrl(EventOutcome eventOutcome) {
@@ -177,7 +200,9 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
 
         if (teamsByCountry.isEmpty()) {
             log.info("completed all countries");
-            shutdownService.receive(PreviousOutcomesServiceImpl.class.getName());
+            Mono.just(PreviousOutcomesServiceImpl.class.getName())
+                    .delayElement(Duration.ofMinutes(1))
+                    .subscribe(shutdownService::receive);
         }
     }
 }

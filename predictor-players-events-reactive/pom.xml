@@ -11,7 +11,7 @@
     <groupId>com.timmytime</groupId>
     <artifactId>predictor-players-events-reactive</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>predictor-players-reactive</name>
+    <name>predictor-players-events-reactive</name>
     <description>reactive players evengts service</description>
 
     <properties>

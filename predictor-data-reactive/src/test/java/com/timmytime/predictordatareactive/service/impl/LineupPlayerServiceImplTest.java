@@ -28,7 +28,7 @@ class LineupPlayerServiceImplTest {
     private static final StatMetricRepo statMetricRepo = mock(StatMetricRepo.class);
 
     private final PlayerService playerService =
-            new PlayerServiceImpl(mock(TeamService.class), playerRepo);
+            new PlayerServiceImpl(mock(TeamService.class), playerRepo, mock(StatMetricRepo.class));
     private static final LineupPlayerRepo lineupService = mock(LineupPlayerRepo.class);
     private final StatMetricService statMetricService =
             new StatMetricServiceImpl(statMetricRepo);

@@ -60,5 +60,19 @@ public class PlayerHandler {
         );
     }
 
+    public Mono<ServerResponse> createFantasyFootballers(ServerRequest request) {
+
+        return ServerResponse.ok().build(
+                playerService.createFantasyFootballers()
+        );
+    }
+
+    public Mono<ServerResponse> createGoalkeepers(ServerRequest request) {
+
+        return ServerResponse.ok().build(
+                playerService.createGoalkeepers()
+        );
+    }
+
 
 }

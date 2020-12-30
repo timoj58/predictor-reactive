@@ -30,7 +30,7 @@ public class PredictionMonitorService {
 
     private final AtomicLong previousCount = new AtomicLong(0);
     private final AtomicBoolean process = new AtomicBoolean(true);
-    private final List<String> countries = new ArrayList<>();
+    private final List<CountryCompetitions> countries = new ArrayList<>();
 
 
     @Autowired
@@ -44,7 +44,7 @@ public class PredictionMonitorService {
         this.webClientFacade = webClientFacade;
     }
 
-    public void addCountry(String county) {
+    public void addCountry(CountryCompetitions county) {
         log.info("adding {}", county);
         this.countries.add(county);
     }
@@ -56,7 +56,7 @@ public class PredictionMonitorService {
 
             predictionService.outstanding()
                     .subscribe(count -> {
-                        log.info("we have {} waiting", count);
+                        log.info("we have {} waiting ({})", count, previousCount.get());
                         if (count != 0 && count == previousCount.get()) {
                             log.info("reprocessing");
                             predictionService.reProcess();

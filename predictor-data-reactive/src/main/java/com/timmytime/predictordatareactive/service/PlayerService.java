@@ -22,4 +22,8 @@ public interface PlayerService {
     Flux<Player> findByCompetition(@PathVariable String competition, @RequestParam String date, @RequestParam Boolean fantasy);
 
     Flux<Player> findFantasyFootballers();
+
+    Mono<Void> createFantasyFootballers();
+
+    Mono<Void> createGoalkeepers();
 }

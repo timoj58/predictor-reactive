@@ -57,9 +57,4 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                 .thenEmpty(Mono.empty());
     }
 
-    @Override
-    public Mono<Void> initTraining() {
-        trainingService.train(trainingService.first());
-        return Mono.empty();
-    }
 }

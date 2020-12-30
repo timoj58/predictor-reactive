@@ -2,6 +2,7 @@ package com.timmytime.predictorclientreactive.router;
 
 import com.timmytime.predictorclientreactive.handler.MessageHandler;
 import com.timmytime.predictorclientreactive.service.MessageReceivedService;
+import com.timmytime.predictorclientreactive.service.VocabService;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
@@ -26,10 +27,19 @@ public class MessageFunction {
 
     @Bean
     @RouterOperation(beanClass = MessageReceivedService.class, beanMethod = "test")
-    RouterFunction<ServerResponse> scrape(MessageHandler messageHandler) {
+    RouterFunction<ServerResponse> test(MessageHandler messageHandler) {
 
         return route(RequestPredicates.POST("/test")
                         .and(RequestPredicates.accept(MediaType.APPLICATION_STREAM_JSON)),
                 messageHandler::test);
+    }
+
+    @Bean
+    @RouterOperation(beanClass = VocabService.class, beanMethod = "createVocab")
+    RouterFunction<ServerResponse> createVocab(MessageHandler messageHandler) {
+
+        return route(RequestPredicates.POST("/create-vocab")
+                        .and(RequestPredicates.accept(MediaType.APPLICATION_STREAM_JSON)),
+                messageHandler::createVocab);
     }
 }

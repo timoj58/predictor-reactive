@@ -71,9 +71,10 @@ public class PlayersMatchServiceImpl implements ILoadService {
 
     @Override
     public void load() {
-        Flux.fromStream(Stream.of(Competition.values())
-                .filter(f -> f.getFantasyLeague() == Boolean.TRUE))
-                .subscribe(this::create);
+        Flux.fromStream(
+                Stream.of(Competition.values())
+                        .filter(f -> f.getFantasyLeague() == Boolean.TRUE)
+        ).subscribe(this::create);
     }
 
     private void create(Competition league) {

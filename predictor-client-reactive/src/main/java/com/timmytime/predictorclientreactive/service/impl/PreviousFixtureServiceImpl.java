@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 @Slf4j
 @Service("previousFixtureService")
@@ -42,7 +41,6 @@ public class PreviousFixtureServiceImpl implements ILoadService {
     private final Integer delay;
 
     private final Map<String, List<PreviousFixtureResponse>> byCompetition = new HashMap<>();
-
 
     @Autowired
     public PreviousFixtureServiceImpl(
@@ -66,32 +64,29 @@ public class PreviousFixtureServiceImpl implements ILoadService {
     @Override
     public void load() {
 
-        Flux.fromStream(
-                Stream.of(
-                        CountryCompetitions.values()
-                )
-        ).subscribe(country ->
-                Flux.fromStream(
-                        country.getCompetitions().stream()
-                )
-                        .subscribe(competition -> {
-                            log.info("processing {}", competition);
-                            byCompetition.put(competition, new ArrayList<>());
-                            List<EventOutcome> eventOutcomes = new ArrayList<>();
-                            webClientFacade.getPreviousEventOutcomes(eventsHost + "/previous-events/" + competition)
-                                    .doOnNext(event -> eventOutcomes.add(event))
-                                    .doFinally(transform ->
-                                            Flux.fromStream(
-                                                    eventOutcomes.stream()
-                                            ).doOnNext(event ->
-                                                    webClientFacade.getMatch(getMatchUrl(event))
-                                                            .subscribe(match -> byCompetition.get(competition).add(transform(event).withScore(match)))
-                                            )
-                                                    .doFinally(save ->
-                                                            Mono.just(competition).delayElement(Duration.ofMinutes(delay)).subscribe(key -> save(key)))
-                                                    .subscribe()
-                                    ).subscribe();
-                        }));
+        Flux.fromArray(CountryCompetitions.values())
+                .subscribe(country ->
+                        Flux.fromStream(
+                                country.getCompetitions().stream()
+                        )
+                                .subscribe(competition -> {
+                                    log.info("processing {}", competition);
+                                    byCompetition.put(competition, new ArrayList<>());
+                                    List<EventOutcome> eventOutcomes = new ArrayList<>();
+                                    webClientFacade.getPreviousEventOutcomes(eventsHost + "/previous-events/" + competition)
+                                            .doOnNext(eventOutcomes::add)
+                                            .doFinally(transform ->
+                                                    Flux.fromStream(
+                                                            eventOutcomes.stream()
+                                                    ).doOnNext(event ->
+                                                            webClientFacade.getMatch(getMatchUrl(event))
+                                                                    .subscribe(match -> byCompetition.get(competition).add(transform(event).withScore(match)))
+                                                    )
+                                                            .doFinally(save ->
+                                                                    Mono.just(competition).delayElement(Duration.ofMinutes(delay)).subscribe(this::save))
+                                                            .subscribe()
+                                            ).subscribe();
+                                }));
 
     }
 
@@ -165,8 +160,7 @@ public class PreviousFixtureServiceImpl implements ILoadService {
                 .filter(f ->
                         f.getPreviousFixtureOutcomes()
                                 .stream()
-                                .filter(e -> e.getEventType().equals("PREDICT_RESULTS"))
-                                .findFirst().isPresent()
+                                .anyMatch(e -> e.getEventType().equals("PREDICT_RESULTS"))
                 ).forEach(result -> {
 
             result.getPreviousFixtureOutcomes().add(
@@ -178,13 +172,11 @@ public class PreviousFixtureServiceImpl implements ILoadService {
                             .filter(f ->
                                     f.getPreviousFixtureOutcomes()
                                             .stream()
-                                            .filter(e -> e.getEventType().equals("PREDICT_GOALS"))
-                                            .findFirst()
-                                            .isPresent())
+                                            .anyMatch(e -> e.getEventType().equals("PREDICT_GOALS")))
                             .findFirst().get().getPreviousFixtureOutcomes().stream().findFirst().get()
             );
 
-            result.getPreviousFixtureOutcomes().stream()
+            result.getPreviousFixtureOutcomes()
                     .forEach(type -> type.setTotalGoals(
                             result.getHomeScore() + result.getAwayScore()
                     ));

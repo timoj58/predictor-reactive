@@ -1,6 +1,8 @@
 package com.timmytime.predictorclientreactive.service.impl;
 
+import com.timmytime.predictorclientreactive.enumerator.LambdaFunctions;
 import com.timmytime.predictorclientreactive.enumerator.Messages;
+import com.timmytime.predictorclientreactive.facade.LambdaFacade;
 import com.timmytime.predictorclientreactive.request.Message;
 import com.timmytime.predictorclientreactive.service.ILoadService;
 import com.timmytime.predictorclientreactive.service.MessageReceivedService;
@@ -22,6 +24,8 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     private final List<ILoadService> loaders = new ArrayList<>();
     private final List<Messages> received = new ArrayList<>();
 
+    private final LambdaFacade lambdaFacade;
+
     @Autowired
     public MessageReceivedServiceImpl(
             CompetitionServiceImpl competitionService,
@@ -29,7 +33,8 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
             PreviousFixtureServiceImpl previousFixtureService,
             PlayersMatchServiceImpl playersMatchService,
             TeamsMatchServiceImpl teamsMatchService,
-            PreviousOutcomesServiceImpl previousOutcomesService
+            PreviousOutcomesServiceImpl previousOutcomesService,
+            LambdaFacade lambdaFacade
     ) {
         this.loaders.add(competitionService);
         this.loaders.add(fixtureService);
@@ -37,6 +42,8 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         this.loaders.add(playersMatchService);
         this.loaders.add(teamsMatchService);
         this.loaders.add(previousOutcomesService);
+
+        this.lambdaFacade = lambdaFacade;
 
     }
 
@@ -47,12 +54,13 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         return message.doOnNext(
                 msg -> {
                     log.info("received {}", msg.getType());
-                    received.add(msg.getType());
-
-                    if (ready()) {
-                        log.info("all messages received");
-                        CompletableFuture.runAsync(() -> load());
-                    }
+                    CompletableFuture.runAsync(() -> process(msg.getType()))
+                            .thenRun(() -> {
+                                if (ready()) {
+                                    log.info("all messages received");
+                                    CompletableFuture.runAsync(() -> load());
+                                }
+                            });
                 }
         ).thenEmpty(Mono.empty());
 
@@ -73,5 +81,18 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
 
     private Boolean ready() {
         return received.containsAll(Arrays.asList(Messages.values()));
+    }
+
+    private void process(Messages msg){
+        received.add(msg);
+
+        switch (msg){
+            case MATCH_PREDICTIONS:
+                lambdaFacade.invoke(LambdaFunctions.SHUTDOWN_ML_TEAMS.getFunctionName());
+                break;
+            case PLAYER_PREDICTIONS:
+                lambdaFacade.invoke(LambdaFunctions.SHUTDOWN_ML_PLAYERS.getFunctionName());
+                break;
+        }
     }
 }
