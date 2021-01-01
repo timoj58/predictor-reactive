@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
 import java.time.Duration;
@@ -107,12 +106,11 @@ public class TrainingServiceImpl implements TrainingService {
     @Override
     public void train() {
 
-        CompletableFuture.runAsync(() ->  playersTrainingHistoryService.find(first).subscribe(this::train));
-        /*
+        //WARNING:  do not run this again.  need to review regarding starting training from the last point.
 
         var players = playerService.get();
         log.info("processing {} players", players.size());
-        CompletableFuture.runAsync(() -> tensorflowDataService.delete())
+        CompletableFuture.runAsync(() -> tensorflowDataService.delete()) //note.  probably better not to delete it all.  given size of dataset. (and storage cost)
                 .thenRun(() ->
                         Flux.fromStream(players.stream())
                                 .limitRate(1)
@@ -123,7 +121,7 @@ public class TrainingServiceImpl implements TrainingService {
                                 .doFinally(train -> playersTrainingHistoryService.find(first).subscribe(this::train)
                                 )
                                 .subscribe()
-                ); */
+                );
     }
 
     @PostConstruct
@@ -132,24 +130,23 @@ public class TrainingServiceImpl implements TrainingService {
         Arrays.asList(FantasyEventTypes.values())
                 .stream()
                 .filter(f -> f.getPredict() == Boolean.TRUE)
-                .forEach(type -> {
+                .forEach(type ->
+                        playersTrainingHistoryService.findOptional(type)
+                                .ifPresentOrElse(then -> log.info("we have history"),
+                                        () -> {
+                                            log.info("init record");
+                                            var history = new PlayersTrainingHistory(
+                                                    type,
+                                                    LocalDate.parse("01-08-2009", DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay(),
+                                                    LocalDate.parse("01-08-2009", DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay()
+                                            );
 
-                    var history = playersTrainingHistoryService.findOptional(type)
-                            .orElse(new PlayersTrainingHistory());
+                                            history.setCompleted(Boolean.TRUE);
+                                            playersTrainingHistoryService.saveNormal(history);
 
-                    if (history.getId() == null) {
-                        log.info("init record");
-                        history = new PlayersTrainingHistory(
-                                type,
-                                LocalDate.parse("01-08-2009", DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay(),
-                                LocalDate.parse("01-08-2009", DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay()
-                        );
+                                        })
 
-                        history.setCompleted(Boolean.TRUE);
-                        playersTrainingHistoryService.saveNormal(history);
-                    }
-
-                });
+                );
 
     }
 
