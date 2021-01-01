@@ -42,9 +42,7 @@ public class PlayerHandler {
 
         return ServerResponse.ok().body(
                 lineupPlayerService.find(
-                        UUID.fromString(serverRequest.pathVariable("player")),
-                        serverRequest.queryParam("fromDate").get(),
-                        serverRequest.queryParam("toDate").get()
+                        UUID.fromString(serverRequest.pathVariable("player"))
                 ),
                 LineupPlayer.class
         );

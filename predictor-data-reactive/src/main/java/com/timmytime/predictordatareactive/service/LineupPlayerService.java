@@ -25,9 +25,7 @@ public interface LineupPlayerService {
     Mono<Void> deleteByMatch(UUID matchId);
 
     Flux<LineupPlayer> find(
-            @PathVariable UUID player,
-            @RequestParam String fromDate,
-            @RequestParam String toDate);
+            @PathVariable UUID player);
 
     Mono<Long> totalAppearances(
             @PathVariable UUID player

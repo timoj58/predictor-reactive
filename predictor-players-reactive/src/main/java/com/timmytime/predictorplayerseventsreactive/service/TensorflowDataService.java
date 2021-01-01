@@ -10,7 +10,7 @@ import java.util.List;
 public interface TensorflowDataService {
     void load(PlayerMatch match);
 
-    void clear();
+    void delete();
 
     List<PlayerEventOutcomeCsv> getPlayerCsv(
             @PathVariable String fromDate,

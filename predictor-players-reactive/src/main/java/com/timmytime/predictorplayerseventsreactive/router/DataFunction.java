@@ -20,4 +20,5 @@ public class DataFunction {
         return route(RequestPredicates.GET("/data/{fromDate}/{toDate}")
                 , dataHandler::getData);
     }
+
 }

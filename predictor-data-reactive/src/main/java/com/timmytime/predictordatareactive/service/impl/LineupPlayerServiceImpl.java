@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -84,14 +85,10 @@ public class LineupPlayerServiceImpl implements LineupPlayerService {
 
     @Override
     public Flux<LineupPlayer> find(
-            UUID player,
-            String fromDate,
-            String toDate) {
-        LocalDateTime start = LocalDate.parse(fromDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay();
-        LocalDateTime end = LocalDate.parse(toDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay().plusDays(1);
+            UUID player) {
 
-        return lineupPlayerRepo.findByPlayerAndDateBetween(
-                player, start, end);
+        return lineupPlayerRepo.findByPlayer(
+                player);
     }
 
     @Override

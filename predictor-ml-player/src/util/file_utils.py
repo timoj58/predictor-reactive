@@ -122,6 +122,7 @@ def make_dir(filename):
 
 
 def write_csv(filename, data):
+    logger.info('writing csv')
     make_dir(filename)
     has_data = False
     with open(filename, 'w') as f:

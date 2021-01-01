@@ -1,7 +1,6 @@
 package com.timmytime.predictorplayerseventsreactive.service.impl;
 
 import com.timmytime.predictorplayerseventsreactive.enumerator.FantasyEventTypes;
-import com.timmytime.predictorplayerseventsreactive.model.Player;
 import com.timmytime.predictorplayerseventsreactive.model.PlayersTrainingHistory;
 import com.timmytime.predictorplayerseventsreactive.service.*;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +16,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -60,17 +60,11 @@ public class TrainingServiceImpl implements TrainingService {
 
         first = toTrain.stream().findFirst().get();
         toTrain.remove(first);
-
     }
 
 
     @Override
     public void train(FantasyEventTypes type) {
-
-        List<Player> players = playerService.get();
-        Integer playerCount = players.size();
-
-        log.info("training init {} for {} players", type.name(), playerCount);
 
         playersTrainingHistoryService.find(type)
                 .doOnNext(history ->
@@ -80,30 +74,7 @@ public class TrainingServiceImpl implements TrainingService {
                                         history.getToDate(),
                                         history.getToDate().plusYears(interval)
                                 )
-                        ).subscribe(trainingHistory -> {
-                            if (type.equals(first)) {
-                                String fromDate = trainingHistory.getFromDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-                                String toDate = trainingHistory.getToDate().plusYears(1).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-
-                                Flux.fromStream(
-                                        players.stream()
-                                ).limitRate(100)
-                                        .delayElements(Duration.ofMillis(playerDelay))
-                                        .doOnNext(player -> playerMatchService.create(
-                                                player.getId(),
-                                                fromDate,
-                                                toDate,
-                                                (data) -> tensorflowDataService.load(data)))
-                                        .doFinally(train ->
-                                                Mono.just(trainingHistory.getId())
-                                                        .delayElement(Duration.ofMinutes(interval))
-                                                        .subscribe(id -> tensorflowTrainingService.train(id))
-                                        ).subscribe();
-                            } else {
-                                log.info("training without loading data {}", type.name());
-                                tensorflowTrainingService.train(trainingHistory.getId());
-                            }
-                        })
+                        ).subscribe(trainingHistory -> tensorflowTrainingService.train(trainingHistory.getId()))
                 )
                 .subscribe();
 
@@ -111,10 +82,10 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     public void train(PlayersTrainingHistory playersTrainingHistory) {
+        log.info("training {}", playersTrainingHistory.getType().name());
         playersTrainingHistory.setCompleted(Boolean.TRUE);
         playersTrainingHistoryService.save(playersTrainingHistory)
                 .subscribe(history -> {
-                    tensorflowDataService.clear();
                     if (playersTrainingHistory.getToDate().isBefore(LocalDate.now().atStartOfDay())) {
                         train(history.getType());
                     } else {
@@ -122,8 +93,9 @@ public class TrainingServiceImpl implements TrainingService {
                         //need to start the next item available in list...
                         if (!toTrain.isEmpty()) {
                             FantasyEventTypes next = toTrain.stream().findFirst().get();
-                            toTrain.remove(next);
+                            log.info("starting {}", next);
                             train(next);
+                            toTrain.remove(next);
                         } else {
                             log.info("training is complete"); //we only train off-line not in realtime.
                         }
@@ -132,32 +104,52 @@ public class TrainingServiceImpl implements TrainingService {
 
     }
 
+    @Override
+    public void train() {
+
+        CompletableFuture.runAsync(() ->  playersTrainingHistoryService.find(first).subscribe(this::train));
+        /*
+
+        var players = playerService.get();
+        log.info("processing {} players", players.size());
+        CompletableFuture.runAsync(() -> tensorflowDataService.delete())
+                .thenRun(() ->
+                        Flux.fromStream(players.stream())
+                                .limitRate(1)
+                                .delayElements(Duration.ofMillis(playerDelay)) //maybe not needed.
+                                .doOnNext(player -> playerMatchService.create(
+                                        player.getId(),
+                                        (data) -> tensorflowDataService.load(data)))
+                                .doFinally(train -> playersTrainingHistoryService.find(first).subscribe(this::train)
+                                )
+                                .subscribe()
+                ); */
+    }
+
     @PostConstruct
     private void init() {
 
-        Flux.fromStream(
-                Arrays.asList(FantasyEventTypes.values())
-                        .stream()
-                        .filter(f -> f.getPredict() == Boolean.TRUE)
-        ).subscribe(type ->
-                playersTrainingHistoryService.find(type)
-                        .switchIfEmpty(Mono.just(new PlayersTrainingHistory()))
-                        .subscribe(history -> {
+        Arrays.asList(FantasyEventTypes.values())
+                .stream()
+                .filter(f -> f.getPredict() == Boolean.TRUE)
+                .forEach(type -> {
 
-                            if (history.getId() == null) {
-                                log.info("init record");
-                                history = new PlayersTrainingHistory(
-                                        type,
-                                        LocalDate.parse("01-08-2009", DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay(),
-                                        LocalDate.parse("01-08-2009", DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay()
-                                );
+                    var history = playersTrainingHistoryService.findOptional(type)
+                            .orElse(new PlayersTrainingHistory());
 
-                                history.setCompleted(Boolean.TRUE);
-                                playersTrainingHistoryService.save(history).subscribe();
-                            }
+                    if (history.getId() == null) {
+                        log.info("init record");
+                        history = new PlayersTrainingHistory(
+                                type,
+                                LocalDate.parse("01-08-2009", DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay(),
+                                LocalDate.parse("01-08-2009", DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay()
+                        );
 
-                        })
-        );
+                        history.setCompleted(Boolean.TRUE);
+                        playersTrainingHistoryService.saveNormal(history);
+                    }
+
+                });
 
     }
 

@@ -110,7 +110,7 @@ public class PredictionServiceImpl implements PredictionService {
                 .subscribe(player ->
                         Flux.fromArray(FantasyEventTypes.values())
                                 .filter(f -> f.getPredict() == Boolean.TRUE)
-                                //HARD.  TODO / IGNORE.  would save 30 minutes tho  .filter(f -> (f == FantasyEventTypes.SAVES && player.getIsGoalkeeper()) || f != FantasyEventTypes.SAVES)
+                                .filter(f -> f != FantasyEventTypes.SAVES || player.getIsGoalkeeper())
                                 .limitRate(1)
                                 .subscribe(fantasyEvent ->
                                         fantasyOutcomeService.save(

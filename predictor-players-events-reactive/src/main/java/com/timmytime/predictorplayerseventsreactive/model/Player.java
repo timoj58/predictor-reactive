@@ -18,5 +18,5 @@ public class Player {
     private String label;
     private UUID latestTeam;
     private LocalDate lastAppearance;
-    //WOULD SAVE TIME: 30 minutes approx... private Boolean isGoalkeeper = Boolean.TRUE; //default
+    private Boolean isGoalkeeper;
 }

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -173,6 +174,5 @@ public class StatMetricServiceImpl implements StatMetricService {
     public Flux<StatMetric> getPlayerStats(UUID player) {
         return statMetricRepo.findByPlayer(player);
     }
-
 
 }

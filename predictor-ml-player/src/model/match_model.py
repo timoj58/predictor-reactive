@@ -79,7 +79,6 @@ def create(train, label, label_values, model_dir, train_filename, test_filename,
             tidy_up(
                 tf_models_dir=tf_models_dir,
                 aws_model_dir=aws_model_dir,
-                team_file=team_file,
                 train_filename=train_filename)
 
             time.sleep(30)

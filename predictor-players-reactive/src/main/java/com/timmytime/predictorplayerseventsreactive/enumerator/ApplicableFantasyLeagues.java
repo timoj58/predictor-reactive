@@ -13,10 +13,6 @@ public enum ApplicableFantasyLeagues {
     FRANCE_1("france"),
     PORTUGAL_1("portugal");
 
-    public String getCountry() {
-        return country;
-    }
-
     private final String country;
 
     ApplicableFantasyLeagues(String country) {
@@ -38,5 +34,9 @@ public enum ApplicableFantasyLeagues {
                 .map(m -> m.getCountry())
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    public String getCountry() {
+        return country;
     }
 }

@@ -10,4 +10,6 @@ public interface MessageReceivedService {
     Mono<Void> receive(Mono<Message> message);
 
     Mono<Void> training(@RequestParam UUID id);
+
+    Mono<Void> initTraining();
 }

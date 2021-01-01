@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -36,9 +35,9 @@ public class PlayerMatchServiceImpl implements PlayerMatchService {
 
 
     @Override
-    public Flux<LineupPlayer> getAppearances(UUID player, String fromDate, String toDate) {
+    public Flux<LineupPlayer> getAppearances(UUID player) {
         return webClientFacade.getAppearances(
-                dataHost + "/players/appearances/" + player + "?fromDate=" + fromDate + "&toDate=" + toDate
+                dataHost + "/players/appearances/" + player
         );
     }
 
@@ -55,23 +54,18 @@ public class PlayerMatchServiceImpl implements PlayerMatchService {
     @Override
     public void create(
             UUID player,
-            String fromDate,
-            String toDate,
             Consumer<PlayerMatch> consumer) {
 
         log.info("creating {}", player);
 
-        getAppearances(player,
-                fromDate,
-                toDate
-        )
-                .delayElements(Duration.ofMillis(4))
+        getAppearances(player)
+                .limitRate(1)
                 .subscribe(appearance ->
                         getMatch(appearance.getMatchId())
                                 .subscribe(match -> {
                                             PlayerMatch playerMatch =
                                                     PlayerMatch.builder()
-                                                            .date(match.getDate())
+                                                            .date(match.getDate().toLocalDate())
                                                             .playerId(player)
                                                             .opponent(appearance.getTeamId().equals(match.getHomeTeam()) ? match.getAwayTeam() : match.getHomeTeam())
                                                             .home(appearance.getTeamId().equals(match.getHomeTeam()) ? Boolean.TRUE : Boolean.FALSE)

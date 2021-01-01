@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service("messageReceivedService")
@@ -55,6 +56,12 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         return playersTrainingHistoryService.find(id)
                 .doOnNext(history -> trainingService.train(history))
                 .thenEmpty(Mono.empty());
+    }
+
+    @Override
+    public Mono<Void> initTraining() {
+        CompletableFuture.runAsync(() -> trainingService.train());
+        return Mono.empty();
     }
 
 }

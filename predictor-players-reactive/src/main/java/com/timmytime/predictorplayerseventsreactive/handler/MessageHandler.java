@@ -35,4 +35,11 @@ public class MessageHandler {
         );
     }
 
+    public Mono<ServerResponse> initTraining(ServerRequest request) {
+
+        return ServerResponse.ok().build(
+                messageReceivedService.initTraining()
+        );
+    }
+
 }

@@ -41,7 +41,7 @@ public class PlayerServiceImpl implements PlayerService {
         log.info("loading players");
 
         //only interested in players active in the last two years
-        String date = LocalDate.now().minusYears(2).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        String date = LocalDate.now().minusYears(1).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
         Arrays.stream(
                 ApplicableFantasyLeagues.values()
@@ -100,4 +100,5 @@ public class PlayerServiceImpl implements PlayerService {
 
         return Flux.concat(homePlayers, awayPlayers);
     }
+
 }

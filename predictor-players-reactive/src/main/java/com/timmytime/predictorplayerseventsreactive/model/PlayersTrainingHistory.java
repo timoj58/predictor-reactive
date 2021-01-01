@@ -18,12 +18,12 @@ import java.util.UUID;
 @AllArgsConstructor
 public class PlayersTrainingHistory {
 
-    @Id
-    private UUID id;
     LocalDateTime date;
     //important
     LocalDateTime fromDate;
     LocalDateTime toDate;
+    @Id
+    private UUID id;
     private Boolean completed = Boolean.FALSE;
     private FantasyEventTypes type;
 

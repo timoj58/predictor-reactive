@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -18,16 +19,26 @@ public class PlayersTrainingHistoryServiceImpl implements PlayersTrainingHistory
 
     @Override
     public Mono<PlayersTrainingHistory> find(UUID id) {
-        return playersTrainingHistoryRepo.findById(id);
+        return Mono.just(playersTrainingHistoryRepo.findById(id).get());
     }
 
     @Override
     public Mono<PlayersTrainingHistory> save(PlayersTrainingHistory trainingHistory) {
-        return playersTrainingHistoryRepo.save(trainingHistory);
+        return Mono.just(playersTrainingHistoryRepo.save(trainingHistory));
+    }
+
+    @Override
+    public void saveNormal(PlayersTrainingHistory trainingHistory) {
+        playersTrainingHistoryRepo.save(trainingHistory);
     }
 
     @Override
     public Mono<PlayersTrainingHistory> find(FantasyEventTypes type) {
-        return playersTrainingHistoryRepo.findFirstByTypeOrderByDateDesc(type);
+        return Mono.just(playersTrainingHistoryRepo.findFirstByTypeOrderByDateDesc(type));
+    }
+
+    @Override
+    public Optional<PlayersTrainingHistory> findOptional(FantasyEventTypes type) {
+        return Optional.ofNullable(playersTrainingHistoryRepo.findFirstByTypeOrderByDateDesc(type));
     }
 }

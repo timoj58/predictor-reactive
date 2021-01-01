@@ -64,16 +64,12 @@ def create_csv(url, filename, start_date, end_date, aws_path):
         return has_data
 
 
-def tidy_up(tf_models_dir, aws_model_dir, team_file, train_filename):
+def tidy_up(tf_models_dir, aws_model_dir, train_filename):
     # probably can tidy this all up.  in one call.
     if aws_model_dir is not None:
         on_finish(tf_models_dir, aws_model_dir)
     else:
         clear_directory(tf_models_dir)
-    # also get rid of the vocab files and training / testing files.
-    # vocab
-    if team_file is not None:
-        clear_directory(os.path.dirname(team_file))
     # training
     if train_filename is not None:
         clear_directory(os.path.dirname(local_dir + train_filename))

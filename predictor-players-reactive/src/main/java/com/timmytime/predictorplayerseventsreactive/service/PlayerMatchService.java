@@ -11,11 +11,11 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 public interface PlayerMatchService {
-    Flux<LineupPlayer> getAppearances(UUID player, String fromDate, String toDate);
+    Flux<LineupPlayer> getAppearances(UUID player);
 
     Mono<Match> getMatch(UUID match);
 
     Flux<StatMetric> getStats(UUID match, UUID player);
 
-    void create(UUID player, String fromDate, String toDate, Consumer<PlayerMatch> consumer);
+    void create(UUID player, Consumer<PlayerMatch> consumer);
 }

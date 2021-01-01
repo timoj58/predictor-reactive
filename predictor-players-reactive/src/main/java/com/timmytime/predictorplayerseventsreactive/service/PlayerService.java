@@ -23,4 +23,5 @@ public interface PlayerService {
             @PathVariable String competition,
             @RequestParam UUID home,
             @RequestParam UUID away);
+
 }
