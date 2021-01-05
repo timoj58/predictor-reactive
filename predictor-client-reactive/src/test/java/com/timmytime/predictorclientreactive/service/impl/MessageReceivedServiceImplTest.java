@@ -12,7 +12,6 @@ import java.util.Arrays;
 
 import static org.mockito.Mockito.*;
 
-@Disabled
 class MessageReceivedServiceImplTest {
 
     CompetitionServiceImpl competitionService = mock(CompetitionServiceImpl.class);

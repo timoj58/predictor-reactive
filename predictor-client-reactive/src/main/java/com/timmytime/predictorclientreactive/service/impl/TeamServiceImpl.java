@@ -35,7 +35,6 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    @PostConstruct
     public void loadTeams() {
 
         Flux.fromStream(

@@ -65,7 +65,7 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
 
         this.receiver
                 = Flux.push(sink -> consumer = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
-        this.receiver.delayElements(Duration.ofMillis(750))
+        this.receiver.delayElements(Duration.ofMillis(600)) //this seems to be current time scale.  prediction -> result.
                 .limitRate(1)
                 .subscribe(this::process);
 

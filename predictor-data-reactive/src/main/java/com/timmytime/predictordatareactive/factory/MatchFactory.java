@@ -85,7 +85,8 @@ public class MatchFactory {
 
 
         } else {
-            log.info("one or both teams are not in teams list");
+            log.info("one or both teams ({} - {},{} - {}) are not in teams list for {}", homeTeamLabel, homeTeam.isPresent(),
+                    awayTeamLabel, awayTeam.isPresent(), resultData.getResult().getString("competition"));
         }
     }
 }

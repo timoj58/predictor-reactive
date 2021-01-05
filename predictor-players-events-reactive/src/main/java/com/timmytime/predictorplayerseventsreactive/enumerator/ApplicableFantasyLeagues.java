@@ -35,7 +35,7 @@ public enum ApplicableFantasyLeagues {
         return Arrays.asList(
                 ApplicableFantasyLeagues.values()
         ).stream()
-                .map(m -> m.getCountry())
+                .map(ApplicableFantasyLeagues::getCountry)
                 .distinct()
                 .collect(Collectors.toList());
     }

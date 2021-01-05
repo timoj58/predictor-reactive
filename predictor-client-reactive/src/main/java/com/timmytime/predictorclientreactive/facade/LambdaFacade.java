@@ -6,12 +6,16 @@ import com.amazonaws.services.lambda.AWSLambda;
 import com.amazonaws.services.lambda.AWSLambdaClientBuilder;
 import com.amazonaws.services.lambda.model.InvokeRequest;
 import com.amazonaws.services.lambda.model.InvokeResult;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class LambdaFacade {
 
     public void invoke(String functionName) {
+        log.info("invoking {}", functionName);
+
         InvokeRequest invokeRequest = new InvokeRequest()
                 .withFunctionName("arn:aws:lambda:us-east-1:842788105885:function:" + functionName);
 

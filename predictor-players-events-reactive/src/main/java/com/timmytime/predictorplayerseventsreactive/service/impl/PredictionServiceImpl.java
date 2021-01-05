@@ -78,7 +78,6 @@ public class PredictionServiceImpl implements PredictionService {
     public void reProcess() {
 
         log.info("processing to fix");
-        //if we have no records left, then we should send a message to client service.  TODO. for automation.
         CompletableFuture.runAsync(() -> fantasyOutcomeService.toFix()
                 .subscribe(fantasyOutcome ->
                         tensorflowPredictionService.predict(

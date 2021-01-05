@@ -16,3 +16,6 @@ clients:
 delays:
   delay: 1
   start: 3
+
+orchestration:
+    enabled: false

@@ -62,6 +62,7 @@ public class S3Facade implements IS3Facade {
 
     @Override
     public void archive(String prefix) {
+        log.info("archiving {}", prefix);
         final AmazonS3 s3 = amazonS3Supplier.get();
 
 
@@ -87,6 +88,7 @@ public class S3Facade implements IS3Facade {
                                                     details.getBucketName(),
                                                     "archive/" + date + "/" + details.getKey()))
                                     ).doFinally(delete -> s3.deleteObject(new DeleteObjectRequest(summary.getBucketName(), summary.getKey())))
+                            .subscribe()
                     );
 
         } while (result.isTruncated());

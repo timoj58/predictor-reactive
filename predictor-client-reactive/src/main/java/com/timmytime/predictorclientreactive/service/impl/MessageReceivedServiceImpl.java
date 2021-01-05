@@ -6,6 +6,7 @@ import com.timmytime.predictorclientreactive.facade.LambdaFacade;
 import com.timmytime.predictorclientreactive.request.Message;
 import com.timmytime.predictorclientreactive.service.ILoadService;
 import com.timmytime.predictorclientreactive.service.MessageReceivedService;
+import com.timmytime.predictorclientreactive.service.TeamService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,7 +45,6 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         this.loaders.add(previousOutcomesService);
 
         this.lambdaFacade = lambdaFacade;
-
     }
 
 
@@ -84,6 +84,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     }
 
     private void process(Messages msg){
+        log.info("processing {}", msg);
         received.add(msg);
 
         switch (msg){

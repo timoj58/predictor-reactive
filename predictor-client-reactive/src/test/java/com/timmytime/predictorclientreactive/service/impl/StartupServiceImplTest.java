@@ -4,6 +4,7 @@ import com.timmytime.predictorclientreactive.facade.LambdaFacade;
 import com.timmytime.predictorclientreactive.facade.S3Facade;
 import com.timmytime.predictorclientreactive.facade.WebClientFacade;
 import com.timmytime.predictorclientreactive.service.StartupService;
+import com.timmytime.predictorclientreactive.service.TeamService;
 import org.junit.jupiter.api.Test;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -18,12 +19,14 @@ class StartupServiceImplTest {
 
     private final StartupService startupService
             = new StartupServiceImpl(
+                    true,
             0,
             "",
             "",
             lambdaFacade,
             webClientFacade,
-            s3Facade
+            s3Facade,
+            mock(TeamService.class)
     );
 
     @Test

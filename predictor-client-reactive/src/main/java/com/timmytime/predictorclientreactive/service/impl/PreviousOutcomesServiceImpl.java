@@ -71,7 +71,7 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
         this.outcomes = Flux.push(sink ->
                 PreviousOutcomesServiceImpl.this.receiver = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
 
-        this.outcomes.limitRate(1).subscribe(this::saveOutcome);
+        this.outcomes.limitRate(1).delayElements(Duration.ofMillis(100)).subscribe(this::saveOutcome);
     }
 
 
@@ -109,7 +109,6 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
 
     private void createOutcome(Team team, EventOutcome eventOutcome, Integer index) {
 
-        log.info("index {}", index);
 
         PredictionOutcomeResponse predictionOutcomeResponse = new PredictionOutcomeResponse();
 
@@ -127,7 +126,6 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
         try {
             var json = new JSONObject(eventOutcome.getPrediction());
         } catch (Exception e) {
-            log.info("{}", eventOutcome.getPrediction());
             eventOutcome.setPrediction(
                     new JSONObject().put("result", new JSONArray(eventOutcome.getPrediction()))
                             .toString()
