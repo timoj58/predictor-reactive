@@ -67,13 +67,6 @@ public class PredictionServiceImpl implements PredictionService {
 
 
     @Override
-    public Mono<Void> fix() {
-        reProcess();
-        return Mono.empty();
-    }
-
-
-    @Override
     public void reProcess() {
         log.info("processing records to fix");
         eventOutcomeService.toFix().subscribe(eventOutcome ->

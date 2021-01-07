@@ -26,15 +26,6 @@ public class MessageFunction {
     }
 
     @Bean
-    @RouterOperation(beanClass = MessageReceivedService.class, beanMethod = "test")
-    RouterFunction<ServerResponse> test(MessageHandler messageHandler) {
-
-        return route(RequestPredicates.POST("/test")
-                        .and(RequestPredicates.accept(MediaType.APPLICATION_STREAM_JSON)),
-                messageHandler::test);
-    }
-
-    @Bean
     @RouterOperation(beanClass = VocabService.class, beanMethod = "createVocab")
     RouterFunction<ServerResponse> createVocab(MessageHandler messageHandler) {
 

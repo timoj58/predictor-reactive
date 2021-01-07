@@ -66,12 +66,6 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
 
     }
 
-    @Override
-    public Mono<Void> test() {
-        load();
-        return Mono.empty();
-    }
-
     private void load() {
         log.info("loading");
         Flux.fromStream(

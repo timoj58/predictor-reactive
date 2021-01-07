@@ -16,14 +16,6 @@ public class MessageHandler {
     private final MessageReceivedService messageReceivedService;
     private final VocabService vocabService;
 
-
-    public Mono<ServerResponse> test(ServerRequest request) {
-
-        return ServerResponse.ok().build(
-                messageReceivedService.test()
-        );
-    }
-
     public Mono<ServerResponse> createVocab(ServerRequest request) {
 
         return ServerResponse.ok().build(

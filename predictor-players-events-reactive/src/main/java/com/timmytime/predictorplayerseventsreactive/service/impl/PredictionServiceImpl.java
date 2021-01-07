@@ -64,16 +64,7 @@ public class PredictionServiceImpl implements PredictionService {
                                 })
                 );
     }
-
-    @Override
-    public Mono<Void> fix() {
-        log.info("fixing predictions");
-        reProcess();
-        log.info("returning");
-
-        return Mono.empty();
-    }
-
+    
     @Override
     public void reProcess() {
 
