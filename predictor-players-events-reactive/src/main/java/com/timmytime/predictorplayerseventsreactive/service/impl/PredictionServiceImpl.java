@@ -64,7 +64,7 @@ public class PredictionServiceImpl implements PredictionService {
                                 })
                 );
     }
-    
+
     @Override
     public void reProcess() {
 

@@ -29,7 +29,6 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 @Slf4j
 @Service("previousOutcomesService")
@@ -70,40 +69,34 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
 
         this.outcomes = Flux.push(sink ->
                 PreviousOutcomesServiceImpl.this.receiver = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
-
-        this.outcomes.limitRate(1).delayElements(Duration.ofMillis(100)).subscribe(this::saveOutcome);
+        this.outcomes.subscribe(this::saveOutcome);
     }
 
 
     @Override
     public void load() {
 
-        //TODO.  needs a test and review why missing some files
+        CompletableFuture.runAsync(() ->
+                Flux.fromStream(Arrays.stream(CountryCompetitions.values()))
+                        .delayElements(Duration.ofSeconds(delay * 20))
+                        .subscribe(country ->
+                                Flux.fromStream(
+                                        teamService.get(country.name().toLowerCase()).stream()
+                                ).delayElements(Duration.ofSeconds(delay))
+                                        .subscribe(
+                                                team -> {
+                                                    AtomicInteger index = new AtomicInteger(0);
+                                                    webClientFacade.getPreviousEventOutcomesByTeam(eventsHost + "/previous-events-by-team/" + team.getId())
+                                                            .limitRate(1)
+                                                            .sort((o1, o2) -> o2.getDate().compareTo(o1.getDate()))
+                                                            .doOnNext(outcome -> createOutcome(team, outcome, index.getAndIncrement()))
+                                                            .doFinally(finish -> finish(country.name().toLowerCase(), team.getId()))
+                                                            .subscribe();
+                                                }
 
-        CompletableFuture.runAsync(() -> init())
-                .thenRun(() -> Mono.just(CountryCompetitions.values()).delayElement(Duration.ofMinutes(delay * 5)) //takes a while to delete all the files
-                        .subscribe(competitions ->
+                                        ))
+        );
 
-                                Flux.fromArray(competitions)
-                                        .delayElements(Duration.ofSeconds(delay * 20))
-                                        .subscribe(country ->
-                                                Flux.fromStream(
-                                                        teamService.get(country.name().toLowerCase()).stream()
-                                                ).delayElements(Duration.ofSeconds(delay))
-                                                        .subscribe(
-                                                                team -> {
-                                                                    AtomicInteger index = new AtomicInteger(0);
-                                                                    log.info("processing {}", team.getLabel());
-                                                                    webClientFacade.getPreviousEventOutcomesByTeam(eventsHost + "/previous-events-by-team/" + team.getId())
-                                                                            .sort((o1, o2) -> o2.getDate().compareTo(o1.getDate()))
-                                                                            .doOnNext(outcome -> createOutcome(team, outcome, index.getAndIncrement()))
-                                                                            .doFinally(finish -> finish(country.name().toLowerCase(), team.getId()))
-                                                                            .subscribe();
-                                                                }
-
-                                                        ))
-                        )
-                );
 
     }
 
@@ -171,24 +164,7 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
                 + "&date=" + eventOutcome.getDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
     }
 
-    private void init() {
-        Flux.fromArray(
-                CountryCompetitions.values()
-        ).subscribe(country -> {
-                    teamsByCountry.put(country.name().toLowerCase(), new ArrayList<>());
-                    teamService.get(country.name().toLowerCase())
-                            .stream()
-                            .forEach(team -> {
-                                log.info("processing {}", team.getLabel());
-                                teamsByCountry.get(country.name().toLowerCase()).add(team.getId());
-                                s3Facade.delete("previous-events/" + team.getCompetition() + "/" + team.getId() + "/");
-                            });
-                }
-        );
-    }
-
     private void finish(String country, UUID team) {
-        log.info("called finish {} {}", country, team);
         teamsByCountry.get(country).remove(team);
 
         if (teamsByCountry.get(country).isEmpty()) {

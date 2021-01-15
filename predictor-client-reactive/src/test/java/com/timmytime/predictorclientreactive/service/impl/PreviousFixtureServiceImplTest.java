@@ -7,11 +7,13 @@ import com.timmytime.predictorclientreactive.model.EventOutcome;
 import com.timmytime.predictorclientreactive.model.Match;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import com.timmytime.predictorclientreactive.service.TeamService;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -34,7 +36,7 @@ class PreviousFixtureServiceImplTest {
             s3Facade, webClientFacade, shutdownService, teamService
     );
 
-    Supplier<List<EventOutcome>> get = () -> Arrays.asList(new EventOutcome());
+    Supplier<List<EventOutcome>> get = () -> Arrays.asList(EventOutcome.builder().date(LocalDateTime.now()).prediction("[]").build());
 
 
     @Test

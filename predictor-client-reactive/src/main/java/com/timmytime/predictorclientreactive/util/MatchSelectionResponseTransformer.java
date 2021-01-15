@@ -18,7 +18,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Component
 public class MatchSelectionResponseTransformer {
 
     private final Function<Map<Integer, Double>, Double> score = predictions -> {

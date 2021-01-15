@@ -1,5 +1,6 @@
 package com.timmytime.predictordatareactive.service.impl;
 
+import com.timmytime.predictordatareactive.configuration.DataConfig;
 import com.timmytime.predictordatareactive.factory.SpecialCasesFactory;
 import com.timmytime.predictordatareactive.model.Team;
 import com.timmytime.predictordatareactive.repo.TeamRepo;
@@ -24,7 +25,7 @@ class TeamServiceImplTest {
 
 
     TeamServiceImpl teamService
-            = new TeamServiceImpl(teamRepo, specialCasesFactory);
+            = new TeamServiceImpl(mock(DataConfig.class), teamRepo, specialCasesFactory);
 
 
     private static final UUID teamToFind = UUID.randomUUID();

@@ -1,5 +1,6 @@
 package com.timmytime.predictordatareactive.service.impl;
 
+import com.timmytime.predictordatareactive.configuration.DataConfig;
 import com.timmytime.predictordatareactive.configuration.SpecialCase;
 import com.timmytime.predictordatareactive.factory.SpecialCasesFactory;
 import com.timmytime.predictordatareactive.model.Team;
@@ -9,7 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -18,14 +21,18 @@ import java.util.stream.Collectors;
 public class TeamServiceImpl implements TeamService {
 
 
+    private final DataConfig dataConfig;
     private final TeamRepo teamRepo;
     private final SpecialCasesFactory specialCasesFactory;
     private final Map<String, Map<UUID, Team>> lookup = new HashMap<>();
 
     @Autowired
     public TeamServiceImpl(
+            DataConfig dataConfig,
             TeamRepo teamRepo,
             SpecialCasesFactory specialCasesFactory) {
+
+        this.dataConfig = dataConfig;
         this.teamRepo = teamRepo;
         this.specialCasesFactory = specialCasesFactory;
 
@@ -160,8 +167,6 @@ public class TeamServiceImpl implements TeamService {
                 .findFirst();
     }
 
-    ;
-
     private Optional<Team> findByLabelIgnoreCaseAndCountry(String label, String country) {
         return lookup.get(country)
                 .values()
@@ -176,5 +181,26 @@ public class TeamServiceImpl implements TeamService {
                 .stream()
                 .filter(f -> f.getLabel().toLowerCase().contains(label.toLowerCase()))
                 .findFirst();
+    }
+
+    @PostConstruct
+    private void loadNewTeams() {
+        dataConfig.getCountries()
+                .stream()
+                .forEach(country ->
+                        country.getCompetitions()
+                                .stream()
+                                .forEach(competition ->
+                                        Flux.fromArray(competition.getTeams().split(","))
+                                                .subscribe(team -> teamRepo.findByLabelIgnoreCase(team)
+                                                        .switchIfEmpty(Mono.just(
+                                                                Team.builder()
+                                                                        .label(team)
+                                                                        .competition(competition.getCompetition())
+                                                                        .country(country.getCountry()).build()))
+                                                        .filter(missing -> missing.getId() == null)
+                                                        .subscribe(save -> teamRepo.save(save.toBuilder().id(UUID.randomUUID()).build()).subscribe()))
+                                )
+                );
     }
 }

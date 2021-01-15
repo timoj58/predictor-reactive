@@ -71,20 +71,25 @@ public class PreviousFixtureServiceImpl implements ILoadService {
                         )
                                 .subscribe(competition -> {
                                     log.info("processing {}", competition);
-                                    byCompetition.put(competition, new ArrayList<>());
                                     List<EventOutcome> eventOutcomes = new ArrayList<>();
                                     webClientFacade.getPreviousEventOutcomes(eventsHost + "/previous-events/" + competition)
                                             .doOnNext(eventOutcomes::add)
                                             .doFinally(transform ->
-                                                    Flux.fromStream(
-                                                            eventOutcomes.stream()
-                                                    ).doOnNext(event ->
-                                                            webClientFacade.getMatch(getMatchUrl(event))
-                                                                    .subscribe(match -> byCompetition.get(competition).add(transform(event).withScore(match)))
-                                                    )
-                                                            .doFinally(save ->
-                                                                    Mono.just(competition).delayElement(Duration.ofMinutes(delay)).subscribe(this::save))
-                                                            .subscribe()
+                                                    {
+                                                        if(!byCompetition.containsKey(competition)){
+                                                            byCompetition.put(competition, new ArrayList<>());
+                                                        }
+
+                                                        Flux.fromStream(
+                                                                eventOutcomes.stream()
+                                                        ).doOnNext(event ->
+                                                                webClientFacade.getMatch(getMatchUrl(event))
+                                                                        .subscribe(match -> byCompetition.get(competition).add(transform(event).withScore(match)))
+                                                        )
+                                                                .doFinally(save ->
+                                                                        Mono.just(competition).delayElement(Duration.ofMinutes(delay)).subscribe(this::save))
+                                                                .subscribe();
+                                                    }
                                             ).subscribe();
                                 }));
 
