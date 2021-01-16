@@ -26,18 +26,16 @@ import java.util.function.UnaryOperator;
 @Component
 public class MatchFactory {
 
-    private final TeamService teamService;
-    private final MatchService matchService;
-    private final MatchCreationService matchCreationService;
-    private final MatchRepairService matchRepairService;
-
     //TEST THIS TODO
     public static UnaryOperator<String> format = data ->
             Parser.unescapeEntities(
                     StringEscapeUtils.escapeHtml4(data).replace("&nbsp;", "")
                     , Boolean.TRUE
             ).trim();
-
+    private final TeamService teamService;
+    private final MatchService matchService;
+    private final MatchCreationService matchCreationService;
+    private final MatchRepairService matchRepairService;
 
     public void createMatch(Result result) {
         log.info("creating match for {}", result.getMatchId());

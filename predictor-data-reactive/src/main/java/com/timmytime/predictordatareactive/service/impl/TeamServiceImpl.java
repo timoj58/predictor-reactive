@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -183,24 +182,26 @@ public class TeamServiceImpl implements TeamService {
                 .findFirst();
     }
 
-    @PostConstruct
-    private void loadNewTeams() {
-        dataConfig.getCountries()
-                .stream()
-                .forEach(country ->
+    public Mono<Void> loadNewTeams() {
+        return Flux.fromStream(dataConfig.getCountries().stream())
+                .doOnNext(country ->
                         country.getCompetitions()
                                 .stream()
-                                .forEach(competition ->
-                                        Flux.fromArray(competition.getTeams().split(","))
-                                                .subscribe(team -> teamRepo.findByLabelIgnoreCase(team)
-                                                        .switchIfEmpty(Mono.just(
-                                                                Team.builder()
-                                                                        .label(team)
-                                                                        .competition(competition.getCompetition())
-                                                                        .country(country.getCountry()).build()))
-                                                        .filter(missing -> missing.getId() == null)
-                                                        .subscribe(save -> teamRepo.save(save.toBuilder().id(UUID.randomUUID()).build()).subscribe()))
-                                )
-                );
+                                .forEach(competition -> {
+                                    log.info("processing {}", competition.getCompetition());
+                                    Flux.fromArray(competition.getTeams().split(","))
+                                            .subscribe(team -> teamRepo.findByLabelIgnoreCase(team)
+                                                    .switchIfEmpty(Mono.just(
+                                                            Team.builder()
+                                                                    .label(team)
+                                                                    .competition(competition.getCompetition())
+                                                                    .country(country.getCountry()).build()))
+                                                    .filter(missing -> missing.getId() == null)
+                                                    .subscribe(save -> {
+                                                        log.info("adding new team {}", save.getLabel());
+                                                        teamRepo.save(save.toBuilder().id(UUID.randomUUID()).build()).subscribe();
+                                                    }));
+                                } )
+                ).then(Mono.empty());
     }
 }

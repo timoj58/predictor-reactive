@@ -19,9 +19,8 @@ import java.util.function.Consumer;
 public class ResultServiceImpl implements ResultService {
 
     private final ResultRepo resultRepo;
-
-    private Consumer<Result> receive;
     private final Flux<Result> results;
+    private Consumer<Result> receive;
 
     @Autowired
     public ResultServiceImpl(

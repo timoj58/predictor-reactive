@@ -10,10 +10,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 
-import java.util.Arrays;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -22,9 +19,8 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
 
 
     private final ResultService resultService;
-
-    private Consumer<JsonNode> receive;
     private final Flux<JsonNode> results;
+    private Consumer<JsonNode> receive;
 
     @Autowired
     public MessageReceivedServiceImpl(

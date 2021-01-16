@@ -27,7 +27,6 @@ public class CompetitionServiceImpl implements ILoadService {
     private final IS3Facade s3Facade;
     private final ShutdownService shutdownService;
 
-
     @Override
     public void load() {
 

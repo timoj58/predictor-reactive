@@ -37,4 +37,11 @@ public class TeamHandler {
         );
     }
 
+    public Mono<ServerResponse> loadNewTeams(ServerRequest request) {
+
+        return ServerResponse.ok().build(
+                teamService.loadNewTeams()
+        );
+    }
+
 }

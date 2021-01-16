@@ -19,6 +19,11 @@ public enum PlayerStats {
         this.key = key;
     }
 
+    public static List<String> getKeys() {
+        return Arrays.asList(values()).stream()
+                .map(m -> m.getKey())
+                .collect(Collectors.toList());
+    }
 
     public String getKey() {
         return key;
@@ -26,12 +31,6 @@ public enum PlayerStats {
 
     public void setKey(String key) {
         this.key = key;
-    }
-
-    public static List<String> getKeys() {
-        return Arrays.asList(values()).stream()
-                .map(m -> m.getKey())
-                .collect(Collectors.toList());
     }
 
 
