@@ -98,7 +98,7 @@ public class PlayerServiceImpl implements PlayerService {
                                     .subscribe(player ->
                                             statMetricRepo.findByPlayer(player.getId())
                                                     .collectList()
-                                                    .map(m -> m.size())
+                                                    .map(List::size)
                                                     .filter(f -> f > 0)
                                                     .subscribe(stats -> {
                                                         log.info("adding {}", player.getLabel());

@@ -2,6 +2,7 @@ package com.timmytime.predictordatareactive.service.impl;
 
 import com.timmytime.predictordatareactive.configuration.DataConfig;
 import com.timmytime.predictordatareactive.configuration.SpecialCase;
+import com.timmytime.predictordatareactive.enumerator.CountryCompetitions;
 import com.timmytime.predictordatareactive.factory.SpecialCasesFactory;
 import com.timmytime.predictordatareactive.model.Team;
 import com.timmytime.predictordatareactive.repo.TeamRepo;
@@ -12,8 +13,10 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Slf4j
 @Service("teamService")
@@ -203,5 +206,34 @@ public class TeamServiceImpl implements TeamService {
                                                     }));
                                 } )
                 ).then(Mono.empty());
+    }
+
+    @PostConstruct
+    private void createVocabCapacity() { //delete this method after one successful run...
+
+        /*  run this just once....post construct is probably fine...
+           create 20 placeholders per league.
+           will be loaded into team vocab....that way, models dont need retraining.
+
+           idea.  train with vocab set.
+
+           As and when we find a new team, 1, confirm its a new team (need to review match regex due to spanish lang stuff)
+           then, if its a team NOF, and new, we update one of these records, assign to team, and then it can be trained.
+
+           this will automate the whole missing team process (ie team who has never played in turkey 1, greece 1 etc.  ie billionaire toy teams
+
+         */
+
+        Flux.fromArray(
+                CountryCompetitions.values()
+        ).subscribe(country -> IntStream.range(0, 20).forEach(index ->
+                teamRepo.save(Team.builder()
+                        .country(country.name().toLowerCase())
+                        .competition("TBC")
+                        .id(UUID.randomUUID())
+                        .label("TBC")
+                        .build()).subscribe())
+        );
+
     }
 }
