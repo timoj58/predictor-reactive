@@ -11,10 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
 import javax.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -63,7 +60,7 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public List<Team> get(String country) {
-        return teams.get(country).values().stream().collect(Collectors.toList());
+        return new ArrayList<>(teams.get(country).values());
     }
 
 }

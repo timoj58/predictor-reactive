@@ -64,7 +64,7 @@ public class TrainingServiceImpl implements TrainingService {
         evaluateMode = Boolean.TRUE;
 
         Flux.fromStream(
-                Arrays.asList(CountryCompetitions.values()).stream()
+                Arrays.stream(CountryCompetitions.values())
         ).delayElements(Duration.ofMinutes(trainingDelay))
                 .subscribe(country -> {
 
@@ -117,7 +117,7 @@ public class TrainingServiceImpl implements TrainingService {
                         .subscribe();
             } else {
                 Mono.just(next)
-                        .subscribe(history -> tensorflowTrainService.train(history));
+                        .subscribe(tensorflowTrainService::train);
             }
 
         } else {

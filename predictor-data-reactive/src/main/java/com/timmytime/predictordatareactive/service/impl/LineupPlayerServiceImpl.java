@@ -56,20 +56,18 @@ public class LineupPlayerServiceImpl implements LineupPlayerService {
                                                 homePlayer,
                                                 resultData,
                                                 date
-                                        ).stream()
-                                                .forEach(stat ->
-                                                        stat.subscribe());
+                                        ).forEach(Mono::subscribe);
 
                                         statMetricService.createPlayerIndividualEventMetrics(
                                                 matchId,
                                                 homePlayer,
                                                 date
-                                        ).stream()
-                                                .forEach(stat ->
-                                                        stat.subscribe());
+                                        ).forEach(Mono::subscribe);
 
                                         //save player...
-                                        playerService.save(homePlayer).subscribe();
+                                        playerService.save(homePlayer).subscribe(
+                                                playerService::addFantasyFootballer
+                                        );
                                     }
                                 }
                         ));

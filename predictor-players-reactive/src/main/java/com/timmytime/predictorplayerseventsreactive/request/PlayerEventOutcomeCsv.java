@@ -45,7 +45,7 @@ public class PlayerEventOutcomeCsv {
         this.minutes = playerMatch.getMinutes();
         this.conceded = playerMatch.getConceded();
 
-        playerMatch.getStats().stream().forEach(stat -> setStats(stat));
+        playerMatch.getStats().forEach(stat -> setStats(stat));
     }
 
     private void setStats(StatMetric stat) {

@@ -8,6 +8,7 @@ import com.timmytime.predictordatareactive.service.MatchCreationService;
 import com.timmytime.predictordatareactive.service.MatchRepairService;
 import com.timmytime.predictordatareactive.service.MatchService;
 import com.timmytime.predictordatareactive.service.TeamService;
+import com.timmytime.predictordatareactive.util.TeamLabelMatcher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringEscapeUtils;
@@ -46,45 +47,56 @@ public class MatchFactory {
 
         log.info("home " + homeTeamLabel + ", away " + awayTeamLabel);
 
-        Optional<Team> homeTeam = teamService.getTeam(homeTeamLabel, resultData.getResult().getString("country"));
-        Optional<Team> awayTeam = teamService.getTeam(awayTeamLabel, resultData.getResult().getString("country"));
+        var countryTeams = teamService.getTeams(resultData.getResult().getString("country"));
 
-        if (homeTeam.isPresent() && awayTeam.isPresent()) {
-            //so now can process as before...
-            teamService.updateCompetition(Arrays.asList(homeTeam.get(), awayTeam.get()), resultData.getResult().getString("competition"));
+        Optional<Team> homeTeam = teamService.getTeam(homeTeamLabel, resultData.getResult().getString("country"))
+                .or(() -> TeamLabelMatcher.match(homeTeamLabel, countryTeams))
+                .or(() -> Optional.of(teamService.createNewTeam(
+                        Team.builder()
+                                .label(homeTeamLabel)
+                                .competition(resultData.getResult().getString("competition")
+                                ).build()))
+                );
 
-            String eventDate = resultData.getResult().getString("date");
-            LocalDateTime eventDateLdt = LocalDateTime.parse(eventDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm'Z'"));
+        Optional<Team> awayTeam = teamService.getTeam(awayTeamLabel, resultData.getResult().getString("country"))
+                .or(() -> TeamLabelMatcher.match(awayTeamLabel, countryTeams))
+                .or(() -> Optional.of(teamService.createNewTeam(
+                        Team.builder()
+                                .label(awayTeamLabel)
+                                .competition(resultData.getResult().getString("competition")).build()))
+                );
 
-            matchService.getMatch(homeTeam.get().getId(), awayTeam.get().getId(), eventDateLdt.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
-                    .switchIfEmpty(Mono.just(new Match()))
-                    .subscribe(match ->
-                    {
-                        if (match.getId() == null) {
-                            log.info("match nof, new event");
-                            matchCreationService.create(
-                                    homeTeam.get(),
-                                    awayTeam.get(),
-                                    eventDateLdt,
-                                    resultData
-                            );
-                        } else {
-                            log.info("a match is on file - repairing");
-                            matchRepairService.repair(match);
-                            matchCreationService.create(
-                                    homeTeam.get(),
-                                    awayTeam.get(),
-                                    eventDateLdt,
-                                    resultData
-                            );
+        //so now can process as before...
+        teamService.updateCompetition(Arrays.asList(homeTeam.get(), awayTeam.get()), resultData.getResult().getString("competition"));
 
-                        }
-                    });
+        String eventDate = resultData.getResult().getString("date");
+        LocalDateTime eventDateLdt = LocalDateTime.parse(eventDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm'Z'"));
 
+        matchService.getMatch(homeTeam.get().getId(), awayTeam.get().getId(), eventDateLdt.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+                .switchIfEmpty(Mono.just(new Match()))
+                .subscribe(match ->
+                {
+                    if (match.getId() == null) {
+                        log.info("match nof, new event");
+                        matchCreationService.create(
+                                homeTeam.get(),
+                                awayTeam.get(),
+                                eventDateLdt,
+                                resultData
+                        );
+                    } else {
+                        log.info("a match is on file - repairing");
+                        matchRepairService.repair(match);
+                        matchCreationService.create(
+                                homeTeam.get(),
+                                awayTeam.get(),
+                                eventDateLdt,
+                                resultData
+                        );
 
-        } else {
-            log.info("one or both teams ({} - {},{} - {}) are not in teams list for {}", homeTeamLabel, homeTeam.isPresent(),
-                    awayTeamLabel, awayTeam.isPresent(), resultData.getResult().getString("competition"));
-        }
+                    }
+                });
+
     }
+
 }

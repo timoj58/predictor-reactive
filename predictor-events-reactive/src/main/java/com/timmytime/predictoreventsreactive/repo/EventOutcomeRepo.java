@@ -15,9 +15,9 @@ public interface EventOutcomeRepo extends ReactiveMongoRepository<EventOutcome, 
 
     Flux<EventOutcome> findByCompetitionInAndPreviousEventTrue(List<String> competition);
 
-    Flux<EventOutcome> findByHomeOrderByDateDesc(UUID team);
+    Flux<EventOutcome> findByHomeAndSuccessNotNullOrderByDateDesc(UUID team);
 
-    Flux<EventOutcome> findByAwayOrderByDateDesc(UUID team);
+    Flux<EventOutcome> findByAwayAndSuccessNotNullOrderByDateDesc(UUID team);
 
     Flux<EventOutcome> findByPredictionNull();
 

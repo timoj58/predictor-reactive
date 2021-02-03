@@ -24,11 +24,12 @@ import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service("previousOutcomesService")
@@ -46,8 +47,8 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
 
     private final Integer delay;
 
-    private final Flux<Triple<EventOutcome, PredictionOutcomeResponse, Pair<Integer, Team>>> outcomes;
-    private Consumer<Triple<EventOutcome, PredictionOutcomeResponse, Pair<Integer, Team>>> receiver;
+    private final Flux<Triple<EventOutcome, PredictionOutcomeResponse, Pair<Long, Team>>> outcomes;
+    private Consumer<Triple<EventOutcome, PredictionOutcomeResponse, Pair<Long, Team>>> receiver;
 
     @Autowired
     public PreviousOutcomesServiceImpl(
@@ -76,31 +77,38 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
     @Override
     public void load() {
 
-        CompletableFuture.runAsync(() ->
-                Flux.fromStream(Arrays.stream(CountryCompetitions.values()))
-                        .delayElements(Duration.ofSeconds(delay * 20))
-                        .subscribe(country ->
-                                Flux.fromStream(
-                                        teamService.get(country.name().toLowerCase()).stream()
-                                ).delayElements(Duration.ofSeconds(delay))
-                                        .subscribe(
-                                                team -> {
-                                                    AtomicInteger index = new AtomicInteger(0);
-                                                    webClientFacade.getPreviousEventOutcomesByTeam(eventsHost + "/previous-events-by-team/" + team.getId())
-                                                            .limitRate(1)
-                                                            .sort((o1, o2) -> o2.getDate().compareTo(o1.getDate()))
-                                                            .doOnNext(outcome -> createOutcome(team, outcome, index.getAndIncrement()))
-                                                            .doFinally(finish -> finish(country.name().toLowerCase(), team.getId()))
-                                                            .subscribe();
-                                                }
-
-                                        ))
-        );
-
+        CompletableFuture.runAsync(() -> init())
+                .thenRun(() ->
+                        Flux.fromStream(Arrays.stream(CountryCompetitions.values()))
+                                .delayElements(Duration.ofSeconds(delay * 20))
+                                .subscribe(country ->
+                                        Flux.fromStream(
+                                                teamService.get(country.name().toLowerCase()).stream()
+                                        ).delayElements(Duration.ofSeconds(delay))
+                                                .subscribe(
+                                                        team ->
+                                                                webClientFacade.getPreviousEventOutcomesByTeam(eventsHost + "/previous-events-by-team/" + team.getId())
+                                                                        .doOnNext(outcome -> createOutcome(team, outcome))
+                                                                        .doFinally(finish -> finish(country.name().toLowerCase(), team.getId()))
+                                                                        .subscribe()
+                                                ))
+                );
 
     }
 
-    private void createOutcome(Team team, EventOutcome eventOutcome, Integer index) {
+    private void init() {
+
+        Stream.of(CountryCompetitions.values())
+                .forEach(country -> {
+                            teamsByCountry.put(country.name().toLowerCase(), new ArrayList<>());
+                            teamService.get(country.name().toLowerCase())
+                                    .forEach(team ->
+                                            teamsByCountry.get(country.name().toLowerCase()).add(team.getId()));
+                        }
+                );
+    }
+
+    private void createOutcome(Team team, EventOutcome eventOutcome) {
 
 
         PredictionOutcomeResponse predictionOutcomeResponse = new PredictionOutcomeResponse();
@@ -128,10 +136,10 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
         predictionOutcomeResponse.setPredictions(eventOutcome.getPrediction());
         predictionOutcomeResponse.setOutcome(eventOutcome.getSuccess());
 
-        receiver.accept(Triple.of(eventOutcome, predictionOutcomeResponse, Pair.of(index, team)));
+        receiver.accept(Triple.of(eventOutcome, predictionOutcomeResponse, Pair.of(eventOutcome.getDate().toEpochSecond(ZoneOffset.UTC), team)));
     }
 
-    private void saveOutcome(Triple<EventOutcome, PredictionOutcomeResponse, Pair<Integer, Team>> data) {
+    private void saveOutcome(Triple<EventOutcome, PredictionOutcomeResponse, Pair<Long, Team>> data) {
 
         var predictionOutcomeResponse = data.getMiddle();
         var eventOutcome = data.getLeft();

@@ -1,5 +1,6 @@
 package com.timmytime.predictorclientreactive.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -9,7 +10,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 @EqualsAndHashCode
 public class EventOutcome {
 
@@ -23,6 +24,5 @@ public class EventOutcome {
     private String eventType = "PREDICT_RESULTS";
     private Boolean previousEvent = Boolean.FALSE; //as in it was the last set of events per competition
     private String country;
-
 
 }

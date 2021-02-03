@@ -60,8 +60,8 @@ public class EventOutcomeServiceImpl implements EventOutcomeService {
     @Override
     public Flux<EventOutcome> previousEventsByTeam(UUID team) {
         return Flux.concat(
-                eventOutcomeRepo.findByHomeOrderByDateDesc(team),
-                eventOutcomeRepo.findByAwayOrderByDateDesc(team)
+                eventOutcomeRepo.findByHomeAndSuccessNotNullOrderByDateDesc(team),
+                eventOutcomeRepo.findByAwayAndSuccessNotNullOrderByDateDesc(team)
         ).sort(Comparator.comparing(EventOutcome::getDate)
                 .reversed()
         ).take(6);

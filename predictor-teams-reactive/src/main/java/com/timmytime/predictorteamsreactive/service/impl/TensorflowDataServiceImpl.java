@@ -22,8 +22,6 @@ import java.util.stream.Collectors;
 public class TensorflowDataServiceImpl implements TensorflowDataService {
 
     private final Map<String, List<Match>> data = new HashMap<>();
-
-    private final Flux<CountryMatch> receiver;
     private Consumer<CountryMatch> consumer;
 
     @Autowired
@@ -31,17 +29,12 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
 
     ) {
 
-        Arrays.asList(
+        Arrays.stream(
                 CountryCompetitions.values()
-        ).stream()
-                .forEach(country -> data.put(country.name().toLowerCase(), new ArrayList<>()));
+        ).forEach(country -> data.put(country.name().toLowerCase(), new ArrayList<>()));
 
-        this.receiver
-                = Flux.push(sink -> consumer = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
-
-        this.receiver.subscribe(this::process);
-
-
+        Flux<CountryMatch> receiver = Flux.push(sink -> consumer = sink::next, FluxSink.OverflowStrategy.BUFFER);
+        receiver.subscribe(this::process);
     }
 
     @Override

@@ -1,19 +1,13 @@
 package com.timmytime.predictordatareactive.service.impl;
 
-import com.timmytime.predictordatareactive.configuration.CompetitionConfig;
-import com.timmytime.predictordatareactive.configuration.CountryConfig;
-import com.timmytime.predictordatareactive.configuration.DataConfig;
 import com.timmytime.predictordatareactive.factory.SpecialCasesFactory;
 import com.timmytime.predictordatareactive.model.Team;
 import com.timmytime.predictordatareactive.repo.TeamRepo;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,11 +21,9 @@ class TeamServiceImplTest {
 
     private static final TeamRepo teamRepo = mock(TeamRepo.class);
 
-    private final DataConfig dataConfig = mock(DataConfig.class);
-
 
     TeamServiceImpl teamService
-            = new TeamServiceImpl(dataConfig, teamRepo, specialCasesFactory);
+            = new TeamServiceImpl(teamRepo, specialCasesFactory);
 
 
     private static final UUID teamToFind = UUID.randomUUID();
@@ -99,28 +91,5 @@ class TeamServiceImplTest {
 
     }
 
-    @Test
-    public void loadNewTeamsTest() throws InterruptedException {
-
-        CountryConfig england = new CountryConfig();
-        CompetitionConfig competitionConfig = new CompetitionConfig();
-        competitionConfig.setTeams("team1,team2,team3,");
-        competitionConfig.setCompetition("england_1");
-        england.setCountry("england");
-        england.setCompetitions(Arrays.asList(competitionConfig));
-
-        when(dataConfig.getCountries()).thenReturn(Arrays.asList(england));
-        when(teamRepo.findByLabelIgnoreCase("team1")).thenReturn(Mono.empty());
-        when(teamRepo.findByLabelIgnoreCase("team2")).thenReturn(Mono.just(Team.builder().id(UUID.randomUUID()).build()));
-        when(teamRepo.findByLabelIgnoreCase("team3")).thenReturn(Mono.empty());
-        when(teamRepo.save(any())).thenReturn(Mono.just(new Team()));
-
-        teamService.loadNewTeams().subscribe();
-
-        Thread.sleep(1000);
-
-        verify(teamRepo, atMost(2)).save(any(Team.class));
-
-    }
 
 }

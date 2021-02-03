@@ -80,7 +80,7 @@ public class MatchServiceImpl implements MatchService {
         return Flux.concat(
                 matchRepo.findByHomeTeamInAndDateBetween(teams, start, end),
                 matchRepo.findByAwayTeamInAndDateBetween(teams, start, end)
-        );
+        ).distinct(); //required and test.  as returning duplicates
     }
 
     @Override

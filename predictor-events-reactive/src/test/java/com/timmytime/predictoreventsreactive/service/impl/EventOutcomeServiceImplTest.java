@@ -66,8 +66,8 @@ class EventOutcomeServiceImplTest {
                 EventOutcome.builder().date(LocalDateTime.now().minusDays(14)).build()
         );
 
-        when(eventOutcomeRepo.findByAwayOrderByDateDesc(any(UUID.class))).thenReturn(Flux.fromStream(eventOutcomeList.stream()));
-        when(eventOutcomeRepo.findByHomeOrderByDateDesc(any(UUID.class))).thenReturn(Flux.fromStream(eventOutcomeList2.stream()));
+        when(eventOutcomeRepo.findByAwayAndSuccessNotNullOrderByDateDesc(any(UUID.class))).thenReturn(Flux.fromStream(eventOutcomeList.stream()));
+        when(eventOutcomeRepo.findByHomeAndSuccessNotNullOrderByDateDesc(any(UUID.class))).thenReturn(Flux.fromStream(eventOutcomeList2.stream()));
 
     }
 

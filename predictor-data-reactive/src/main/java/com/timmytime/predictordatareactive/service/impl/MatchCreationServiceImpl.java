@@ -48,7 +48,7 @@ public class MatchCreationServiceImpl implements MatchCreationService {
                 homeTeam,
                 "home",
                 date,
-                resultData).stream()
+                resultData)
                 .forEach(action -> action
                         .delayElement(Duration.ofMillis(100L))
                         .subscribe());
@@ -58,7 +58,7 @@ public class MatchCreationServiceImpl implements MatchCreationService {
                 awayTeam,
                 "away",
                 date,
-                resultData).stream()
+                resultData)
                 .forEach(action -> action
                         .delayElement(Duration.ofMillis(100L))
                         .subscribe());

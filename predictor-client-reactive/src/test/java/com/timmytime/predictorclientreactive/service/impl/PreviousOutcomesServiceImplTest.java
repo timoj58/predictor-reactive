@@ -44,14 +44,18 @@ class PreviousOutcomesServiceImplTest {
 
        when(teamService.get(any())).thenReturn(Arrays.asList(
                Team.builder().country("test").build(),
-               Team.builder().country("test").build()
+               Team.builder().country("test2").build()
        ));
 
        when(teamService.getTeam(anyString(), any())).thenReturn(Team.builder().build());
 
        when(webClientFacade.getPreviousEventOutcomesByTeam(any())).thenReturn(Flux.just(
                EventOutcome.builder().date(LocalDateTime.now()).home(UUID.randomUUID()).away(UUID.randomUUID()).prediction("[]").build(),
-               EventOutcome.builder().date(LocalDateTime.now().minusDays(1)).home(UUID.randomUUID()).away(UUID.randomUUID()).prediction("[]").build()
+               EventOutcome.builder().date(LocalDateTime.now().minusDays(1)).home(UUID.randomUUID()).away(UUID.randomUUID()).prediction("[]").build(),
+               EventOutcome.builder().date(LocalDateTime.now().minusDays(2)).home(UUID.randomUUID()).away(UUID.randomUUID()).prediction("[]").build(),
+               EventOutcome.builder().date(LocalDateTime.now().minusDays(3)).home(UUID.randomUUID()).away(UUID.randomUUID()).prediction("[]").build(),
+               EventOutcome.builder().date(LocalDateTime.now().minusDays(4)).home(UUID.randomUUID()).away(UUID.randomUUID()).prediction("[]").build(),
+               EventOutcome.builder().date(LocalDateTime.now().minusDays(5)).home(UUID.randomUUID()).away(UUID.randomUUID()).prediction("[]").build()
        ));
 
        when(webClientFacade.getMatch(anyString())).thenReturn(
@@ -60,7 +64,7 @@ class PreviousOutcomesServiceImplTest {
 
        previousOutcomesService.load();
 
-       Thread.sleep(1000L);
+       Thread.sleep(2000L);
 
        verify(s3Facade, atLeastOnce()).put(anyString(), anyString());
    }

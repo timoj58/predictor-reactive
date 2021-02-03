@@ -29,12 +29,4 @@ public class TeamFunction {
                 , teamHandler::findByCountry);
     }
 
-    @Bean
-    @RouterOperation(beanClass = TeamService.class, beanMethod = "loadNewTeams")
-    RouterFunction<ServerResponse> loadNewTeams(TeamHandler teamHandler) {
-        return route(RequestPredicates.POST("/load-new-teams")
-                        .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON))
-                , teamHandler::loadNewTeams);
-    }
-
 }

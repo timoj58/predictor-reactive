@@ -29,7 +29,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         this.resultService = resultService;
 
         this.results = Flux.push(sink ->
-                MessageReceivedServiceImpl.this.receive = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
+                MessageReceivedServiceImpl.this.receive = sink::next, FluxSink.OverflowStrategy.BUFFER);
 
         this.results.subscribe(this::process);
     }

@@ -24,6 +24,6 @@ public interface TeamService {
 
     List<Team> getTeamsByCompetition(@PathVariable String competition);
 
-    Mono<Void> loadNewTeams();
+    Team createNewTeam(Team team);
 
 }

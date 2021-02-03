@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.UUID;
 
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Getter
 @Setter
 @Builder(toBuilder = true)
@@ -18,10 +19,13 @@ import java.util.UUID;
 public class Team {
 
     @Id
+    @EqualsAndHashCode.Include
     private UUID id;
     private String label;
     @Indexed
+    @EqualsAndHashCode.Include
     private String country;
+    @EqualsAndHashCode.Include
     private String competition;
     private LatLng latLng;
 

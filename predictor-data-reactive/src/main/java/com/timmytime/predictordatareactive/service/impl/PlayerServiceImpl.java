@@ -7,14 +7,15 @@ import com.timmytime.predictordatareactive.repo.PlayerRepo;
 import com.timmytime.predictordatareactive.repo.StatMetricRepo;
 import com.timmytime.predictordatareactive.service.PlayerService;
 import com.timmytime.predictordatareactive.service.TeamService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -25,7 +26,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-@RequiredArgsConstructor
 @Slf4j
 @Service("playerService")
 public class PlayerServiceImpl implements PlayerService {
@@ -34,6 +34,24 @@ public class PlayerServiceImpl implements PlayerService {
     private final PlayerRepo playerRepo;
     private final StatMetricRepo statMetricRepo;
 
+    private final List<UUID> placeholders = new ArrayList<>();
+
+    @Autowired
+    public PlayerServiceImpl(
+            TeamService teamService,
+            PlayerRepo playerRepo,
+            StatMetricRepo statMetricRepo
+    ) {
+        this.teamService = teamService;
+        this.playerRepo = playerRepo;
+        this.statMetricRepo = statMetricRepo;
+
+        playerRepo.findAll()
+                .filter(f -> f.getLabel().equals("TBC"))
+                .map(Player::getId)
+                .subscribe(placeholders::add);
+
+    }
 
     @Override
     public Mono<Player> find(UUID id) {
@@ -95,24 +113,8 @@ public class PlayerServiceImpl implements PlayerService {
                             log.info("now updating the players");
                             playerRepo.findAll()
                                     .filter(p -> p.getLastAppearance() != null && p.getLastAppearance().isAfter(LocalDate.now().minusYears(1)))
-                                    .subscribe(player ->
-                                            statMetricRepo.findByPlayer(player.getId())
-                                                    .collectList()
-                                                    .map(List::size)
-                                                    .filter(f -> f > 0)
-                                                    .subscribe(stats -> {
-                                                        log.info("adding {}", player.getLabel());
-                                                        playerRepo.save(
-                                                                player
-                                                                        .toBuilder()
-                                                                        .fantasyFootballer(Boolean.TRUE)
-                                                                        .build()
-                                                        ).subscribe();
-                                                    })
-
-                                    );
-                        })
-                        .subscribe()
+                                    .subscribe(this::addFantasyFootballer);
+                        }).subscribe()
         );
 
         return Mono.empty();
@@ -128,7 +130,7 @@ public class PlayerServiceImpl implements PlayerService {
                                 statMetricRepo.findByPlayer(player.getId())
                                         .filter(f -> f.getLabel().equalsIgnoreCase("saves"))
                                         .collectList()
-                                        .map(m -> m.size())
+                                        .map(List::size)
                                         .filter(f -> f > 0)
                                         .subscribe(gk -> {
                                             log.info("adding gk {}", player.getLabel());
@@ -142,6 +144,25 @@ public class PlayerServiceImpl implements PlayerService {
         );
 
         return Mono.empty();
+    }
+
+    @Override
+    public void addFantasyFootballer(Player player) {
+        if (!player.getFantasyFootballer()) {
+            statMetricRepo.findByPlayer(player.getId())
+                    .collectList()
+                    .map(List::size)
+                    .filter(f -> f > 0)
+                    .subscribe(stats -> {
+                        log.info("adding {}", player.getLabel());
+                        playerRepo.save(
+                                player
+                                        .toBuilder()
+                                        .fantasyFootballer(Boolean.TRUE)
+                                        .build()
+                        ).subscribe();
+                    });
+        }
     }
 
 
@@ -191,10 +212,26 @@ public class PlayerServiceImpl implements PlayerService {
     private Player create(String label) {
         Player player = new Player();
 
-        player.setId(UUID.randomUUID());
+        player.setId(placeholders.remove(0));
         player.setLabel(label);
+        player.setFantasyFootballer(Boolean.FALSE); //its turned on later.
 
         return player;
+    }
+
+
+    @PostConstruct
+    private void createVocabCapacity() { //delete this method after one successful run...
+
+        IntStream.range(0, 1000).forEach(index ->
+                playerRepo.save(
+                        Player.builder()
+                                .id(UUID.randomUUID())
+                                .fantasyFootballer(Boolean.TRUE) //always set them as active
+                                .label("TBC")
+                                .build()
+                ).subscribe());
+
     }
 
 }

@@ -26,4 +26,6 @@ public interface PlayerService {
     Mono<Void> createFantasyFootballers();
 
     Mono<Void> createGoalkeepers();
+
+    void addFantasyFootballer(Player player);
 }
