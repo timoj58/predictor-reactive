@@ -5,7 +5,9 @@ import com.timmytime.predictorplayerseventsreactive.enumerator.Messages;
 import com.timmytime.predictorplayerseventsreactive.request.Message;
 import com.timmytime.predictorplayerseventsreactive.service.MessageReceivedService;
 import com.timmytime.predictorplayerseventsreactive.service.PlayersTrainingHistoryService;
+import com.timmytime.predictorplayerseventsreactive.service.TrainingModelService;
 import com.timmytime.predictorplayerseventsreactive.service.TrainingService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,25 +20,21 @@ import java.util.concurrent.CompletableFuture;
 @Service("messageReceivedService")
 public class MessageReceivedServiceImpl implements MessageReceivedService {
 
-    private final Map<String, List<Messages>> messages = new HashMap<>();
+    private final List<ApplicableFantasyLeagues> messages = new ArrayList<>();
 
     private final TrainingService trainingService;
+    private final TrainingModelService trainingModelService;
     private final PlayersTrainingHistoryService playersTrainingHistoryService;
 
     @Autowired
     public MessageReceivedServiceImpl(
             TrainingService trainingService,
+            TrainingModelService trainingModelService,
             PlayersTrainingHistoryService playersTrainingHistoryService
     ) {
         this.trainingService = trainingService;
+        this.trainingModelService = trainingModelService;
         this.playersTrainingHistoryService = playersTrainingHistoryService;
-
-        Arrays.stream(
-                ApplicableFantasyLeagues.values()
-        )
-                .map(ApplicableFantasyLeagues::getCountry)
-                .distinct()
-                .forEach(country -> messages.put(country.toLowerCase(), new ArrayList<>()));
 
     }
 
@@ -45,8 +43,14 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
 
         return message.doOnNext(
                 msg -> {
-                    log.info("received {} {}", msg.getType(), msg.getCountry());
-                    //TODO.  review if we need it?
+                    log.info("received {} {}", msg.getCountry(), msg.getCompetition());
+                    messages.add(ApplicableFantasyLeagues.valueOf(msg.getCompetition().toUpperCase()));
+                    if(messages.containsAll(Arrays.asList(ApplicableFantasyLeagues.values()))){
+                        log.info("start player training");
+                        playersTrainingHistoryService.find(trainingService.firstTrainingEvent())
+                                .subscribe(trainingModelService::next);
+                        //TODO note we now need to send a message to player events once completed
+                    }
                 }
         ).thenEmpty(Mono.empty());
     }
@@ -59,8 +63,8 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     }
 
     @Override
-    public Mono<Void> initTraining() {
-        CompletableFuture.runAsync(trainingService::train);
+    public Mono<Void> createTrainingModel() {
+        CompletableFuture.runAsync(trainingModelService::create);
         return Mono.empty();
     }
 

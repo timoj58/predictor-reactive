@@ -7,10 +7,8 @@ import com.timmytime.predictorteamsreactive.enumerator.CountryCompetitions;
 import com.timmytime.predictorteamsreactive.enumerator.Training;
 import com.timmytime.predictorteamsreactive.facade.WebClientFacade;
 import com.timmytime.predictorteamsreactive.model.Message;
-import com.timmytime.predictorteamsreactive.service.MessageReceivedService;
-import com.timmytime.predictorteamsreactive.service.TensorflowDataService;
-import com.timmytime.predictorteamsreactive.service.TrainingHistoryService;
-import com.timmytime.predictorteamsreactive.service.TrainingService;
+import com.timmytime.predictorteamsreactive.model.TrainingHistory;
+import com.timmytime.predictorteamsreactive.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +16,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -30,6 +30,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
 
     private final TrainingHistoryService trainingHistoryService;
     private final TrainingService trainingService;
+    private final TrainingModelService trainingModelService;
     private final TensorflowDataService tensorflowDataService;
     private final WebClientFacade webClientFacade;
     private final String eventsHost;
@@ -40,6 +41,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
             @Value("${clients.events}") String eventsHost,
             @Value("${clients.players}") String playersHost,
             TrainingHistoryService trainingHistoryService,
+            TrainingModelService trainingModelService,
             TrainingService trainingService,
             TensorflowDataService tensorflowDataService,
             WebClientFacade webClientFacade
@@ -47,6 +49,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         this.eventsHost = eventsHost;
         this.playersHost = playersHost;
         this.trainingHistoryService = trainingHistoryService;
+        this.trainingModelService = trainingModelService;
         this.trainingService = trainingService;
         this.tensorflowDataService = tensorflowDataService;
         this.webClientFacade = webClientFacade;
@@ -65,7 +68,17 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                                 playersHost + "/message",
                                 createMessage(msg.getCountry().toUpperCase(), "DATA_LOADED")
                         );
-                        trainingService.train(trainingHistoryService.find(Training.TRAIN_RESULTS, msg.getCountry()), Boolean.FALSE);
+                        trainingService.train(i -> {
+                            var trainingHistory = trainingHistoryService.find(Training.TRAIN_RESULTS, msg.getCountry());
+                            return trainingHistoryService.save(
+                                    new TrainingHistory(
+                                            trainingHistory.getType(),
+                                            trainingHistory.getCountry(),
+                                            trainingHistory.getToDate(),
+                                            trainingHistory.getToDate().plusYears(i).isAfter(LocalDateTime.now()) ?
+                                                    LocalDateTime.now() : trainingHistory.getToDate().plusYears(i))
+                            );
+                        });
                     }
                 }
         ).thenEmpty(Mono.empty());
@@ -80,15 +93,13 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         return Mono.just(
                 trainingHistoryService.find(id)
         ).doOnNext(history -> {
-            if (!trainingService.train(history, Boolean.FALSE)) {
+            if (history.getToDate().isBefore(LocalDate.now().atStartOfDay())) {
+                trainingHistoryService.completeTraining(history);
                 switch (history.getType()) {
                     case TRAIN_RESULTS:
                         //we start training goals..
                         log.info("now training goals for {}", history.getCountry());
-                        trainingService.train(
-                                trainingService.init(Training.TRAIN_GOALS, history.getCountry()),
-                                Boolean.TRUE
-                        );
+                        trainingService.train(i -> trainingHistoryService.next(Training.TRAIN_GOALS, history.getCountry(), i));
                         break;
                     case TRAIN_GOALS:
                         log.info("finishing up {}", history.getCountry().toUpperCase());
@@ -100,14 +111,16 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                         );
                         break;
                 }
+            } else {
+                trainingService.train(i -> history);
             }
         }).thenEmpty(Mono.empty());
 
     }
 
     @Override
-    public Mono<Void> initTraining() {
-        trainingService.train();
+    public Mono<Void> createTrainingModels() {
+        trainingModelService.create();
         return Mono.empty();
     }
 

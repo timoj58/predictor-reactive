@@ -35,10 +35,10 @@ public class MessageHandler {
         );
     }
 
-    public Mono<ServerResponse> initTraining(ServerRequest request) {
+    public Mono<ServerResponse> createTrainingModels(ServerRequest request) {
 
         return ServerResponse.ok().build(
-                messageReceivedService.initTraining()
+                messageReceivedService.createTrainingModels()
         );
     }
 

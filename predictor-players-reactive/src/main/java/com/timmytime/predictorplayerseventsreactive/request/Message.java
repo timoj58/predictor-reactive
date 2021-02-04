@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Message {
-    private Messages type;
     private String country;
+    private String competition;
 }

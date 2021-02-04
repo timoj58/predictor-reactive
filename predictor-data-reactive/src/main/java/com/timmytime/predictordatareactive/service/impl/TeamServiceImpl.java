@@ -197,21 +197,4 @@ public class TeamServiceImpl implements TeamService {
 
         return placeholder;
     }
-
-    @PostConstruct
-    private void createVocabCapacity() { //delete this method after one successful run...
-
-
-        Flux.fromArray(
-                CountryCompetitions.values()
-        ).subscribe(country -> IntStream.range(0, 20).forEach(index ->
-                teamRepo.save(Team.builder()
-                        .country(country.name().toLowerCase())
-                        .competition("TBC")
-                        .id(UUID.randomUUID())
-                        .label("TBC")
-                        .build()).subscribe())
-        );
-
-    }
 }

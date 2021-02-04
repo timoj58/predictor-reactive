@@ -42,8 +42,7 @@ public class VocabService {
         Map<String, StringBuilder> teamsVocab = new HashMap<>();
         StringBuilder allTeams = new StringBuilder();
         //teams
-        Arrays.asList(CountryCompetitions.values())
-                .stream()
+        Arrays.stream(CountryCompetitions.values())
                 .map(Enum::name)
                 .map(String::toLowerCase)
                 .map(teamService::get)
@@ -55,7 +54,7 @@ public class VocabService {
                         allTeams.append(team.getId()).append("\n");
                     });
 
-                    s3Facade.put("vocab/" + country + "/team-vocab.txt", teamsVocab.get(country).toString());
+                    s3Facade.put("predictor-team-models", "vocab/" + country + "/team-vocab.txt", teamsVocab.get(country).toString());
                 });
 
 

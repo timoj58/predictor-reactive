@@ -7,29 +7,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 
-import javax.annotation.PostConstruct;
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service("trainingService")
 public class TrainingServiceImpl implements TrainingService {
 
-    private final PlayerService playerService;
     private final PlayersTrainingHistoryService playersTrainingHistoryService;
     private final TensorflowTrainingService tensorflowTrainingService;
-    private final PlayerMatchService playerMatchService;
-    private final TensorflowDataService tensorflowDataService;
 
     private final Integer interval;
-    private final Integer playerDelay;
 
     private final FantasyEventTypes first;
     private final List<FantasyEventTypes> toTrain;
@@ -37,20 +29,12 @@ public class TrainingServiceImpl implements TrainingService {
     @Autowired
     public TrainingServiceImpl(
             @Value("${training.interval}") Integer interval,
-            @Value("${training.player-delay}") Integer playerDelay,
-            PlayerService playerService,
             PlayersTrainingHistoryService playersTrainingHistoryService,
-            TensorflowTrainingService tensorflowTrainingService,
-            PlayerMatchService playerMatchService,
-            TensorflowDataService tensorflowDataService
+            TensorflowTrainingService tensorflowTrainingService
     ) {
         this.interval = interval;
-        this.playerDelay = playerDelay;
-        this.playerService = playerService;
         this.playersTrainingHistoryService = playersTrainingHistoryService;
         this.tensorflowTrainingService = tensorflowTrainingService;
-        this.playerMatchService = playerMatchService;
-        this.tensorflowDataService = tensorflowDataService;
 
         toTrain = Arrays.stream(
                 FantasyEventTypes.values()
@@ -71,7 +55,8 @@ public class TrainingServiceImpl implements TrainingService {
                                 new PlayersTrainingHistory(
                                         history.getType(),
                                         history.getToDate(),
-                                        history.getToDate().plusYears(interval)
+                                        history.getToDate().isAfter(LocalDateTime.now()) ?
+                                                LocalDateTime.now() : history.getToDate().plusYears(interval)
                                 )
                         ).subscribe(trainingHistory -> tensorflowTrainingService.train(trainingHistory.getId()))
                 )
@@ -104,49 +89,8 @@ public class TrainingServiceImpl implements TrainingService {
     }
 
     @Override
-    public void train() {
-
-        //WARNING:  do not run this again.  need to review regarding starting training from the last point.
-
-        var players = playerService.get();
-        log.info("processing {} players", players.size());
-        CompletableFuture.runAsync(tensorflowDataService::delete) //note.  probably better not to delete it all.  given size of dataset. (and storage cost)
-                .thenRun(() ->
-                        Flux.fromStream(players.stream())
-                                .limitRate(1)
-                                .delayElements(Duration.ofMillis(playerDelay)) //maybe not needed.
-                                .doOnNext(player -> playerMatchService.create(
-                                        player.getId(),
-                                        tensorflowDataService::load))
-                                .doFinally(train -> playersTrainingHistoryService.find(first).subscribe(this::train)
-                                )
-                                .subscribe()
-                );
-    }
-
-    @PostConstruct
-    private void init() {
-
-        Arrays.stream(FantasyEventTypes.values())
-                .filter(f -> f.getPredict() == Boolean.TRUE)
-                .forEach(type ->
-                        playersTrainingHistoryService.findOptional(type)
-                                .ifPresentOrElse(then -> log.info("we have history"),
-                                        () -> {
-                                            log.info("init record");
-                                            var history = new PlayersTrainingHistory(
-                                                    type,
-                                                    LocalDate.parse("01-08-2009", DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay(),
-                                                    LocalDate.parse("01-08-2009", DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay()
-                                            );
-
-                                            history.setCompleted(Boolean.TRUE);
-                                            playersTrainingHistoryService.saveNormal(history);
-
-                                        })
-
-                );
-
+    public FantasyEventTypes firstTrainingEvent() {
+        return first;
     }
 
 }

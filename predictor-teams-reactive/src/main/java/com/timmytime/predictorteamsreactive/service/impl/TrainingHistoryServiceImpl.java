@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.UUID;
@@ -21,7 +22,6 @@ import java.util.UUID;
 public class TrainingHistoryServiceImpl implements TrainingHistoryService {
 
     private final TrainingHistoryRepo trainingHistoryRepo;
-
 
     @Override
     public TrainingHistory find(UUID id) {
@@ -34,26 +34,30 @@ public class TrainingHistoryServiceImpl implements TrainingHistoryService {
     }
 
     @Override
-    public Boolean finished(Training type) {
-        return trainingHistoryRepo.findByTypeAndCompletedFalse(type).isEmpty();
-    }
-
-    @Override
     public TrainingHistory find(Training type, String country) {
         return trainingHistoryRepo.findByTypeAndCountryOrderByDateDesc(type, country.toLowerCase()).stream().findFirst().get();
     }
 
     @Override
-    public TrainingHistory clone(TrainingHistory trainingHistory) {
-
-        TrainingHistory cloned = new TrainingHistory(
-                trainingHistory.getType().equals(Training.TRAIN_RESULTS) ? Training.TRAIN_GOALS : Training.TRAIN_RESULTS,
-                trainingHistory.getCountry(),
-                trainingHistory.getFromDate(),
-                trainingHistory.getToDate()
+    public TrainingHistory next(Training type, String country, Integer interval) {
+        TrainingHistory previous = find(type, country.toLowerCase());
+        return save(
+                new TrainingHistory(
+                        type,
+                        country.toLowerCase(),
+                        previous.getToDate(),
+                        previous.getToDate().plusYears(interval).isAfter(LocalDateTime.now()) ?
+                                LocalDateTime.now() :
+                                previous.getToDate().plusYears(interval)
+                )
         );
+    }
 
-        return trainingHistoryRepo.save(cloned);
+    @Override
+    public void completeTraining(TrainingHistory trainingHistory) {
+        log.info("we have completed {} - {}", trainingHistory.getCountry(), trainingHistory.getType());
+        trainingHistory.setCompleted(Boolean.TRUE);
+        save(trainingHistory);
     }
 
     @PostConstruct

@@ -219,19 +219,4 @@ public class PlayerServiceImpl implements PlayerService {
         return player;
     }
 
-
-    @PostConstruct
-    private void createVocabCapacity() { //delete this method after one successful run...
-
-        IntStream.range(0, 1000).forEach(index ->
-                playerRepo.save(
-                        Player.builder()
-                                .id(UUID.randomUUID())
-                                .fantasyFootballer(Boolean.TRUE) //always set them as active
-                                .label("TBC")
-                                .build()
-                ).subscribe());
-
-    }
-
 }

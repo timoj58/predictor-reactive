@@ -10,9 +10,9 @@ public interface TrainingHistoryService {
 
     TrainingHistory save(TrainingHistory trainingHistory);
 
-    Boolean finished(Training type);
-
     TrainingHistory find(Training type, String country);
 
-    TrainingHistory clone(TrainingHistory trainingHistory);
+    TrainingHistory next(Training type, String country, Integer interval);
+
+    void completeTraining(TrainingHistory trainingHistory);
 }

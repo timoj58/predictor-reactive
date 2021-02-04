@@ -12,11 +12,15 @@ import org.json.JSONException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.FileSystemResource;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -28,7 +32,7 @@ class LineupPlayerServiceImplTest {
     private static final StatMetricRepo statMetricRepo = mock(StatMetricRepo.class);
 
     private final PlayerService playerService =
-            new PlayerServiceImpl(mock(TeamService.class), playerRepo, mock(StatMetricRepo.class));
+            new PlayerServiceImpl(mock(TeamService.class), playerRepo, statMetricRepo);
     private static final LineupPlayerRepo lineupService = mock(LineupPlayerRepo.class);
     private final StatMetricService statMetricService =
             new StatMetricServiceImpl(statMetricRepo);
@@ -73,6 +77,14 @@ class LineupPlayerServiceImplTest {
         when(lineupService.save(any())).thenReturn(Mono.just(new LineupPlayer()));
 
         when(statMetricRepo.save(any(StatMetric.class))).thenReturn(Mono.just(statMetric));
+
+        List<Player> placeholders = new ArrayList<>();
+
+        IntStream.range(0, 100).forEach(i -> placeholders.add(Player.builder().label("TBC").id(UUID.randomUUID()).build()));
+
+        when(playerRepo.findAll()).thenReturn(Flux.fromStream(placeholders.stream()));
+
+        when(statMetricRepo.findByPlayer(any())).thenReturn(Flux.empty());
 
     }
 

@@ -27,15 +27,6 @@ public enum ApplicableFantasyLeagues {
                 .collect(Collectors.toList());
     }
 
-    public static List<String> getCountries() {
-        return Arrays.stream(
-                ApplicableFantasyLeagues.values()
-        )
-                .map(ApplicableFantasyLeagues::getCountry)
-                .distinct()
-                .collect(Collectors.toList());
-    }
-
     public String getCountry() {
         return country;
     }

@@ -11,5 +11,5 @@ public interface MessageReceivedService {
 
     Mono<Void> training(@RequestParam UUID id);
 
-    Mono<Void> initTraining();
+    Mono<Void> createTrainingModel();
 }

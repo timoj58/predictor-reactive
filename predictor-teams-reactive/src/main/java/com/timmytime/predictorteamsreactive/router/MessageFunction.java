@@ -31,10 +31,10 @@ public class MessageFunction {
     }
 
     @Bean
-    @RouterOperation(beanClass = MessageReceivedService.class, beanMethod = "initTraining")
-    RouterFunction<ServerResponse> initTraining(MessageHandler messageHandler) {
-        return route(RequestPredicates.POST("/init-training")
-                , messageHandler::initTraining);
+    @RouterOperation(beanClass = MessageReceivedService.class, beanMethod = "createTrainingModels")
+    RouterFunction<ServerResponse> createTrainingModels(MessageHandler messageHandler) {
+        return route(RequestPredicates.POST("/create-training-models")
+                , messageHandler::createTrainingModels);
     }
 
 }

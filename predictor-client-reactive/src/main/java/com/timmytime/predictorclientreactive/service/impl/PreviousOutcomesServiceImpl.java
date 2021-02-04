@@ -23,12 +23,15 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 
+import java.text.DecimalFormat;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -48,6 +51,16 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
     private final Integer delay;
 
     private Consumer<Triple<EventOutcome, PredictionOutcomeResponse, Pair<Long, Team>>> receiver;
+
+    private final DecimalFormat format = new DecimalFormat("#0.00000000");
+
+    //hopefully s3 orders this properly.  my bad really as s3 is ordered by text (annoying).
+    private final Function<Long, Double> invertIndex = index -> {
+        var now = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+        var percentage = (double)index / now;
+
+        return 1 - Double.parseDouble(format.format(percentage));
+    };
 
     @Autowired
     public PreviousOutcomesServiceImpl(
@@ -140,9 +153,10 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
 
     private void saveOutcome(Triple<EventOutcome, PredictionOutcomeResponse, Pair<Long, Team>> data) {
 
+
         var predictionOutcomeResponse = data.getMiddle();
         var eventOutcome = data.getLeft();
-        var index = data.getRight().getLeft();
+        var index = invertIndex.apply(data.getRight().getLeft());
         var team = data.getRight().getRight();
 
         webClientFacade.getMatch(getMatchUrl(eventOutcome))
