@@ -24,6 +24,11 @@ public class TeamLabelMatcher {
 
         log.info("we have {} matches for {}", meetsThreshold.size(), label);
 
+        if (meetsThreshold.size() > 1) {
+            log.error("we have matched more than one record for {}", label); //note this will create a third record later.
+            //review how often it occurs, can relink teams anyway.  this is highly unlikely.
+        }
+
         return meetsThreshold.size() > 1 ? Optional.empty() : meetsThreshold.stream().findFirst();
     }
 

@@ -24,6 +24,69 @@ public class ResultScraper {
 
     private final SportsScraperConfigurationFactory sportsScraperConfigurationFactory;
     private final RestTemplate restTemplate = new RestTemplate();
+    BiFunction<JSONArray, JSONArray, JSONArray> iterate = (paths, data) -> {
+
+        JSONArray results = new JSONArray();
+
+        IntStream.range(0, data.length()).forEach(d -> {
+
+                    JSONObject result = new JSONObject();
+
+                    IntStream.range(0, paths.length()).forEach(
+                            i -> {
+                                JSONObject path = paths.getJSONObject(i);
+
+                                JSONObject object = path.getString("objectType").equals("array") ?
+                                        data.getJSONObject(d).has(path.getString("objectKey")) ?
+                                                data.getJSONObject(d).getJSONArray(path.getString("objectKey")).getJSONObject(path.getInt("index"))
+                                                : null
+                                        : data.getJSONObject(d).getJSONObject(path.getString("objectKey"));
+
+                                if (object != null) {
+                                    result.put(path.getString("dataKey"), object.get(path.getString("dataKey")).toString());
+                                } else {
+                                    log.info("we have no key for " + data.getJSONObject(d).toString());
+                                }
+                            });
+                    results.put(result);
+                }
+
+        );
+
+        return results;
+    };
+    BiFunction<JSONArray, JSONObject, Object> extract = (config, event) -> {
+
+
+        for (int i = 0; i < config.length(); i++) {
+
+            JSONObject temp = new JSONObject(config.getJSONObject(i).toString());
+
+            String key = temp.getString("key");
+            String index = temp.has("index") ? temp.getString("index") : "";
+            Boolean hasValue = temp.has("value");
+
+            switch (temp.getString("type")) {
+                case "array":
+                    if (index.equals("iterate")) {
+                        //we simply..process object / data item. as need both.
+                        return iterate.apply(temp.getJSONArray("data"), event.getJSONArray(key));
+                    }
+                    event = hasValue ? filter(event.getJSONArray(key), index, temp.getString("value")) : event.getJSONArray(key).getJSONObject(Integer.valueOf(index));
+                    break;
+                case "object":
+                    event = event.getJSONObject(key);
+                    break;
+                default:
+                    return event.getString(key);
+
+            }
+
+        }
+
+        return "";
+    };
+
 
     public ResultScraper(
             SportsScraperConfigurationFactory sportsScraperConfigurationFactory
@@ -68,73 +131,6 @@ public class ResultScraper {
 
         return results;
     }
-
-
-    BiFunction<JSONArray, JSONArray, JSONArray> iterate = (paths, data) -> {
-
-        JSONArray results = new JSONArray();
-
-        IntStream.range(0, data.length()).forEach(d -> {
-
-                    JSONObject result = new JSONObject();
-
-                    IntStream.range(0, paths.length()).forEach(
-                            i -> {
-                                JSONObject path = paths.getJSONObject(i);
-
-                                JSONObject object = path.getString("objectType").equals("array") ?
-                                        data.getJSONObject(d).has(path.getString("objectKey")) ?
-                                                data.getJSONObject(d).getJSONArray(path.getString("objectKey")).getJSONObject(path.getInt("index"))
-                                                : null
-                                        : data.getJSONObject(d).getJSONObject(path.getString("objectKey"));
-
-                                if (object != null) {
-                                    result.put(path.getString("dataKey"), object.get(path.getString("dataKey")).toString());
-                                } else {
-                                    log.info("we have no key for " + data.getJSONObject(d).toString());
-                                }
-                            });
-                    results.put(result);
-                }
-
-        );
-
-        return results;
-    };
-
-
-    BiFunction<JSONArray, JSONObject, Object> extract = (config, event) -> {
-
-
-        for (int i = 0; i < config.length(); i++) {
-
-            JSONObject temp = new JSONObject(config.getJSONObject(i).toString());
-
-            String key = temp.getString("key");
-            String index = temp.has("index") ? temp.getString("index") : "";
-            Boolean hasValue = temp.has("value");
-
-            switch (temp.getString("type")) {
-                case "array":
-                    if (index.equals("iterate")) {
-                        //we simply..process object / data item. as need both.
-                        return iterate.apply(temp.getJSONArray("data"), event.getJSONArray(key));
-                    }
-                    event = hasValue ? filter(event.getJSONArray(key), index, temp.getString("value")) : event.getJSONArray(key).getJSONObject(Integer.valueOf(index));
-                    break;
-                case "object":
-                    event = event.getJSONObject(key);
-                    break;
-                default:
-                    return event.getString(key);
-
-            }
-
-        }
-
-        return "";
-    };
-
 
     private JSONObject filter(JSONArray array, String index, String value) {
         for (int i = 0; i < array.length(); i++) {

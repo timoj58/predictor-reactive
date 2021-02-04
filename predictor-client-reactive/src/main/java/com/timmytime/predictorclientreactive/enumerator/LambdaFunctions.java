@@ -14,13 +14,13 @@ public enum LambdaFunctions {
     SHUTDOWN("predictor-destroy") //shuts down all the instances
     ;
 
-    public String getFunctionName() {
-        return functionName;
-    }
-
     private final String functionName;
 
     LambdaFunctions(String functionName) {
         this.functionName = functionName;
+    }
+
+    public String getFunctionName() {
+        return functionName;
     }
 }

@@ -34,28 +34,21 @@ public class PlayerResponseServiceImpl implements PlayerResponseService {
     private final PlayerService playerService;
     private final TeamService teamService;
     private final PlayerMatchService playerMatchService;
-
-    private final Flux<FantasyOutcome> receiver;
-    private Consumer<FantasyOutcome> consumer;
-
     private final Integer delay;
-
     private final Map<UUID, List<FantasyEventTypes>> byPlayer = new HashMap<>();
-
     private final FantasyResponseTransformer fantasyResponseTransformer = new FantasyResponseTransformer();
-
     private final List<FantasyEventTypes> ALL_EVENTS =
-            Arrays.asList(FantasyEventTypes.values()).stream().filter(f -> f.getPredict() == Boolean.TRUE).collect(Collectors.toList());
-
+            Arrays.stream(FantasyEventTypes.values()).filter(f -> f.getPredict() == Boolean.TRUE).collect(Collectors.toList());
     BiFunction<List<PlayerMatch>, FantasyEventTypes, Integer> getTotals = (playerAppearances, fantasyEventTypes) -> {
 
         //TODO tidy this all up from old code a mess now
         List<PlayerEvent> statMetrics = new ArrayList<>();
-        playerAppearances.stream().forEach(
-                playerAppearance -> playerAppearance.getStats().stream().forEach(stat -> statMetrics.add(new PlayerEvent(stat))));
+        playerAppearances.forEach(
+                playerAppearance -> playerAppearance.getStats().forEach(stat -> statMetrics.add(new PlayerEvent(stat))));
 
-        return statMetrics.stream().filter(f -> f.getEventType().equals(fantasyEventTypes)).mapToInt(m -> m.getValue()).sum();
+        return statMetrics.stream().filter(f -> f.getEventType().equals(fantasyEventTypes)).mapToInt(PlayerEvent::getValue).sum();
     };
+    private Consumer<FantasyOutcome> consumer;
 
     @Autowired
     public PlayerResponseServiceImpl(
@@ -73,10 +66,9 @@ public class PlayerResponseServiceImpl implements PlayerResponseService {
         this.playerMatchService = playerMatchService;
         this.playerResponseRepo = playerResponseRepo;
 
-        this.receiver
-                = Flux.push(sink -> consumer = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
+        Flux<FantasyOutcome> receiver = Flux.push(sink -> consumer = sink::next, FluxSink.OverflowStrategy.BUFFER);
 
-        this.receiver.subscribe(this::process);
+        receiver.subscribe(this::process);
 
     }
 
@@ -115,8 +107,7 @@ public class PlayerResponseServiceImpl implements PlayerResponseService {
                 })
                 .doFinally(save -> {
                     if (!fantasyOutcomesValidated.isEmpty()) {
-                        Arrays.asList(FantasyEventTypes.values())
-                                .stream()
+                        Arrays.stream(FantasyEventTypes.values())
                                 .filter(f -> f.getPredict() == Boolean.TRUE)
                                 .forEach(event -> {
                                     List<FantasyOutcome> filtered = fantasyOutcomesValidated.stream().filter(f -> f.getFantasyEventType().equals(event)).collect(Collectors.toList());
@@ -150,12 +141,11 @@ public class PlayerResponseServiceImpl implements PlayerResponseService {
 
                         fantasyOutcomes.stream().collect(groupingBy(FantasyOutcome::getOpponent))
                                 .values()
-                                .stream()
                                 .forEach(match -> {
                                     FantasyResponse fantasyResponse = fantasyResponseTransformer.transform.apply(match);
 
-                                    UUID opponent = match.stream().map(m -> m.getOpponent()).distinct().findFirst().get();
-                                    Boolean isHome = match.stream().map(m -> m.getHome()).distinct().findFirst().get().contentEquals("home");
+                                    UUID opponent = match.stream().map(FantasyOutcome::getOpponent).distinct().findFirst().get();
+                                    Boolean isHome = match.stream().map(FantasyOutcome::getHome).distinct().findFirst().get().contentEquals("home");
 
                                     fantasyResponse.setOpponent(teamService.getTeam(opponent).getLabel());
                                     fantasyResponse.setIsHome(isHome);
@@ -188,7 +178,7 @@ public class PlayerResponseServiceImpl implements PlayerResponseService {
                             player,
                             "01-08-2009",
                             LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
-                            (data) -> playerMatches.add(data)
+                            playerMatches::add
                     ))
                     .doFinally(start -> Mono.just(fantasyOutcome)
                             .delayElement(Duration.ofSeconds(10 * delay))

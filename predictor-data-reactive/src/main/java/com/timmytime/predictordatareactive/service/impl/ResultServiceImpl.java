@@ -19,7 +19,6 @@ import java.util.function.Consumer;
 public class ResultServiceImpl implements ResultService {
 
     private final ResultRepo resultRepo;
-    private final Flux<Result> results;
     private Consumer<Result> receive;
 
     @Autowired
@@ -29,10 +28,10 @@ public class ResultServiceImpl implements ResultService {
     ) {
         this.resultRepo = resultRepo;
 
-        this.results = Flux.push(sink ->
-                ResultServiceImpl.this.receive = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
+        Flux<Result> results = Flux.push(sink ->
+                ResultServiceImpl.this.receive = sink::next, FluxSink.OverflowStrategy.BUFFER);
 
-        this.results.subscribe(matchFactory::createMatch);
+        results.subscribe(matchFactory::createMatch);
     }
 
     @Override

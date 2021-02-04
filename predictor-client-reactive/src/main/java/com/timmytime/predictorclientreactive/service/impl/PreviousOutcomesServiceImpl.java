@@ -47,7 +47,6 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
 
     private final Integer delay;
 
-    private final Flux<Triple<EventOutcome, PredictionOutcomeResponse, Pair<Long, Team>>> outcomes;
     private Consumer<Triple<EventOutcome, PredictionOutcomeResponse, Pair<Long, Team>>> receiver;
 
     @Autowired
@@ -68,16 +67,16 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
         this.teamService = teamService;
         this.shutdownService = shutdownService;
 
-        this.outcomes = Flux.push(sink ->
-                PreviousOutcomesServiceImpl.this.receiver = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
-        this.outcomes.subscribe(this::saveOutcome);
+        Flux<Triple<EventOutcome, PredictionOutcomeResponse, Pair<Long, Team>>> outcomes = Flux.push(sink ->
+                PreviousOutcomesServiceImpl.this.receiver = sink::next, FluxSink.OverflowStrategy.BUFFER);
+        outcomes.subscribe(this::saveOutcome);
     }
 
 
     @Override
     public void load() {
 
-        CompletableFuture.runAsync(() -> init())
+        CompletableFuture.runAsync(this::init)
                 .thenRun(() ->
                         Flux.fromStream(Arrays.stream(CountryCompetitions.values()))
                                 .delayElements(Duration.ofSeconds(delay * 20))

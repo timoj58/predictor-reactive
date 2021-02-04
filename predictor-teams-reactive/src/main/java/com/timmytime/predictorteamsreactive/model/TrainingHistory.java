@@ -19,12 +19,12 @@ import java.util.UUID;
 @AllArgsConstructor
 public class TrainingHistory {
 
-    @Id
-    private UUID id;
     LocalDateTime date;
     //important
     LocalDateTime fromDate;
     LocalDateTime toDate;
+    @Id
+    private UUID id;
     private String country;
     private Boolean completed = Boolean.FALSE;
     private Training type = Training.TRAIN_RESULTS;

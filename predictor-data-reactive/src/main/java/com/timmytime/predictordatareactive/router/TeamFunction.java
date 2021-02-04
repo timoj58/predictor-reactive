@@ -4,7 +4,6 @@ import com.timmytime.predictordatareactive.handler.TeamHandler;
 import com.timmytime.predictordatareactive.service.TeamService;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;

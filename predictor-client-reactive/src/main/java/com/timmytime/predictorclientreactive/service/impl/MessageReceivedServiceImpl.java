@@ -6,7 +6,6 @@ import com.timmytime.predictorclientreactive.facade.LambdaFacade;
 import com.timmytime.predictorclientreactive.request.Message;
 import com.timmytime.predictorclientreactive.service.ILoadService;
 import com.timmytime.predictorclientreactive.service.MessageReceivedService;
-import com.timmytime.predictorclientreactive.service.TeamService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,7 +57,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                             .thenRun(() -> {
                                 if (ready()) {
                                     log.info("all messages received");
-                                    CompletableFuture.runAsync(() -> load());
+                                    CompletableFuture.runAsync(this::load);
                                 }
                             });
                 }
@@ -77,11 +76,11 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         return received.containsAll(Arrays.asList(Messages.values()));
     }
 
-    private void process(Messages msg){
+    private void process(Messages msg) {
         log.info("processing {}", msg);
         received.add(msg);
 
-        switch (msg){
+        switch (msg) {
             case MATCH_PREDICTIONS:
                 lambdaFacade.invoke(LambdaFunctions.SHUTDOWN_ML_TEAMS.getFunctionName());
                 break;

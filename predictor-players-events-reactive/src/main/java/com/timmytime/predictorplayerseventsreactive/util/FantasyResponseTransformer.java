@@ -28,10 +28,10 @@ public class FantasyResponseTransformer {
         switch (event) {
             case SAVES:
             case MINUTES:
-                outcomes.stream().forEach(f -> result.put("accumulator", result.getDouble("accumulator") + getAverage(f.getPrediction())));
+                outcomes.forEach(f -> result.put("accumulator", result.getDouble("accumulator") + getAverage(f.getPrediction())));
                 break;
             default:
-                outcomes.stream().forEach(f -> result.put("accumulator", result.getDouble("accumulator") + getScores(f.getPrediction()).values().stream().mapToDouble(m -> m).sum()));
+                outcomes.forEach(f -> result.put("accumulator", result.getDouble("accumulator") + getScores(f.getPrediction()).values().stream().mapToDouble(m -> m).sum()));
         }
 
         return result.getDouble("accumulator");

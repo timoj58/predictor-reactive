@@ -68,7 +68,7 @@ public class S3Facade implements IS3Facade {
 
         ListObjectsV2Request listObjectsRequest = new ListObjectsV2Request()
                 .withBucketName("predictor-client-data")
-                .withPrefix(prefix+"/")
+                .withPrefix(prefix + "/")
                 .withMaxKeys(250);
         ListObjectsV2Result result;
 
@@ -78,7 +78,6 @@ public class S3Facade implements IS3Facade {
 
             result = s3.listObjectsV2(listObjectsRequest);
             result.getObjectSummaries()
-                    .stream()
                     .forEach(summary ->
                             Mono.just(summary)
                                     .doOnNext(details ->
@@ -88,7 +87,7 @@ public class S3Facade implements IS3Facade {
                                                     details.getBucketName(),
                                                     "archive/" + date + "/" + details.getKey()))
                                     ).doFinally(delete -> s3.deleteObject(new DeleteObjectRequest(summary.getBucketName(), summary.getKey())))
-                            .subscribe()
+                                    .subscribe()
                     );
 
         } while (result.isTruncated());

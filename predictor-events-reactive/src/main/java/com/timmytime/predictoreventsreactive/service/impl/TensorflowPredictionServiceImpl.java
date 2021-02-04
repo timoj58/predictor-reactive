@@ -22,13 +22,8 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
     private final String trainingHost;
     private final String resultsUrl;
     private final String goalsUrl;
-
-    private final Integer delay;
-
-    private final Flux<TensorflowPrediction> receiver;
-    private Consumer<TensorflowPrediction> consumer;
-
     private final WebClientFacade webClientFacade;
+    private Consumer<TensorflowPrediction> consumer;
 
 
     @Autowired
@@ -42,12 +37,10 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
         this.trainingHost = trainingHost;
         this.resultsUrl = resultsUrl;
         this.goalsUrl = goalsUrl;
-        this.delay = delay;
         this.webClientFacade = webClientFacade;
 
-        this.receiver
-                = Flux.push(sink -> consumer = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
-        this.receiver.delayElements(Duration.ofSeconds(delay * 2))
+        Flux<TensorflowPrediction> receiver = Flux.push(sink -> consumer = sink::next, FluxSink.OverflowStrategy.BUFFER);
+        receiver.delayElements(Duration.ofSeconds(delay * 2))
                 .limitRate(1)
                 .subscribe(this::process);
     }

@@ -76,7 +76,7 @@ public class PreviousFixtureServiceImpl implements ILoadService {
                                             .doOnNext(eventOutcomes::add)
                                             .doFinally(transform ->
                                                     {
-                                                        if(!byCompetition.containsKey(competition)){
+                                                        if (!byCompetition.containsKey(competition)) {
                                                             byCompetition.put(competition, new ArrayList<>());
                                                         }
 

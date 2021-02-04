@@ -55,7 +55,5 @@ public class BetwayEventsScraper {
         return results;
     }
 
-    ;
-
 
 }

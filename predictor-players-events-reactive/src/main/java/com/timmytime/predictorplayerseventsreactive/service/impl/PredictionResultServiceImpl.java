@@ -35,7 +35,7 @@ public class PredictionResultServiceImpl implements PredictionResultService {
 
                             log.info("saving prediction {} id: {}", fantasyOutcome.getFantasyEventType(), fantasyOutcome.getId());
                             fantasyOutcomeService.save(fantasyOutcome).subscribe(
-                                    outcome -> playerResponseService.addResult(outcome)
+                                    playerResponseService::addResult
                             );
 
                         })
@@ -63,7 +63,7 @@ public class PredictionResultServiceImpl implements PredictionResultService {
 
         List<Prediction> normalized = new ArrayList<>();
 
-        byIndex.keySet().stream().forEach(
+        byIndex.keySet().forEach(
                 key -> normalized.add(
                         new Prediction(key,
                                 byIndex.get(key)

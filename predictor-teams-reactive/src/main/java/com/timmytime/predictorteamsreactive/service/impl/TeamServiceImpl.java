@@ -12,16 +12,14 @@ import reactor.core.publisher.Flux;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service("teamService")
 public class TeamServiceImpl implements TeamService {
 
 
-    private Map<String, Map<UUID, Team>> teams = new HashMap<>();
-
     private final String dataHost;
+    private final Map<String, Map<UUID, Team>> teams = new HashMap<>();
 
     @Autowired
     public TeamServiceImpl(
@@ -35,7 +33,7 @@ public class TeamServiceImpl implements TeamService {
     public void loadTeams() {
 
         Flux.fromStream(
-                Arrays.asList(CountryCompetitions.values()).stream()
+                Arrays.stream(CountryCompetitions.values())
         ).subscribe(country -> {
                     teams.put(country.name().toLowerCase(), new HashMap<>());
                     WebClient.builder().build()
@@ -55,6 +53,6 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public List<Team> getTeams(String country) {
-        return teams.get(country).values().stream().collect(Collectors.toList());
+        return new ArrayList<>(teams.get(country).values());
     }
 }

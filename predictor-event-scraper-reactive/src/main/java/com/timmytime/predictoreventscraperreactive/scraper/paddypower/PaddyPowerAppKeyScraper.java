@@ -19,6 +19,11 @@ public class PaddyPowerAppKeyScraper {
 
     private final ScraperProxyFacade scraperProxyFacade;
 
+    @Autowired
+    public PaddyPowerAppKeyScraper(ScraperProxyFacade scraperProxyFacade) {
+        this.scraperProxyFacade = scraperProxyFacade;
+    }
+
     public String scrape(BookmakerSiteRules siteRules) {
 
         JSONObject key = new JSONObject(siteRules.getKeys().get(0));
@@ -42,13 +47,6 @@ public class PaddyPowerAppKeyScraper {
         }
 
         return appKey;
-    }
-
-    ;
-
-    @Autowired
-    public PaddyPowerAppKeyScraper(ScraperProxyFacade scraperProxyFacade) {
-        this.scraperProxyFacade = scraperProxyFacade;
     }
 
 }

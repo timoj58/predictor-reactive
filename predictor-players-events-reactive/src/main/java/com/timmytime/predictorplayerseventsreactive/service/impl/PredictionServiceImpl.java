@@ -14,7 +14,6 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
@@ -42,8 +41,8 @@ public class PredictionServiceImpl implements PredictionService {
 
         //init machine
         Flux.fromStream(
-                Arrays.asList("assists", "conceded", "goals", "minutes", "red", "saves", "yellow").stream()
-        ).subscribe(type -> tensorflowPredictionService.init(type));
+                Stream.of("assists", "conceded", "goals", "minutes", "red", "saves", "yellow")
+        ).subscribe(tensorflowPredictionService::init);
 
     }
 

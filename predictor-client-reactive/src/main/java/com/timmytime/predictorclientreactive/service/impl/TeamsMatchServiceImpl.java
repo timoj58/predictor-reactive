@@ -74,7 +74,7 @@ public class TeamsMatchServiceImpl implements ILoadService {
                             webClientFacade.getUpcomingEventOutcomes(eventsHost + "/events/" + competition)
                                     .doOnNext(event -> byCompetition.get(competition).add(transform(event)))
                                     .doFinally(save ->
-                                            Mono.just(competition).delayElement(Duration.ofMinutes(delay)).subscribe(key -> save(key)))
+                                            Mono.just(competition).delayElement(Duration.ofMinutes(delay)).subscribe(this::save))
                                     .subscribe();
                         }
                 )
@@ -85,7 +85,6 @@ public class TeamsMatchServiceImpl implements ILoadService {
         log.info("saving {}", competition);
 
         byCompetition.get(competition)
-                .stream()
                 .forEach(event -> {
                     try {
                         s3Facade.put("upcoming-events/" + competition + "/" + event.getHome().getId() + "/" + event.getAway().getId() + "/" + event.getEventType(),

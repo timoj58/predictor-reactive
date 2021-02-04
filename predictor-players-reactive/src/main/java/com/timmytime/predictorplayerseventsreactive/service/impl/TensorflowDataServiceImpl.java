@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 public class TensorflowDataServiceImpl implements TensorflowDataService {
 
     private final PlayerMatchRepo playerMatchRepo;
-    private final Flux<PlayerMatch> receiver;
     private Consumer<PlayerMatch> consumer;
 
     @Autowired
@@ -31,10 +30,9 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
     ) {
         this.playerMatchRepo = playerMatchRepo;
 
-        this.receiver
-                = Flux.push(sink -> consumer = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
+        Flux<PlayerMatch> receiver = Flux.push(sink -> consumer = sink::next, FluxSink.OverflowStrategy.BUFFER);
 
-        this.receiver.limitRate(1).subscribe(this::process);
+        receiver.limitRate(1).subscribe(this::process);
     }
 
 

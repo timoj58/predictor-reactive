@@ -20,8 +20,8 @@ public enum PlayerStats {
     }
 
     public static List<String> getKeys() {
-        return Arrays.asList(values()).stream()
-                .map(m -> m.getKey())
+        return Arrays.stream(values())
+                .map(PlayerStats::getKey)
                 .collect(Collectors.toList());
     }
 

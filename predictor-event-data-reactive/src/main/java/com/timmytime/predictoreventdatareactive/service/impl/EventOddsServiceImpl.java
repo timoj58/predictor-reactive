@@ -20,7 +20,6 @@ import java.util.function.Consumer;
 public class EventOddsServiceImpl implements EventOddsService {
 
     private final EventOddsRepo eventOddsRepo;
-    private final Flux<EventOdds> events;
     private Consumer<EventOdds> receive;
 
     @Autowired
@@ -29,10 +28,10 @@ public class EventOddsServiceImpl implements EventOddsService {
     ) {
         this.eventOddsRepo = eventOddsRepo;
 
-        this.events = Flux.push(sink ->
-                EventOddsServiceImpl.this.receive = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
+        Flux<EventOdds> events = Flux.push(sink ->
+                EventOddsServiceImpl.this.receive = sink::next, FluxSink.OverflowStrategy.BUFFER);
 
-        this.events.limitRate(1).subscribe(this::process);
+        events.limitRate(1).subscribe(this::process);
 
     }
 

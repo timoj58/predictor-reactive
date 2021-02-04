@@ -32,17 +32,16 @@ public enum CountryCompetitions {
     }
 
     public static CountryCompetitions findByCompetition(String competition) {
-        return Arrays.asList(
+        return Arrays.stream(
                 CountryCompetitions.values()
-        ).stream()
+        )
                 .filter(f -> f.getCompetitions().contains(competition))
                 .findFirst()
                 .get();
     }
 
     public static List<String> getAllCompetitions() {
-        return Arrays.asList(CountryCompetitions.values())
-                .stream()
+        return Arrays.stream(CountryCompetitions.values())
                 .map(CountryCompetitions::getCompetitions)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());

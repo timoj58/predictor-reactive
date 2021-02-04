@@ -61,22 +61,21 @@ public class TrainingHistoryServiceImpl implements TrainingHistoryService {
         if (trainingHistoryRepo.count() == 0) {
             log.info("initialize history");
 
-            Arrays.asList(
+            Arrays.stream(
                     CountryCompetitions.values()
-            ).stream()
+            )
                     .forEach(country ->
-                                Arrays.asList(Training.values())
-                                        .stream()
-                                        .forEach(type -> {
-                                            TrainingHistory trainingHistory = new TrainingHistory(
-                                                    type,
-                                                    country.name().toLowerCase(),
-                                                    LocalDate.parse("01-08-2009", DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay(),
-                                                    LocalDate.parse("01-08-2009", DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay());
+                            Arrays.stream(Training.values())
+                                    .forEach(type -> {
+                                        TrainingHistory trainingHistory = new TrainingHistory(
+                                                type,
+                                                country.name().toLowerCase(),
+                                                LocalDate.parse("01-08-2009", DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay(),
+                                                LocalDate.parse("01-08-2009", DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay());
 
-                                            trainingHistory.setCompleted(Boolean.TRUE);
-                                            trainingHistoryRepo.save(trainingHistory);
-                                        })
+                                        trainingHistory.setCompleted(Boolean.TRUE);
+                                        trainingHistoryRepo.save(trainingHistory);
+                                    })
                     );
 
 

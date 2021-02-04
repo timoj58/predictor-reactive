@@ -21,7 +21,6 @@ import java.util.function.Consumer;
 public class MessageReceivedServiceImpl implements MessageReceivedService {
 
     private final ProviderService providerService;
-    private final Flux<JsonNode> results;
     private Consumer<JsonNode> receive;
 
     @Autowired
@@ -30,16 +29,16 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     ) {
         this.providerService = providerService;
 
-        this.results = Flux.push(sink ->
-                MessageReceivedServiceImpl.this.receive = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
+        Flux<JsonNode> results = Flux.push(sink ->
+                MessageReceivedServiceImpl.this.receive = sink::next, FluxSink.OverflowStrategy.BUFFER);
 
-        this.results.limitRate(1).delayElements(Duration.ofMillis(500)).subscribe(this::process);
+        results.limitRate(1).delayElements(Duration.ofMillis(500)).subscribe(this::process);
     }
 
     @Override
     public Mono<Void> receive(Mono<JsonNode> received) {
         return
-                received.doOnNext(receive::accept)
+                received.doOnNext(receive)
                         .thenEmpty(Mono.empty());
     }
 

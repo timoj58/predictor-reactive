@@ -19,7 +19,6 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
 
 
     private final ResultService resultService;
-    private final Flux<JsonNode> results;
     private Consumer<JsonNode> receive;
 
     @Autowired
@@ -28,17 +27,16 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     ) {
         this.resultService = resultService;
 
-        this.results = Flux.push(sink ->
+        Flux<JsonNode> results = Flux.push(sink ->
                 MessageReceivedServiceImpl.this.receive = sink::next, FluxSink.OverflowStrategy.BUFFER);
 
-        this.results.subscribe(this::process);
+        results.subscribe(this::process);
     }
 
     @Override
     public Mono<Void> receive(Mono<JsonNode> received) {
-        return
-                received.doOnNext(receive::accept)
-                        .thenEmpty(Mono.empty());
+        return received.doOnNext(receive)
+                .thenEmpty(Mono.empty());
     }
 
     @Override

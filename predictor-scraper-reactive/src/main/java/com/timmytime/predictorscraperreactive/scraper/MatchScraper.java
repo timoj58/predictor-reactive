@@ -26,6 +26,86 @@ import java.util.stream.IntStream;
 public class MatchScraper implements IScraper<Match> {
     private final SportsScraperConfigurationFactory sportsScraperConfigurationFactory;
     private final RestTemplate restTemplate = new RestTemplate();
+    Function<String, JsonNode> parse = data -> {
+        JSONObject parse = new JSONObject();
+
+        Document document = Parser.htmlParser().parseInput(data, "");
+
+        //the actual result is easy.
+        parse.put("value", document.text());
+
+        String classes = data.replace("<td ", "");
+
+        classes = classes.substring(0, classes.indexOf(">"));
+
+        Arrays.asList(classes.split("\\s+")).stream().forEach(
+                f ->
+                        parse.put(f.split("=")[0], f.split("=")[1].replace("\"", ""))
+        );
+
+
+        try {
+            return new ObjectMapper().readTree(parse.toString());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("failed to map data");
+        }
+    };
+    BiFunction<String, String, List<JsonNode>> parseOthers = (id, data) -> {
+
+        JSONObject result = new JSONObject();
+        JSONObject result2 = null;
+
+        switch (id) {
+            case "posession-home":
+                result.put("data-stat", "possession");
+                result.put("data-home-away", "home");
+                result.put("value", data.replace("%", ""));
+                break;
+            case "posession-away":
+                result.put("data-stat", "possession");
+                result.put("data-home-away", "away");
+                result.put("value", data.replace("%", ""));
+                break;
+            case "shots-home":
+                result.put("data-stat", "shots");
+                result.put("data-home-away", "home");
+                result.put("value", data.substring(0, data.indexOf(" ")));
+                result2 = new JSONObject();
+                result2.put("data-stat", "onTarget");
+                result2.put("data-home-away", "home");
+                result2.put("value", data.substring(data.indexOf("(") + 1, data.indexOf(")")));
+                break;
+            case "shots-away":
+                result.put("data-stat", "shots");
+                result.put("data-home-away", "away");
+                result.put("value", data.substring(0, data.indexOf(" ")));
+                result2 = new JSONObject();
+                result2.put("data-stat", "onTarget");
+                result2.put("data-home-away", "away");
+                result2.put("value", data.substring(data.indexOf("(") + 1, data.indexOf(")")));
+                break;
+
+        }
+
+        List<JsonNode> results = new ArrayList<>();
+
+        try {
+            results.add(new ObjectMapper().readTree(result.toString()));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("failed to map data");
+        }
+
+        if (result2 != null) {
+            try {
+                results.add(new ObjectMapper().readTree(result2.toString()));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("failed to map data");
+            }
+        }
+
+        return results;
+
+    };
 
     public MatchScraper(
             SportsScraperConfigurationFactory sportsScraperConfigurationFactory
@@ -103,86 +183,4 @@ public class MatchScraper implements IScraper<Match> {
 
         return match;
     }
-
-    Function<String, JsonNode> parse = data -> {
-        JSONObject parse = new JSONObject();
-
-        Document document = Parser.htmlParser().parseInput(data, "");
-
-        //the actual result is easy.
-        parse.put("value", document.text());
-
-        String classes = data.replace("<td ", "");
-
-        classes = classes.substring(0, classes.indexOf(">"));
-
-        Arrays.asList(classes.split("\\s+")).stream().forEach(
-                f ->
-                        parse.put(f.split("=")[0], f.split("=")[1].replace("\"", ""))
-        );
-
-
-        try {
-            return new ObjectMapper().readTree(parse.toString());
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("failed to map data");
-        }
-    };
-
-    BiFunction<String, String, List<JsonNode>> parseOthers = (id, data) -> {
-
-        JSONObject result = new JSONObject();
-        JSONObject result2 = null;
-
-        switch (id) {
-            case "posession-home":
-                result.put("data-stat", "possession");
-                result.put("data-home-away", "home");
-                result.put("value", data.replace("%", ""));
-                break;
-            case "posession-away":
-                result.put("data-stat", "possession");
-                result.put("data-home-away", "away");
-                result.put("value", data.replace("%", ""));
-                break;
-            case "shots-home":
-                result.put("data-stat", "shots");
-                result.put("data-home-away", "home");
-                result.put("value", data.substring(0, data.indexOf(" ")));
-                result2 = new JSONObject();
-                result2.put("data-stat", "onTarget");
-                result2.put("data-home-away", "home");
-                result2.put("value", data.substring(data.indexOf("(") + 1, data.indexOf(")")));
-                break;
-            case "shots-away":
-                result.put("data-stat", "shots");
-                result.put("data-home-away", "away");
-                result.put("value", data.substring(0, data.indexOf(" ")));
-                result2 = new JSONObject();
-                result2.put("data-stat", "onTarget");
-                result2.put("data-home-away", "away");
-                result2.put("value", data.substring(data.indexOf("(") + 1, data.indexOf(")")));
-                break;
-
-        }
-
-        List<JsonNode> results = new ArrayList<>();
-
-        try {
-            results.add(new ObjectMapper().readTree(result.toString()));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("failed to map data");
-        }
-
-        if (result2 != null) {
-            try {
-                results.add(new ObjectMapper().readTree(result2.toString()));
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException("failed to map data");
-            }
-        }
-
-        return results;
-
-    };
 }

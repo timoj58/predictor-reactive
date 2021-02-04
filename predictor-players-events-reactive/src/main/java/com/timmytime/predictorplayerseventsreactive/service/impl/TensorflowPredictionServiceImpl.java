@@ -32,7 +32,6 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
 
     private final WebClientFacade webClientFacade;
 
-    private final Flux<TensorflowPrediction> receiver;
     private Consumer<TensorflowPrediction> consumer;
 
 
@@ -63,9 +62,8 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
 
         this.webClientFacade = webClientFacade;
 
-        this.receiver
-                = Flux.push(sink -> consumer = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
-        this.receiver.delayElements(Duration.ofMillis(600)) //this seems to be current time scale.  prediction -> result.
+        Flux<TensorflowPrediction> receiver = Flux.push(sink -> consumer = sink::next, FluxSink.OverflowStrategy.BUFFER);
+        receiver.delayElements(Duration.ofMillis(600)) //this seems to be current time scale.  prediction -> result.
                 .limitRate(1)
                 .subscribe(this::process);
 

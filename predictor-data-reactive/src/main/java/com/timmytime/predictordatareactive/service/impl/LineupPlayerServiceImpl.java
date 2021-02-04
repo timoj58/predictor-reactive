@@ -38,39 +38,38 @@ public class LineupPlayerServiceImpl implements LineupPlayerService {
             String lineupType
     ) {
 
-        playerService.process(players).stream()
-                .forEach(homePlayers ->
-                        homePlayers.subscribe(
-                                homePlayer -> { //wrong now...
-                                    lineupPlayerRepo.save(
-                                            new LineupPlayer(homePlayer.getId(), homePlayer.getDuration(), matchId, team.getId(), date)
-                                    ).subscribe();
+        playerService.process(players).forEach(homePlayers ->
+                homePlayers.subscribe(
+                        homePlayer -> { //wrong now...
+                            lineupPlayerRepo.save(
+                                    new LineupPlayer(homePlayer.getId(), homePlayer.getDuration(), matchId, team.getId(), date)
+                            ).subscribe();
 
 
-                                    homePlayer.setLastAppearance(date.toLocalDate());
-                                    homePlayer.setLatestTeam(team.getId());
-                                    //create player stats...
-                                    if (Arrays.asList("players", "subs").contains(lineupType)) {
-                                        statMetricService.createPlayerMatchEventMetrics(
-                                                matchId,
-                                                homePlayer,
-                                                resultData,
-                                                date
-                                        ).forEach(Mono::subscribe);
+                            homePlayer.setLastAppearance(date.toLocalDate());
+                            homePlayer.setLatestTeam(team.getId());
+                            //create player stats...
+                            if (Arrays.asList("players", "subs").contains(lineupType)) {
+                                statMetricService.createPlayerMatchEventMetrics(
+                                        matchId,
+                                        homePlayer,
+                                        resultData,
+                                        date
+                                ).forEach(Mono::subscribe);
 
-                                        statMetricService.createPlayerIndividualEventMetrics(
-                                                matchId,
-                                                homePlayer,
-                                                date
-                                        ).forEach(Mono::subscribe);
+                                statMetricService.createPlayerIndividualEventMetrics(
+                                        matchId,
+                                        homePlayer,
+                                        date
+                                ).forEach(Mono::subscribe);
 
-                                        //save player...
-                                        playerService.save(homePlayer).subscribe(
-                                                playerService::addFantasyFootballer
-                                        );
-                                    }
-                                }
-                        ));
+                                //save player...
+                                playerService.save(homePlayer).subscribe(
+                                        playerService::addFantasyFootballer
+                                );
+                            }
+                        }
+                ));
     }
 
     @Override

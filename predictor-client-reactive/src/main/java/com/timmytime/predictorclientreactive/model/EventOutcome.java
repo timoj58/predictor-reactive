@@ -1,6 +1,5 @@
 package com.timmytime.predictorclientreactive.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import java.time.LocalDateTime;

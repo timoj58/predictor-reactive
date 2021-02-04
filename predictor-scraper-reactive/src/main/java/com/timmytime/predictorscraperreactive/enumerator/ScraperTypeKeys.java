@@ -6,5 +6,5 @@ public enum ScraperTypeKeys {
     MATCHES,
     PLAYER_STATS,
     PLAYERS_TEAMS,
-    SPECIAL_CASES;
+    SPECIAL_CASES
 }

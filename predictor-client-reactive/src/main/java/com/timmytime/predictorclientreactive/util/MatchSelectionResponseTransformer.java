@@ -7,7 +7,6 @@ import com.timmytime.predictorclientreactive.model.PlayerResponse;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -55,36 +54,35 @@ public class MatchSelectionResponseTransformer {
 
         //ok the hard part...so wait.  a bit.  need to filter the map..on combined totals pretty much.
         //or map the lot to a simple map of <PlayerId, Value> or each event. then select top 5 sorted....
-        combined.stream()
-                .forEach(player -> {
+        combined.forEach(player -> {
 
-                    goals.add(
-                            new PlayerEventScore(player, player.getFantasyResponse()
-                                    .stream()
-                                    .mapToDouble(m -> score.apply(m.getGoals())).findFirst().orElse(0.0))
-                    );
+            goals.add(
+                    new PlayerEventScore(player, player.getFantasyResponse()
+                            .stream()
+                            .mapToDouble(m -> score.apply(m.getGoals())).findFirst().orElse(0.0))
+            );
 
-                    assists.add(
-                            new PlayerEventScore(player, player.getFantasyResponse()
-                                    .stream()
-                                    .mapToDouble(m -> score.apply(m.getAssists())).findFirst().orElse(0.0))
-                    );
+            assists.add(
+                    new PlayerEventScore(player, player.getFantasyResponse()
+                            .stream()
+                            .mapToDouble(m -> score.apply(m.getAssists())).findFirst().orElse(0.0))
+            );
 
-                    if (player.getSaves() != null) {
-                        saves.add(
-                                new PlayerEventScore(player, player.getFantasyResponse()
-                                        .stream()
-                                        .mapToDouble(m -> m.getSaves()).findFirst().orElse(0.0))
-                        );
-                    }
+            if (player.getSaves() != null) {
+                saves.add(
+                        new PlayerEventScore(player, player.getFantasyResponse()
+                                .stream()
+                                .mapToDouble(m -> m.getSaves()).findFirst().orElse(0.0))
+                );
+            }
 
-                    yellows.add(
-                            new PlayerEventScore(player, player.getFantasyResponse()
-                                    .stream()
-                                    .mapToDouble(m -> score.apply(m.getYellowCards())).findFirst().orElse(0.0))
-                    );
+            yellows.add(
+                    new PlayerEventScore(player, player.getFantasyResponse()
+                            .stream()
+                            .mapToDouble(m -> score.apply(m.getYellowCards())).findFirst().orElse(0.0))
+            );
 
-                });
+        });
 
 
         matchSelectionResponses.add(create.apply(goals, FantasyEventTypes.GOALS));
@@ -97,7 +95,7 @@ public class MatchSelectionResponseTransformer {
 
     @Getter
     @Setter
-    private class PlayerEventScore {
+    private static class PlayerEventScore {
 
         private PlayerResponse playerResponse;
         private Double score;

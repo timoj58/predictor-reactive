@@ -38,9 +38,9 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         this.predictionResultService = predictionResultService;
         this.predictionMonitorService = predictionMonitorService;
 
-        Arrays.asList(
+        Arrays.stream(
                 ApplicableFantasyLeagues.values()
-        ).stream()
+        )
                 .map(ApplicableFantasyLeagues::getCountry)
                 .distinct()
                 .forEach(country -> messages.put(country.toLowerCase(), new ArrayList<>()));
@@ -60,7 +60,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                             CompletableFuture.runAsync(() -> predictionService.start(msg.getCountry().toLowerCase()))
                                     .thenRun(() -> Mono.just(msg.getCountry().toLowerCase())
                                             .delayElement(Duration.ofMinutes(1))
-                                            .subscribe(v -> predictionMonitorService.addCountry(v))
+                                            .subscribe(predictionMonitorService::addCountry)
                                     );
                         }
                     } else {

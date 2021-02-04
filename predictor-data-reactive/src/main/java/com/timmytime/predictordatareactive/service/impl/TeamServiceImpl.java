@@ -68,7 +68,7 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public void updateCompetition(List<Team> teams, String competition) {
-        teams.stream().forEach(team -> {
+        teams.forEach(team -> {
             team.setCompetition(competition);
             teamRepo.save(team).subscribe();
         });

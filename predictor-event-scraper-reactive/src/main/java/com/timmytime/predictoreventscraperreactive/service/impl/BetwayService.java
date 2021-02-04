@@ -86,29 +86,29 @@ public class BetwayService implements BookmakerService {
         )
                 .delayElements(Duration.ofMinutes(delay))
                 .subscribe(league ->
-                Mono.just(
-                        leagueRules.stream().filter(f -> f.getId().equals(league)).findFirst().get()
-                )
-                        .doOnNext(scraper ->
-                                Flux.fromStream(
-                                        betwayScraperFactory.getEventsScraper().scrape(
-                                                bookmakerSiteRules
-                                                        .stream()
-                                                        .filter(f -> f.getType().equals("leagues") && f.getId().equals("generic"))
-                                                        .findFirst()
-                                                        .get()
-                                                , scraper).stream()
-                                )
-                                        .subscribe(id ->
-                                                messageService.send(
-                                                        betwayScraperFactory.getEventScraper().scrape(eventRules, new JSONObject().put("eventId", id), scraper.getId()))
+                        Mono.just(
+                                leagueRules.stream().filter(f -> f.getId().equals(league)).findFirst().get()
+                        )
+                                .doOnNext(scraper ->
+                                        Flux.fromStream(
+                                                betwayScraperFactory.getEventsScraper().scrape(
+                                                        bookmakerSiteRules
+                                                                .stream()
+                                                                .filter(f -> f.getType().equals("leagues") && f.getId().equals("generic"))
+                                                                .findFirst()
+                                                                .get()
+                                                        , scraper).stream()
                                         )
-                        ).doFinally(end ->
-                        Mono.just(ScraperTypeKeys.BETWAY_ODDS.name())
-                                .delayElement(Duration.ofMinutes(5 * delay))
-                                .subscribe(provider -> messageService.send(provider, league))
-                ).subscribe()
-        );
+                                                .subscribe(id ->
+                                                        messageService.send(
+                                                                betwayScraperFactory.getEventScraper().scrape(eventRules, new JSONObject().put("eventId", id), scraper.getId()))
+                                                )
+                                ).doFinally(end ->
+                                Mono.just(ScraperTypeKeys.BETWAY_ODDS.name())
+                                        .delayElement(Duration.ofMinutes(5 * delay))
+                                        .subscribe(provider -> messageService.send(provider, league))
+                        ).subscribe()
+                );
 
     }
 

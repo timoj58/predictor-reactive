@@ -28,7 +28,40 @@ import java.util.stream.IntStream;
 public class LineupScraper implements IScraper<Lineup> {
     private final SportsScraperConfigurationFactory sportsScraperConfigurationFactory;
     private final RestTemplate restTemplate = new RestTemplate();
+    BiFunction<String, Integer, JSONObject> createPlayer = (name, time) ->
+            new JSONObject().put("name", name).put("time", time);
+    Function<String, Integer> getTime = time -> {
+        Matcher matcher = Pattern.compile("\\d+").matcher(time);
 
+        if (matcher.find()) {
+            return Integer.valueOf(matcher.group(0));
+        }
+        return 0;
+    };
+    //for a bug in espn
+    BiFunction<JSONArray, JSONObject, Boolean> contains = (players, player) -> {
+        Boolean found = Boolean.FALSE;
+        for (int i = 0; i < players.length(); i++) {
+            if (players.getJSONObject(i).getString("name").equals(player.getString("name"))) {
+                found = Boolean.TRUE;
+            }
+        }
+
+        return found;
+    };
+    Function<Elements, Integer> getSubTime = path -> {
+
+        Pattern pattern = Pattern.compile("(?<=detail\">)(.*)(?=</span)");
+        Matcher matcher = pattern.matcher(path.toString());
+
+        String time = "";
+
+        while (matcher.find()) {
+            time = matcher.group(1);
+        }
+
+        return getTime.apply(time);
+    };
     public LineupScraper(
             SportsScraperConfigurationFactory sportsScraperConfigurationFactory
     ) {
@@ -156,40 +189,4 @@ public class LineupScraper implements IScraper<Lineup> {
         lineup.setType("lineup");
         return new PlayerStatsScraper(sportsScraperConfigurationFactory, lineup).scrape(matchId);
     }
-
-
-    BiFunction<String, Integer, JSONObject> createPlayer = (name, time) ->
-            new JSONObject().put("name", name).put("time", time);
-    Function<String, Integer> getTime = time -> {
-        Matcher matcher = Pattern.compile("\\d+").matcher(time);
-
-        if (matcher.find()) {
-            return Integer.valueOf(matcher.group(0));
-        }
-        return 0;
-    };
-    //for a bug in espn
-    BiFunction<JSONArray, JSONObject, Boolean> contains = (players, player) -> {
-        Boolean found = Boolean.FALSE;
-        for (int i = 0; i < players.length(); i++) {
-            if (players.getJSONObject(i).getString("name").equals(player.getString("name"))) {
-                found = Boolean.TRUE;
-            }
-        }
-
-        return found;
-    };
-    Function<Elements, Integer> getSubTime = path -> {
-
-        Pattern pattern = Pattern.compile("(?<=detail\">)(.*)(?=</span)");
-        Matcher matcher = pattern.matcher(path.toString());
-
-        String time = "";
-
-        while (matcher.find()) {
-            time = matcher.group(1);
-        }
-
-        return getTime.apply(time);
-    };
 }

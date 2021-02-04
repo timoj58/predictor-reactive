@@ -65,7 +65,7 @@ public class PredictionResultServiceImpl implements PredictionResultService {
 
         List<PredictionLine> normalized = new ArrayList<>();
 
-        byIndex.keySet().stream().forEach(
+        byIndex.keySet().forEach(
                 key -> normalized.add(
                         new PredictionLine(key,
                                 byIndex.get(key)

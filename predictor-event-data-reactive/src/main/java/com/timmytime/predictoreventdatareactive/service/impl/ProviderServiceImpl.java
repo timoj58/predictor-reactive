@@ -23,9 +23,6 @@ import java.util.stream.IntStream;
 @Service("providerService")
 public class ProviderServiceImpl implements ProviderService {
 
-    private final Flux<Pair<Providers, JsonNode>> messages;
-    private final Flux<JSONObject> events;
-    private Flux<Pair<JSONObject, Consumer<JSONObject>>> bets;
     private Consumer<Pair<Providers, JsonNode>> receiveJson;
     private Consumer<JSONObject> receiveEvent;
     private Consumer<Pair<JSONObject, Consumer<JSONObject>>> betsReceived;
@@ -36,17 +33,17 @@ public class ProviderServiceImpl implements ProviderService {
             BetwayService betwayService,
             PaddyPowerService paddyPowerService
     ) {
-        this.messages = Flux.push(sink ->
-                ProviderServiceImpl.this.receiveJson = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
+        Flux<Pair<Providers, JsonNode>> messages = Flux.push(sink ->
+                ProviderServiceImpl.this.receiveJson = sink::next, FluxSink.OverflowStrategy.BUFFER);
 
-        this.events = Flux.push(sink ->
-                ProviderServiceImpl.this.receiveEvent = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
+        Flux<JSONObject> events = Flux.push(sink ->
+                ProviderServiceImpl.this.receiveEvent = sink::next, FluxSink.OverflowStrategy.BUFFER);
 
-        this.bets = Flux.push(sink ->
-                ProviderServiceImpl.this.betsReceived = (t) -> sink.next(t), FluxSink.OverflowStrategy.BUFFER);
+        Flux<Pair<JSONObject, Consumer<JSONObject>>> bets = Flux.push(sink ->
+                ProviderServiceImpl.this.betsReceived = sink::next, FluxSink.OverflowStrategy.BUFFER);
 
-        this.messages.limitRate(1).subscribe(msg -> process(msg).stream().forEach(receiveEvent::accept));
-        this.events.limitRate(1).subscribe(event -> {
+        messages.limitRate(1).subscribe(msg -> process(msg).forEach(receiveEvent));
+        events.limitRate(1).subscribe(event -> {
             switch (Providers.valueOf(event.getString("provider"))) {
                 case PADDYPOWER_ODDS:
                     processBets(paddyPowerService.prepare(event));
@@ -57,7 +54,7 @@ public class ProviderServiceImpl implements ProviderService {
             }
         });
 
-        this.bets.limitRate(1)
+        bets.limitRate(1)
                 .subscribe(bet -> bet.getRight().accept(bet.getLeft()));
     }
 

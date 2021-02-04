@@ -50,7 +50,6 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         this.webClientFacade = webClientFacade;
 
         Arrays.asList(CountryCompetitions.values())
-                .stream()
                 .forEach(country -> messages.put(country.name(), new ArrayList<>()));
 
     }

@@ -52,9 +52,9 @@ public class TrainingServiceImpl implements TrainingService {
         this.playerMatchService = playerMatchService;
         this.tensorflowDataService = tensorflowDataService;
 
-        toTrain = Arrays.asList(
+        toTrain = Arrays.stream(
                 FantasyEventTypes.values()
-        ).stream().filter(f -> f.getPredict() == Boolean.TRUE)
+        ).filter(f -> f.getPredict() == Boolean.TRUE)
                 .collect(Collectors.toList());
 
         first = toTrain.stream().findFirst().get();
@@ -110,14 +110,14 @@ public class TrainingServiceImpl implements TrainingService {
 
         var players = playerService.get();
         log.info("processing {} players", players.size());
-        CompletableFuture.runAsync(() -> tensorflowDataService.delete()) //note.  probably better not to delete it all.  given size of dataset. (and storage cost)
+        CompletableFuture.runAsync(tensorflowDataService::delete) //note.  probably better not to delete it all.  given size of dataset. (and storage cost)
                 .thenRun(() ->
                         Flux.fromStream(players.stream())
                                 .limitRate(1)
                                 .delayElements(Duration.ofMillis(playerDelay)) //maybe not needed.
                                 .doOnNext(player -> playerMatchService.create(
                                         player.getId(),
-                                        (data) -> tensorflowDataService.load(data)))
+                                        tensorflowDataService::load))
                                 .doFinally(train -> playersTrainingHistoryService.find(first).subscribe(this::train)
                                 )
                                 .subscribe()
@@ -127,8 +127,7 @@ public class TrainingServiceImpl implements TrainingService {
     @PostConstruct
     private void init() {
 
-        Arrays.asList(FantasyEventTypes.values())
-                .stream()
+        Arrays.stream(FantasyEventTypes.values())
                 .filter(f -> f.getPredict() == Boolean.TRUE)
                 .forEach(type ->
                         playersTrainingHistoryService.findOptional(type)

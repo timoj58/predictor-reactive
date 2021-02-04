@@ -13,10 +13,6 @@ public enum ApplicableFantasyLeagues {
     FRANCE_1("france"),
     PORTUGAL_1("portugal");
 
-    public String getCountry() {
-        return country;
-    }
-
     private final String country;
 
     ApplicableFantasyLeagues(String country) {
@@ -24,19 +20,23 @@ public enum ApplicableFantasyLeagues {
     }
 
     public static List<ApplicableFantasyLeagues> findByCountry(String country) {
-        return Arrays.asList(
+        return Arrays.stream(
                 ApplicableFantasyLeagues.values()
-        ).stream()
+        )
                 .filter(f -> f.getCountry().equalsIgnoreCase(country))
                 .collect(Collectors.toList());
     }
 
     public static List<String> getCountries() {
-        return Arrays.asList(
+        return Arrays.stream(
                 ApplicableFantasyLeagues.values()
-        ).stream()
+        )
                 .map(ApplicableFantasyLeagues::getCountry)
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    public String getCountry() {
+        return country;
     }
 }

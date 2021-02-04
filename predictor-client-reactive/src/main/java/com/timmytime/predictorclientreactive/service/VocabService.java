@@ -55,22 +55,22 @@ public class VocabService {
                         allTeams.append(team.getId()).append("\n");
                     });
 
-                    s3Facade.put("vocab/"+ country + "/team-vocab.txt", teamsVocab.get(country).toString());
+                    s3Facade.put("vocab/" + country + "/team-vocab.txt", teamsVocab.get(country).toString());
                 });
 
 
-        s3Facade.put("predictor-player-models","vocab/team-vocab.txt", allTeams.toString());
+        s3Facade.put("predictor-player-models", "vocab/team-vocab.txt", allTeams.toString());
 
         //players (async fine)
-        CompletableFuture.runAsync( () ->
-        webClientFacade.getFantasyPlayers(
-                dataHost + "/players/fantasy"
-        ).collectList()
-                .subscribe(players -> {
-                    StringBuilder playerVocab = new StringBuilder();
-                    players.forEach(player -> playerVocab.append(player.getId()).append("\n"));
-                    s3Facade.put("predictor-player-models","vocab/players-vocab.txt", playerVocab.toString());
-                })
+        CompletableFuture.runAsync(() ->
+                webClientFacade.getFantasyPlayers(
+                        dataHost + "/players/fantasy"
+                ).collectList()
+                        .subscribe(players -> {
+                            StringBuilder playerVocab = new StringBuilder();
+                            players.forEach(player -> playerVocab.append(player.getId()).append("\n"));
+                            s3Facade.put("predictor-player-models", "vocab/players-vocab.txt", playerVocab.toString());
+                        })
         );
 
         return Mono.empty();

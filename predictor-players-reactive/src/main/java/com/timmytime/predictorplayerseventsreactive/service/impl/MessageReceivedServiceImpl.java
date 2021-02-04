@@ -31,9 +31,9 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         this.trainingService = trainingService;
         this.playersTrainingHistoryService = playersTrainingHistoryService;
 
-        Arrays.asList(
+        Arrays.stream(
                 ApplicableFantasyLeagues.values()
-        ).stream()
+        )
                 .map(ApplicableFantasyLeagues::getCountry)
                 .distinct()
                 .forEach(country -> messages.put(country.toLowerCase(), new ArrayList<>()));
@@ -54,13 +54,13 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     @Override
     public Mono<Void> training(UUID id) {
         return playersTrainingHistoryService.find(id)
-                .doOnNext(history -> trainingService.train(history))
+                .doOnNext(trainingService::train)
                 .thenEmpty(Mono.empty());
     }
 
     @Override
     public Mono<Void> initTraining() {
-        CompletableFuture.runAsync(() -> trainingService.train());
+        CompletableFuture.runAsync(trainingService::train);
         return Mono.empty();
     }
 

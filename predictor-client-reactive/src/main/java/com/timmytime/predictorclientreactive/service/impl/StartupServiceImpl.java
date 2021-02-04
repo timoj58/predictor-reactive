@@ -102,7 +102,7 @@ public class StartupServiceImpl implements StartupService {
             );
         } else {
             log.info("stand alone mode");
-            CompletableFuture.runAsync(() -> teamService.loadTeams());
+            CompletableFuture.runAsync(teamService::loadTeams);
         }
 
     }
@@ -111,7 +111,7 @@ public class StartupServiceImpl implements StartupService {
         log.info("starting scrapers and loading teams");
         CompletableFuture.runAsync(() -> webClientFacade.startScraper(dataScraperHost + url))
                 .thenRun(() -> webClientFacade.startScraper(eventScraperHost + url))
-                .thenRun(() -> teamService.loadTeams());
+                .thenRun(teamService::loadTeams);
     }
 
 }

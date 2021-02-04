@@ -19,6 +19,7 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 
@@ -49,38 +50,24 @@ public class MatchFactory {
 
         var countryTeams = teamService.getTeams(resultData.getResult().getString("country"));
 
-        Optional<Team> homeTeam = teamService.getTeam(homeTeamLabel, resultData.getResult().getString("country"))
-                .or(() -> TeamLabelMatcher.match(homeTeamLabel, countryTeams))
-                .or(() -> Optional.of(teamService.createNewTeam(
-                        Team.builder()
-                                .label(homeTeamLabel)
-                                .competition(resultData.getResult().getString("competition")
-                                ).build()))
-                );
-
-        Optional<Team> awayTeam = teamService.getTeam(awayTeamLabel, resultData.getResult().getString("country"))
-                .or(() -> TeamLabelMatcher.match(awayTeamLabel, countryTeams))
-                .or(() -> Optional.of(teamService.createNewTeam(
-                        Team.builder()
-                                .label(awayTeamLabel)
-                                .competition(resultData.getResult().getString("competition")).build()))
-                );
+        Team homeTeam = getOrCreate(homeTeamLabel, resultData, countryTeams);
+        Team awayTeam = getOrCreate(awayTeamLabel, resultData, countryTeams);
 
         //so now can process as before...
-        teamService.updateCompetition(Arrays.asList(homeTeam.get(), awayTeam.get()), resultData.getResult().getString("competition"));
+        teamService.updateCompetition(Arrays.asList(homeTeam, awayTeam), resultData.getResult().getString("competition"));
 
         String eventDate = resultData.getResult().getString("date");
         LocalDateTime eventDateLdt = LocalDateTime.parse(eventDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm'Z'"));
 
-        matchService.getMatch(homeTeam.get().getId(), awayTeam.get().getId(), eventDateLdt.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+        matchService.getMatch(homeTeam.getId(), awayTeam.getId(), eventDateLdt.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
                 .switchIfEmpty(Mono.just(new Match()))
                 .subscribe(match ->
                 {
                     if (match.getId() == null) {
                         log.info("match nof, new event");
                         matchCreationService.create(
-                                homeTeam.get(),
-                                awayTeam.get(),
+                                homeTeam,
+                                awayTeam,
                                 eventDateLdt,
                                 resultData
                         );
@@ -88,8 +75,8 @@ public class MatchFactory {
                         log.info("a match is on file - repairing");
                         matchRepairService.repair(match);
                         matchCreationService.create(
-                                homeTeam.get(),
-                                awayTeam.get(),
+                                homeTeam,
+                                awayTeam,
                                 eventDateLdt,
                                 resultData
                         );
@@ -97,6 +84,18 @@ public class MatchFactory {
                     }
                 });
 
+    }
+
+    private Team getOrCreate(String label, ResultData resultData, List<Team> countryTeams) {
+        return teamService.getTeam(label, resultData.getResult().getString("country"))
+                .or(() -> TeamLabelMatcher.match(label, countryTeams))
+                .or(() -> Optional.of(teamService.createNewTeam(
+                        Team.builder()
+                                .label(label)
+                                .competition(resultData.getResult().getString("competition")
+                                ).build())
+                        )
+                ).get();
     }
 
 }
