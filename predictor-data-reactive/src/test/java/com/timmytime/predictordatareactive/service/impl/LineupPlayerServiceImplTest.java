@@ -30,19 +30,15 @@ class LineupPlayerServiceImplTest {
 
     private static final PlayerRepo playerRepo = mock(PlayerRepo.class);
     private static final StatMetricRepo statMetricRepo = mock(StatMetricRepo.class);
-
-    private final PlayerService playerService =
-            new PlayerServiceImpl(mock(TeamService.class), playerRepo, statMetricRepo);
     private static final LineupPlayerRepo lineupService = mock(LineupPlayerRepo.class);
-    private final StatMetricService statMetricService =
-            new StatMetricServiceImpl(statMetricRepo);
-
     private static Team team;
     private static UUID lineupId = UUID.randomUUID();
     private static UUID teamStatsId = UUID.randomUUID();
-
     private static ResultData resultData;
-
+    private final PlayerService playerService =
+            new PlayerServiceImpl(mock(TeamService.class), playerRepo, statMetricRepo);
+    private final StatMetricService statMetricService =
+            new StatMetricServiceImpl(statMetricRepo);
     private final LineupPlayerServiceImpl lineupPlayerService
             = new LineupPlayerServiceImpl(
             playerService,

@@ -15,7 +15,6 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -41,7 +40,7 @@ public class PredictionServiceImpl implements PredictionService {
 
         //init machine
         Flux.fromStream(
-                Stream.of("assists", "conceded", "goals", "minutes", "red", "saves", "yellow")
+                Stream.of("assists", "goals", "yellow")
         ).subscribe(tensorflowPredictionService::init);
 
     }
@@ -68,7 +67,7 @@ public class PredictionServiceImpl implements PredictionService {
     public void reProcess() {
 
         log.info("processing to fix");
-        CompletableFuture.runAsync(() -> fantasyOutcomeService.toFix()
+        fantasyOutcomeService.toFix()
                 .subscribe(fantasyOutcome ->
                         tensorflowPredictionService.predict(
                                 TensorflowPrediction.builder()
@@ -80,8 +79,7 @@ public class PredictionServiceImpl implements PredictionService {
                                                         fantasyOutcome.getOpponent(),
                                                         fantasyOutcome.getHome()))
                                         .build())
-                )
-        );
+                );
     }
 
     @Override
@@ -99,7 +97,6 @@ public class PredictionServiceImpl implements PredictionService {
                 .subscribe(player ->
                         Flux.fromArray(FantasyEventTypes.values())
                                 .filter(f -> f.getPredict() == Boolean.TRUE)
-                                .filter(f -> f != FantasyEventTypes.SAVES || player.getIsGoalkeeper())
                                 .limitRate(1)
                                 .subscribe(fantasyEvent ->
                                         fantasyOutcomeService.save(

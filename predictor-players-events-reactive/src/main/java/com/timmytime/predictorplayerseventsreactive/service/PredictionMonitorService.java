@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -66,6 +67,17 @@ public class PredictionMonitorService {
                     });
         }
 
+    }
+
+    //due to some issues to force a restart.
+    @PostConstruct
+    private void processOutstanding() {
+        predictionService.outstanding()
+                .subscribe(count -> {
+                    if (count > 0) {
+                        predictionService.reProcess();
+                    }
+                });
     }
 
     private JsonNode createMessage() {

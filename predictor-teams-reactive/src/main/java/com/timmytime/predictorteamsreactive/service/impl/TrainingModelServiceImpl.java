@@ -13,11 +13,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.time.Duration;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @Service("trainingModelService")
@@ -28,15 +29,15 @@ public class TrainingModelServiceImpl implements TrainingModelService {
     private final TrainingHistoryService trainingHistoryService;
     private final WebClientFacade webClientFacade;
     private final Integer interval;
-    private final Integer trainingDelay;
     private final String dataHost;
+
+    private final List<CountryCompetitions> countriesProcessed = new ArrayList<>();
 
 
     @Autowired
     public TrainingModelServiceImpl(
             @Value("${clients.data}") String dataHost,
             @Value("${delays.interval}") Integer interval,
-            @Value("${delays.training-init}") Integer trainingDelay,
             TensorflowDataService tensorflowDataService,
             TensorflowTrainService tensorflowTrainService,
             TrainingHistoryService trainingHistoryService,
@@ -44,33 +45,34 @@ public class TrainingModelServiceImpl implements TrainingModelService {
     ) {
         this.dataHost = dataHost;
         this.interval = interval;
-        this.trainingDelay = trainingDelay;
         this.tensorflowDataService = tensorflowDataService;
         this.tensorflowTrainService = tensorflowTrainService;
         this.trainingHistoryService = trainingHistoryService;
         this.webClientFacade = webClientFacade;
+
+        countriesProcessed.addAll(Arrays.asList(CountryCompetitions.values()));
     }
 
 
     @Override
     public void create() {
-
-        log.info("training init");
-
-        Flux.fromStream(
-                Arrays.stream(CountryCompetitions.values())
-        ).delayElements(Duration.ofMinutes(trainingDelay))
-                .subscribe(country -> {
-
-                    TrainingHistory trainingHistory = trainingHistoryService.next(Training.TRAIN_RESULTS, country.name(), interval);
-                    webClientFacade.getMatches(
-                            dataHost + "/match/country/" + trainingHistory.getCountry()
-                                    + "/" + trainingHistory.getFromDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-                                    + "/" + trainingHistory.getToDate().plusYears(interval).toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-                    ).doOnNext(match -> tensorflowDataService.load(new CountryMatch(trainingHistory.getCountry(), match)))
-                            .doFinally(f -> tensorflowTrainService.train(trainingHistory))
-                            .subscribe();
-                });
+        if (!countriesProcessed.isEmpty()) {
+            var toProcess = countriesProcessed.remove(0);
+            log.info("training init {}", toProcess.name());
+            Mono.just(toProcess)
+                    .subscribe(country -> {
+                        TrainingHistory trainingHistory = trainingHistoryService.next(Training.TRAIN_RESULTS, country.name(), interval);
+                        webClientFacade.getMatches(
+                                dataHost + "/match/country/" + trainingHistory.getCountry()
+                                        + "/" + trainingHistory.getFromDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                                        + "/" + trainingHistory.getToDate().plusYears(interval).toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                        ).doOnNext(match -> tensorflowDataService.load(new CountryMatch(trainingHistory.getCountry(), match)))
+                                .doFinally(f -> tensorflowTrainService.train(trainingHistory))
+                                .subscribe();
+                    });
+        } else {
+            log.info("all countries have been trained");
+        }
 
     }
 

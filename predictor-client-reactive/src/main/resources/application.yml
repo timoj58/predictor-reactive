@@ -18,4 +18,8 @@ delays:
   start: 3
 
 orchestration:
-    enabled: false
+  enabled: false
+
+vocab:
+  players: true
+  teams: false

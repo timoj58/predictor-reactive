@@ -26,12 +26,8 @@ class TrainingServiceImplTest {
     private TrainingServiceImpl trainingService
             = new TrainingServiceImpl(
             0,
-            0,
-            playerService,
             playersTrainingHistoryService,
-            tensorflowTrainingService,
-            playerMatchService,
-            tensorflowDataService);
+            tensorflowTrainingService);
 
     @Test
     public void justTrainTest() {

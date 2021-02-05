@@ -91,6 +91,7 @@ public class MatchFactory {
                 .or(() -> TeamLabelMatcher.match(label, countryTeams))
                 .or(() -> Optional.of(teamService.createNewTeam(
                         Team.builder()
+                                .country(resultData.getResult().getString("country"))
                                 .label(label)
                                 .competition(resultData.getResult().getString("competition")
                                 ).build())

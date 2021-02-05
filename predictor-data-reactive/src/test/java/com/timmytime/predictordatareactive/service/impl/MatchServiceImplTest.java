@@ -31,7 +31,7 @@ class MatchServiceImplTest {
     private TeamService teamService;
 
     @BeforeEach
-    void init(){
+    void init() {
         MockitoAnnotations.initMocks(this);
 
         when(teamService.getTeams(anyString())).thenReturn(Arrays.asList(
@@ -51,9 +51,8 @@ class MatchServiceImplTest {
     }
 
 
-
     @Test
-    void duplicateMatchesFilteredTest(){
+    void duplicateMatchesFilteredTest() {
 
         matchService.getMatchesByCountry("england", "01-01-2010", "01-01-2011").collectList()
                 .subscribe(matches -> assertThat(matches.size()).isEqualTo(1));

@@ -5,6 +5,8 @@ import com.timmytime.predictorplayerseventsreactive.model.PlayersTrainingHistory
 
 public interface TrainingService {
     void train(FantasyEventTypes type);
+
     void train(PlayersTrainingHistory playersTrainingHistory);
+
     FantasyEventTypes firstTrainingEvent();
 }

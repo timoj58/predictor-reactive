@@ -35,11 +35,14 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     private final WebClientFacade webClientFacade;
     private final String eventsHost;
     private final String playersHost;
+    private final Boolean trainingEvaluation;
+
 
     @Autowired
     public MessageReceivedServiceImpl(
             @Value("${clients.events}") String eventsHost,
             @Value("${clients.players}") String playersHost,
+            @Value("${training.evaluation}") Boolean trainingEvaluation,
             TrainingHistoryService trainingHistoryService,
             TrainingModelService trainingModelService,
             TrainingService trainingService,
@@ -48,6 +51,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     ) {
         this.eventsHost = eventsHost;
         this.playersHost = playersHost;
+        this.trainingEvaluation = trainingEvaluation;
         this.trainingHistoryService = trainingHistoryService;
         this.trainingModelService = trainingModelService;
         this.trainingService = trainingService;
@@ -93,7 +97,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         return Mono.just(
                 trainingHistoryService.find(id)
         ).doOnNext(history -> {
-            if (history.getToDate().isBefore(LocalDate.now().atStartOfDay())) {
+            if (history.getToDate().isAfter(LocalDate.now().atStartOfDay())) {
                 trainingHistoryService.completeTraining(history);
                 switch (history.getType()) {
                     case TRAIN_RESULTS:
@@ -105,14 +109,27 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                         log.info("finishing up {}", history.getCountry().toUpperCase());
                         //finished.
                         tensorflowDataService.clear(history.getCountry());
-                        webClientFacade.sendMessage(
-                                eventsHost + "/message",
-                                createMessage(history.getCountry().toUpperCase(), "TRAINING_COMPLETED")
-                        );
+                        if (trainingEvaluation) {
+                            trainingModelService.create();
+                        } else {
+                            webClientFacade.sendMessage(
+                                    eventsHost + "/message",
+                                    createMessage(history.getCountry().toUpperCase(), "TRAINING_COMPLETED")
+                            );
+                        }
+
                         break;
                 }
             } else {
-                trainingService.train(i -> history);
+                trainingService.train(i -> trainingHistoryService.save(
+                        new TrainingHistory(
+                                history.getType(),
+                                history.getCountry(),
+                                history.getToDate(),
+                                history.getToDate().plusYears(i).isAfter(LocalDateTime.now()) ?
+                                        LocalDateTime.now() : history.getToDate().plusYears(i)
+                        )
+                ));
             }
         }).thenEmpty(Mono.empty());
 

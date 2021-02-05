@@ -19,12 +19,8 @@ public class PlayerEventOutcomeCsv {
     private UUID player;
     private UUID opponent;
     private String home;
-    private Integer minutes;
-    private Integer conceded;
     private Integer goals = 0;
     private Integer assists = 0;
-    private Integer saves = 0;
-    private Integer red = 0;
     private Integer yellow = 0;
 
 
@@ -42,23 +38,14 @@ public class PlayerEventOutcomeCsv {
         this.opponent = playerMatch.getOpponent();
         this.home = playerMatch.getHome() ? "home" : "away";
 
-        this.minutes = playerMatch.getMinutes();
-        this.conceded = playerMatch.getConceded();
-
-        playerMatch.getStats().forEach(stat -> setStats(stat));
+        playerMatch.getStats().forEach(this::setStats);
     }
 
     private void setStats(StatMetric stat) {
 
         switch (stat.getLabel()) {
-            case "Red Card":
-                this.red += stat.getValue();
-                break;
             case "Yellow Card":
                 this.yellow += stat.getValue();
-                break;
-            case "saves":
-                this.saves += stat.getValue();
                 break;
             case "goals":    //need to fix this.  double counting i think. due to old stats still present.
                 this.goals += stat.getValue();

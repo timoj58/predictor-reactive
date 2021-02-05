@@ -1,7 +1,6 @@
 package com.timmytime.predictordatareactive.service.impl;
 
 import com.timmytime.predictordatareactive.configuration.SpecialCase;
-import com.timmytime.predictordatareactive.enumerator.CountryCompetitions;
 import com.timmytime.predictordatareactive.factory.SpecialCasesFactory;
 import com.timmytime.predictordatareactive.model.Team;
 import com.timmytime.predictordatareactive.repo.TeamRepo;
@@ -11,10 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Slf4j
 @Service("teamService")
@@ -188,12 +185,11 @@ public class TeamServiceImpl implements TeamService {
                 .findFirst().get();
 
         teamRepo.save(placeholder).subscribe();
-        lookup.get(team.getCountry()).values().remove(placeholder);
 
         placeholder.setCompetition(team.getCompetition());
         placeholder.setLabel(team.getLabel());
 
-        lookup.get(team.getCountry()).values().add(placeholder);
+        lookup.get(team.getCountry()).put(placeholder.getId(), placeholder);
 
         return placeholder;
     }

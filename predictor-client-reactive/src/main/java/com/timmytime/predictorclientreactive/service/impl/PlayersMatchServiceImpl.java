@@ -6,6 +6,7 @@ import com.timmytime.predictorclientreactive.enumerator.Competition;
 import com.timmytime.predictorclientreactive.enumerator.FantasyEventTypes;
 import com.timmytime.predictorclientreactive.facade.S3Facade;
 import com.timmytime.predictorclientreactive.facade.WebClientFacade;
+import com.timmytime.predictorclientreactive.model.MatchSelectionResponse;
 import com.timmytime.predictorclientreactive.model.MatchSelectionsResponse;
 import com.timmytime.predictorclientreactive.model.PlayerResponse;
 import com.timmytime.predictorclientreactive.model.TopSelectionsResponse;
@@ -43,10 +44,10 @@ public class PlayersMatchServiceImpl implements ILoadService {
     private final BiFunction<List<MatchSelectionsResponse>, FantasyEventTypes, List<PlayerResponse>> process = (matchSelectionsResponses, fantasyEventTypes) ->
             matchSelectionsResponses
                     .stream()
-                    .map(m -> m.getMatchSelectionResponses())
+                    .map(MatchSelectionsResponse::getMatchSelectionResponses)
                     .flatMap(List::stream)
                     .filter(f -> f.getEvent().equals(fantasyEventTypes.name().toLowerCase()))
-                    .map(m -> m.getPlayerResponses())
+                    .map(MatchSelectionResponse::getPlayerResponses)
                     .flatMap(List::stream)
                     .collect(Collectors.toList());
 

@@ -23,15 +23,12 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 
-import java.text.DecimalFormat;
 import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -50,17 +47,7 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
 
     private final Integer delay;
 
-    private Consumer<Triple<EventOutcome, PredictionOutcomeResponse, Pair<Long, Team>>> receiver;
-
-    private final DecimalFormat format = new DecimalFormat("#0.00000000");
-
-    //hopefully s3 orders this properly.  my bad really as s3 is ordered by text (annoying).
-    private final Function<Long, Double> invertIndex = index -> {
-        var now = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
-        var percentage = (double)index / now;
-
-        return 1 - Double.parseDouble(format.format(percentage));
-    };
+    private Consumer<Triple<EventOutcome, PredictionOutcomeResponse, Pair<Integer, Team>>> receiver;
 
     @Autowired
     public PreviousOutcomesServiceImpl(
@@ -80,7 +67,7 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
         this.teamService = teamService;
         this.shutdownService = shutdownService;
 
-        Flux<Triple<EventOutcome, PredictionOutcomeResponse, Pair<Long, Team>>> outcomes = Flux.push(sink ->
+        Flux<Triple<EventOutcome, PredictionOutcomeResponse, Pair<Integer, Team>>> outcomes = Flux.push(sink ->
                 PreviousOutcomesServiceImpl.this.receiver = sink::next, FluxSink.OverflowStrategy.BUFFER);
         outcomes.subscribe(this::saveOutcome);
     }
@@ -98,11 +85,13 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
                                                 teamService.get(country.name().toLowerCase()).stream()
                                         ).delayElements(Duration.ofSeconds(delay))
                                                 .subscribe(
-                                                        team ->
-                                                                webClientFacade.getPreviousEventOutcomesByTeam(eventsHost + "/previous-events-by-team/" + team.getId())
-                                                                        .doOnNext(outcome -> createOutcome(team, outcome))
-                                                                        .doFinally(finish -> finish(country.name().toLowerCase(), team.getId()))
-                                                                        .subscribe()
+                                                        team -> {
+                                                            AtomicInteger index = new AtomicInteger(0);
+                                                            webClientFacade.getPreviousEventOutcomesByTeam(eventsHost + "/previous-events-by-team/" + team.getId())
+                                                                    .doOnNext(outcome -> createOutcome(team, outcome, index.getAndIncrement()))
+                                                                    .doFinally(finish -> finish(country.name().toLowerCase(), team.getId()))
+                                                                    .subscribe();
+                                                        }
                                                 ))
                 );
 
@@ -120,7 +109,7 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
                 );
     }
 
-    private void createOutcome(Team team, EventOutcome eventOutcome) {
+    private void createOutcome(Team team, EventOutcome eventOutcome, Integer index) {
 
 
         PredictionOutcomeResponse predictionOutcomeResponse = new PredictionOutcomeResponse();
@@ -148,15 +137,15 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
         predictionOutcomeResponse.setPredictions(eventOutcome.getPrediction());
         predictionOutcomeResponse.setOutcome(eventOutcome.getSuccess());
 
-        receiver.accept(Triple.of(eventOutcome, predictionOutcomeResponse, Pair.of(eventOutcome.getDate().toEpochSecond(ZoneOffset.UTC), team)));
+        receiver.accept(Triple.of(eventOutcome, predictionOutcomeResponse, Pair.of(index, team)));
     }
 
-    private void saveOutcome(Triple<EventOutcome, PredictionOutcomeResponse, Pair<Long, Team>> data) {
+    private void saveOutcome(Triple<EventOutcome, PredictionOutcomeResponse, Pair<Integer, Team>> data) {
 
 
         var predictionOutcomeResponse = data.getMiddle();
         var eventOutcome = data.getLeft();
-        var index = invertIndex.apply(data.getRight().getLeft());
+        var index = data.getRight().getLeft();
         var team = data.getRight().getRight();
 
         webClientFacade.getMatch(getMatchUrl(eventOutcome))

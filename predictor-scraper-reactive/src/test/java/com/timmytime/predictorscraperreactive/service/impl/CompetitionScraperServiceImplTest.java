@@ -21,13 +21,10 @@ import static org.mockito.Mockito.*;
 
 class CompetitionScraperServiceImplTest {
 
+    private static final ScraperFactory scraperFactory = mock(ScraperFactory.class);
     private final SportsScraperConfigurationFactory sportsScraperConfigurationFactory
             = new SportsScraperConfigurationFactory("./src/main/resources/config/");
-
     private final MessageService messageService = mock(MessageService.class);
-    private static final ScraperFactory scraperFactory = mock(ScraperFactory.class);
-
-
     private final CompetitionScraperServiceImpl
             competitionScraperService = new CompetitionScraperServiceImpl(
             0,

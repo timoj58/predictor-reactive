@@ -23,14 +23,13 @@ import static org.mockito.Mockito.*;
 
 class MatchFactoryTest {
 
+    private static final Result result = new Result();
     private final MatchCreationService matchCreationService = mock(MatchCreationService.class);
     private final MatchRepairService matchRepairService = mock(MatchRepairService.class);
     private final TeamService teamService = mock(TeamService.class);
     private final MatchService matchService = mock(MatchService.class);
     private final MatchFactory matchFactory
             = new MatchFactory(teamService, matchService, matchCreationService, matchRepairService);
-
-    private static final Result result = new Result();
 
     @BeforeAll
     public static void setUp() throws IOException {

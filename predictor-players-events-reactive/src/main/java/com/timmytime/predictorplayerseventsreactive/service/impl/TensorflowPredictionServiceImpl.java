@@ -22,10 +22,6 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
     private final String trainingHost;
     private final String goalsUrl;
     private final String assistsUrl;
-    private final String minutesUrl;
-    private final String concededUrl;
-    private final String savesUrl;
-    private final String redUrl;
     private final String yellowUrl;
     private final String initUrl;
     private final String destroyUrl;
@@ -40,10 +36,6 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
             @Value("${clients.training}") String trainingHost,
             @Value("${clients.ml-predict-goals}") String goalsUrl,
             @Value("${clients.ml-predict-assists}") String assistsUrl,
-            @Value("${clients.ml-predict-minutes}") String minutesUrl,
-            @Value("${clients.ml-predict-conceded}") String concededUrl,
-            @Value("${clients.ml-predict-saves}") String savesUrl,
-            @Value("${clients.ml-predict-red}") String redUrl,
             @Value("${clients.ml-predict-yellow}") String yellowUrl,
             @Value("${clients.ml-predict-init}") String initUrl,
             @Value("${clients.ml-predict-destroy}") String destroyUrl,
@@ -52,11 +44,7 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
         this.trainingHost = trainingHost;
         this.goalsUrl = goalsUrl;
         this.assistsUrl = assistsUrl;
-        this.concededUrl = concededUrl;
-        this.minutesUrl = minutesUrl;
         this.yellowUrl = yellowUrl;
-        this.redUrl = redUrl;
-        this.savesUrl = savesUrl;
         this.initUrl = initUrl;
         this.destroyUrl = destroyUrl;
 
@@ -112,14 +100,6 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
                 return goalsUrl;
             case ASSISTS:
                 return assistsUrl;
-            case SAVES:
-                return savesUrl;
-            case MINUTES:
-                return minutesUrl;
-            case GOALS_CONCEDED:
-                return concededUrl;
-            case RED_CARD:
-                return redUrl;
             case YELLOW_CARD:
                 return yellowUrl;
         }

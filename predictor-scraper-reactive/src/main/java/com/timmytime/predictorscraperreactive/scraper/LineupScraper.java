@@ -62,6 +62,7 @@ public class LineupScraper implements IScraper<Lineup> {
 
         return getTime.apply(time);
     };
+
     public LineupScraper(
             SportsScraperConfigurationFactory sportsScraperConfigurationFactory
     ) {

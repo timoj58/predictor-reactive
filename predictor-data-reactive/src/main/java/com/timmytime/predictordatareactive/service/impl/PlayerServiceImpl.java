@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -211,12 +210,20 @@ public class PlayerServiceImpl implements PlayerService {
 
     private Player create(String label) {
         Player player = new Player();
-
-        player.setId(placeholders.remove(0));
+        player.setId(placeholders.isEmpty() ? UUID.randomUUID() : placeholders.remove(0));
         player.setLabel(label);
         player.setFantasyFootballer(Boolean.FALSE); //its turned on later.
 
         return player;
+    }
+
+    // @PostConstruct
+    private void vocabAdditions() {
+
+        Flux.fromStream(IntStream.range(0, 20000).boxed()).limitRate(5).subscribe(i -> playerRepo.save(
+                Player.builder().label("TBC").id(UUID.randomUUID()).fantasyFootballer(Boolean.TRUE).build()
+        ).subscribe());
+
     }
 
 }

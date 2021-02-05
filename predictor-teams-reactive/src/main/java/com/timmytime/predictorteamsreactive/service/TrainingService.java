@@ -5,5 +5,5 @@ import com.timmytime.predictorteamsreactive.model.TrainingHistory;
 import java.util.function.Function;
 
 public interface TrainingService {
-    void train(Function<Integer, TrainingHistory> trainingHistoryFuunction);
+    void train(Function<Integer, TrainingHistory> trainingHistoryFunction);
 }

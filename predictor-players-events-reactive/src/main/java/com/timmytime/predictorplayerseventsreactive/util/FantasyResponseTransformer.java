@@ -42,15 +42,6 @@ public class FantasyResponseTransformer {
 
 
         try {
-            fantasyResponse.setMinutes(getAverage(
-                    filter.apply(outcomes, (f) -> f.getFantasyEventType().equals(FantasyEventTypes.MINUTES))
-            ));
-        } catch (Exception e) {
-            fantasyResponse.setSaves(null);
-        }
-
-
-        try {
             fantasyResponse.setAssists(getScores(
                     filter.apply(outcomes, (f) -> f.getFantasyEventType().equals(FantasyEventTypes.ASSISTS))
             ));
@@ -61,30 +52,6 @@ public class FantasyResponseTransformer {
         try {
             fantasyResponse.setGoals(getScores(
                     filter.apply(outcomes, (f) -> f.getFantasyEventType().equals(FantasyEventTypes.GOALS))
-            ));
-        } catch (Exception e) {
-            fantasyResponse.setSaves(null);
-        }
-
-        try {
-            fantasyResponse.setSaves(getAverage(
-                    filter.apply(outcomes, (f) -> f.getFantasyEventType().equals(FantasyEventTypes.SAVES))
-            ));
-        } catch (Exception e) {
-            fantasyResponse.setSaves(null);
-        }
-
-        try {
-            fantasyResponse.setConceded(getAverage(
-                    filter.apply(outcomes, (f) -> f.getFantasyEventType().equals(FantasyEventTypes.GOALS_CONCEDED))
-            ));
-        } catch (Exception e) {
-            fantasyResponse.setSaves(null);
-        }
-
-        try {
-            fantasyResponse.setRedCards(getScores(
-                    filter.apply(outcomes, (f) -> f.getFantasyEventType().equals(FantasyEventTypes.RED_CARD))
             ));
         } catch (Exception e) {
             fantasyResponse.setSaves(null);

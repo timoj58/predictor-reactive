@@ -14,9 +14,8 @@ import static org.mockito.Mockito.*;
 
 class BetwayServiceTest {
 
-    private final MessageService messageService = mock(MessageService.class);
     private final static BetwayScraperFactory betwayScraperFactory = mock(BetwayScraperFactory.class);
-
+    private final MessageService messageService = mock(MessageService.class);
     private final BetwayService betwayService
             = new BetwayService(0,
             new BookmakerScraperConfigurationFactory("./src/main/resources/config/"),

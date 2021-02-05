@@ -21,25 +21,21 @@ import static org.mockito.Mockito.*;
 @Disabled
 class PredictionServiceImplTest {
 
+    private static final EventOutcomeService eventOutcomeService = mock(EventOutcomeService.class);
+    private static final UUID event1 = UUID.randomUUID();
+    private static final UUID event2 = UUID.randomUUID();
+    private static final UUID event3 = UUID.randomUUID();
+    private static final UUID replay1 = UUID.randomUUID();
     private final EventService eventService = mock(EventService.class);
     private final WebClientFacade webClientFacade = mock(WebClientFacade.class);
     private final TensorflowPredictionService tensorflowPredictionService = new TensorflowPredictionServiceImpl(
             "", "", "", 0, webClientFacade
     );
-    private static final EventOutcomeService eventOutcomeService = mock(EventOutcomeService.class);
-
-
     private final PredictionServiceImpl predictionService
             = new PredictionServiceImpl(
             eventService,
             tensorflowPredictionService,
             eventOutcomeService);
-
-    private static final UUID event1 = UUID.randomUUID();
-    private static final UUID event2 = UUID.randomUUID();
-    private static final UUID event3 = UUID.randomUUID();
-    private static final UUID replay1 = UUID.randomUUID();
-
 
     @BeforeAll
     public static void setUp() {

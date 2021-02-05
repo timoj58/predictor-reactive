@@ -2,7 +2,9 @@ package com.timmytime.predictorplayerseventsreactive.service.impl;
 
 import com.timmytime.predictorplayerseventsreactive.enumerator.FantasyEventTypes;
 import com.timmytime.predictorplayerseventsreactive.model.PlayersTrainingHistory;
-import com.timmytime.predictorplayerseventsreactive.service.*;
+import com.timmytime.predictorplayerseventsreactive.service.PlayersTrainingHistoryService;
+import com.timmytime.predictorplayerseventsreactive.service.TensorflowTrainingService;
+import com.timmytime.predictorplayerseventsreactive.service.TrainingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,7 +57,7 @@ public class TrainingServiceImpl implements TrainingService {
                                 new PlayersTrainingHistory(
                                         history.getType(),
                                         history.getToDate(),
-                                        history.getToDate().isAfter(LocalDateTime.now()) ?
+                                        history.getToDate().plusYears(interval).isAfter(LocalDateTime.now()) ?
                                                 LocalDateTime.now() : history.getToDate().plusYears(interval)
                                 )
                         ).subscribe(trainingHistory -> tensorflowTrainingService.train(trainingHistory.getId()))

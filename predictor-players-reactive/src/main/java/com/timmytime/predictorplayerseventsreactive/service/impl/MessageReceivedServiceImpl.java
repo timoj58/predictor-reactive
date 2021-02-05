@@ -1,19 +1,20 @@
 package com.timmytime.predictorplayerseventsreactive.service.impl;
 
 import com.timmytime.predictorplayerseventsreactive.enumerator.ApplicableFantasyLeagues;
-import com.timmytime.predictorplayerseventsreactive.enumerator.Messages;
 import com.timmytime.predictorplayerseventsreactive.request.Message;
 import com.timmytime.predictorplayerseventsreactive.service.MessageReceivedService;
 import com.timmytime.predictorplayerseventsreactive.service.PlayersTrainingHistoryService;
 import com.timmytime.predictorplayerseventsreactive.service.TrainingModelService;
 import com.timmytime.predictorplayerseventsreactive.service.TrainingService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
@@ -45,7 +46,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                 msg -> {
                     log.info("received {} {}", msg.getCountry(), msg.getCompetition());
                     messages.add(ApplicableFantasyLeagues.valueOf(msg.getCompetition().toUpperCase()));
-                    if(messages.containsAll(Arrays.asList(ApplicableFantasyLeagues.values()))){
+                    if (messages.containsAll(Arrays.asList(ApplicableFantasyLeagues.values()))) {
                         log.info("start player training");
                         playersTrainingHistoryService.find(trainingService.firstTrainingEvent())
                                 .subscribe(trainingModelService::next);

@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class TeamLabelMatcherTest {
 
     @Test
-    void matchTest(){
+    void matchTest() {
         var label = "Almería";
 
         var match = TeamLabelMatcher.match(label, Arrays.asList(
