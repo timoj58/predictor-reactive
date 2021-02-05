@@ -1,8 +1,7 @@
-import logging
-
 import dataset.dataset_utils as dataset_utils
 import dataset.match_dataset as match_dataset
 import featureset.match_featureset as match_featureset
+import logging
 import service.vocab_service as vocab_service
 import util.classifier_utils as classifier_utils
 from model.model_utils import tidy_up
@@ -14,7 +13,6 @@ local_dir = get_dir_cfg()['local']
 
 
 def create(country, train, label, label_values, model_dir, train_filename, test_filename):
-
     logger.info('create match model called')
     learning_cfg = get_learning_cfg(model_dir)
 

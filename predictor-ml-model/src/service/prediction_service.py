@@ -1,7 +1,6 @@
 import logging
-import model.model_utils as model_utils
-
 import model.match_model as match_model
+import model.model_utils as model_utils
 import service.receipt_service as receipt_service
 from service.config_service import get_dir_cfg
 

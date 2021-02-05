@@ -1,5 +1,6 @@
 import json
 import logging
+import model.model_utils as model_utils
 import predict.player_assists_prediction as player_assists_prediction
 import predict.player_goals_prediction as player_goals_prediction
 import predict.player_yellow_card_prediction as player_yellow_card_prediction
@@ -8,11 +9,9 @@ import traceback
 import train.player_assists_train as player_assists_train
 import train.player_goals_train as player_goals_train
 import train.player_yellow_card_train as player_yellow_card_train
-import model.model_utils as model_utils
+import util.classifier_utils as classifier_utils
 from flask import Flask
 from flask import request
-
-import util.classifier_utils as classifier_utils
 from service.config_service import get_dir_cfg
 
 app = Flask(__name__)

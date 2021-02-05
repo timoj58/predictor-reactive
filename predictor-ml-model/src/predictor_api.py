@@ -1,14 +1,13 @@
 import json
 import logging
-import threading
-import traceback
-from flask import Flask
-from flask import request
-
 import predict.match_goals_prediction as match_goals_prediction
 import predict.match_result_prediction as match_result_prediction
+import threading
+import traceback
 import train.match_goals_train as match_goals_train
 import train.match_result_train as match_result_train
+from flask import Flask
+from flask import request
 from service.config_service import get_dir_cfg
 
 app = Flask(__name__)

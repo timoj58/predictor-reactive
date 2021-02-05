@@ -1,6 +1,5 @@
 import setuptools
 
-
 setuptools.setup(
     name="predictor_players_pkg",
     version="0.0.1",

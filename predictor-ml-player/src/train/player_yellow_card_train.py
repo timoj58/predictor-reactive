@@ -1,7 +1,5 @@
-import logging
-
 import dataset.match_dataset as match_dataset
-import service.receipt_service as receipt_service
+import logging
 import service.training_service as training_service
 
 logger = logging.getLogger(__name__)

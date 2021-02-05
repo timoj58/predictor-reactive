@@ -1,9 +1,9 @@
-import logging
-import time
 import dataset.dataset_utils as dataset_utils
 import dataset.match_dataset as match_dataset
 import featureset.match_featureset as match_featureset
+import logging
 import service.vocab_service as vocab_service
+import time
 import util.classifier_utils as classifier_utils
 from model.model_utils import tidy_up
 from service.config_service import get_dir_cfg

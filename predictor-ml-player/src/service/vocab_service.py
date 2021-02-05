@@ -3,7 +3,6 @@ import os
 import os.path
 
 from service.config_service import get_dir_cfg
-from util.file_utils import get_aws_file
 
 logger = logging.getLogger(__name__)
 

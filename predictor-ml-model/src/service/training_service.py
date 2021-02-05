@@ -1,10 +1,9 @@
 import logging
-from datetime import datetime
-import pandas as pd
-
 import model.match_model as match_model
 import model.model_utils as model_utils
+import pandas as pd
 import service.receipt_service as receipt_service
+from datetime import datetime
 from service.config_service import get_dir_cfg
 from service.config_service import get_learning_cfg
 

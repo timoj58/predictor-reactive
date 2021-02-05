@@ -1,21 +1,19 @@
-import requests
-from requests.auth import HTTPDigestAuth
-from util.file_utils import write_csv
-
-from service.config_service import get_analysis_cfg
-from util.file_utils import put_aws_file_with_path
-from util.file_utils import write_filenames_index_from_filename
-from dataset.dataset_utils import eval_input_fn
+import calendar
 import datetime
+import json
 import logging
+import os
+import requests
+from dataset.dataset_utils import eval_input_fn
+from service.config_service import get_analysis_cfg
 from service.config_service import get_dir_cfg
 from util.file_utils import clear_directory
-from util.file_utils import on_finish
-from util.file_utils import is_on_file
 from util.file_utils import get_aws_file
-import os
-import calendar
-import json
+from util.file_utils import is_on_file
+from util.file_utils import on_finish
+from util.file_utils import put_aws_file_with_path
+from util.file_utils import write_csv
+from util.file_utils import write_filenames_index_from_filename
 
 logger = logging.getLogger(__name__)
 
