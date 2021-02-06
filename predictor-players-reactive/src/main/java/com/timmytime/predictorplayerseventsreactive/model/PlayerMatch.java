@@ -19,9 +19,9 @@ public class PlayerMatch {
     @Id
     private UUID id;
     private UUID playerId;
-    private UUID home;
+    private UUID opponent;
     private LocalDate date;
-    private UUID away;
+    private Boolean home;
     //and then we need the stats...
     private List<StatMetric> stats;
     //duration and conceded also required

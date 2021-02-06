@@ -126,7 +126,7 @@ def write_csv(filename, data):
     make_dir(filename)
     has_data = False
     with open(filename, 'w') as f:
-        fnames = ['player', 'home', 'away', 'goals', 'assists', 'yellow']
+        fnames = ['player', 'opponent', 'home', 'goals', 'assists', 'yellow']
         writer = csv.DictWriter(f, fieldnames=fnames, extrasaction='ignore')
 
         for row in data:

@@ -76,8 +76,8 @@ public class PredictionServiceImpl implements PredictionService {
                                                 new PlayerEventOutcomeCsv(
                                                         fantasyOutcome.getId(),
                                                         fantasyOutcome.getPlayerId(),
-                                                        fantasyOutcome.getHome(),
-                                                        fantasyOutcome.getAway()))
+                                                        fantasyOutcome.getOpponent(),
+                                                        fantasyOutcome.getHome()))
                                         .build())
                 );
     }
@@ -103,10 +103,10 @@ public class PredictionServiceImpl implements PredictionService {
                                                 FantasyOutcome.builder()
                                                         .id(UUID.randomUUID())
                                                         .eventDate(date)
-                                                        .home(homeTeam)
+                                                        .opponent(player.getLatestTeam().equals(homeTeam) ? awayTeam : homeTeam)
                                                         .playerId(player.getId())
                                                         .fantasyEventType(fantasyEvent)
-                                                        .away(awayTeam) //not sure why its like this
+                                                        .home(player.getLatestTeam().equals(homeTeam) ? "home" : "away") //not sure why its like this
                                                         .build()
                                         ).subscribe(fantasyOutcome ->
                                                 tensorflowPredictionService.predict(

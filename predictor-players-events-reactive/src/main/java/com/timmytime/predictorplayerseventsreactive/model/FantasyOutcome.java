@@ -20,8 +20,8 @@ public class FantasyOutcome {
     private UUID playerId;
     private FantasyEventTypes fantasyEventType;
     private String prediction;
-    private UUID home;
-    private UUID away;
+    private String home;
+    private UUID opponent;
     private LocalDateTime eventDate;
     private Boolean current = Boolean.TRUE;
 

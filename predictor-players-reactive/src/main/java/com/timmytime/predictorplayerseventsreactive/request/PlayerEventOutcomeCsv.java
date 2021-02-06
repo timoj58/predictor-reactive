@@ -17,17 +17,17 @@ public class PlayerEventOutcomeCsv {
     private UUID id;
 
     private UUID player;
-    private UUID home;
-    private UUID away;
+    private UUID opponent;
+    private String home;
     private Integer goals = 0;
     private Integer assists = 0;
     private Integer yellow = 0;
 
 
-    public PlayerEventOutcomeCsv(UUID id, UUID player, UUID home, UUID away) {
+    public PlayerEventOutcomeCsv(UUID id, UUID player, UUID opponent, String home) {
         this.id = id;
         this.player = player;
-        this.away = away;
+        this.opponent = opponent;
         this.home = home;
     }
 
@@ -35,8 +35,8 @@ public class PlayerEventOutcomeCsv {
         this.id = playerMatch.getPlayerId();
         this.player = playerMatch.getPlayerId();
 
-        this.home = playerMatch.getHome();
-        this.away = playerMatch.getAway();
+        this.opponent = playerMatch.getOpponent();
+        this.home = playerMatch.getHome() ? "home" : "away";
 
         playerMatch.getStats().forEach(stat -> setStats(stat));
     }
