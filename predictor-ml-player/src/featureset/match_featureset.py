@@ -7,7 +7,7 @@ def create_feature_columns(team_vocab, player_vocab):
     feature_columns = []
 
     feature_columns.append(create_category_indicator_column('player', player_vocab))
-    feature_columns.append(create_category_indicator_column('opponent', team_vocab))
-    feature_columns.append(create_vocab_column('home', ['home', 'away']))
+    feature_columns.append(create_category_indicator_column('home', team_vocab))
+    feature_columns.append(create_category_indicator_column('away', team_vocab))
 
     return feature_columns

@@ -13,16 +13,16 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document
-@Builder
+@Builder(toBuilder = true)
 public class FantasyOutcome {
     @Id
     private UUID id;
     private UUID playerId;
     private FantasyEventTypes fantasyEventType;
     private String prediction;
-    private String home;
-    private UUID opponent;
+    private UUID home;
+    private UUID away;
     private LocalDateTime eventDate;
-    private Boolean current = Boolean.FALSE;
+    private Boolean current = Boolean.TRUE;
 
 }

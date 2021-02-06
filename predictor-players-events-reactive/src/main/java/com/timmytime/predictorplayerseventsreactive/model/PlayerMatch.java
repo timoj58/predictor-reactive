@@ -14,9 +14,9 @@ import java.util.UUID;
 public class PlayerMatch {
 
     private UUID playerId;
-    private UUID opponent;
+    private UUID home;
     private LocalDateTime date;
-    private Boolean home;
+    private UUID away;
     //and then we need the stats...
     private List<StatMetric> stats;
     //duration and conceded also required

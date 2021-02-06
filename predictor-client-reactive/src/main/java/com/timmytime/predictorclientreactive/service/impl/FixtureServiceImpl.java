@@ -72,15 +72,15 @@ public class FixtureServiceImpl implements ILoadService {
                                             ))
                                     .doFinally(save -> {
                                         try {
-                                            s3Facade.put("fixtures/" + competition, new ObjectMapper().writeValueAsString(upcomingCompetitionEventsResponse));
+                                            s3Facade.put("fixtures/" + competition,
+                                                    new ObjectMapper().writeValueAsString(upcomingCompetitionEventsResponse));
                                         } catch (JsonProcessingException e) {
                                             log.error("json", e);
                                         }
                                     })
                                     .subscribe();
                         })
-        ).doFinally(end -> shutdownService.receive(FixtureServiceImpl.class.getName()))
-                .subscribe();
+        ).doFinally(end -> shutdownService.receive(FixtureServiceImpl.class.getName())).subscribe();
 
     }
 }

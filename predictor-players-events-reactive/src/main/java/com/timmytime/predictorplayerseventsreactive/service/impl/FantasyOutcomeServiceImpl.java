@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -16,10 +17,16 @@ public class FantasyOutcomeServiceImpl implements FantasyOutcomeService {
 
     private final FantasyOutcomeRepo fantasyOutcomeRepo;
 
-
     @Override
     public Mono<FantasyOutcome> save(FantasyOutcome fantasyOutcome) {
-        return fantasyOutcomeRepo.save(fantasyOutcome);
+        return Mono.just(fantasyOutcome)
+                .doOnNext(f -> fantasyOutcomeRepo.findByPlayerId(f.getPlayerId())
+                        .filter(r -> r.getEventDate().isBefore(LocalDateTime.now()))
+                        .doOnNext(r -> fantasyOutcomeRepo.save(
+                                r.toBuilder().current(Boolean.FALSE).build()
+                                ).subscribe()
+                        )
+                ).doFinally(save -> fantasyOutcomeRepo.save(fantasyOutcome));
     }
 
     @Override

@@ -23,18 +23,18 @@ def predict(data, init, label, label_values, model_dir, receipt):
 
     player = []
     home = []
-    opponent = []
+    away = []
 
     # Generate predictions from the model
 
-    opponent.append(data['opponent'])
     home.append(data['home'])
+    away.append(data['away'])
     player.append(data['player'])
 
     predict_x = {
         'player': player,
-        'opponent': opponent,
-        'home': home
+        'home': home,
+        'away': away
     }
 
     response = model_utils.predict(

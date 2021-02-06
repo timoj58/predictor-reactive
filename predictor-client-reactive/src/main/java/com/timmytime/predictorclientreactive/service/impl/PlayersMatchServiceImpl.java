@@ -88,7 +88,7 @@ public class PlayersMatchServiceImpl implements ILoadService {
                     webClientFacade.getPlayers(playersHost + "/players/match/" + league + "?home=" + event.getHome() + "&away=" + event.getAway()) //need players by teams...
                             .doOnNext(player ->
                                     webClientFacade.getPlayer(playersHost + "/player/" + player.getId()) //get player response
-                                            .subscribe(playerResponse -> playerResponses.add(playerResponse))
+                                            .subscribe(playerResponses::add)
                             ) //get the appearance and stats set up, create a player response
                             .doFinally(match -> Mono.just(playerResponses)
                                     .delayElement(Duration.ofMinutes(delay))

@@ -1,6 +1,6 @@
 import pandas as pd
 
-CSV_COLUMN_NAMES = ['player', 'opponent', 'home', 'goals', 'assists', 'yellow']
+CSV_COLUMN_NAMES = ['player', 'home', 'away', 'goals', 'assists', 'yellow']
 
 SCORE = list(range(0, 10))
 CARDS = [0, 1, 2]

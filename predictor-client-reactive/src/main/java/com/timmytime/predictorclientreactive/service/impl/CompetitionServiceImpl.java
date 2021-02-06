@@ -42,7 +42,6 @@ public class CompetitionServiceImpl implements ILoadService {
             countryAndCompetitionResponse.setCountryResponse(new CountryResponse(country.name().toLowerCase()));
 
             country.getCompetitions()
-                    .stream()
                     .forEach(competition -> countryAndCompetitionResponse
                             .getCompetitionResponses()
                             .add(new CompetitionResponse(

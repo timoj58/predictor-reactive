@@ -98,6 +98,7 @@ public class PlayerResponseServiceImpl implements PlayerResponseService {
         List<FantasyOutcome> fantasyOutcomes = new ArrayList<>();
 
         fantasyOutcomeService.findByPlayer(player.getId())
+                .filter(FantasyOutcome::getCurrent)
                 .doOnNext(fantasyOutcome -> {
                     if (fantasyOutcome.getCurrent()) {
                         fantasyOutcomes.add(fantasyOutcome);
@@ -139,16 +140,16 @@ public class PlayerResponseServiceImpl implements PlayerResponseService {
 
                     if (!fantasyOutcomes.isEmpty()) {
 
-                        fantasyOutcomes.stream().collect(groupingBy(FantasyOutcome::getOpponent))
+                        fantasyOutcomes.stream().collect(groupingBy(FantasyOutcome::getAway))
                                 .values()
                                 .forEach(match -> {
                                     FantasyResponse fantasyResponse = fantasyResponseTransformer.transform.apply(match);
 
-                                    UUID opponent = match.stream().map(FantasyOutcome::getOpponent).distinct().findFirst().get();
-                                    Boolean isHome = match.stream().map(FantasyOutcome::getHome).distinct().findFirst().get().contentEquals("home");
+                                    UUID opponent = match.stream().map(FantasyOutcome::getAway).distinct().findFirst().get();
+                                    //Boolean isHome = match.stream().map(FantasyOutcome::getHome).distinct().findFirst().get().contentEquals("home");
 
                                     fantasyResponse.setOpponent(teamService.getTeam(opponent).getLabel());
-                                    fantasyResponse.setIsHome(isHome);
+                                    //fantasyResponse.setIsHome(isHome);
 
                                     playerResponse.getFantasyResponse().add(fantasyResponse);
                                 });
