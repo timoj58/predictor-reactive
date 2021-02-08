@@ -42,4 +42,14 @@ public class EventsHandler {
                 EventOutcome.class
         );
     }
+
+    public Mono<ServerResponse> topSelections(ServerRequest request) {
+
+        return ServerResponse.ok().body(
+                eventOutcomeService.topSelections(
+                        request.pathVariable("outcome"),
+                        Integer.valueOf(request.queryParam("threshold").get())),
+                EventOutcome.class
+        );
+    }
 }

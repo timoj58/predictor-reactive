@@ -2,6 +2,7 @@ package com.timmytime.predictorclientreactive.util;
 
 import com.timmytime.predictorclientreactive.enumerator.FantasyEventTypes;
 import com.timmytime.predictorclientreactive.model.FantasyEvent;
+import com.timmytime.predictorclientreactive.model.FantasyResponse;
 import com.timmytime.predictorclientreactive.model.MatchSelectionResponse;
 import com.timmytime.predictorclientreactive.model.PlayerResponse;
 import lombok.Getter;
@@ -49,7 +50,6 @@ public class MatchSelectionResponseTransformer {
 
         List<PlayerEventScore> goals = new ArrayList<>();
         List<PlayerEventScore> assists = new ArrayList<>();
-        List<PlayerEventScore> saves = new ArrayList<>();
         List<PlayerEventScore> yellows = new ArrayList<>();
 
         //ok the hard part...so wait.  a bit.  need to filter the map..on combined totals pretty much.
@@ -68,14 +68,6 @@ public class MatchSelectionResponseTransformer {
                             .mapToDouble(m -> score.apply(m.getAssists())).findFirst().orElse(0.0))
             );
 
-            if (player.getSaves() != null) {
-                saves.add(
-                        new PlayerEventScore(player, player.getFantasyResponse()
-                                .stream()
-                                .mapToDouble(m -> m.getSaves()).findFirst().orElse(0.0))
-                );
-            }
-
             yellows.add(
                     new PlayerEventScore(player, player.getFantasyResponse()
                             .stream()
@@ -88,7 +80,6 @@ public class MatchSelectionResponseTransformer {
         matchSelectionResponses.add(create.apply(goals, FantasyEventTypes.GOALS));
         matchSelectionResponses.add(create.apply(assists, FantasyEventTypes.ASSISTS));
         matchSelectionResponses.add(create.apply(yellows, FantasyEventTypes.YELLOW_CARD));
-        matchSelectionResponses.add(create.apply(saves, FantasyEventTypes.SAVES));
 
         return matchSelectionResponses.stream().sorted(Comparator.comparing(MatchSelectionResponse::getOrder)).collect(Collectors.toList());
     }

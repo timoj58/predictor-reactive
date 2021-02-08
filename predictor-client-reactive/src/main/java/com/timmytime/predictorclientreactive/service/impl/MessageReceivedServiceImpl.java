@@ -34,6 +34,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
             PlayersMatchServiceImpl playersMatchService,
             TeamsMatchServiceImpl teamsMatchService,
             PreviousOutcomesServiceImpl previousOutcomesService,
+            BetServiceImpl betService,
             LambdaFacade lambdaFacade
     ) {
         this.loaders.add(competitionService);
@@ -42,6 +43,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         this.loaders.add(playersMatchService);
         this.loaders.add(teamsMatchService);
         this.loaders.add(previousOutcomesService);
+        this.loaders.add(betService);
 
         this.lambdaFacade = lambdaFacade;
     }

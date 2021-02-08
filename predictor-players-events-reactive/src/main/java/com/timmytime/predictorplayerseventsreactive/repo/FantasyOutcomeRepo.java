@@ -1,5 +1,6 @@
 package com.timmytime.predictorplayerseventsreactive.repo;
 
+import com.timmytime.predictorplayerseventsreactive.enumerator.FantasyEventTypes;
 import com.timmytime.predictorplayerseventsreactive.model.FantasyOutcome;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.stereotype.Repository;
@@ -14,4 +15,6 @@ public interface FantasyOutcomeRepo extends ReactiveMongoRepository<FantasyOutco
     Flux<FantasyOutcome> findByCurrent(Boolean current);
 
     Flux<FantasyOutcome> findByPredictionNull();
+
+    Flux<FantasyOutcome> findByCurrentAndFantasyEventType(Boolean current, FantasyEventTypes fantasyEventTypes);
 }

@@ -2,6 +2,7 @@ package com.timmytime.predictorclientreactive.service.impl;
 
 import com.timmytime.predictorclientreactive.enumerator.LambdaFunctions;
 import com.timmytime.predictorclientreactive.facade.LambdaFacade;
+import com.timmytime.predictorclientreactive.model.BetProvider;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,8 @@ public class ShutdownServiceImpl implements ShutdownService {
                             FixtureServiceImpl.class.getName(),
                             PreviousFixtureServiceImpl.class.getName(),
                             TeamsMatchServiceImpl.class.getName(),
-                            PreviousOutcomesServiceImpl.class.getName()
+                            PreviousOutcomesServiceImpl.class.getName(),
+                            BetProvider.class.getName()
                     ))) {
                         shutdown();
                     }

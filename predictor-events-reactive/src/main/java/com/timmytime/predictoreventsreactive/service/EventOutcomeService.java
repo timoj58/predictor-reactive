@@ -2,6 +2,7 @@ package com.timmytime.predictoreventsreactive.service;
 
 import com.timmytime.predictoreventsreactive.model.EventOutcome;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -23,4 +24,6 @@ public interface EventOutcomeService {
     Flux<EventOutcome> previousEventsByTeam(@PathVariable UUID team);
 
     Flux<EventOutcome> toFix();
+
+    Flux<EventOutcome> topSelections(@PathVariable String outcome, @RequestParam Integer threshold);
 }

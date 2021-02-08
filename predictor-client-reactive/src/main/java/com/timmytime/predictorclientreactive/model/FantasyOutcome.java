@@ -1,10 +1,7 @@
-package com.timmytime.predictorplayerseventsreactive.model;
+package com.timmytime.predictorclientreactive.model;
 
-import com.timmytime.predictorplayerseventsreactive.enumerator.FantasyEventTypes;
+import com.timmytime.predictorclientreactive.enumerator.FantasyEventTypes;
 import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -13,10 +10,8 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Document
 @Builder(toBuilder = true)
 public class FantasyOutcome {
-    @Id
     private UUID id;
     private UUID playerId;
     private FantasyEventTypes fantasyEventType;
@@ -25,7 +20,6 @@ public class FantasyOutcome {
     private UUID opponent;
     private LocalDateTime eventDate;
     private Boolean current = Boolean.TRUE;
-    @Transient
     private String label;
 
 }

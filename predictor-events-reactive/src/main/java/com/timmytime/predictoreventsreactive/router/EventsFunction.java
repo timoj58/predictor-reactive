@@ -34,4 +34,11 @@ public class EventsFunction {
         return route(RequestPredicates.GET("/previous-events-by-team/{team}")
                 , eventsHandler::previousEventsByTeam);
     }
+
+    @Bean
+    @RouterOperation(beanClass = EventOutcomeService.class, beanMethod = "topSelections")
+    RouterFunction<ServerResponse> topSelections(EventsHandler eventsHandler) {
+        return route(RequestPredicates.GET("/top-selections/{outcome}")
+                , eventsHandler::topSelections);
+    }
 }

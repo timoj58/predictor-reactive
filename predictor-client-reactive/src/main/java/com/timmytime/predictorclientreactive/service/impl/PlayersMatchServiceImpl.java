@@ -131,15 +131,13 @@ public class PlayersMatchServiceImpl implements ILoadService {
     private void saveTopSelections(Competition competition) {
         TopSelectionsResponse topSelectionsGoalsResponse = new TopSelectionsResponse(FantasyEventTypes.GOALS, new ArrayList<>()); //should be using enums...
         TopSelectionsResponse topSelectionsAssistsResponse = new TopSelectionsResponse(FantasyEventTypes.ASSISTS, new ArrayList<>());
-        TopSelectionsResponse topSelectionsSavesResponse = new TopSelectionsResponse(FantasyEventTypes.SAVES, new ArrayList<>());
         TopSelectionsResponse topSelectionsYellowsResponse = new TopSelectionsResponse(FantasyEventTypes.YELLOW_CARD, new ArrayList<>());
 
         topSelectionsGoalsResponse.process(process.apply(byCompetition.get(competition), FantasyEventTypes.GOALS));
         topSelectionsAssistsResponse.process(process.apply(byCompetition.get(competition), FantasyEventTypes.ASSISTS));
-        topSelectionsSavesResponse.process(process.apply(byCompetition.get(competition), FantasyEventTypes.SAVES));
         topSelectionsYellowsResponse.process(process.apply(byCompetition.get(competition), FantasyEventTypes.YELLOW_CARD));
 
-        Arrays.asList(topSelectionsAssistsResponse, topSelectionsGoalsResponse, topSelectionsSavesResponse, topSelectionsYellowsResponse)
+        Arrays.asList(topSelectionsAssistsResponse, topSelectionsGoalsResponse, topSelectionsYellowsResponse)
                 .forEach(topSelectionsResponse ->
                 {
                     try {

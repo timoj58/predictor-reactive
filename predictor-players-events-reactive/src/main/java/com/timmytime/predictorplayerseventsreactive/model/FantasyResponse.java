@@ -15,13 +15,8 @@ public class FantasyResponse implements Serializable {
 
     Map<Integer, Double> goals = new HashMap<>();
     Map<Integer, Double> assists = new HashMap<>();
-    Map<Integer, Double> redCards = new HashMap<>();
     Map<Integer, Double> yellowCards = new HashMap<>();
     private String opponent;
     private Boolean isHome;
-    private Double minutes;
-    private Double conceded;
-    private Double saves = 0.0;
-
 
 }

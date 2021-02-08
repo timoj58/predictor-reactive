@@ -12,4 +12,6 @@ public interface TeamService {
 
     List<Team> get(String country);
 
+    Team getTeam(UUID id);
+
 }

@@ -16,7 +16,6 @@ import java.util.UUID;
 @Document
 @NoArgsConstructor
 public class PlayerResponse implements Serializable {
-
     private String label;
     @Id
     private UUID id;
@@ -28,17 +27,9 @@ public class PlayerResponse implements Serializable {
     private Integer yellowCards;
     private Integer saves;
 
-    //this is for recent form...
-    private Double hardmanRed;
-    private Double hardmanYellow;
-    private Double marksman;
-    private Double wizard;
-
     private Double fantasyEventScore; //saves time.  also should use this for the mobile
     private String fantasyEventKey; //saves time.  also should use this for the mobile
 
     private List<FantasyResponse> fantasyResponse = new ArrayList<>();
-
-    private List<FantasyEvent> averages = new ArrayList<>();
 
 }

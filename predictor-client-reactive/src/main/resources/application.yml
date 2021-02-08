@@ -7,8 +7,8 @@ springdoc:
 
 clients:
   data: http://localhost:8092
-  event: http://localhost:8093
-  event-data: http://localhost:8094
+  event: http://localhost:8094
+  event-data: http://localhost:8093
   players: http://localhost:8095
   data-scraper:
   event-scraper:
@@ -23,3 +23,11 @@ orchestration:
 vocab:
   players: true
   teams: false
+
+betting:
+   home-win: 75
+   away-win: 50
+   draw: 40
+   goal: 50
+   assist: 40
+   yellow-card: 50

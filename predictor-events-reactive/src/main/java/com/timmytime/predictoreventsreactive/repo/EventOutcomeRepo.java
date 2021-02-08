@@ -1,6 +1,7 @@
 package com.timmytime.predictoreventsreactive.repo;
 
 
+import com.timmytime.predictoreventsreactive.enumerator.Predictions;
 import com.timmytime.predictoreventsreactive.model.EventOutcome;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.stereotype.Repository;
@@ -21,5 +22,6 @@ public interface EventOutcomeRepo extends ReactiveMongoRepository<EventOutcome, 
 
     Flux<EventOutcome> findByPredictionNull();
 
+    Flux<EventOutcome> findBySuccessNullAndEventType(String predictions);
 
 }

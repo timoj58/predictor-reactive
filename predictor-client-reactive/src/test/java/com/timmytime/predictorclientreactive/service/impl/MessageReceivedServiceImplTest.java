@@ -27,6 +27,7 @@ class MessageReceivedServiceImplTest {
             matchService,
             teamsMatchService,
             previousOutcomesService,
+            mock(BetServiceImpl.class),
             mock(LambdaFacade.class)
     );
 

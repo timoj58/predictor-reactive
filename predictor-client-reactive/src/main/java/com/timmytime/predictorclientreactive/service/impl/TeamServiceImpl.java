@@ -18,9 +18,7 @@ import java.util.stream.Stream;
 public class TeamServiceImpl implements TeamService {
 
     private final String dataHost;
-
     private final Map<String, Map<UUID, Team>> teams = new HashMap<>();
-
 
     @Autowired
     public TeamServiceImpl(
@@ -59,6 +57,14 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public List<Team> get(String country) {
         return new ArrayList<>(teams.get(country).values());
+    }
+
+    @Override
+    public Team getTeam(UUID id) {
+       List<Team> allTeams = new ArrayList<>();
+
+       teams.keySet().forEach(country -> allTeams.addAll(teams.get(country).values()));
+       return allTeams.stream().filter(f -> f.getId().equals(id)).findFirst().get();
     }
 
 }

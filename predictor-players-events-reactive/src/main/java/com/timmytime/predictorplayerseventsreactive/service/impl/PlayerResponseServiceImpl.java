@@ -93,29 +93,12 @@ public class PlayerResponseServiceImpl implements PlayerResponseService {
         playerResponse.setCurrentTeam(teamService.getTeam(player.getLatestTeam()).getLabel());
 
         log.info("we have {} matches for {}", playerMatches.size(), player.getLabel());
-
-        List<FantasyOutcome> fantasyOutcomesValidated = new ArrayList<>();
         List<FantasyOutcome> fantasyOutcomes = new ArrayList<>();
 
         fantasyOutcomeService.findByPlayer(player.getId())
                 .filter(FantasyOutcome::getCurrent)
-                .doOnNext(fantasyOutcome -> {
-                    if (fantasyOutcome.getCurrent()) {
-                        fantasyOutcomes.add(fantasyOutcome);
-                    } else {
-                        fantasyOutcomesValidated.add(fantasyOutcome);
-                    }
-                })
+                .doOnNext(fantasyOutcomes::add)
                 .doFinally(save -> {
-                    if (!fantasyOutcomesValidated.isEmpty()) {
-                        Arrays.stream(FantasyEventTypes.values())
-                                .filter(f -> f.getPredict() == Boolean.TRUE)
-                                .forEach(event -> {
-                                    List<FantasyOutcome> filtered = fantasyOutcomesValidated.stream().filter(f -> f.getFantasyEventType().equals(event)).collect(Collectors.toList());
-                                    playerResponse.getAverages().add(new FantasyEvent(fantasyResponseTransformer.total.apply(filtered, event) / filtered.size(), event.name().toLowerCase()));
-                                });
-                    }
-
                     //also need to work out, set
                     playerResponse.setAppearances(playerMatches.size());
                     //need to sort these out at some point.  needs util to do it.
@@ -124,19 +107,6 @@ public class PlayerResponseServiceImpl implements PlayerResponseService {
                     playerResponse.setRedCards(getTotals.apply(playerMatches, FantasyEventTypes.RED_CARD));
                     playerResponse.setYellowCards(getTotals.apply(playerMatches, FantasyEventTypes.YELLOW_CARD));
                     playerResponse.setSaves(getTotals.apply(playerMatches, FantasyEventTypes.SAVES));
-
-                    //set our current status flags too (historic is worked out in app).
-                    List<PlayerMatch> recent = playerMatches
-                            .stream()
-                            .filter(f -> f.getDate().toLocalDate().isAfter(LocalDate.now().minusYears(1)))
-                            .collect(Collectors.toList());
-
-                    if (!recent.isEmpty()) {
-                        playerResponse.setHardmanYellow((getTotals.apply(recent, FantasyEventTypes.YELLOW_CARD).doubleValue() / (double) recent.size()) * 100.0);
-                        playerResponse.setHardmanRed((getTotals.apply(recent, FantasyEventTypes.RED_CARD).doubleValue() / (double) recent.size()) * 100.0);
-                        playerResponse.setWizard((getTotals.apply(recent, FantasyEventTypes.ASSISTS).doubleValue() / (double) recent.size()) * 100.0);
-                        playerResponse.setMarksman((getTotals.apply(recent, FantasyEventTypes.GOALS).doubleValue() / (double) recent.size()) * 100.0);
-                    }
 
                     if (!fantasyOutcomes.isEmpty()) {
 
@@ -189,8 +159,10 @@ public class PlayerResponseServiceImpl implements PlayerResponseService {
         }
     }
 
-    @PostConstruct
+
+    //@PostConstruct
     private void init() {
+        log.info("deleting all player responses"); //i dont think this is running. also not needed really...
         playerResponseRepo.deleteAll();
     }
 

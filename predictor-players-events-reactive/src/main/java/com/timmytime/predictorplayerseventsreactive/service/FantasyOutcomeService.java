@@ -1,6 +1,8 @@
 package com.timmytime.predictorplayerseventsreactive.service;
 
 import com.timmytime.predictorplayerseventsreactive.model.FantasyOutcome;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -14,5 +16,7 @@ public interface FantasyOutcomeService {
     Flux<FantasyOutcome> findByPlayer(UUID id);
 
     Flux<FantasyOutcome> toFix();
+
+    Flux<FantasyOutcome> topSelections(@PathVariable String market, @RequestParam  Integer threshold);
 
 }

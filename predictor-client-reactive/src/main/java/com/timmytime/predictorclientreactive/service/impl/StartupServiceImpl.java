@@ -73,7 +73,8 @@ public class StartupServiceImpl implements StartupService {
                                     "previous-events",
                                     "previous-fixtures",
                                     "top-performers",
-                                    "upcoming-events"
+                                    "upcoming-events",
+                                    "selected-bets"
                             )
                     )
                             .limitRate(1)

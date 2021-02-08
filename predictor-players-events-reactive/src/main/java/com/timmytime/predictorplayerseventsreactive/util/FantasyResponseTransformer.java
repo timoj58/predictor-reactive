@@ -46,7 +46,7 @@ public class FantasyResponseTransformer {
                     filter.apply(outcomes, (f) -> f.getFantasyEventType().equals(FantasyEventTypes.ASSISTS))
             ));
         } catch (Exception e) {
-            fantasyResponse.setSaves(null);
+            fantasyResponse.setAssists(null);
         }
 
         try {
@@ -54,7 +54,7 @@ public class FantasyResponseTransformer {
                     filter.apply(outcomes, (f) -> f.getFantasyEventType().equals(FantasyEventTypes.GOALS))
             ));
         } catch (Exception e) {
-            fantasyResponse.setSaves(null);
+            fantasyResponse.setGoals(null);
         }
 
         try {
@@ -62,7 +62,7 @@ public class FantasyResponseTransformer {
                     filter.apply(outcomes, (f) -> f.getFantasyEventType().equals(FantasyEventTypes.YELLOW_CARD))
             ));
         } catch (Exception e) {
-            fantasyResponse.setSaves(null);
+            fantasyResponse.setYellowCards(null);
         }
 
 
