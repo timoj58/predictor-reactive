@@ -59,8 +59,6 @@ public class PlayerMatchServiceImpl implements PlayerMatchService {
             String toDate,
             Consumer<PlayerMatch> consumer) {
 
-        log.info("creating {}", player);
-
         getAppearances(player,
                 fromDate,
                 toDate

@@ -36,6 +36,13 @@ public class EventsFunction {
     }
 
     @Bean
+    @RouterOperation(beanClass = EventOutcomeService.class, beanMethod = "outstandingEvents")
+    RouterFunction<ServerResponse> outstandingEvents(EventsHandler eventsHandler) {
+        return route(RequestPredicates.GET("/outstanding/{country}")
+                , eventsHandler::outstandingEvents);
+    }
+
+    @Bean
     @RouterOperation(beanClass = EventOutcomeService.class, beanMethod = "topSelections")
     RouterFunction<ServerResponse> topSelections(EventsHandler eventsHandler) {
         return route(RequestPredicates.GET("/top-selections/{outcome}")

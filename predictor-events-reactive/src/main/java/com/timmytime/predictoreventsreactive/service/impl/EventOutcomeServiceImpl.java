@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -76,6 +77,15 @@ public class EventOutcomeServiceImpl implements EventOutcomeService {
     @Override
     public Flux<EventOutcome> toFix() {
         return eventOutcomeRepo.findByPredictionNull();
+    }
+
+    @Override
+    public Flux<EventOutcome> outstandingEvents(String country) {
+        var minusDays = LocalDateTime.now().getDayOfWeek().equals(DayOfWeek.FRIDAY) ? 3 : 4;
+        return eventOutcomeRepo.findByEventTypeAndCompetitionInAndSuccessNull(
+                Predictions.PREDICT_RESULTS.name(), CountryCompetitions.valueOf(country.toUpperCase()).getCompetitions())
+                .filter(f -> f.getDate().isAfter(LocalDateTime.now().minusDays(10))) //could make it dynamic.
+                .filter(f -> f.getDate().isBefore(LocalDateTime.now().minusDays(minusDays)));
     }
 
     @Override

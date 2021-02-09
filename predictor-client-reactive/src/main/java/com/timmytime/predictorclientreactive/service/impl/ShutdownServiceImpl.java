@@ -43,7 +43,7 @@ public class ShutdownServiceImpl implements ShutdownService {
                             PreviousFixtureServiceImpl.class.getName(),
                             TeamsMatchServiceImpl.class.getName(),
                             PreviousOutcomesServiceImpl.class.getName(),
-                            BetProvider.class.getName()
+                            BetServiceImpl.class.getName()
                     ))) {
                         shutdown();
                     }

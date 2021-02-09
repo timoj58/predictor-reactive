@@ -4,6 +4,7 @@ import com.timmytime.predictorclientreactive.request.Message;
 import com.timmytime.predictorclientreactive.service.MessageReceivedService;
 import com.timmytime.predictorclientreactive.service.VocabService;
 import com.timmytime.predictorclientreactive.service.impl.BetServiceImpl;
+import com.timmytime.predictorclientreactive.service.impl.PlayersMatchServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -19,6 +20,7 @@ public class MessageHandler {
     private final MessageReceivedService messageReceivedService;
     private final VocabService vocabService;
     private final BetServiceImpl betService;
+    private final PlayersMatchServiceImpl playersMatchService;
 
     public Mono<ServerResponse> createVocab(ServerRequest request) {
 
@@ -42,7 +44,10 @@ public class MessageHandler {
 
     private Mono<Void> processTest(){
         return Mono.just("test")
-                .doOnNext(v -> CompletableFuture.runAsync(() -> betService.load()))
+                .doOnNext(v -> {
+                    CompletableFuture.runAsync(betService::load)
+                            .thenRun(playersMatchService::load);
+                })
                 .thenEmpty(Mono.empty());
     }
 

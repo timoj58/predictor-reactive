@@ -16,4 +16,6 @@ public interface TensorflowDataService {
             @PathVariable String toDate);
 
     void clear(String country);
+
+    void loadOutstanding(String country);
 }

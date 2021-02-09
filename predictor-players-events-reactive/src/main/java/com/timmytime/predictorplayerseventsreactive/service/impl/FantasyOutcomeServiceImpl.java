@@ -6,6 +6,7 @@ import com.timmytime.predictorplayerseventsreactive.repo.FantasyOutcomeRepo;
 import com.timmytime.predictorplayerseventsreactive.service.FantasyOutcomeService;
 import com.timmytime.predictorplayerseventsreactive.service.PlayerService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service("fantasyOutcomeService")
 public class FantasyOutcomeServiceImpl implements FantasyOutcomeService {
@@ -25,14 +27,7 @@ public class FantasyOutcomeServiceImpl implements FantasyOutcomeService {
 
     @Override
     public Mono<FantasyOutcome> save(FantasyOutcome fantasyOutcome) {
-        return Mono.just(fantasyOutcome)
-                .doOnNext(f -> fantasyOutcomeRepo.findByPlayerId(f.getPlayerId())
-                        .filter(r -> r.getEventDate().isBefore(LocalDateTime.now()))
-                        .doOnNext(r -> fantasyOutcomeRepo.save(
-                                r.toBuilder().current(Boolean.FALSE).build()
-                                ).subscribe()
-                        )
-                ).doFinally(save -> fantasyOutcomeRepo.save(fantasyOutcome));
+        return fantasyOutcomeRepo.save(fantasyOutcome);
     }
 
     @Override
@@ -92,6 +87,18 @@ public class FantasyOutcomeServiceImpl implements FantasyOutcomeService {
                     outcome.setCurrent(Boolean.TRUE);
                     fantasyOutcomeRepo.save(outcome).subscribe();
                 });
+    }
+
+    @PostConstruct
+    private void resetCurrent(){
+        log.info("reset current events");
+
+        fantasyOutcomeRepo.findByCurrent(Boolean.TRUE)
+                .filter(r -> r.getEventDate().isBefore(LocalDateTime.now()))
+                .limitRate(5)
+                .subscribe(fantasyOutcome ->
+                        fantasyOutcomeRepo.save(fantasyOutcome.toBuilder().current(Boolean.FALSE).build()).subscribe());
+
     }
 
 

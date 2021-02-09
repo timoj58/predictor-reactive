@@ -1,6 +1,7 @@
 package com.timmytime.predictorteamsreactive.facade;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.timmytime.predictorteamsreactive.model.EventOutcome;
 import com.timmytime.predictorteamsreactive.model.Match;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -21,6 +22,24 @@ public class WebClientFacade {
                 .uri(url)
                 .retrieve()
                 .bodyToFlux(Match.class);
+
+    }
+
+    public Mono<Match> getMatch(String url) {
+        return WebClient.builder().build()
+                .get()
+                .uri(url)
+                .retrieve()
+                .bodyToMono(Match.class);
+
+    }
+
+    public Flux<EventOutcome> getOutstandingEvents(String url) {
+        return WebClient.builder().build()
+                .get()
+                .uri(url)
+                .retrieve()
+                .bodyToFlux(EventOutcome.class);
 
     }
 

@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -93,12 +94,12 @@ public class PlayerResponseServiceImpl implements PlayerResponseService {
         playerResponse.setCurrentTeam(teamService.getTeam(player.getLatestTeam()).getLabel());
 
         log.info("we have {} matches for {}", playerMatches.size(), player.getLabel());
-        List<FantasyOutcome> fantasyOutcomes = new ArrayList<>();
 
         fantasyOutcomeService.findByPlayer(player.getId())
                 .filter(FantasyOutcome::getCurrent)
-                .doOnNext(fantasyOutcomes::add)
+                .doOnNext(p -> playerResponse.getFantasyOutcomes().add(p))
                 .doFinally(save -> {
+                    log.info("saving player response for {}", player.getLabel());
                     //also need to work out, set
                     playerResponse.setAppearances(playerMatches.size());
                     //need to sort these out at some point.  needs util to do it.
@@ -108,9 +109,10 @@ public class PlayerResponseServiceImpl implements PlayerResponseService {
                     playerResponse.setYellowCards(getTotals.apply(playerMatches, FantasyEventTypes.YELLOW_CARD));
                     playerResponse.setSaves(getTotals.apply(playerMatches, FantasyEventTypes.SAVES));
 
-                    if (!fantasyOutcomes.isEmpty()) {
+                    if (!playerResponse.getFantasyOutcomes().isEmpty()) {
 
-                        fantasyOutcomes.stream().collect(groupingBy(FantasyOutcome::getOpponent))
+                        log.info("we have fantasy outcomes for {}", player.getLabel());
+                        playerResponse.getFantasyOutcomes().stream().collect(groupingBy(FantasyOutcome::getOpponent))
                                 .values()
                                 .forEach(match -> {
                                     FantasyResponse fantasyResponse = fantasyResponseTransformer.transform.apply(match);
@@ -124,9 +126,8 @@ public class PlayerResponseServiceImpl implements PlayerResponseService {
                                     playerResponse.getFantasyResponse().add(fantasyResponse);
                                 });
 
-
                     }
-
+                    log.info("saving {} outcomes for {}", playerResponse.getFantasyOutcomes().size(), player.getLabel());
                     playerResponseRepo.save(playerResponse).subscribe();
                 })
                 .subscribe();
@@ -140,30 +141,43 @@ public class PlayerResponseServiceImpl implements PlayerResponseService {
         }
         byPlayer.get(fantasyOutcome.getPlayerId()).add(fantasyOutcome.getFantasyEventType());
 
-        List<PlayerMatch> playerMatches = new ArrayList<>();
-
         if (byPlayer.get(fantasyOutcome.getPlayerId()).containsAll(ALL_EVENTS)) {
             log.info("loading player {}, all predictions available", fantasyOutcome.getPlayerId());
-            Mono.just(fantasyOutcome.getPlayerId())
-                    .doOnNext(player -> playerMatchService.create(
-                            player,
-                            "01-08-2009",
-                            LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
-                            playerMatches::add
-                    ))
-                    .doFinally(start -> Mono.just(fantasyOutcome)
-                            .delayElement(Duration.ofSeconds(10 * delay))
-                            .subscribe(outcome -> load(outcome.getPlayerId(), playerMatches)))
-                    .subscribe();
-
+            initLoad(fantasyOutcome.getPlayerId());
         }
     }
 
+    private void initLoad(UUID playerId){
+        List<PlayerMatch> playerMatches = new ArrayList<>();
+        Mono.just(playerId)
+                .doOnNext(player -> playerMatchService.create(
+                        player,
+                        "01-08-2009",
+                        LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+                        playerMatches::add
+                ))
+                .doFinally(start -> Mono.just(1)
+                        .delayElement(Duration.ofSeconds(10 * delay))
+                        .subscribe(outcome -> load(playerId, playerMatches)))
+                .subscribe();
+    }
 
-    //@PostConstruct
+
+    //TESTING @PostConstruct
     private void init() {
-        log.info("deleting all player responses"); //i dont think this is running. also not needed really...
-        playerResponseRepo.deleteAll();
+
+        CompletableFuture.runAsync(() ->
+                Mono.just(5).delayElement(Duration.ofMinutes(2))
+        .subscribe(then -> {
+            log.info("loading player responses");
+            Flux.fromStream(playerService.get().stream())
+                    .filter(f -> !f.getLabel().equals("TBC"))
+                    .limitRate(1)
+                    .delayElements(Duration.ofMillis(100))
+                    .map(Player::getId)
+                    .subscribe(this::initLoad);
+        }));
+
     }
 
 }

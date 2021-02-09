@@ -25,5 +25,7 @@ public interface EventOutcomeService {
 
     Flux<EventOutcome> toFix();
 
+    Flux<EventOutcome> outstandingEvents(@PathVariable String country);
+
     Flux<EventOutcome> topSelections(@PathVariable String outcome, @RequestParam Integer threshold);
 }

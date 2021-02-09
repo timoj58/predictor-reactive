@@ -28,4 +28,5 @@ public enum CountryCompetitions {
     CountryCompetitions(List<String> competitions) {
         this.competitions = competitions;
     }
+
 }

@@ -14,6 +14,8 @@ import java.util.UUID;
 public interface EventOutcomeRepo extends ReactiveMongoRepository<EventOutcome, UUID> {
     Flux<EventOutcome> findByCompetitionInAndSuccessNull(List<String> competition);
 
+    Flux<EventOutcome> findByEventTypeAndCompetitionInAndSuccessNull(String eventType, List<String> competition);
+
     Flux<EventOutcome> findByCompetitionInAndPreviousEventTrue(List<String> competition);
 
     Flux<EventOutcome> findByHomeAndSuccessNotNullOrderByDateDesc(UUID team);

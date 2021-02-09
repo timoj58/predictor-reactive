@@ -43,6 +43,15 @@ public class EventsHandler {
         );
     }
 
+    public Mono<ServerResponse> outstandingEvents(ServerRequest request) {
+
+        return ServerResponse.ok().body(
+                eventOutcomeService.outstandingEvents(
+                        request.pathVariable("country")),
+                EventOutcome.class
+        );
+    }
+
     public Mono<ServerResponse> topSelections(ServerRequest request) {
 
         return ServerResponse.ok().body(
