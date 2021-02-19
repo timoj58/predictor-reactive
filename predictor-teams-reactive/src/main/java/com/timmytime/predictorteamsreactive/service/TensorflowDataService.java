@@ -17,5 +17,5 @@ public interface TensorflowDataService {
 
     void clear(String country);
 
-    void loadOutstanding(String country);
+    void loadOutstanding(String country, Runnable finish);
 }

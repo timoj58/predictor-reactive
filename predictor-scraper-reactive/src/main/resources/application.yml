@@ -22,5 +22,5 @@ config:
   dir: /tmp/
 
 delays:
-  day: 10
-  match: 1
+  day: 60
+  match: 2

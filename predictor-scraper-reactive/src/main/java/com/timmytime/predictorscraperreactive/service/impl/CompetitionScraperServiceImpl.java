@@ -54,7 +54,7 @@ public class CompetitionScraperServiceImpl implements CompetitionScraperService 
                 Stream.iterate(scraperHistory.getDate().minusDays(scraperHistory.getDaysScraped()), d -> d.plusDays(1))
                         .limit(scraperHistory.getDaysScraped())
         )
-                .delayElements(Duration.ofSeconds(dayDelay))
+                .delayElements(Duration.ofSeconds(dayDelay/3))
                 .doOnNext(date ->
 
                         Flux.fromStream(
@@ -67,10 +67,10 @@ public class CompetitionScraperServiceImpl implements CompetitionScraperService 
                                             messageService.send(result);
 
                                             Flux.fromStream(
-                                                    Arrays.asList(
+                                                    Stream.of(
                                                             scraperFactory.getMatchScraper(sportsScraperConfigurationFactory),
                                                             scraperFactory.getLineupScraper(sportsScraperConfigurationFactory)
-                                                    ).stream()
+                                                    )
                                             )
                                                     .subscribe(scrapers -> {
                                                         try {

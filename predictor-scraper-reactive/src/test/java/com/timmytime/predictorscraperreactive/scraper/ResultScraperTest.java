@@ -3,6 +3,7 @@ package com.timmytime.predictorscraperreactive.scraper;
 import com.timmytime.predictorscraperreactive.configuration.SiteRules;
 import com.timmytime.predictorscraperreactive.enumerator.ScraperTypeKeys;
 import com.timmytime.predictorscraperreactive.factory.SportsScraperConfigurationFactory;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -10,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Disabled
 class ResultScraperTest {
 
     private final SportsScraperConfigurationFactory sportsScraperConfigurationFactory

@@ -72,17 +72,19 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                                 playersHost + "/message",
                                 createMessage(msg.getCountry().toUpperCase(), "DATA_LOADED")
                         );
-                        trainingService.train(i -> {
-                            var trainingHistory = trainingHistoryService.find(Training.TRAIN_RESULTS, msg.getCountry());
-                            return trainingHistoryService.save(
-                                    new TrainingHistory(
-                                            trainingHistory.getType(),
-                                            trainingHistory.getCountry(),
-                                            trainingHistory.getToDate(),
-                                            trainingHistory.getToDate().plusYears(i).isAfter(LocalDateTime.now()) ?
-                                                    LocalDateTime.now() : trainingHistory.getToDate().plusYears(i))
-                            );
-                        });
+                        tensorflowDataService.loadOutstanding(msg.getCountry().toLowerCase(), () ->
+                                trainingService.train(i -> {
+                                    var trainingHistory = trainingHistoryService.find(Training.TRAIN_RESULTS, msg.getCountry());
+                                    return trainingHistoryService.save(
+                                            new TrainingHistory(
+                                                    trainingHistory.getType(),
+                                                    trainingHistory.getCountry(),
+                                                    trainingHistory.getToDate(),
+                                                    trainingHistory.getToDate().plusYears(i).isAfter(LocalDateTime.now()) ?
+                                                            LocalDateTime.now() : trainingHistory.getToDate().plusYears(i))
+                                    );
+                                })
+                        );
                     }
                 }
         ).thenEmpty(Mono.empty());

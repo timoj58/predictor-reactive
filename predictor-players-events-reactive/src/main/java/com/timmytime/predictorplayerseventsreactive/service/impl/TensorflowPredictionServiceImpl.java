@@ -51,8 +51,8 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
         this.webClientFacade = webClientFacade;
 
         Flux<TensorflowPrediction> receiver = Flux.push(sink -> consumer = sink::next, FluxSink.OverflowStrategy.BUFFER);
-        receiver.delayElements(Duration.ofMillis(600)) //this seems to be current time scale.  prediction -> result.
-                .limitRate(1)
+        receiver.delayElements(Duration.ofMillis(1500)) //large dict makes it slower now.  under a heavy load.
+                .limitRate(2)
                 .subscribe(this::process);
 
     }

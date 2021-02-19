@@ -17,6 +17,8 @@ public interface FantasyOutcomeService {
 
     Flux<FantasyOutcome> toFix();
 
+    Flux<FantasyOutcome> reset();
+
     Flux<FantasyOutcome> topSelections(@PathVariable String market, @RequestParam  Integer threshold);
 
 }

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -72,12 +73,17 @@ public class PredictionMonitorService {
     //due to some issues to force a restart.
     @PostConstruct
     private void processOutstanding() {
+        log.info("process outstanding");
+        CompletableFuture.runAsync(() ->
         predictionService.outstanding()
                 .subscribe(count -> {
                     if (count > 0) {
-                        predictionService.reProcess();
+                        log.info("records to resolve");
+                        //first reset all.
+                        predictionService.reset();
                     }
-                });
+                })
+        );
     }
 
     private JsonNode createMessage() {

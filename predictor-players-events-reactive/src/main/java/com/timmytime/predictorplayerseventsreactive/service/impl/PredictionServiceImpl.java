@@ -87,6 +87,14 @@ public class PredictionServiceImpl implements PredictionService {
         return fantasyOutcomeService.toFix().count();
     }
 
+    @Override
+    public void reset() {
+        fantasyOutcomeService.reset()
+                .doOnNext(record -> fantasyOutcomeService.save(record.toBuilder().prediction(null).build()).subscribe())
+                .doFinally(then -> reProcess())
+                .subscribe();
+    }
+
 
     private Boolean processPlayers(String competition, LocalDateTime date, UUID homeTeam, UUID awayTeam) {
         Flux.fromStream(

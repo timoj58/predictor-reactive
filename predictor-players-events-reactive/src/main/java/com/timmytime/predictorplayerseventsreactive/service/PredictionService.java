@@ -8,4 +8,6 @@ public interface PredictionService {
     void reProcess();
 
     Mono<Long> outstanding();
+
+    void reset();
 }

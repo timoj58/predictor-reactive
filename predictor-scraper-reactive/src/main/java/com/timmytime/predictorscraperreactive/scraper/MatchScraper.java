@@ -15,9 +15,8 @@ import org.jsoup.parser.Parser;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.IntStream;
@@ -26,6 +25,7 @@ import java.util.stream.IntStream;
 public class MatchScraper implements IScraper<Match> {
     private final SportsScraperConfigurationFactory sportsScraperConfigurationFactory;
     private final RestTemplate restTemplate = new RestTemplate();
+    private final Map<Integer, AtomicInteger> retryMap = new HashMap<>();
     Function<String, JsonNode> parse = data -> {
         JSONObject parse = new JSONObject();
 
@@ -116,6 +116,14 @@ public class MatchScraper implements IScraper<Match> {
     @Override
     public Match scrape(Integer matchId) {
 
+        if(!retryMap.containsKey(matchId)){
+            retryMap.put(matchId, new AtomicInteger(0));
+        }
+
+        var retry = retryMap.get(matchId).incrementAndGet();
+
+        log.info("retry {} for matchId {}", retry, matchId);
+
         Match match = new Match();
         match.setMatchId(matchId);
         match.setType("match");
@@ -131,8 +139,11 @@ public class MatchScraper implements IScraper<Match> {
         SiteRules events = siteRules.stream().filter(f -> f.getId().equals("events")).findFirst().get();
         //grab the payload.
         try {
+            var url = events.getUrl().replace("{game_id}", matchId.toString());
 
-            String response = restTemplate.exchange(events.getUrl().replace("{game_id}", matchId.toString()),
+            log.info("match scraping: url {}", url);
+
+            String response = restTemplate.exchange(url,
                     HttpMethod.GET, null, String.class).getBody();
 
             Document document = Parser.htmlParser().parseInput(response, "");
@@ -179,6 +190,10 @@ public class MatchScraper implements IScraper<Match> {
 
         } catch (Exception e) {
             log.error("match scraper failed", e);
+            //need to put retries in here due to 503.  retrying
+            if(retry <= 3){
+                scrape(matchId);
+            }
         }
 
         return match;

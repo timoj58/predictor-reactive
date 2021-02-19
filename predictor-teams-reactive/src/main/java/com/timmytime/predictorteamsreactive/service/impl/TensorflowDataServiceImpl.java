@@ -42,14 +42,6 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
         this.webClientFacade = webClientFacade;
         Flux<CountryMatch> receiver = Flux.push(sink -> consumer = sink::next, FluxSink.OverflowStrategy.BUFFER);
         receiver.subscribe(this::process);
-
-        Arrays.stream(
-                CountryCompetitions.values()
-        ).forEach(country -> {
-            data.put(country.name().toLowerCase(), new ArrayList<>());
-            CompletableFuture.runAsync(() -> loadOutstanding(country.name())); //need to update any missing games.
-        });
-
     }
 
     @Override
@@ -80,15 +72,14 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
         } else {
             log.info("no data to clear for {}", country);
         }
-
     }
 
     @Override
-    public void loadOutstanding(String country) {
+    public void loadOutstanding(String country, Runnable finish) {
         log.info("loading outstanding games");
         webClientFacade.getOutstandingEvents(
                 eventsHost + "/outstanding/" + country.toLowerCase()
-        ).subscribe(event -> {
+        ).doOnNext(event -> {
                     log.info("found outstanding event {} vs {}, {}", event.getHome(), event.getAway(), event.getDate().toString());
                     webClientFacade.getMatch(dataHost + "/match" +
                             "?home=" + event.getHome() + "&away=" + event.getAway()
@@ -103,7 +94,8 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
 
                             );
                 }
-        );
+        ).doFinally(then -> finish.run())
+        .subscribe();
     }
 
 
