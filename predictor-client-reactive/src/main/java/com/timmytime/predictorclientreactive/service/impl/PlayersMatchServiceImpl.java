@@ -17,14 +17,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
-import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import static java.time.Duration.ofMinutes;
+import static java.util.Arrays.asList;
+import static java.util.stream.Stream.of;
+import static reactor.core.publisher.Flux.fromStream;
+import static reactor.core.publisher.Mono.just;
 
 @Slf4j
 @Service("playersMatchService")
@@ -72,8 +77,8 @@ public class PlayersMatchServiceImpl implements ILoadService {
 
     @Override
     public void load() {
-        Flux.fromStream(
-                Stream.of(Competition.values())
+        fromStream(
+                of(Competition.values())
                         .filter(f -> f.getFantasyLeague() == Boolean.TRUE)
         ).subscribe(this::create);
     }
@@ -90,8 +95,8 @@ public class PlayersMatchServiceImpl implements ILoadService {
                                     webClientFacade.getPlayer(playersHost + "/player/" + player.getId()) //get player response
                                             .subscribe(playerResponses::add)
                             ) //get the appearance and stats set up, create a player response
-                            .doFinally(match -> Mono.just(playerResponses)
-                                    .delayElement(Duration.ofMinutes(delay))
+                            .doFinally(match -> just(playerResponses)
+                                    .delayElement(ofMinutes(delay))
                                     .subscribe(players -> {
                                         MatchSelectionsResponse matchSelectionsResponse
                                                 = new MatchSelectionsResponse(
@@ -104,7 +109,7 @@ public class PlayersMatchServiceImpl implements ILoadService {
                                     })
                             ).subscribe();
                 })
-                .doFinally(save -> Mono.just(league).delayElement(Duration.ofMinutes(delay * 2)).subscribe(this::save))
+                .doFinally(save -> just(league).delayElement(ofMinutes(delay * 2)).subscribe(this::save))
                 .subscribe();
 
     }
@@ -137,7 +142,7 @@ public class PlayersMatchServiceImpl implements ILoadService {
         topSelectionsAssistsResponse.process(process.apply(byCompetition.get(competition), FantasyEventTypes.ASSISTS));
         topSelectionsYellowsResponse.process(process.apply(byCompetition.get(competition), FantasyEventTypes.YELLOW_CARD));
 
-        Arrays.asList(topSelectionsAssistsResponse, topSelectionsGoalsResponse, topSelectionsYellowsResponse)
+        asList(topSelectionsAssistsResponse, topSelectionsGoalsResponse, topSelectionsYellowsResponse)
                 .forEach(topSelectionsResponse ->
                 {
                     try {

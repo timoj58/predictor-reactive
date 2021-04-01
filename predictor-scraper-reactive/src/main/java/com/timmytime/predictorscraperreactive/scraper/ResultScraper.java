@@ -114,22 +114,27 @@ public class ResultScraper {
         String url = competition.getUrl().replace("{date}", date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")).replace("-", ""));
 
         log.info("url {}", url);
+        var retryCount = 0;
 
-        List<Result> results = new ArrayList<>();
+        List<Result> results;
 
+        do{
+            results = fetch(url, eventRules, competition, retryCount);
+            retryCount++;
+        }while (results == null && retryCount < 3);
+
+        return results == null ? new ArrayList<>() : results;
+    }
+
+    private List<Result> fetch(String url, SiteRules eventRules, SiteRules competition, Integer retry){
+        log.info("fetching results retry: {}", retry);
         try {
-            results = process(url, eventRules, competition);
+            return process(url, eventRules, competition);
 
         } catch (Exception e) {
-            log.error("first fail, trying again", e);
-            try {
-                results = process(url, eventRules, competition);
-            } catch (Exception e2) {
-                log.error("give up", e2);
-            }
+            log.error("fail, trying again", e);
+            return null;
         }
-
-        return results;
     }
 
     private JSONObject filter(JSONArray array, String index, String value) {

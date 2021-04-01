@@ -10,11 +10,12 @@ import com.amazonaws.services.s3.model.ListObjectsV2Request;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Mono;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Supplier;
+
+import static java.time.LocalDate.now;
+import static reactor.core.publisher.Mono.just;
 
 @Slf4j
 @Component
@@ -72,14 +73,14 @@ public class S3Facade implements IS3Facade {
                 .withMaxKeys(250);
         ListObjectsV2Result result;
 
-        String date = LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        String date = now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
         do {
 
             result = s3.listObjectsV2(listObjectsRequest);
             result.getObjectSummaries()
                     .forEach(summary ->
-                            Mono.just(summary)
+                            just(summary)
                                     .doOnNext(details ->
                                             s3.copyObject(new CopyObjectRequest(
                                                     details.getBucketName(),

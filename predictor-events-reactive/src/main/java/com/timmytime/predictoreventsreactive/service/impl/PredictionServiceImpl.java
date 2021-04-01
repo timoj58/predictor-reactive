@@ -12,11 +12,13 @@ import com.timmytime.predictoreventsreactive.service.TensorflowPredictionService
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.Duration;
 import java.util.UUID;
+
+import static java.time.Duration.ofMinutes;
+import static reactor.core.publisher.Flux.fromArray;
+import static reactor.core.publisher.Flux.fromStream;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -31,14 +33,14 @@ public class PredictionServiceImpl implements PredictionService {
     @Override
     public void start(String country) {
         log.info("starting predictions for {}", country);
-        Flux.fromStream(
+        fromStream(
                 CountryCompetitions.valueOf(country).getCompetitions().stream()
         )
-                .delayElements(Duration.ofMinutes(1))
+                .delayElements(ofMinutes(1))
                 .subscribe(competition ->
                         eventService.getEvents(competition)
                                 .subscribe(event ->
-                                        Flux.fromArray(Predictions.values())
+                                        fromArray(Predictions.values())
                                                 .limitRate(1)
                                                 .subscribe(predict ->
                                                         eventOutcomeService.save(

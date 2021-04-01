@@ -17,8 +17,6 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
@@ -26,6 +24,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static reactor.core.publisher.Flux.fromArray;
+import static reactor.core.publisher.Flux.fromStream;
+import static reactor.core.publisher.Mono.just;
 
 @Slf4j
 @Service("previousFixtureService")
@@ -64,9 +66,9 @@ public class PreviousFixtureServiceImpl implements ILoadService {
     @Override
     public void load() {
 
-        Flux.fromArray(CountryCompetitions.values())
+        fromArray(CountryCompetitions.values())
                 .subscribe(country ->
-                        Flux.fromStream(
+                        fromStream(
                                 country.getCompetitions().stream()
                         )
                                 .subscribe(competition -> {
@@ -80,14 +82,14 @@ public class PreviousFixtureServiceImpl implements ILoadService {
                                                             byCompetition.put(competition, new ArrayList<>());
                                                         }
 
-                                                        Flux.fromStream(
+                                                        fromStream(
                                                                 eventOutcomes.stream()
                                                         ).doOnNext(event ->
                                                                 webClientFacade.getMatch(getMatchUrl(event))
                                                                         .subscribe(match -> byCompetition.get(competition).add(transform(event).withScore(match)))
                                                         )
                                                                 .doFinally(save ->
-                                                                        Mono.just(competition).delayElement(Duration.ofMinutes(delay)).subscribe(this::save))
+                                                                        just(competition).delayElement(Duration.ofMinutes(delay)).subscribe(this::save))
                                                                 .subscribe();
                                                     }
                                             ).subscribe();

@@ -118,11 +118,11 @@ public class BetServiceImpl implements ILoadService {
 
     private TopSelection processMatchEvent(EventOutcome eventOutcome, String outcome) {
         var prediction = convert(eventOutcome.getPrediction());
-        var title = Arrays.asList("homeWin","draw").contains(outcome) ? eventOutcome.getHome() : eventOutcome.getAway();
+        var title = Arrays.asList("homeWin", "draw").contains(outcome) ? eventOutcome.getHome() : eventOutcome.getAway();
         var subtitle = Arrays.asList("awayWin").contains(outcome) ? eventOutcome.getHome() : eventOutcome.getAway();
         return TopSelection.builder()
                 .label(teamService.getTeam(eventOutcome.getCountry(), title).getLabel())
-                .subtitle("vs "+teamService.getTeam(eventOutcome.getCountry(), subtitle).getLabel())
+                .subtitle("vs " + teamService.getTeam(eventOutcome.getCountry(), subtitle).getLabel())
                 .rating(prediction.getJSONObject(0).getDouble("score"))
                 .market(prediction.getJSONObject(0).getString("key"))
                 .date(eventOutcome.getDate().format(dateTimeFormatter))

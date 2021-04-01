@@ -10,13 +10,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
-import java.time.Duration;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Stream;
+
+import static java.time.Duration.ofMinutes;
+import static java.util.concurrent.CompletableFuture.runAsync;
+import static java.util.stream.Stream.of;
+import static reactor.core.publisher.Flux.fromStream;
+import static reactor.core.publisher.Mono.just;
 
 @Slf4j
 @Service("startupService")
@@ -64,10 +65,10 @@ public class StartupServiceImpl implements StartupService {
 
             log.info("orchestration mode");
 
-            CompletableFuture.runAsync(() ->
+            runAsync(() ->
 
-                    Flux.fromStream(
-                            Stream.of(
+                    fromStream(
+                            of(
                                     "fixtures",
                                     "player-events",
                                     "previous-events",
@@ -81,8 +82,8 @@ public class StartupServiceImpl implements StartupService {
                             .doOnNext(s3Facade::archive)
                             .doFinally(start ->
 
-                                    Flux.fromStream(
-                                            Stream.of(
+                                    fromStream(
+                                            of(
                                                     LambdaFunctions.PROXY_START,
                                                     LambdaFunctions.DATABASE,
                                                     LambdaFunctions.PRE_START,
@@ -90,12 +91,12 @@ public class StartupServiceImpl implements StartupService {
                                             )
                                     )
                                             .limitRate(1)
-                                            .delayElements(Duration.ofMinutes(startDelay))
+                                            .delayElements(ofMinutes(startDelay))
                                             .map(LambdaFunctions::getFunctionName)
                                             .doOnNext(lambdaFacade::invoke)
                                             .doFinally(wakeup ->
-                                                    Mono.just("/scrape")
-                                                            .delayElement(Duration.ofMinutes(startDelay))
+                                                    just("/scrape")
+                                                            .delayElement(ofMinutes(startDelay))
                                                             .subscribe(this::completeStartup))
                                             .subscribe()
                             )
@@ -103,14 +104,14 @@ public class StartupServiceImpl implements StartupService {
             );
         } else {
             log.info("stand alone mode");
-            CompletableFuture.runAsync(teamService::loadTeams);
+            runAsync(teamService::loadTeams);
         }
 
     }
 
     private void completeStartup(String url) {
         log.info("starting scrapers and loading teams");
-        CompletableFuture.runAsync(() -> webClientFacade.startScraper(dataScraperHost + url))
+        runAsync(() -> webClientFacade.startScraper(dataScraperHost + url))
                 .thenRun(() -> webClientFacade.startScraper(eventScraperHost + url))
                 .thenRun(teamService::loadTeams);
     }

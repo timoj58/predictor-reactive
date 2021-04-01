@@ -26,10 +26,14 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
+
+import static java.time.Duration.ofSeconds;
+import static java.util.Arrays.stream;
+import static java.util.concurrent.CompletableFuture.runAsync;
+import static java.util.stream.Stream.of;
+import static reactor.core.publisher.Flux.fromStream;
 
 @Slf4j
 @Service("previousOutcomesService")
@@ -76,14 +80,14 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
     @Override
     public void load() {
 
-        CompletableFuture.runAsync(this::init)
+        runAsync(this::init)
                 .thenRun(() ->
-                        Flux.fromStream(Arrays.stream(CountryCompetitions.values()))
-                                .delayElements(Duration.ofSeconds(delay * 20))
+                        fromStream(stream(CountryCompetitions.values()))
+                                .delayElements(ofSeconds(delay * 20))
                                 .subscribe(country ->
-                                        Flux.fromStream(
+                                        fromStream(
                                                 teamService.get(country.name().toLowerCase()).stream()
-                                        ).delayElements(Duration.ofSeconds(delay))
+                                        ).delayElements(ofSeconds(delay))
                                                 .subscribe(
                                                         team -> {
                                                             AtomicInteger index = new AtomicInteger(0);
@@ -99,7 +103,7 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
 
     private void init() {
 
-        Stream.of(CountryCompetitions.values())
+        of(CountryCompetitions.values())
                 .forEach(country -> {
                             teamsByCountry.put(country.name().toLowerCase(), new ArrayList<>());
                             teamService.get(country.name().toLowerCase())

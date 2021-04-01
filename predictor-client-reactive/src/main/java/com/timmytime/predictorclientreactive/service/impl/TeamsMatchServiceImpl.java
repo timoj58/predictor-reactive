@@ -16,15 +16,16 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
+
+import static java.util.stream.Stream.of;
+import static reactor.core.publisher.Flux.fromStream;
+import static reactor.core.publisher.Mono.just;
 
 @Slf4j
 @Service("teamsMatchService")
@@ -61,10 +62,10 @@ public class TeamsMatchServiceImpl implements ILoadService {
     @Override
     public void load() {
 
-        Flux.fromStream(
-                Stream.of(CountryCompetitions.values())
+        fromStream(
+                of(CountryCompetitions.values())
         ).subscribe(country ->
-                Flux.fromStream(
+                fromStream(
                         country.getCompetitions().stream()
                 ).subscribe(
                         competition -> {
@@ -74,7 +75,7 @@ public class TeamsMatchServiceImpl implements ILoadService {
                             webClientFacade.getUpcomingEventOutcomes(eventsHost + "/events/" + competition)
                                     .doOnNext(event -> byCompetition.get(competition).add(transform(event)))
                                     .doFinally(save ->
-                                            Mono.just(competition).delayElement(Duration.ofMinutes(delay)).subscribe(this::save))
+                                            just(competition).delayElement(Duration.ofMinutes(delay)).subscribe(this::save))
                                     .subscribe();
                         }
                 )

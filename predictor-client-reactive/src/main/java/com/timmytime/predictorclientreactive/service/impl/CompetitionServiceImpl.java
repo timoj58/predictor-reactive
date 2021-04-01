@@ -13,11 +13,12 @@ import com.timmytime.predictorclientreactive.service.ShutdownService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
+
+import static java.util.stream.Stream.of;
+import static reactor.core.publisher.Flux.fromStream;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -32,8 +33,8 @@ public class CompetitionServiceImpl implements ILoadService {
 
         List<CountryAndCompetitionResponse> countryAndCompetitionResponses = new ArrayList<>();
 
-        Flux.fromStream(
-                Stream.of(CountryCompetitions.values())
+        fromStream(
+                of(CountryCompetitions.values())
         ).doOnNext(country -> {
 
             log.info("processing {}", country.name());

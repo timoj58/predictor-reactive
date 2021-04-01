@@ -91,7 +91,7 @@ public class WebClientFacade {
                 .bodyToFlux(Player.class);
     }
 
-    public Flux<EventOutcome> topMatchSelections(String url){
+    public Flux<EventOutcome> topMatchSelections(String url) {
         return WebClient.builder().build()
                 .get()
                 .uri(url)
@@ -100,7 +100,7 @@ public class WebClientFacade {
 
     }
 
-    public Flux<FantasyOutcome> topPlayerSelections(String url){
+    public Flux<FantasyOutcome> topPlayerSelections(String url) {
         return WebClient.builder().build()
                 .get()
                 .uri(url)

@@ -9,13 +9,14 @@ import com.timmytime.predictorclientreactive.service.MessageReceivedService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+
+import static java.util.concurrent.CompletableFuture.runAsync;
+import static reactor.core.publisher.Flux.fromStream;
 
 @Slf4j
 @Service("messageReceivedService")
@@ -55,11 +56,11 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         return message.doOnNext(
                 msg -> {
                     log.info("received {}", msg.getType());
-                    CompletableFuture.runAsync(() -> process(msg.getType()))
+                    runAsync(() -> process(msg.getType()))
                             .thenRun(() -> {
                                 if (ready()) {
                                     log.info("all messages received");
-                                    CompletableFuture.runAsync(this::load);
+                                    runAsync(this::load);
                                 }
                             });
                 }
@@ -69,7 +70,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
 
     private void load() {
         log.info("loading");
-        Flux.fromStream(
+        fromStream(
                 loaders.stream()
         ).subscribe(ILoadService::load);
     }

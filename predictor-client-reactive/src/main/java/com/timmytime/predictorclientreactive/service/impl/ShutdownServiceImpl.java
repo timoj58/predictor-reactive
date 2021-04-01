@@ -2,19 +2,19 @@ package com.timmytime.predictorclientreactive.service.impl;
 
 import com.timmytime.predictorclientreactive.enumerator.LambdaFunctions;
 import com.timmytime.predictorclientreactive.facade.LambdaFacade;
-import com.timmytime.predictorclientreactive.model.BetProvider;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Stream;
+
+import static java.time.Duration.ofMinutes;
+import static java.util.concurrent.CompletableFuture.runAsync;
+import static java.util.stream.Stream.of;
+import static reactor.core.publisher.Flux.fromStream;
 
 @Service("shutdownService")
 @Slf4j
@@ -33,7 +33,7 @@ public class ShutdownServiceImpl implements ShutdownService {
     @Override
     public void receive(String service) {
         log.info("receiving shutdown message for {}", service);
-        CompletableFuture.runAsync(() -> received.add(service))
+        runAsync(() -> received.add(service))
                 .thenRun(() -> {
                     log.info("checking status?...");
                     if (received.containsAll(Arrays.asList(
@@ -53,12 +53,12 @@ public class ShutdownServiceImpl implements ShutdownService {
     @Override
     public void shutdown() {
         log.info("shutting down");
-        Flux.fromStream(
-                Stream.of(
+        fromStream(
+                of(
                         LambdaFunctions.PROXY_STOP,
                         LambdaFunctions.SHUTDOWN
                 )
-        ).delayElements(Duration.ofMinutes(1)) //review.  probably not required
+        ).delayElements(ofMinutes(1)) //review.  probably not required
                 .map(LambdaFunctions::getFunctionName)
                 .subscribe(lambdaFacade::invoke);
 

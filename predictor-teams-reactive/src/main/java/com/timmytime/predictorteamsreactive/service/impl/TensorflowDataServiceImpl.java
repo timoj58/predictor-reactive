@@ -42,6 +42,10 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
         this.webClientFacade = webClientFacade;
         Flux<CountryMatch> receiver = Flux.push(sink -> consumer = sink::next, FluxSink.OverflowStrategy.BUFFER);
         receiver.subscribe(this::process);
+
+        Arrays.asList(CountryCompetitions.values())
+                .forEach(country -> data.put(country.name().toLowerCase(), new ArrayList<>()));
+
     }
 
     @Override
@@ -87,7 +91,7 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
                             .subscribe(match -> {
                                         log.info("found the actual match {} vs {}", match.getHomeTeam(), match.getAwayTeam());
                                         load(new CountryMatch(
-                                                country,
+                                                country.toLowerCase(),
                                                 match.toBuilder().date(LocalDateTime.now().minusDays(1)).build()) //need to ensure it gets picked up.
                                         );
                                     }

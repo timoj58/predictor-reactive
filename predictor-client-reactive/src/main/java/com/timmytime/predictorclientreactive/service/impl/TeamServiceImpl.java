@@ -8,10 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Flux;
 
 import java.util.*;
-import java.util.stream.Stream;
+
+import static java.util.stream.Stream.of;
+import static reactor.core.publisher.Flux.fromStream;
 
 @Slf4j
 @Service("teamService")
@@ -30,8 +31,8 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public void loadTeams() {
 
-        Flux.fromStream(
-                Stream.of(CountryCompetitions.values())
+        fromStream(
+                of(CountryCompetitions.values())
         ).subscribe(country -> {
                     teams.put(country.name().toLowerCase(), new HashMap<>());
                     WebClient.builder().build()
@@ -61,10 +62,10 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public Team getTeam(UUID id) {
-       List<Team> allTeams = new ArrayList<>();
+        List<Team> allTeams = new ArrayList<>();
 
-       teams.keySet().forEach(country -> allTeams.addAll(teams.get(country).values()));
-       return allTeams.stream().filter(f -> f.getId().equals(id)).findFirst().get();
+        teams.keySet().forEach(country -> allTeams.addAll(teams.get(country).values()));
+        return allTeams.stream().filter(f -> f.getId().equals(id)).findFirst().get();
     }
 
 }

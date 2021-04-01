@@ -15,11 +15,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.stream.Stream;
+
+import static java.util.stream.Stream.of;
+import static reactor.core.publisher.Flux.fromStream;
 
 @Slf4j
 @Service("fixtureService")
@@ -50,10 +51,10 @@ public class FixtureServiceImpl implements ILoadService {
 
     @Override
     public void load() {
-        Flux.fromStream(
-                Stream.of(CountryCompetitions.values())
+        fromStream(
+                of(CountryCompetitions.values())
         ).doOnNext(country ->
-                Flux.fromStream(country.getCompetitions().stream())
+                fromStream(country.getCompetitions().stream())
                         .subscribe(competition -> {
                             log.info("processing {}", competition);
                             UpcomingCompetitionEventsResponse upcomingCompetitionEventsResponse =
