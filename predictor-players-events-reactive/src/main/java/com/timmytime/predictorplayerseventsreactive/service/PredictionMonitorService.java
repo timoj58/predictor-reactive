@@ -58,7 +58,8 @@ public class PredictionMonitorService {
                         log.info("we have {} waiting ({})", count, previousCount.get());
                         if (count != 0 && count == previousCount.get()) {
                             log.info("reprocessing");
-                            predictionService.reProcess();
+                            //needs seperate thread
+                            CompletableFuture.runAsync(predictionService::reProcess);
                         } else if (count == 0 && countriesProcessed.containsAll(ApplicableFantasyLeagues.getCountries())) {
                             log.info("finishing");
                             webClientFacade.sendMessage(clientHost + "/message", createMessage());

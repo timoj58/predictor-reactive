@@ -2,8 +2,7 @@ package com.timmytime.predictoreventdatareactive.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.timmytime.predictoreventdatareactive.enumerator.Providers;
-import com.timmytime.predictoreventdatareactive.service.BetwayService;
-import com.timmytime.predictoreventdatareactive.service.PaddyPowerService;
+import com.timmytime.predictoreventdatareactive.service.EspnService;
 import com.timmytime.predictoreventdatareactive.service.ProviderService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -30,8 +29,7 @@ public class ProviderServiceImpl implements ProviderService {
 
     @Autowired
     public ProviderServiceImpl(
-            BetwayService betwayService,
-            PaddyPowerService paddyPowerService
+            EspnService espnService
     ) {
         Flux<Pair<Providers, JsonNode>> messages = Flux.push(sink ->
                 ProviderServiceImpl.this.receiveJson = sink::next, FluxSink.OverflowStrategy.BUFFER);
@@ -45,11 +43,8 @@ public class ProviderServiceImpl implements ProviderService {
         messages.limitRate(1).subscribe(msg -> process(msg).forEach(receiveEvent));
         events.limitRate(1).subscribe(event -> {
             switch (Providers.valueOf(event.getString("provider"))) {
-                case PADDYPOWER_ODDS:
-                    processBets(paddyPowerService.prepare(event));
-                    break;
-                case BETWAY_ODDS:
-                    processBets(betwayService.prepare(event));
+                case ESPN_ODDS:
+                    processBets(espnService.prepare(event));
                     break;
             }
         });

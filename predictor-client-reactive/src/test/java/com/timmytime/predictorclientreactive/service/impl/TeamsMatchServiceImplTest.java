@@ -11,13 +11,18 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.mockito.Mockito.*;
 
-@Disabled
+//@Disabled
 class TeamsMatchServiceImplTest {
 
     WebClientFacade webClientFacade = mock(WebClientFacade.class);
@@ -33,6 +38,12 @@ class TeamsMatchServiceImplTest {
     @Test
     public void loadTest() throws InterruptedException {
 
+        List<EventOutcome> eventOutcomeList = new ArrayList<>();
+
+        IntStream.range(0, 20).forEach(i -> eventOutcomeList.add(EventOutcome.builder()
+                .date(LocalDateTime.now())
+                .prediction("{}").build()));
+
         Arrays.asList(
                 CountryCompetitions.values()
         )
@@ -43,7 +54,7 @@ class TeamsMatchServiceImplTest {
                 .stream()
                 .forEach(c ->
                         when(webClientFacade.getUpcomingEventOutcomes("/events/" + c))
-                                .thenReturn(Flux.fromStream(Arrays.asList(new EventOutcome()).stream()
+                                .thenReturn(Flux.fromStream(eventOutcomeList.stream()
                                 )));
 
 

@@ -15,22 +15,14 @@ import java.util.stream.Stream;
 @Service("scraperService")
 public class ScraperServiceImpl implements ScraperService {
 
-    private final PaddyPowerService paddyPowerService;
-    private final BetwayService betwayService;
+    private final EspnService espnService;
 
     @Override
     public Mono<Void> scrape() {
-        log.info("scraping");
+        log.info("scraping...");
 
-        Flux.fromStream(
-                Stream.of(
-                        paddyPowerService,
-                        betwayService
-                )
-        ).subscribe(
-                BookmakerService::scrape
-        );
-
+        Mono.just(espnService)
+        .subscribe(BookmakerService::scrape);
 
         return Mono.empty();
 

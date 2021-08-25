@@ -8,6 +8,7 @@ import com.timmytime.predictoreventsreactive.service.PredictionMonitorService;
 import com.timmytime.predictoreventsreactive.service.PredictionResultService;
 import com.timmytime.predictoreventsreactive.service.PredictionService;
 import com.timmytime.predictoreventsreactive.service.ValidationService;
+import lombok.Getter;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
@@ -23,6 +24,7 @@ class MessageReceivedServiceImplTest {
 
     private final MessageReceivedServiceImpl messageReceivedService
             = new MessageReceivedServiceImpl("dummy", predictionService, predictionResultService, mock(PredictionMonitorService.class), validationService, webClientFacade);
+
 
     @Test
     @Disabled

@@ -84,7 +84,6 @@ public class StartupServiceImpl implements StartupService {
 
                                     fromStream(
                                             of(
-                                                    LambdaFunctions.PROXY_START,
                                                     LambdaFunctions.DATABASE,
                                                     LambdaFunctions.PRE_START,
                                                     LambdaFunctions.START

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.timmytime.predictoreventscraperreactive.enumerator.CountryCompetitions;
-import com.timmytime.predictoreventscraperreactive.enumerator.ScraperTypeKeys;
 import com.timmytime.predictoreventscraperreactive.facade.WebClientFacade;
 import com.timmytime.predictoreventscraperreactive.model.ScraperModel;
 import com.timmytime.predictoreventscraperreactive.service.MessageService;
@@ -41,8 +40,7 @@ public class MessageServiceImpl implements MessageService {
 
         this.webClientFacade = webClientFacade;
 
-        messages.put(ScraperTypeKeys.PADDYPOWER_ODDS.name(), new ArrayList<>());
-        messages.put(ScraperTypeKeys.BETWAY_ODDS.name(), new ArrayList<>());
+        messages.put("espn", new ArrayList<>());
     }
 
     @Override

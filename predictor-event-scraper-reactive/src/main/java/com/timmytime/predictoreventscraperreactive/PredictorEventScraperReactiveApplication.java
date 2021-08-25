@@ -12,4 +12,5 @@ public class PredictorEventScraperReactiveApplication {
         SpringApplication.run(PredictorEventScraperReactiveApplication.class, args);
     }
 
+
 }

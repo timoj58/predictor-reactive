@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.stream.Stream.of;
 import static reactor.core.publisher.Flux.fromStream;
@@ -83,7 +84,7 @@ public class TeamsMatchServiceImpl implements ILoadService {
     }
 
     private void save(String competition) {
-        log.info("saving {}", competition);
+        log.info("saving {} {} {}", competition, byCompetition.size(), byCompetition.get(competition).size());
 
         byCompetition.get(competition)
                 .forEach(event -> {
@@ -125,7 +126,6 @@ public class TeamsMatchServiceImpl implements ILoadService {
         eventOutcomeResponse.setHome(teamService.getTeam(event.getCountry(), event.getHome()));
         eventOutcomeResponse.setAway(teamService.getTeam(event.getCountry(), event.getAway()));
 
-        log.info("processing {}", event.getId());
 
         return eventOutcomeResponse;
 

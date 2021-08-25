@@ -11,12 +11,5 @@ clients:
   event-data: http://127.0.0.1:8093
   events: http://127.0.0.1:8091
 
-# default properties
-config:
-  dir: /tmp/
-
-delays:
-  betway: 1
-  paddypower: 1
-  paddypower2: 60
-
+fixtures:
+  url: "https://www.espn.co.uk/soccer/fixtures/_/date/{date}/league/{competition}"

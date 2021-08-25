@@ -13,12 +13,11 @@ import javax.annotation.PostConstruct;
 import java.time.*;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.IntStream;
 
+@Service
 @Slf4j
 @RequiredArgsConstructor
-@Service("betwayService")
-public class BetwayService {
+public class EspnService {
 
     private final TeamService teamService;
     private final EventOddsService eventOddsService;
@@ -28,38 +27,31 @@ public class BetwayService {
         String competition = event.getString("competition");
 
 
-        Optional<Team> homeTeam = teamService.find(event.getString("HomeTeamName"), competition);
-        Optional<Team> awayTeam = teamService.find(event.getString("AwayTeamName"), competition);
+        Optional<Team> homeTeam = teamService.find(event.getString("home"), competition);
+        Optional<Team> awayTeam = teamService.find(event.getString("away"), competition);
 
         if (homeTeam.isPresent() && awayTeam.isPresent()) {
 
             LocalDateTime eventDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(
-                    event.getLong("Milliseconds")
+                    event.getLong("milliseconds")
             ), ZoneId.systemDefault());
-            //dont have these details...TBC
+
             if (eventDate.isBefore(LocalDateTime.now().plusDays(daysInAdvance()))) {
 
                 List<JSONObject> bets = new ArrayList<>();
-                IntStream.range(0, event.getJSONArray("bets").length()).forEach(
-                        bet -> bets.add(event.getJSONArray("bets").getJSONObject(bet)));
-
+                bets.add(new JSONObject());
 
                 return Pair.of(bets, bet -> {
-                    Double odds = bet.getDouble("OddsDecimal");
 
                     JSONObject eventName = new JSONObject();
 
-                    eventName.put("title", bet.getString("title"));
-                    eventName.put("CouponName", bet.getString("CouponName"));
-                    eventName.put("BetName", bet.getString("BetName"));
-
+                    eventName.put("title", "RESULT");
 
                     eventOddsService.addToQueue(
                             EventOdds.builder()
                                     .id(UUID.randomUUID())
-                                    .provider(Providers.BETWAY_ODDS.name())
+                                    .provider(Providers.ESPN_ODDS.name())
                                     .teams(Arrays.asList(homeTeam.get().getId(), awayTeam.get().getId()))
-                                    .price(odds)
                                     .eventDate(eventDate)
                                     .event(eventName.toString())
                                     .competition(competition)
@@ -90,6 +82,6 @@ public class BetwayService {
 
     @PostConstruct
     private void init() {
-        eventOddsService.delete(Providers.BETWAY_ODDS).subscribe();
+        eventOddsService.delete(Providers.ESPN_ODDS).subscribe();
     }
 }

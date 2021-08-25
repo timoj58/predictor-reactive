@@ -27,15 +27,7 @@ class MessageReceivedServiceImplTest {
         messageReceivedService.receive(
                 Mono.just(
                         new ObjectMapper().readTree(
-                                new JSONObject().put("provider", Providers.BETWAY_ODDS.name()).toString()
-                        )
-                )
-        ).subscribe();
-
-        messageReceivedService.receive(
-                Mono.just(
-                        new ObjectMapper().readTree(
-                                new JSONObject().put("provider", Providers.PADDYPOWER_ODDS.name()).toString()
+                                new JSONObject().put("provider", Providers.ESPN_ODDS.name()).toString()
                         )
                 )
         ).subscribe();
