@@ -6,7 +6,6 @@ import com.timmytime.predictoreventdatareactive.service.EspnService;
 import com.timmytime.predictoreventdatareactive.service.ProviderService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +15,6 @@ import reactor.core.publisher.FluxSink;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.IntStream;
 
 @Slf4j
 @Service("providerService")
@@ -61,15 +59,14 @@ public class ProviderServiceImpl implements ProviderService {
     private List<JSONObject> process(Pair<Providers, JsonNode> message) {
         JSONObject details = new JSONObject(message.getRight().toString());
 
-        List<JSONObject> events = new ArrayList<>();
+        List<JSONObject> events = new ArrayList<>();  //TODO refactor this all.  legacy now one for 1.  ie 1 event.
 
-        JSONArray data = details.getJSONArray("data");
-
-        IntStream.range(0, data.length()).forEach(i ->
-                events.add(data.getJSONObject(i)
+        events.add(
+                details
                         .put("competition", details.getString("competition"))
-                        .put("provider", message.getLeft().name())));
-
+                        .put("provider", message.getLeft().name()
+                        )
+        );
         return events;
     }
 

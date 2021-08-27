@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.timmytime.predictoreventscraperreactive.enumerator.Providers.ESPN_ODDS;
+
 @Slf4j
 @Service("messageService")
 public class MessageServiceImpl implements MessageService {
@@ -40,7 +42,7 @@ public class MessageServiceImpl implements MessageService {
 
         this.webClientFacade = webClientFacade;
 
-        messages.put("espn", new ArrayList<>());
+        messages.put(ESPN_ODDS.name(), new ArrayList<>());
     }
 
     @Override

@@ -3,12 +3,10 @@ package com.timmytime.predictoreventscraperreactive.service.impl;
 import com.timmytime.predictoreventscraperreactive.configuration.FixturesScraperConfiguration;
 import com.timmytime.predictoreventscraperreactive.scraper.CompetitionFixtureScraper;
 import com.timmytime.predictoreventscraperreactive.service.BookmakerService;
-import com.timmytime.predictoreventscraperreactive.service.MessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 
@@ -31,6 +29,6 @@ public class EspnService implements BookmakerService {
     @Override
     public void scrape() {
         Flux.fromStream(fixturesScraperConfiguration.getCompetitionFixtures().stream()
-        ).subscribe(competitionFixtureScraper::scrape);
+        ).delayElements(Duration.ofMillis(100)).limitRate(4).subscribe(competitionFixtureScraper::scrape);
     }
 }

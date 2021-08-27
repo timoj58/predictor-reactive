@@ -20,6 +20,8 @@ import reactor.core.publisher.Mono;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 
+import static com.timmytime.predictoreventscraperreactive.enumerator.Providers.ESPN_ODDS;
+
 @Slf4j
 @Component
 public class CompetitionFixtureScraper {
@@ -52,25 +54,33 @@ public class CompetitionFixtureScraper {
 
                     result.put("home", home);
                     result.put("away", away);
-                    result.put("milliseconds", LocalDateTime.parse(
-                            date,
-                            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm'Z'")).toEpochSecond(OffsetDateTime.now().getOffset())
-                    );
+                    result.put("milliseconds", "");
+                    if(!date.isEmpty()) {
+                       try {
+                           result.put("milliseconds", LocalDateTime.parse(
+                                   date,
+                                   DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm'Z'")).toEpochSecond(OffsetDateTime.now().getOffset())
+                           );
+                       }catch (Exception e){
+                           result.put("milliseconds", LocalDateTime.now().toEpochSecond(OffsetDateTime.now().getOffset()));
+                       }
+                    }
 
                     log.info("{} v {} on {}", home, away, result.get("milliseconds"));
-
-                    messageService.send(
-                            ScraperModel.builder()
-                                    .provider("ESPN_ODDS")
-                                    .competition(competitionFixtures.getCode().name().toLowerCase())
-                                    .data(convert(result))
-                                    .build());
+                    if(!(home.isEmpty() || away.isEmpty())) {
+                        messageService.send(
+                                ScraperModel.builder()
+                                        .provider(ESPN_ODDS.name())
+                                        .competition(competitionFixtures.getCode().name().toLowerCase())
+                                        .data(convert(result))
+                                        .build());
+                    }
 
                 })
         .doFinally(finish ->
                 Mono.just(competitionFixtures.getCode())
                         .delayElement(Duration.ofSeconds(5))
-                        .subscribe(notify -> messageService.send("ESPN_ODDS", notify.name().toLowerCase()))
+                        .subscribe(notify -> messageService.send(ESPN_ODDS.name(), notify.name().toLowerCase()))
         ).subscribe();
 
     }
