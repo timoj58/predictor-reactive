@@ -54,7 +54,7 @@ public class CompetitionFixtureScraper {
 
                     result.put("home", home);
                     result.put("away", away);
-                    result.put("milliseconds", "");
+                    result.put("milliseconds", LocalDateTime.now().toEpochSecond(OffsetDateTime.now().getOffset()));
                     if(!date.isEmpty()) {
                        try {
                            result.put("milliseconds", LocalDateTime.parse(
@@ -62,7 +62,7 @@ public class CompetitionFixtureScraper {
                                    DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm'Z'")).toEpochSecond(OffsetDateTime.now().getOffset())
                            );
                        }catch (Exception e){
-                           result.put("milliseconds", LocalDateTime.now().toEpochSecond(OffsetDateTime.now().getOffset()));
+                           log.error("date failed for {} v {}", home, away);
                        }
                     }
 

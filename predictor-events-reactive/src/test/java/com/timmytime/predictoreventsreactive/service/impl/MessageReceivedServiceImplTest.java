@@ -32,7 +32,7 @@ class MessageReceivedServiceImplTest {
 
         Message message = new Message();
 
-        message.setType(Messages.PADDYPOWER_ODDS);
+        message.setType(Messages.ESPN_ODDS);
         message.setCountry("ENGLAND");
 
         messageReceivedService.receive(
@@ -40,7 +40,7 @@ class MessageReceivedServiceImplTest {
 
         Message message2 = new Message();
 
-        message2.setType(Messages.BETWAY_ODDS);
+        message2.setType(Messages.ESPN_ODDS);
         message2.setCountry("ENGLAND");
 
         messageReceivedService.receive(
@@ -67,7 +67,7 @@ class MessageReceivedServiceImplTest {
 
         Message message = new Message();
 
-        message.setType(Messages.PADDYPOWER_ODDS);
+        message.setType(Messages.ESPN_ODDS);
         message.setCountry("ENGLAND");
 
         messageReceivedService.receive(

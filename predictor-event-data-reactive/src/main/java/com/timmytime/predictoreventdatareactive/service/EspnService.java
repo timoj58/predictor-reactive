@@ -27,13 +27,13 @@ public class EspnService {
         String competition = event.getString("competition");
 
 
-        Optional<Team> homeTeam = teamService.find(event.getString("home"), competition);
-        Optional<Team> awayTeam = teamService.find(event.getString("away"), competition);
+        Optional<Team> homeTeam = teamService.find(event.getJSONObject("data").getString("home"), competition);
+        Optional<Team> awayTeam = teamService.find(event.getJSONObject("data").getString("away"), competition);
 
         if (homeTeam.isPresent() && awayTeam.isPresent()) {
 
             LocalDateTime eventDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(
-                    event.getLong("milliseconds")
+                    event.getJSONObject("data").getLong("milliseconds")
             ), ZoneId.systemDefault());
 
             if (eventDate.isBefore(LocalDateTime.now().plusDays(daysInAdvance()))) {
