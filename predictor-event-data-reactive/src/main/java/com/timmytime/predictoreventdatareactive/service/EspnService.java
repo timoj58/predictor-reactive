@@ -26,15 +26,17 @@ public class EspnService {
         log.info("processing {}", event.toString());
         String competition = event.getString("competition");
 
+        //TODO needs better error handling..
+
 
         Optional<Team> homeTeam = teamService.find(event.getJSONObject("data").getString("home"), competition);
         Optional<Team> awayTeam = teamService.find(event.getJSONObject("data").getString("away"), competition);
 
         if (homeTeam.isPresent() && awayTeam.isPresent()) {
 
-            LocalDateTime eventDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(
-                    event.getJSONObject("data").getLong("milliseconds")
-            ), ZoneId.systemDefault());
+            LocalDateTime eventDate = LocalDateTime.ofEpochSecond(
+                    event.getJSONObject("data").getLong("milliseconds"), 0,
+                    OffsetDateTime.now().getOffset());
 
             if (eventDate.isBefore(LocalDateTime.now().plusDays(daysInAdvance()))) {
 

@@ -8,6 +8,7 @@ public enum CompetitionFixtureCodes {
     ENGLAND_2("eng.2"),
     ENGLAND_3("eng.3"),
     ENGLAND_4("eng.4"),
+    ENGLAND_5("eng.5"),
     SCOTLAND_1("sco.1"),
     SCOTLAND_2("sco.2"),
     SCOTLAND_3("sco.3"),

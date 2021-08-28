@@ -15,7 +15,7 @@ class PredictorEventScraperReactiveApplicationTests {
 
     @Test
     void contextLoads() {
-        assertEquals(25, fixturesScraperConfiguration.getCompetitionFixtures().size());
+        assertEquals(26, fixturesScraperConfiguration.getCompetitionFixtures().size());
     }
 
 }
