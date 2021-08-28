@@ -22,12 +22,18 @@ public class EspnService {
     private final TeamService teamService;
     private final EventOddsService eventOddsService;
 
-    public Pair<List<JSONObject>, Consumer<JSONObject>> prepare(JSONObject event) {
+    public Pair<List<JSONObject>, Consumer<JSONObject>> prepareWrapper(JSONObject event) {
         log.info("processing {}", event.toString());
+        try{
+            return prepare(event);
+        }catch (Exception ex){
+            log.error("failed to prepare", ex);
+            return Pair.of(Arrays.asList(), e -> { });
+        }
+    }
+
+    private Pair<List<JSONObject>, Consumer<JSONObject>> prepare(JSONObject event)  {
         String competition = event.getString("competition");
-
-        //TODO needs better error handling..
-
 
         Optional<Team> homeTeam = teamService.find(event.getJSONObject("data").getString("home"), competition);
         Optional<Team> awayTeam = teamService.find(event.getJSONObject("data").getString("away"), competition);
@@ -67,8 +73,7 @@ public class EspnService {
             log.info("one or more {} teams nof : {}", competition, event.toString());
         }
 
-        return Pair.of(Arrays.asList(), e -> {
-        });
+        return Pair.of(Arrays.asList(), e -> { });
     }
 
     private Integer daysInAdvance() {

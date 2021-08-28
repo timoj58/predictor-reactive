@@ -38,16 +38,17 @@ public class ProviderServiceImpl implements ProviderService {
         Flux<Pair<JSONObject, Consumer<JSONObject>>> bets = Flux.push(sink ->
                 ProviderServiceImpl.this.betsReceived = sink::next, FluxSink.OverflowStrategy.BUFFER);
 
-        messages.limitRate(1).subscribe(msg -> process(msg).forEach(receiveEvent));
-        events.limitRate(1).subscribe(event -> {
+        messages.limitRate(10).subscribe(msg -> process(msg).forEach(receiveEvent));
+        events.limitRate(10)
+                .subscribe(event -> {
             switch (Providers.valueOf(event.getString("provider"))) {
                 case ESPN_ODDS:
-                    processBets(espnService.prepare(event));
+                    processBets(espnService.prepareWrapper(event));
                     break;
             }
         });
 
-        bets.limitRate(1)
+        bets.limitRate(10)
                 .subscribe(bet -> bet.getRight().accept(bet.getLeft()));
     }
 
