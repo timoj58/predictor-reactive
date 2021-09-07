@@ -39,50 +39,55 @@ public class CompetitionFixtureScraper {
     public void scrape(CompetitionFixtures competitionFixtures){
 
         log.info("scraping {}", competitionFixtures.getUrl());
+        String response = "";
+        try {
+            response = restTemplate.exchange(competitionFixtures.getUrl(),
+                    HttpMethod.GET, null, String.class).getBody();
 
-        String response = restTemplate.exchange(competitionFixtures.getUrl(),
-                HttpMethod.GET, null, String.class).getBody();
+            Document document = Parser.htmlParser().parseInput(response, "");
 
-        Document document = Parser.htmlParser().parseInput(response, "");
+            Flux.fromStream(document.select(".schedule tbody tr").stream())
+                    .doOnNext(row -> {
+                        JSONObject result = new JSONObject();
+                        var home = row.child(0).select("a.team-name span").text();
+                        var away = row.child(1).select("a.team-name span").text();
+                        var date = row.child(2).attr("data-date");
 
-        Flux.fromStream(document.select(".schedule tbody tr").stream())
-                .doOnNext(row -> {
-                    JSONObject result = new JSONObject();
-                    var home = row.child(0).select("a.team-name span").text();
-                    var away = row.child(1).select("a.team-name span").text();
-                    var date = row.child(2).attr("data-date");
+                        result.put("home", home);
+                        result.put("away", away);
+                        result.put("milliseconds", LocalDateTime.now().toEpochSecond(OffsetDateTime.now().getOffset()));
+                        if (!date.isEmpty()) {
+                            try {
+                                result.put("milliseconds", LocalDateTime.parse(
+                                        date,
+                                        DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm'Z'")).toEpochSecond(OffsetDateTime.now().getOffset())
+                                );
+                            } catch (Exception e) {
+                                log.error("date failed for {} v {}", home, away);
+                            }
+                        }
 
-                    result.put("home", home);
-                    result.put("away", away);
-                    result.put("milliseconds", LocalDateTime.now().toEpochSecond(OffsetDateTime.now().getOffset()));
-                    if(!date.isEmpty()) {
-                       try {
-                           result.put("milliseconds", LocalDateTime.parse(
-                                   date,
-                                   DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm'Z'")).toEpochSecond(OffsetDateTime.now().getOffset())
-                           );
-                       }catch (Exception e){
-                           log.error("date failed for {} v {}", home, away);
-                       }
-                    }
+                        log.info("{} v {} on {}", home, away, result.get("milliseconds"));
+                        if (!(home.isEmpty() || away.isEmpty())) {
+                            messageService.send(
+                                    ScraperModel.builder()
+                                            .provider(ESPN_ODDS.name())
+                                            .competition(competitionFixtures.getCode().name().toLowerCase())
+                                            .data(convert(result))
+                                            .build());
+                        }
 
-                    log.info("{} v {} on {}", home, away, result.get("milliseconds"));
-                    if(!(home.isEmpty() || away.isEmpty())) {
-                        messageService.send(
-                                ScraperModel.builder()
-                                        .provider(ESPN_ODDS.name())
-                                        .competition(competitionFixtures.getCode().name().toLowerCase())
-                                        .data(convert(result))
-                                        .build());
-                    }
+                    })
+                    .doFinally(finish ->
+                            Mono.just(competitionFixtures.getCode())
+                                    .delayElement(Duration.ofSeconds(5))
+                                    .subscribe(notify -> messageService.send(ESPN_ODDS.name(), notify.name().toLowerCase()))
+                    ).subscribe();
 
-                })
-        .doFinally(finish ->
-                Mono.just(competitionFixtures.getCode())
-                        .delayElement(Duration.ofSeconds(5))
-                        .subscribe(notify -> messageService.send(ESPN_ODDS.name(), notify.name().toLowerCase()))
-        ).subscribe();
-
+        }catch (Exception e){
+            //completed if error.  TODO review.  page missing etc.
+            messageService.send(ESPN_ODDS.name(), competitionFixtures.getCode().name());
+        }
     }
 
     private JsonNode convert(JSONObject result){

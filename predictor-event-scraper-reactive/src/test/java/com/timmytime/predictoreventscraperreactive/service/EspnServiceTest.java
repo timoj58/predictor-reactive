@@ -28,7 +28,7 @@ public class EspnServiceTest {
         );
         espnService.scrape();
 
-        Thread.sleep(6000);
+        Thread.sleep(20000);
     }
 
 }

@@ -1,13 +1,16 @@
 from featureset.featureset_utils import create_category_indicator_column
 from featureset.featureset_utils import create_vocab_column
 
+feature_columns = None
+
 
 def create_feature_columns(team_vocab, player_vocab):
-    # sort out the featulre columns
-    feature_columns = []
+    global feature_columns
 
-    feature_columns.append(create_category_indicator_column('player', player_vocab))
-    feature_columns.append(create_category_indicator_column('opponent', team_vocab))
-    feature_columns.append(create_vocab_column('home', ['home', 'away']))
+    if feature_columns is None:
+        # sort out the feature columns
+        feature_columns = [create_category_indicator_column('player', player_vocab),
+                           create_category_indicator_column('opponent', team_vocab),
+                           create_vocab_column('home', ['home', 'away'])]
 
     return feature_columns

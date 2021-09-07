@@ -9,6 +9,8 @@ logger = logging.getLogger(__name__)
 
 local_dir = get_dir_cfg()['local']
 
+classifier = None
+
 
 def init_models(model_dir):
     logger.info('calling init')
@@ -31,8 +33,14 @@ def create(feature_columns, classes, model_dir, learning_cfg, init):
     if init:
         init_models(model_dir)
 
-    return tf.estimator.DNNClassifier(
+    global classifier
+
+    if classifier is None:
+      classifier = tf.estimator.DNNClassifier(
         feature_columns=feature_columns,
         hidden_units=learning_cfg['hidden_units'],
         n_classes=classes,
         model_dir=local_dir + model_dir)
+
+    return classifier
+
