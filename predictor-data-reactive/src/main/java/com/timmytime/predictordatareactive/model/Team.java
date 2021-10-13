@@ -28,5 +28,6 @@ public class Team {
     @EqualsAndHashCode.Include
     private String competition;
     private LatLng latLng;
+    private String espnId;
 
 }

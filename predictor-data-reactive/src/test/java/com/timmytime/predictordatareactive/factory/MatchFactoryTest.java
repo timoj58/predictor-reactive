@@ -34,11 +34,9 @@ class MatchFactoryTest {
     @BeforeAll
     public static void setUp() throws IOException {
         //need to read in files as strings.
-        FileSystemResource fileSystemResource = new FileSystemResource("./src/main/resources/match.json");
         FileSystemResource fileSystemResource2 = new FileSystemResource("./src/main/resources/result.json");
         FileSystemResource fileSystemResource3 = new FileSystemResource("./src/main/resources/lineup.json");
 
-        result.setMatch(FileUtils.readFileToString(fileSystemResource.getFile()));
         result.setResult(FileUtils.readFileToString(fileSystemResource2.getFile()));
         result.setLineup(FileUtils.readFileToString(fileSystemResource3.getFile()));
 
@@ -53,7 +51,7 @@ class MatchFactoryTest {
         Team team = new Team();
         team.setId(UUID.randomUUID());
 
-        when(teamService.getTeam(anyString(), anyString()))
+        when(teamService.getTeam(anyString(), anyString(), anyString()))
                 .thenReturn(Optional.of(team));
 
         matchFactory.createMatch(result);
@@ -81,7 +79,7 @@ class MatchFactoryTest {
         Team team = new Team();
         team.setId(UUID.randomUUID());
 
-        when(teamService.getTeam(anyString(), anyString()))
+        when(teamService.getTeam(anyString(), anyString(), anyString()))
                 .thenReturn(Optional.of(team));
 
         matchFactory.createMatch(result);

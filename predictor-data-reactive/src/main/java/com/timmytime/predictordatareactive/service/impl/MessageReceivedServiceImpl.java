@@ -50,7 +50,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
 
         Integer matchId = received.get("matchId").asInt();
         String type = received.get("type").textValue();
-        log.info("match: {} received message {}", matchId, received.toString());
+        log.info("match: {} {} received message", matchId, type);
 
         resultService.findByMatch(matchId)
                 .subscribe(result -> {
@@ -61,9 +61,6 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                             break;
                         case "lineup":
                             result.setLineup(received.toString());
-                            break;
-                        case "match":
-                            result.setMatch(received.toString());
                             break;
                     }
 

@@ -1,43 +1,31 @@
 package com.timmytime.predictorscraperreactive.scraper;
 
-import com.timmytime.predictorscraperreactive.configuration.SiteRules;
-import com.timmytime.predictorscraperreactive.enumerator.ScraperTypeKeys;
-import com.timmytime.predictorscraperreactive.factory.SportsScraperConfigurationFactory;
-import org.junit.jupiter.api.Disabled;
+import com.timmytime.predictorscraperreactive.enumerator.CompetitionFixtureCodes;
+import com.timmytime.predictorscraperreactive.model.Result;
+import com.timmytime.predictorscraperreactive.service.ScraperTrackerService;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 
-@Disabled
 class ResultScraperTest {
 
-    private final SportsScraperConfigurationFactory sportsScraperConfigurationFactory
-            = new SportsScraperConfigurationFactory("./src/main/resources/config/");
-
-    private ResultScraper resultScraper
-            = new ResultScraper(sportsScraperConfigurationFactory);
+    private final ResultScraper resultScraper = new ResultScraper(mock(ScraperTrackerService.class));
 
     @Test
-    public void resultScraperTest() throws InterruptedException {
+    void scrapeTest() {
+        List<Result> results = resultScraper.scrape(
+                Pair.of(CompetitionFixtureCodes.ENGLAND_1,
+                        "https://www.espn.co.uk/soccer/scoreboard/_/league/eng.1/date/{date}"),
+                LocalDate.parse("03-10-2021", DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+        );
 
-        LocalDate date = LocalDate.parse("2018-01-01", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-        SiteRules england1 =
-                sportsScraperConfigurationFactory.getConfig(ScraperTypeKeys.RESULTS)
-                        .getSportScrapers()
-                        .stream()
-                        .findFirst()
-                        .get()
-                        .getSiteRules().stream().filter(f -> f.getId().equals("england_1"))
-                        .findFirst()
-                        .get();
-
-        Thread.sleep(1000);
-
-        assertEquals(5, resultScraper.scrape(england1, date).size());
+        assertEquals(4, results.size());
     }
 
 }

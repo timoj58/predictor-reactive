@@ -44,14 +44,17 @@ public class MatchFactory {
         ResultData resultData = new ResultData(result);
 
         String homeTeamLabel = format.apply(resultData.getResult().getString("homeTeam"));
+        String homeTeamEspnId = format.apply(resultData.getResult().getString("homeTeamEspnId"));
+
         String awayTeamLabel = format.apply(resultData.getResult().getString("awayTeam"));
+        String awayTeamEspnId = format.apply(resultData.getResult().getString("awayTeamEspnId"));
 
         log.info("home " + homeTeamLabel + ", away " + awayTeamLabel);
 
         var countryTeams = teamService.getTeams(resultData.getResult().getString("country"));
 
-        Team homeTeam = getOrCreate(homeTeamLabel, resultData, countryTeams);
-        Team awayTeam = getOrCreate(awayTeamLabel, resultData, countryTeams);
+        Team homeTeam = getOrCreate(homeTeamLabel, homeTeamEspnId, resultData, countryTeams);
+        Team awayTeam = getOrCreate(awayTeamLabel, awayTeamEspnId, resultData, countryTeams);
 
         //so now can process as before...
         teamService.updateCompetition(Arrays.asList(homeTeam, awayTeam), resultData.getResult().getString("competition"));
@@ -86,13 +89,14 @@ public class MatchFactory {
 
     }
 
-    private Team getOrCreate(String label, ResultData resultData, List<Team> countryTeams) {
-        return teamService.getTeam(label, resultData.getResult().getString("country"))
+    private Team getOrCreate(String label, String espnId, ResultData resultData, List<Team> countryTeams) {
+        return teamService.getTeam(resultData.getResult().getString("country"), label, espnId)
                 .or(() -> TeamLabelMatcher.match(label, countryTeams))
                 .or(() -> Optional.of(teamService.createNewTeam(
                         Team.builder()
                                 .country(resultData.getResult().getString("country"))
                                 .label(label)
+                                .espnId(espnId)
                                 .competition(resultData.getResult().getString("competition")
                                 ).build())
                         )

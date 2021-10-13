@@ -15,13 +15,6 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class TeamFunction {
 
     @Bean
-    @RouterOperation(beanClass = TeamService.class, beanMethod = "getTeam")
-    RouterFunction<ServerResponse> getTeamByAlias(TeamHandler teamHandler) {
-        return route(RequestPredicates.GET("/teams/alias/{alias}")
-                , teamHandler::alias);
-    }
-
-    @Bean
     @RouterOperation(beanClass = TeamService.class, beanMethod = "getTeams")
     RouterFunction<ServerResponse> getTeamsByCountry(TeamHandler teamHandler) {
         return route(RequestPredicates.GET("/teams/country/{country}")

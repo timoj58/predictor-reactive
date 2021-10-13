@@ -13,19 +13,10 @@ import java.util.UUID;
 public interface PlayerService {
     Mono<Player> find(UUID id);
 
-    void delete(UUID id);
-
     Mono<Player> save(Player player);
 
     List<Mono<Player>> process(JSONArray players);
 
-    Flux<Player> findByCompetition(@PathVariable String competition, @RequestParam String date, @RequestParam Boolean fantasy);
+    Flux<Player> findByCompetition(@PathVariable String competition, @RequestParam String date);
 
-    Flux<Player> findFantasyFootballers();
-
-    Mono<Void> createFantasyFootballers();
-
-    Mono<Void> createGoalkeepers();
-
-    void addFantasyFootballer(Player player);
-}
+ }

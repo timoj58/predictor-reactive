@@ -1,5 +1,6 @@
 package com.timmytime.predictordatareactive.service.impl;
 
+import com.timmytime.predictordatareactive.enumerator.CountryCompetitions;
 import com.timmytime.predictordatareactive.enumerator.PlayerStats;
 import com.timmytime.predictordatareactive.model.Player;
 import com.timmytime.predictordatareactive.model.Team;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -31,35 +33,19 @@ public class PlayerServiceImpl implements PlayerService {
 
     private final TeamService teamService;
     private final PlayerRepo playerRepo;
-    private final StatMetricRepo statMetricRepo;
-
-    private final List<UUID> placeholders = new ArrayList<>();
 
     @Autowired
     public PlayerServiceImpl(
             TeamService teamService,
-            PlayerRepo playerRepo,
-            StatMetricRepo statMetricRepo
+            PlayerRepo playerRepo
     ) {
         this.teamService = teamService;
         this.playerRepo = playerRepo;
-        this.statMetricRepo = statMetricRepo;
-
-        playerRepo.findAll()
-                .filter(f -> f.getLabel().equals("TBC"))
-                .map(Player::getId)
-                .subscribe(placeholders::add);
-
     }
 
     @Override
     public Mono<Player> find(UUID id) {
         return null;
-    }
-
-    @Override
-    public void delete(UUID id) {
-        playerRepo.deleteById(id).subscribe();
     }
 
     @Override
@@ -76,7 +62,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public Flux<Player> findByCompetition(String competition, String date, Boolean fantasy) {
+    public Flux<Player> findByCompetition(String competition, String date) {
 
         LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
@@ -86,82 +72,7 @@ public class PlayerServiceImpl implements PlayerService {
                 .collect(Collectors.toList());
 
         return playerRepo.findByLatestTeamIn(teams)
-                .filter(f -> fantasy == f.getFantasyFootballer())
                 .filter(f -> f.getLastAppearance().isAfter(localDate));
-    }
-
-    @Override
-    public Flux<Player> findFantasyFootballers() {
-        return playerRepo.findByFantasyFootballerTrue();
-    }
-
-    @Override
-    public Mono<Void> createFantasyFootballers() {
-
-        log.info("start create fantasy players");
-
-        CompletableFuture.runAsync(() ->
-
-                playerRepo.findAll()
-                        .doOnNext(player -> playerRepo.save(
-                                player.toBuilder()
-                                        .fantasyFootballer(Boolean.FALSE)
-                                        .build()
-                        ).subscribe())
-                        .doFinally(create -> {
-                            log.info("now updating the players");
-                            playerRepo.findAll()
-                                    .filter(p -> p.getLastAppearance() != null && p.getLastAppearance().isAfter(LocalDate.now().minusYears(1)))
-                                    .subscribe(this::addFantasyFootballer);
-                        }).subscribe()
-        );
-
-        return Mono.empty();
-    }
-
-    @Override
-    public Mono<Void> createGoalkeepers() {
-        log.info("starting gk check");
-
-        CompletableFuture.runAsync(() ->
-                playerRepo.findByFantasyFootballerTrue()
-                        .subscribe(player ->
-                                statMetricRepo.findByPlayer(player.getId())
-                                        .filter(f -> f.getLabel().equalsIgnoreCase("saves"))
-                                        .collectList()
-                                        .map(List::size)
-                                        .filter(f -> f > 0)
-                                        .subscribe(gk -> {
-                                            log.info("adding gk {}", player.getLabel());
-                                            playerRepo.save(
-                                                    player.toBuilder()
-                                                            .isGoalkeeper(Boolean.TRUE)
-                                                            .build()
-                                            ).subscribe();
-                                        })
-                        )
-        );
-
-        return Mono.empty();
-    }
-
-    @Override
-    public void addFantasyFootballer(Player player) {
-        if (!player.getFantasyFootballer()) {
-            statMetricRepo.findByPlayer(player.getId())
-                    .collectList()
-                    .map(List::size)
-                    .filter(f -> f > 0)
-                    .subscribe(stats -> {
-                        log.info("adding {}", player.getLabel());
-                        playerRepo.save(
-                                player
-                                        .toBuilder()
-                                        .fantasyFootballer(Boolean.TRUE)
-                                        .build()
-                        ).subscribe();
-                    });
-        }
     }
 
 
@@ -172,28 +83,21 @@ public class PlayerServiceImpl implements PlayerService {
         lineup.forEach(
                 lineupPlayer ->
                         players.add(
-                                playerRepo.findByLabel(lineupPlayer.getString("name"))
+                                playerRepo.findByEspnId(lineupPlayer.getString("espnId"))
                                         .switchIfEmpty(
                                                 Mono.just(
-                                                        create(lineupPlayer.getString("name"))
+                                                        create(lineupPlayer.getString("name"),
+                                                                lineupPlayer.getString("espnId"))
                                                 )
                                         )
                                         .map(m -> {
                                             m.getStats().addAll(getStats(lineupPlayer));
                                             return m;
                                         })
-                                        .map(m -> {
-                                            m.setDuration(getDuration(lineupPlayer));
-                                            return m;
-                                        })
                         )
         );
 
         return players;
-    }
-
-    private Integer getDuration(JSONObject player) {
-        return player.getInt("time");
     }
 
     private List<JSONObject> getStats(JSONObject player) {
@@ -208,22 +112,31 @@ public class PlayerServiceImpl implements PlayerService {
         return stats;
     }
 
-    private Player create(String label) {
+    private Player create(String label, String espnId) {
         Player player = new Player();
-        player.setId(placeholders.isEmpty() ? UUID.randomUUID() : placeholders.remove(0));
+
+        player.setId(UUID.randomUUID());
         player.setLabel(label);
-        player.setFantasyFootballer(Boolean.FALSE); //its turned on later.
+        player.setEspnId(espnId);
 
         return player;
     }
 
-    // @PostConstruct
-    private void vocabAdditions() {
-
-        Flux.fromStream(IntStream.range(0, 20000).boxed()).limitRate(5).subscribe(i -> playerRepo.save(
-                Player.builder().label("TBC").id(UUID.randomUUID()).fantasyFootballer(Boolean.TRUE).build()
-        ).subscribe());
-
+   //TODO not important for now.  need a think about... @PostConstruct
+    private void initDb(){
+        playerRepo.findAll().count().filter(count -> count == 0).subscribe(
+                then -> Flux.fromStream(
+                        IntStream.range(0, 200000).boxed()
+                ).subscribe(
+                        index ->
+                                playerRepo.save(
+                                        Player.builder()
+                                                .id(UUID.randomUUID())
+                                                .label("TBC")
+                                                .espnId("TBC")
+                                                .build()
+                                ).subscribe()
+                )
+        );
     }
-
 }

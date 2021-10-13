@@ -24,7 +24,6 @@ public class LineupPlayer implements Serializable {
     @Id
     private UUID id;
     private UUID player;
-    private Integer appearance;
 
     //new fields
     private UUID matchId;
@@ -32,10 +31,9 @@ public class LineupPlayer implements Serializable {
     private UUID teamId;
 
 
-    public LineupPlayer(UUID player, int appearance, UUID matchId, UUID teamId, LocalDateTime date) {
+    public LineupPlayer(UUID player, UUID matchId, UUID teamId, LocalDateTime date) {
         this.id = UUID.randomUUID();
         this.player = player;
-        this.appearance = appearance;
         this.matchId = matchId;
         this.teamId = teamId;
         this.date = date;

@@ -1,8 +1,7 @@
 package com.timmytime.predictorscraperreactive.service;
 
-import com.timmytime.predictorscraperreactive.configuration.SiteRules;
-import com.timmytime.predictorscraperreactive.model.ScraperHistory;
+import java.time.LocalDateTime;
 
 public interface CompetitionScraperService {
-    void scrape(ScraperHistory scraperHistory, SiteRules competition);
+    void scrape(LocalDateTime date);
 }

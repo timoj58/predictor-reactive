@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 public enum CountryCompetitions {
-    ENGLAND(Arrays.asList("england_1", "england_2", "england_3", "england_4", "england_5")),
+    ENGLAND(Arrays.asList("england_1", "england_2", "england_3", "england_4")),
     SCOTLAND(Arrays.asList("scotland_1", "scotland_2", "scotland_3", "scotland_4")),
     ITALY(Arrays.asList("italy_1", "italy_2")),
     FRANCE(Arrays.asList("france_1", "france_2")),

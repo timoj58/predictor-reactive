@@ -34,40 +34,30 @@ public class LineupPlayerServiceImpl implements LineupPlayerService {
             Team team,
             UUID matchId,
             LocalDateTime date,
-            ResultData resultData,
-            String lineupType
+            ResultData resultData
     ) {
 
-        playerService.process(players).forEach(homePlayers ->
-                homePlayers.subscribe(
-                        homePlayer -> { //wrong now...
+        log.info("creating lineup");
+
+        playerService.process(players).forEach(player ->
+                player.subscribe(
+                        created -> {
                             lineupPlayerRepo.save(
-                                    new LineupPlayer(homePlayer.getId(), homePlayer.getDuration(), matchId, team.getId(), date)
+                                    new LineupPlayer(created.getId(), matchId, team.getId(), date)
                             ).subscribe();
 
 
-                            homePlayer.setLastAppearance(date.toLocalDate());
-                            homePlayer.setLatestTeam(team.getId());
-                            //create player stats...
-                            if (Arrays.asList("players", "subs").contains(lineupType)) {
-                                statMetricService.createPlayerMatchEventMetrics(
+                            created.setLastAppearance(date.toLocalDate());
+                            created.setLatestTeam(team.getId());
+
+                                statMetricService.create(
                                         matchId,
-                                        homePlayer,
-                                        resultData,
+                                        created,
                                         date
                                 ).forEach(Mono::subscribe);
 
-                                statMetricService.createPlayerIndividualEventMetrics(
-                                        matchId,
-                                        homePlayer,
-                                        date
-                                ).forEach(Mono::subscribe);
+                            playerService.save(created).subscribe();
 
-                                //save player...
-                                playerService.save(homePlayer).subscribe(
-                                        playerService::addFantasyFootballer
-                                );
-                            }
                         }
                 ));
     }

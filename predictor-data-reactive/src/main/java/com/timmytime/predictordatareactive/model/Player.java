@@ -25,15 +25,9 @@ public class Player {
     private String label;
     private UUID latestTeam;
     private LocalDate lastAppearance;
-    private Boolean fantasyFootballer = Boolean.FALSE;
-    private Boolean isGoalkeeper = Boolean.FALSE;
+    private String espnId;
 
     @Transient
     @JsonIgnore
-    private List<JSONObject> stats = new ArrayList<>();
-
-    @Transient
-    @JsonIgnore
-    private Integer duration;
-
+    private final List<JSONObject> stats = new ArrayList<>();
 }

@@ -15,12 +15,6 @@ clients:
   data: http://127.0.0.1:8092
   team: http://127.0.0.1:8090
 
-results:
-  start-date: 2020-07-10
-
-config:
-  dir: /tmp/
-
-delays:
-  day: 60
-  match: 2
+scraper:
+  match: "https://www.espn.co.uk/football/match/_/gameId/{game_id}"
+  results: "https://www.espn.co.uk/soccer/scoreboard/_/league/{league}/date/{date}"

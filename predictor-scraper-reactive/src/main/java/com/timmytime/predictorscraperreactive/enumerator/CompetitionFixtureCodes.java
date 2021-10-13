@@ -1,6 +1,10 @@
-package com.timmytime.predictoreventscraperreactive.enumerator;
+package com.timmytime.predictorscraperreactive.enumerator;
 
 import lombok.Getter;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 public enum CompetitionFixtureCodes {
@@ -30,9 +34,17 @@ public enum CompetitionFixtureCodes {
     BELGIUM_1("bel.1"),
     HOLLAND_1("ned.1");
 
-    private String code;
+    private final String code;
 
-    CompetitionFixtureCodes(String code){
+    CompetitionFixtureCodes(String code) {
         this.code = code;
+    }
+
+    public static List<CompetitionFixtureCodes> getForCountry(CompetitionFixtureCodes competitionFixtureCodes) {
+        return Arrays.asList(
+                CompetitionFixtureCodes.values()
+        ).stream()
+                .filter(f -> f.name().contains(competitionFixtureCodes.name().split("_")[0]))
+                .collect(Collectors.toList());
     }
 }

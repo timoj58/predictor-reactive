@@ -17,8 +17,7 @@ public interface LineupPlayerService {
             Team team,
             UUID matchId,
             LocalDateTime date,
-            ResultData resultData,
-            String lineupType
+            ResultData resultData
     );
 
     Mono<Void> deleteByMatch(UUID matchId);

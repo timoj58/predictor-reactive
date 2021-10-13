@@ -86,7 +86,7 @@ public class CompetitionFixtureScraper {
 
         }catch (Exception e){
             //completed if error.  TODO review.  page missing etc.
-            messageService.send(ESPN_ODDS.name(), competitionFixtures.getCode().name());
+            messageService.send(ESPN_ODDS.name(), competitionFixtures.getCode().name().toLowerCase());
         }
     }
 

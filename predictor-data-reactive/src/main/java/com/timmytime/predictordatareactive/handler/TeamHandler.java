@@ -16,20 +16,6 @@ public class TeamHandler {
 
     private final TeamService teamService;
 
-    public Mono<ServerResponse> alias(ServerRequest request) {
-
-        Optional<Team> team = teamService.getTeam(
-                request.pathVariable("alias"),
-                request.queryParam("country").get()
-        );
-
-        return team.isPresent() ?
-                ServerResponse.ok().bodyValue(team.get())
-                :
-                ServerResponse.notFound().build();
-
-    }
-
     public Mono<ServerResponse> findByCountry(ServerRequest serverRequest) {
 
         return ServerResponse.ok().bodyValue(

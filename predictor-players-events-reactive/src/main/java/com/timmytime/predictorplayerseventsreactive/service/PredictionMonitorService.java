@@ -48,7 +48,7 @@ public class PredictionMonitorService {
         this.countriesProcessed.add(country);
     }
 
-    @Scheduled(fixedDelay = 120000L) //once per 2 minutes is fine.
+    @Scheduled(fixedDelay = 240000L) //once per 4 minutes is fine.
     public void predictionMonitor() {
 
         if (process.get()) {

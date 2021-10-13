@@ -32,11 +32,10 @@ class LineupPlayerServiceImplTest {
     private static final StatMetricRepo statMetricRepo = mock(StatMetricRepo.class);
     private static final LineupPlayerRepo lineupService = mock(LineupPlayerRepo.class);
     private static Team team;
-    private static UUID lineupId = UUID.randomUUID();
     private static UUID teamStatsId = UUID.randomUUID();
     private static ResultData resultData;
     private final PlayerService playerService =
-            new PlayerServiceImpl(mock(TeamService.class), playerRepo, statMetricRepo);
+            new PlayerServiceImpl(mock(TeamService.class), playerRepo);
     private final StatMetricService statMetricService =
             new StatMetricServiceImpl(statMetricRepo);
     private final LineupPlayerServiceImpl lineupPlayerService
@@ -51,12 +50,10 @@ class LineupPlayerServiceImplTest {
         team = new Team();
         team.setId(UUID.randomUUID());
 
-        FileSystemResource fileSystemResource = new FileSystemResource("./src/main/resources/match.json");
         FileSystemResource fileSystemResource2 = new FileSystemResource("./src/main/resources/result.json");
         FileSystemResource fileSystemResource3 = new FileSystemResource("./src/main/resources/lineup.json");
 
         Result result = new Result();
-        result.setMatch(FileUtils.readFileToString(fileSystemResource.getFile()));
         result.setResult(FileUtils.readFileToString(fileSystemResource2.getFile()));
         result.setLineup(FileUtils.readFileToString(fileSystemResource3.getFile()));
         resultData = new ResultData(result);
@@ -92,8 +89,7 @@ class LineupPlayerServiceImplTest {
                 team,
                 teamStatsId,
                 LocalDateTime.now(),
-                resultData,
-                "players"
+                resultData
         );
 
         verify(playerRepo, atLeastOnce()).save(any(Player.class));

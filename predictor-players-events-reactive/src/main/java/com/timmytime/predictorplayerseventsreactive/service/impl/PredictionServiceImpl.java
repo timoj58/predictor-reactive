@@ -41,7 +41,7 @@ public class PredictionServiceImpl implements PredictionService {
         //init machine
         Flux.fromStream(
                 Stream.of("assists", "goals", "yellow")
-        ).subscribe(tensorflowPredictionService::init);
+        ).subscribe(tensorflowPredictionService::init);  //maybe this is the cause?  hard to tell.  review logs another day.
 
     }
 
@@ -68,6 +68,7 @@ public class PredictionServiceImpl implements PredictionService {
 
         log.info("processing to fix");
         fantasyOutcomeService.toFix()
+                .delayElements(Duration.ofMillis(10))
                 .subscribe(fantasyOutcome ->
                         tensorflowPredictionService.predict(
                                 TensorflowPrediction.builder()

@@ -12,7 +12,5 @@ spring:
       uri: mongodb://localhost:27017/predictor-db
       auto-index-creation: true
 
-config:
-  dir: ./src/main/resources/config/
 
 

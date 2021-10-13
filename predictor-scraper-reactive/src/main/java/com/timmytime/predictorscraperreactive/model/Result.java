@@ -12,8 +12,9 @@ public class Result extends ScraperModel {
     private Integer awayScore;
     private String date;
     private String homeTeam;
+    private String homeTeamEspnId;
     private String awayTeam;
-    private String details;
+    private String awayTeamEspnId;
     private String country;
     private String competition;
 

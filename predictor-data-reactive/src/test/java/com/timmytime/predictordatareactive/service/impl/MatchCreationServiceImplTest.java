@@ -23,7 +23,6 @@ import static org.mockito.Mockito.*;
 class MatchCreationServiceImplTest {
 
     private static final MatchService matchService = mock(MatchService.class);
-    private static final StatMetricService statMetricService = mock(StatMetricService.class);
     private static final LineupPlayerService lineupPlayerService = mock(LineupPlayerService.class);
     private static final ResultRepo resultRepo = mock(ResultRepo.class);
 
@@ -31,19 +30,16 @@ class MatchCreationServiceImplTest {
     private final MatchCreationServiceImpl matchCreationService
             = new MatchCreationServiceImpl(
             matchService,
-            statMetricService,
             lineupPlayerService,
             resultRepo
     );
 
     @BeforeAll
     public static void setUp() throws IOException {
-        FileSystemResource fileSystemResource = new FileSystemResource("./src/main/resources/match.json");
         FileSystemResource fileSystemResource2 = new FileSystemResource("./src/main/resources/result.json");
         FileSystemResource fileSystemResource3 = new FileSystemResource("./src/main/resources/lineup.json");
 
         Result result = new Result();
-        result.setMatch(FileUtils.readFileToString(fileSystemResource.getFile()));
         result.setResult(FileUtils.readFileToString(fileSystemResource2.getFile()));
         result.setLineup(FileUtils.readFileToString(fileSystemResource3.getFile()));
         resultData = new ResultData(result);

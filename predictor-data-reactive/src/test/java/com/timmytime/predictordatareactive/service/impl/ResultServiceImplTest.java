@@ -22,13 +22,11 @@ class ResultServiceImplTest {
         Result result = new Result(1);
         result.setLineup("{}");
         result.setResult("{}");
-        result.setMatch("{}");
 
         Result result2 = new Result(2);
 
         result2.setLineup("{}");
         result2.setResult("{}");
-        result2.setMatch("{}");
 
         when(resultRepo.save(result)).thenReturn(Mono.just(result));
         when(resultRepo.save(result2)).thenReturn(Mono.just(result2));

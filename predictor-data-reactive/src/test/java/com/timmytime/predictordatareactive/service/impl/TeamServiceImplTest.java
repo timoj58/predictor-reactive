@@ -1,6 +1,5 @@
 package com.timmytime.predictordatareactive.service.impl;
 
-import com.timmytime.predictordatareactive.factory.SpecialCasesFactory;
 import com.timmytime.predictordatareactive.model.Team;
 import com.timmytime.predictordatareactive.repo.TeamRepo;
 import org.junit.jupiter.api.BeforeAll;
@@ -19,10 +18,8 @@ class TeamServiceImplTest {
 
     private static final TeamRepo teamRepo = mock(TeamRepo.class);
     private static final UUID teamToFind = UUID.randomUUID();
-    private final SpecialCasesFactory
-            specialCasesFactory = new SpecialCasesFactory("./src/main/resources/config/");
     TeamServiceImpl teamService
-            = new TeamServiceImpl(teamRepo, specialCasesFactory);
+            = new TeamServiceImpl(teamRepo);
 
     @BeforeAll
     public static void setUp() {
@@ -82,7 +79,7 @@ class TeamServiceImplTest {
         ).thenReturn(Flux.fromStream(teams.stream()));
 
         assertTrue(
-                teamService.getTeam("something u", "england").get().getId().equals(teamToFind)
+                teamService.getTeam("something u", "england", "").get().getId().equals(teamToFind)
         );
 
     }

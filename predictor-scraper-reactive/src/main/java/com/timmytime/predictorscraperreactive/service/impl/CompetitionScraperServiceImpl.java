@@ -1,92 +1,89 @@
 package com.timmytime.predictorscraperreactive.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.timmytime.predictorscraperreactive.configuration.SiteRules;
+import com.timmytime.predictorscraperreactive.configuration.ResultsConfiguration;
+import com.timmytime.predictorscraperreactive.enumerator.CompetitionFixtureCodes;
 import com.timmytime.predictorscraperreactive.factory.ScraperFactory;
-import com.timmytime.predictorscraperreactive.factory.SportsScraperConfigurationFactory;
-import com.timmytime.predictorscraperreactive.model.ScraperHistory;
-import com.timmytime.predictorscraperreactive.request.Message;
+import com.timmytime.predictorscraperreactive.model.ScraperModel;
 import com.timmytime.predictorscraperreactive.service.CompetitionScraperService;
+import com.timmytime.predictorscraperreactive.service.MatchScraperService;
 import com.timmytime.predictorscraperreactive.service.MessageService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import reactor.core.publisher.FluxSink;
 
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.stream.Stream;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service("competitionScraperService")
 public class CompetitionScraperServiceImpl implements CompetitionScraperService {
 
-    private final SportsScraperConfigurationFactory sportsScraperConfigurationFactory;
     private final ScraperFactory scraperFactory;
     private final MessageService messageService;
-    private final Integer dayDelay;
-    private final Integer matchDelay;
+    private final MatchScraperService matchScraperService;
+    private final ResultsConfiguration resultsConfiguration;
+
+    private Consumer<Triple<CompetitionFixtureCodes, String, LocalDate>> results;
 
     @Autowired
     public CompetitionScraperServiceImpl(
-            @Value("${delays.day}") Integer dayDelay,
-            @Value("${delays.match}") Integer matchDelay,
-            SportsScraperConfigurationFactory sportsScraperConfigurationFactory,
             ScraperFactory scraperFactory,
-            MessageService messageService
+            MessageService messageService,
+            MatchScraperService matchScraperService,
+            ResultsConfiguration resultsConfiguration
     ) {
-        this.dayDelay = dayDelay;
-        this.matchDelay = matchDelay;
-        this.sportsScraperConfigurationFactory = sportsScraperConfigurationFactory;
         this.scraperFactory = scraperFactory;
         this.messageService = messageService;
+        this.matchScraperService = matchScraperService;
+        this.resultsConfiguration = resultsConfiguration;
 
+        Flux<Triple<CompetitionFixtureCodes, String, LocalDate>> results = Flux.push(sink ->
+                CompetitionScraperServiceImpl.this.results = sink::next, FluxSink.OverflowStrategy.BUFFER);
+
+        results.delayElements(Duration.ofMillis(500)).subscribe(this::process);
     }
 
     @Override
-    public void scrape(ScraperHistory scraperHistory, SiteRules competition) {
-        log.info("scraping {}", competition.getId());
-
-        //our date range...review time delays.  slow slow slow (also reduces errors too)
+    public void scrape(LocalDateTime date) {
         Flux.fromStream(
-                Stream.iterate(scraperHistory.getDate().minusDays(scraperHistory.getDaysScraped()), d -> d.plusDays(1))
-                        .limit(scraperHistory.getDaysScraped())
-        )
-                .delayElements(Duration.ofSeconds(dayDelay/3))
-                .doOnNext(date ->
+                resultsConfiguration.getUrls().stream()
+        ).subscribe(competition -> consume(Triple.of(competition.getLeft(), competition.getRight(), date.toLocalDate())));
+    }
 
-                        Flux.fromStream(
-                                scraperFactory.getResultScraper(
-                                        sportsScraperConfigurationFactory
-                                ).scrape(competition, date.toLocalDate()).stream()
-                        ).delayElements(Duration.ofSeconds(matchDelay))
-                                .subscribe(result -> {
+    private void consume(Triple<CompetitionFixtureCodes, String, LocalDate> config) {
+        scraperFactory.getScraperTrackerService().addMatchesInQueue(config.getLeft());
+        results.accept(config);
+    }
 
-                                            messageService.send(result);
+    private void process(Triple<CompetitionFixtureCodes, String, LocalDate> config) {
 
-                                            Flux.fromStream(
-                                                    Stream.of(
-                                                            scraperFactory.getMatchScraper(sportsScraperConfigurationFactory),
-                                                            scraperFactory.getLineupScraper(sportsScraperConfigurationFactory)
-                                                    )
-                                            )
-                                                    .subscribe(scrapers -> {
-                                                        try {
-                                                            messageService.send(scrapers.scrape(result.getMatchId()));
-                                                        } catch (JsonProcessingException e) {
-                                                            log.error("failed to process data", e);
-                                                        }
-                                                    });
-                                        }
-                                )
-                ).doFinally(send ->
-                Mono.just(competition.getId())
-                        .delayElement(Duration.ofSeconds(dayDelay))
-                        .subscribe(id -> messageService.send(new Message(competition.getId())))
-        )
-                .subscribe();
+        var matches = scraperFactory.getResultScraper().scrape(Pair.of(config.getLeft(), config.getMiddle()), config.getRight());
 
+        scraperFactory.getScraperTrackerService().addMatches(
+                config.getLeft(),
+                matches.stream()
+                        .map(ScraperModel::getMatchId)
+                        .collect(Collectors.toList())
+        );
+
+        Flux.fromStream(matches.stream())
+                .map(result -> Pair.of(config.getLeft(), messageService.send(result)))
+                .subscribe(matchScraperService::add);
+    }
+
+
+    @Scheduled(fixedRate = 60000)
+    private void retry() {
+        log.info("retrying failed attempts");
+        Flux.fromStream(scraperFactory.getScraperTrackerService().getFailedResultsRequests().stream())
+                .subscribe(this::consume);
     }
 }

@@ -6,12 +6,8 @@ import java.util.stream.Collectors;
 
 public enum PlayerStats {
     GOALS("goals"),
-    SAVES("saves"),
-    SHOTS_ON_TARGET("shotsOnTarget"),
-    TOTAL_SHOTS("totalShots"),
-    FOULS_COMMITED("foulsCommited"),
-    FOULS_SUFFERED("foulsSuffered"),
-    GOAL_ASSISTS("goalAssists");
+    YELLOW("yellows"),
+    GOAL_ASSISTS("assists");
 
     private String key;
 

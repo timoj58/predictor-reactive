@@ -31,4 +31,12 @@ public class ScrapeFunction {
                 (scrape) -> ServerResponse.ok().build(scraperService.scrape()));
     }
 
+    @Bean
+    @RouterOperation(beanClass = ScraperService.class, beanMethod = "historic")
+    RouterFunction<ServerResponse> historic() {
+
+        return route(RequestPredicates.POST("/historic"),
+                (scrape) -> ServerResponse.ok().build(scraperService.historic()));
+    }
+
 }

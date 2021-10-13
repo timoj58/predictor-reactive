@@ -29,109 +29,21 @@ public class StatMetricServiceImpl implements StatMetricService {
     private final StatMetricRepo statMetricRepo;
 
     @Override
-    public void delete(UUID id) {
-        statMetricRepo.deleteById(id).subscribe();
-    }
-
-    @Override
     public Mono<StatMetric> save(StatMetric statMetric) {
         return statMetricRepo.save(statMetric);
     }
 
-    @Override
-    public List<Mono<StatMetric>> createTeamMetrics(
-            UUID matchId,
-            Team team,
-            String label,
-            LocalDateTime date,
-            ResultData resultData
-    ) {
 
-        List<Mono<StatMetric>> stats = new ArrayList<>();
-
-        JSONArray data = resultData.getMatch().getJSONArray("data");
-
-        IntStream.range(0, data.length())
-                .forEach(index -> {
-                    log.info("processing stats {}", team.getLabel());
-
-                    if (data.getJSONObject(index).getString("data-home-away").equals(label)) {
-
-                        StatMetric statMetric = new StatMetric();
-                        statMetric.setId(UUID.randomUUID());
-                        statMetric.setTeam(team.getId());
-                        statMetric.setTimestamp(date);
-                        statMetric.setLabel(data.getJSONObject(index).getString("data-stat"));
-                        statMetric.setValue(Integer.valueOf(data.getJSONObject(index).getString("value")));
-                        statMetric.setMatchId(matchId);
-
-
-                        log.info("adding a stat {}", statMetric.getLabel());
-                        stats.add(
-                                save(statMetric)
-                        );
-                    }
-                });
-
-
-        return stats;
-    }
 
     @Override
-    public List<Mono<StatMetric>> createPlayerMatchEventMetrics(
-            UUID matchId,
-            Player player,
-            ResultData resultData,
-            LocalDateTime date
-    ) {
-        List<Mono<StatMetric>> statMetrics = new ArrayList<>();
-        JSONArray details = new JSONArray(resultData.getResult().getString("details"));
-
-        IntStream.range(0, details.length()).forEach(i -> {
-
-                    String escaped = details.getJSONObject(i).has("displayName") ?
-                            Parser.unescapeEntities(MatchFactory.format.apply(details.getJSONObject(i).getString("displayName")), Boolean.TRUE)
-                            : null;
-
-
-                    if (escaped != null) {
-
-                        if (player.getLabel().equalsIgnoreCase(
-                                escaped.replace("  ", " "))
-                        ) {
-
-                            StatMetric statMetric = new StatMetric();
-                            statMetric.setId(UUID.randomUUID());
-                            statMetric.setTimestamp(date);
-                            statMetric.setLabel(details.getJSONObject(i).getString("text"));
-                            statMetric.setTimeOfMetric(details.getJSONObject(i).getInt("value"));
-                            statMetric.setPlayer(player.getId());  //need to fix this
-                            statMetric.setMatchId(matchId);
-
-                            statMetrics.add(
-                                    save(statMetric)
-                            );
-
-                        }
-                    } else {
-                        log.info("we dont have a player for event " + details.getJSONObject(i).toString());
-                    }
-                }
-        );
-
-        return statMetrics;
-
-    }
-
-    @Override
-    public List<Mono<StatMetric>> createPlayerIndividualEventMetrics(
+    public List<Mono<StatMetric>> create(
             UUID matchId,
             Player player,
             LocalDateTime date
     ) {
         List<Mono<StatMetric>> statMetrics = new ArrayList<>();
 
-        player.getStats().stream().forEach(stat -> {
+        player.getStats().forEach(stat -> {
 
             String key = stat.keys().next();
 

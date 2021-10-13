@@ -10,7 +10,6 @@ import org.json.JSONObject;
 public class ResultData {
 
     private Integer id;
-    private JSONObject match;
     private JSONObject lineups;
     private JSONObject result;
 
@@ -19,7 +18,6 @@ public class ResultData {
         this.id = result.getMatchId();
         this.result = new JSONObject(result.getResult());
         this.lineups = new JSONObject(result.getLineup());
-        this.match = new JSONObject(result.getMatch());
 
     }
 }

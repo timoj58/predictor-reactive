@@ -6,7 +6,6 @@ public enum Competition {
     england_2("Championship", "English", Boolean.TRUE),
     england_3("League One", "English", Boolean.FALSE),
     england_4("League Two", "English", Boolean.FALSE),
-    england_5("National League", "English", Boolean.FALSE),
     italy_1("Serie A", "Italian", Boolean.TRUE),
     italy_2("Serie B", "Italian", Boolean.FALSE),
     spain_1("La Liga", "Spanish", Boolean.TRUE),

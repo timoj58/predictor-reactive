@@ -1,6 +1,5 @@
 package com.timmytime.predictorscraperreactive.service.impl;
 
-import com.timmytime.predictorscraperreactive.factory.SportsScraperConfigurationFactory;
 import com.timmytime.predictorscraperreactive.model.ScraperHistory;
 import com.timmytime.predictorscraperreactive.repo.ScraperHistoryRepo;
 import com.timmytime.predictorscraperreactive.service.CompetitionScraperService;
@@ -9,13 +8,12 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ScraperServiceImplTest {
 
 
-    private final SportsScraperConfigurationFactory sportsScraperConfigurationFactory
-            = new SportsScraperConfigurationFactory("./src/main/resources/config/");
     private final ScraperHistoryRepo scraperHistoryRepo
             = mock(ScraperHistoryRepo.class);
     private final CompetitionScraperService competitionScraperService
@@ -24,12 +22,16 @@ class ScraperServiceImplTest {
 
     private final ScraperServiceImpl scraperService
             = new ScraperServiceImpl(
-            0,
-            sportsScraperConfigurationFactory,
             competitionScraperService,
-            scraperHistoryRepo,
-            messageService);
+            scraperHistoryRepo);
 
+
+    @Test
+    public void historicTest() throws InterruptedException {
+        scraperService.historic(); //need a real competition scraper here.
+
+        Thread.sleep(10000L);
+    }
 
     @Test
     public void scrapeTest() throws InterruptedException {
@@ -43,10 +45,6 @@ class ScraperServiceImplTest {
 
         Thread.sleep(30000L);
 
-        verify(competitionScraperService, atLeast(14)).scrape(
-                any(), any());
-
-        verify(messageService, atLeastOnce()).send();
 
     }
 

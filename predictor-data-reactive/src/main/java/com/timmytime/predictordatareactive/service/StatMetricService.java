@@ -13,26 +13,10 @@ import java.util.List;
 import java.util.UUID;
 
 public interface StatMetricService {
-    void delete(UUID id);
 
     Mono<StatMetric> save(StatMetric match);
 
-    List<Mono<StatMetric>> createTeamMetrics(
-            UUID matchId,
-            Team team,
-            String label,
-            LocalDateTime date,
-            ResultData resultData
-    );
-
-    List<Mono<StatMetric>> createPlayerMatchEventMetrics(
-            UUID matchId,
-            Player player,
-            ResultData resultData,
-            LocalDateTime date
-    );
-
-    List<Mono<StatMetric>> createPlayerIndividualEventMetrics(
+    List<Mono<StatMetric>> create(
             UUID matchId,
             Player player,
             LocalDateTime date

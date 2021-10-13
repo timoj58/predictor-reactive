@@ -23,12 +23,6 @@ public class PlayerFunction {
                 , playerHandler::getByCompetition);
     }
 
-    @Bean
-    @RouterOperation(beanClass = PlayerService.class, beanMethod = "findFantasyFootballers")
-    RouterFunction<ServerResponse> findFantasyFootballers(PlayerHandler playerHandler) {
-        return route(RequestPredicates.GET("/players/fantasy")
-                , playerHandler::findFantasyFootballers);
-    }
 
     @Bean
     @RouterOperation(beanClass = LineupPlayerService.class, beanMethod = "find")
@@ -44,21 +38,4 @@ public class PlayerFunction {
                 , playerHandler::getTotalAppearances);
     }
 
-    @Bean
-    @RouterOperation(beanClass = PlayerService.class, beanMethod = "createFantasyFootballers")
-    RouterFunction<ServerResponse> createFantasyFootballers(PlayerHandler playerHandler) {
-
-        return route(RequestPredicates.POST("/create-fantasy-footballers")
-                        .and(RequestPredicates.accept(MediaType.APPLICATION_STREAM_JSON)),
-                playerHandler::createFantasyFootballers);
-    }
-
-    @Bean
-    @RouterOperation(beanClass = PlayerService.class, beanMethod = "createGoalkeepers")
-    RouterFunction<ServerResponse> createGoalkeepers(PlayerHandler playerHandler) {
-
-        return route(RequestPredicates.POST("/create-goalkeepers")
-                        .and(RequestPredicates.accept(MediaType.APPLICATION_STREAM_JSON)),
-                playerHandler::createGoalkeepers);
-    }
 }

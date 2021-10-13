@@ -24,19 +24,11 @@ public class PlayerHandler {
         return ServerResponse.ok().body(
                 playerService.findByCompetition(
                         serverRequest.pathVariable("competition"),
-                        serverRequest.queryParam("date").get(),
-                        Boolean.valueOf(serverRequest.queryParam("fantasy").get())),
+                        serverRequest.queryParam("date").get()),
                 Player.class
         );
     }
 
-    public Mono<ServerResponse> findFantasyFootballers(ServerRequest serverRequest) {
-
-        return ServerResponse.ok().body(
-                playerService.findFantasyFootballers(),
-                Player.class
-        );
-    }
 
     public Mono<ServerResponse> getAppearances(ServerRequest serverRequest) {
 
@@ -57,20 +49,5 @@ public class PlayerHandler {
                 Integer.class
         );
     }
-
-    public Mono<ServerResponse> createFantasyFootballers(ServerRequest request) {
-
-        return ServerResponse.ok().build(
-                playerService.createFantasyFootballers()
-        );
-    }
-
-    public Mono<ServerResponse> createGoalkeepers(ServerRequest request) {
-
-        return ServerResponse.ok().build(
-                playerService.createGoalkeepers()
-        );
-    }
-
 
 }

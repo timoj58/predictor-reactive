@@ -18,7 +18,6 @@ public class Result {
     private Integer matchId;
     private LocalDate date;
     private String lineup;
-    private String match;
     private String result;
     private Boolean processed = Boolean.FALSE;
 
@@ -28,6 +27,6 @@ public class Result {
     }
 
     public Boolean ready() {
-        return lineup != null && result != null && match != null;
+        return lineup != null && result != null;
     }
 }
