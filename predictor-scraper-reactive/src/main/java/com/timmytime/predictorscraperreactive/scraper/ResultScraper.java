@@ -41,6 +41,7 @@ public class ResultScraper {
             scraperTrackerService.addFailedResultsRequest(competition, date);
             return Collections.emptyList();
         }
+        scraperTrackerService.removeMatchesFromQueue(competition.getLeft());
 
         return process(Parser.htmlParser().parseInput(response, ""), competition.getLeft());
     }
@@ -57,7 +58,13 @@ public class ResultScraper {
                             .replace("</script>", "")).getJSONArray("events");
 
                     IntStream.range(0, events.length()).forEach(
-                            index -> results.add(create(events.getJSONObject(index), competition))
+                            index -> {
+                                var event = events.getJSONObject(index);
+                                var status = event.getJSONObject("status").getJSONObject("type").getString("name");
+                                if(status.equals("STATUS_FULL_TIME")) {
+                                    results.add(create(event, competition));
+                                }
+                            }
                     );
                 });
 

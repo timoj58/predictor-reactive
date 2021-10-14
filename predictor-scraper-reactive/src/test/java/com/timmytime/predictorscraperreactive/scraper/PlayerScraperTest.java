@@ -15,6 +15,6 @@ public class PlayerScraperTest {
 
     @Test
     void scrapeTest() {
-        playerScraper.scrape(Pair.of(CompetitionFixtureCodes.BELGIUM_1, 605973));
+        playerScraper.scrape(Pair.of(CompetitionFixtureCodes.ITALY_1, 278345));
     }
 }

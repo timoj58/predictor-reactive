@@ -48,7 +48,7 @@ public class CompetitionScraperServiceImpl implements CompetitionScraperService 
         Flux<Triple<CompetitionFixtureCodes, String, LocalDate>> results = Flux.push(sink ->
                 CompetitionScraperServiceImpl.this.results = sink::next, FluxSink.OverflowStrategy.BUFFER);
 
-        results.delayElements(Duration.ofMillis(500)).subscribe(this::process);
+        results.delayElements(Duration.ofMillis(100)).subscribe(this::process);
     }
 
     @Override
@@ -82,7 +82,6 @@ public class CompetitionScraperServiceImpl implements CompetitionScraperService 
 
     @Scheduled(fixedRate = 60000)
     private void retry() {
-        log.info("retrying failed attempts");
         Flux.fromStream(scraperFactory.getScraperTrackerService().getFailedResultsRequests().stream())
                 .subscribe(this::consume);
     }

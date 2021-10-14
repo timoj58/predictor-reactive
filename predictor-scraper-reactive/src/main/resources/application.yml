@@ -6,6 +6,9 @@ spring:
   data:
     mongodb:
       uri: mongodb://localhost:27017/predictor-db
+  cloud:
+    config:
+      enabled: false
 
 springdoc:
   swagger-ui:

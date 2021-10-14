@@ -81,4 +81,6 @@ public class ScraperServiceImpl implements ScraperService {
 
     }
 
+    //need to init the history again, once historic finished.
+
 }

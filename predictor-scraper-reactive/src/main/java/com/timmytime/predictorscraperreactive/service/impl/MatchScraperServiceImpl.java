@@ -53,10 +53,8 @@ public class MatchScraperServiceImpl implements MatchScraperService {
 
     @Scheduled(fixedRate = 60000)
     private void retry() {
-        log.info("retrying failed attempts");
         Flux.fromStream(scraperFactory.getScraperTrackerService().getFailedPlayersRequests().stream())
                 .subscribe(this::add);
-
     }
 
 }

@@ -15,7 +15,7 @@ public class WebClientFacade {
         WebClient.builder().build()
                 .post()
                 .uri(url)
-                .exchange()
+                .exchangeToMono(Mono::just)
                 .subscribe();
     }
 
@@ -25,7 +25,7 @@ public class WebClientFacade {
                 .uri(url)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(Mono.just(message), Message.class)
-                .exchange()
+                .exchangeToMono(Mono::just)
                 .subscribe();
     }
 
@@ -35,7 +35,7 @@ public class WebClientFacade {
                 .uri(url)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(Mono.just(message), JsonNode.class)
-                .exchange()
+                .exchangeToMono(Mono::just)
                 .subscribe();
     }
 }

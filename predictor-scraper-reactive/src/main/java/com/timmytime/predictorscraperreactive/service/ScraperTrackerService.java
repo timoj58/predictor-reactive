@@ -18,6 +18,8 @@ public interface ScraperTrackerService {
 
     void addMatchesInQueue(CompetitionFixtureCodes competition);
 
+    void removeMatchesFromQueue(CompetitionFixtureCodes competition);
+
     void addMatches(CompetitionFixtureCodes competition, List<Integer> matchIds);
 
     void removeMatch(Pair<CompetitionFixtureCodes, Integer> matchId);

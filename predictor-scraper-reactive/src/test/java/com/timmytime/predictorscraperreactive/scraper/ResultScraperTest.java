@@ -8,7 +8,9 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -21,11 +23,11 @@ class ResultScraperTest {
     void scrapeTest() {
         List<Result> results = resultScraper.scrape(
                 Pair.of(CompetitionFixtureCodes.ENGLAND_1,
-                        "https://www.espn.co.uk/soccer/scoreboard/_/league/eng.1/date/{date}"),
-                LocalDate.parse("03-10-2021", DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                        "https://www.espn.co.uk/soccer/scoreboard/_/league/eng.2/date/{date}"),
+                LocalDate.parse("16-02-2010", DateTimeFormatter.ofPattern("dd-MM-yyyy"))
         );
 
-        assertEquals(4, results.size());
+        assertEquals(9, results.size());
     }
 
 }

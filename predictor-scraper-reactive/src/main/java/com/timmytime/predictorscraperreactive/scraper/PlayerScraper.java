@@ -62,18 +62,37 @@ public class PlayerScraper {
             return setData(lineup, data);
         }
 
-        lineups.get(0)
-                .select("tbody").get(0)
-                .select(".accordion-item")
-                .forEach(item -> data.getJSONArray("home").put(createPlayer(item)));
+        try {
+            lineups.get(0)
+                    .select("tbody").get(0)
+                    .select(".accordion-item")
+                    .forEach(item -> addPlayerToLineup(data, "home", createPlayer(item)));
 
-        lineups.get(1)
-                .select("tbody").get(0)
-                .select(".accordion-item")
-                .forEach(item -> data.getJSONArray("away").put(createPlayer(item)));
+            lineups.get(1)
+                    .select("tbody").get(0)
+                    .select(".accordion-item")
+                    .forEach(item -> addPlayerToLineup(data, "away", createPlayer(item)));
+
+        }catch (Exception e){
+            log.error("lineup has failed for matchId {}", matchId);
+            return setData(lineup, data);
+        }
 
         return setData(lineup, data);
 
+    }
+
+    private void addPlayerToLineup(JSONObject data, String key, JSONObject player){
+         //dont add duplicates.  bug in source scrape
+         boolean found = false;
+         for(int i=0;i<data.getJSONArray(key).length(); i++){
+             if(player.getString("espnId").equals(data.getJSONArray(key).getJSONObject(i).getString("espnId"))){
+                 found = true;
+             }
+         }
+         if(!found) {
+             data.getJSONArray(key).put(player);
+         }
     }
 
     private JSONObject createPlayer(Element element) {
