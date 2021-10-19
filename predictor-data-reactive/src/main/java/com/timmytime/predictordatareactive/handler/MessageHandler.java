@@ -31,4 +31,11 @@ public class MessageHandler {
                 messageReceivedService.completed()
         );
     }
+
+    public Mono<ServerResponse> repair(ServerRequest request){
+        return ServerResponse.ok().build(
+                messageReceivedService.repair()
+        );
+
+    }
 }

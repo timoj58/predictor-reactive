@@ -74,6 +74,7 @@ public class ScraperServiceImpl implements ScraperService {
     }
 
     private void process(ScraperHistory scraperHistory) {
+        competitionScraperService.setResultsInQueue(scraperHistory.getDaysScraped());
         Flux.fromStream(
                 Stream.iterate(scraperHistory.getDate().minusDays(scraperHistory.getDaysScraped()), d -> d.plusDays(1))
                         .limit(scraperHistory.getDaysScraped())

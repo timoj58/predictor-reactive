@@ -1,49 +1,33 @@
 package com.timmytime.predictorscraperreactive.scraper;
 
 import com.timmytime.predictorscraperreactive.enumerator.CompetitionFixtureCodes;
+import com.timmytime.predictorscraperreactive.enumerator.ScraperType;
 import com.timmytime.predictorscraperreactive.model.Result;
-import com.timmytime.predictorscraperreactive.service.ScraperTrackerService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
-import org.springframework.http.HttpMethod;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 
 @Slf4j
 public class ResultScraper {
 
-    private final RestTemplate restTemplate = new RestTemplate();
-    private final ScraperTrackerService scraperTrackerService;
 
-    public ResultScraper(ScraperTrackerService scraperTrackerService) {
-        this.scraperTrackerService = scraperTrackerService;
+    public Triple<CompetitionFixtureCodes, ScraperType, String> createRequest(Pair<CompetitionFixtureCodes, String> competition, LocalDate date) {
+        String url = competition.getRight().replace("{date}", date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")).replace("-", ""));
+        return Triple.of(competition.getLeft(), ScraperType.RESULTS, url);
     }
 
-    public List<Result> scrape(Pair<CompetitionFixtureCodes, String> competition, LocalDate date) {
-
-        String url = competition.getRight().replace("{date}", date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")).replace("-", ""));
-        String response = "";
-        try {
-            response = restTemplate.exchange(url,
-                    HttpMethod.GET, null, String.class).getBody();
-        } catch (RestClientException restClientException) {
-            scraperTrackerService.addFailedResultsRequest(competition, date);
-            return Collections.emptyList();
-        }
-        scraperTrackerService.removeMatchesFromQueue(competition.getLeft());
-
-        return process(Parser.htmlParser().parseInput(response, ""), competition.getLeft());
+    public List<Result> scrape(CompetitionFixtureCodes competition, String response) {
+        return process(Parser.htmlParser().parseInput(response, ""), competition);
     }
 
     private List<Result> process(Document document, CompetitionFixtureCodes competition) {
@@ -61,7 +45,7 @@ public class ResultScraper {
                             index -> {
                                 var event = events.getJSONObject(index);
                                 var status = event.getJSONObject("status").getJSONObject("type").getString("name");
-                                if(status.equals("STATUS_FULL_TIME")) {
+                                if (status.equals("STATUS_FULL_TIME")) {
                                     results.add(create(event, competition));
                                 }
                             }

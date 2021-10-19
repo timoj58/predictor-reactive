@@ -44,16 +44,14 @@ public class MatchCreationServiceImpl implements MatchCreationService {
                 resultData.getLineups().getJSONObject("data").getJSONArray("home"),
                 homeTeam,
                 match.getId(),
-                date,
-                resultData);
+                date);
 
 
         lineupPlayerService.processPlayers(
                 resultData.getLineups().getJSONObject("data").getJSONArray("away"),
                 awayTeam,
                 match.getId(),
-                date,
-                resultData);
+                date);
 
 
         matchService.save(match).doAfterTerminate(() ->

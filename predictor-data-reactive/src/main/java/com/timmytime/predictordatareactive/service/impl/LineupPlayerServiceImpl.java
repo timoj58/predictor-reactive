@@ -1,7 +1,6 @@
 package com.timmytime.predictordatareactive.service.impl;
 
 import com.timmytime.predictordatareactive.model.LineupPlayer;
-import com.timmytime.predictordatareactive.model.ResultData;
 import com.timmytime.predictordatareactive.model.Team;
 import com.timmytime.predictordatareactive.repo.LineupPlayerRepo;
 import com.timmytime.predictordatareactive.service.LineupPlayerService;
@@ -15,7 +14,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -33,8 +31,7 @@ public class LineupPlayerServiceImpl implements LineupPlayerService {
             JSONArray players,
             Team team,
             UUID matchId,
-            LocalDateTime date,
-            ResultData resultData
+            LocalDateTime date
     ) {
 
         log.info("creating lineup");

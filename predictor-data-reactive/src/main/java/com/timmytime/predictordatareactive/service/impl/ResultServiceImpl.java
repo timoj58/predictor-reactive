@@ -5,6 +5,8 @@ import com.timmytime.predictordatareactive.model.Result;
 import com.timmytime.predictordatareactive.repo.ResultRepo;
 import com.timmytime.predictordatareactive.service.ResultService;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -51,6 +53,21 @@ public class ResultServiceImpl implements ResultService {
     public Mono<Result> findByMatch(Integer matchId) {
         return resultRepo.findById(matchId) //need to handle not found case...
                 .switchIfEmpty(resultRepo.save(new Result(matchId)));
+    }
+
+    @Override
+    public void repair() {
+        resultRepo.findByProcessed(Boolean.FALSE)
+                .limitRate(10)
+                .subscribe(result -> {
+                      result.setLineup(new JSONObject()
+                              .put("data", new JSONObject()
+                                      .put("home", new JSONArray())
+                                      .put("away", new JSONArray())
+                              ).toString());
+
+                     process(result);
+                });
     }
 
     @PostConstruct

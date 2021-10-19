@@ -5,11 +5,20 @@ import com.timmytime.predictorscraperreactive.request.Message;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 @Component
 public class WebClientFacade {
+
+    private final WebClient pageWebClient = WebClient.builder()
+            .exchangeStrategies(ExchangeStrategies.builder()
+                    .codecs(config -> config
+                            .defaultCodecs()
+                            .maxInMemorySize(16 * 1024 * 1024))
+                    .build())
+            .build();
 
     public void send(String url) {
         WebClient.builder().build()
@@ -37,5 +46,15 @@ public class WebClientFacade {
                 .body(Mono.just(message), JsonNode.class)
                 .exchangeToMono(Mono::just)
                 .subscribe();
+    }
+
+    public Mono<String> getPage(String url) {
+        return pageWebClient
+                .get()
+                .uri(url)
+                .retrieve()
+                .bodyToMono(String.class)
+                .onErrorReturn("PAGE_ERROR");
+
     }
 }

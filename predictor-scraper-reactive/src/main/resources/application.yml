@@ -21,3 +21,7 @@ clients:
 scraper:
   match: "https://www.espn.co.uk/football/match/_/gameId/{game_id}"
   results: "https://www.espn.co.uk/soccer/scoreboard/_/league/{league}/date/{date}"
+
+scheduler:
+  retry: 60000
+  tracker: 45000

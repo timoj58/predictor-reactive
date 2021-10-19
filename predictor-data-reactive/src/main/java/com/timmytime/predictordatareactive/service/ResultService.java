@@ -8,4 +8,6 @@ public interface ResultService {
     void process(Result result);
 
     Mono<Result> findByMatch(Integer matchId);
+
+    void repair();
 }

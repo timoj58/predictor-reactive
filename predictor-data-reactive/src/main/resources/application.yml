@@ -11,6 +11,9 @@ spring:
     mongodb:
       uri: mongodb://localhost:27017/predictor-db
       auto-index-creation: true
+  cloud:
+    config:
+      enabled: false
 
 
 

@@ -7,4 +7,6 @@ public interface MessageReceivedService {
     Mono<Void> receive(Mono<JsonNode> received);
 
     Mono<Void> completed();
+
+    Mono<Void> repair();
 }

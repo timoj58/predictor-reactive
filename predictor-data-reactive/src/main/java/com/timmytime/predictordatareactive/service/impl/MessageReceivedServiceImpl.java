@@ -10,6 +10,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 
@@ -42,7 +43,15 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     @Override
     public Mono<Void> completed() {
         log.info("completed scrape message received");
-        //shut down the scraper service with lambda call.
+        //shut down the scraper service with lambda call.  (dont think this is used).  delete TODO
+        return Mono.empty();
+    }
+
+    @Override
+    public Mono<Void> repair() {
+        //repairs historic scrape, where pages that have no match details are stuck.
+        //we have enough information to complete the result, not lineup.
+        CompletableFuture.runAsync(resultService::repair);
         return Mono.empty();
     }
 

@@ -3,19 +3,17 @@ package com.timmytime.predictorscraperreactive.scraper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.timmytime.predictorscraperreactive.enumerator.CompetitionFixtureCodes;
+import com.timmytime.predictorscraperreactive.enumerator.ScraperType;
 import com.timmytime.predictorscraperreactive.model.Lineup;
-import com.timmytime.predictorscraperreactive.service.ScraperTrackerService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
-import org.springframework.http.HttpMethod;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
@@ -23,28 +21,20 @@ import java.util.Optional;
 @Slf4j
 public class PlayerScraper {
 
-    private final RestTemplate restTemplate = new RestTemplate();
     private final String matchUrl;
-    private final ScraperTrackerService scraperTrackerService;
 
-    public PlayerScraper(String matchUrl, ScraperTrackerService scraperTrackerService) {
+    public PlayerScraper(String matchUrl) {
         this.matchUrl = matchUrl;
-        this.scraperTrackerService = scraperTrackerService;
     }
 
-    public Optional<Lineup> scrape(Pair<CompetitionFixtureCodes, Integer> matchId) {
-
+    public Triple<CompetitionFixtureCodes, ScraperType, String> createRequest(Pair<CompetitionFixtureCodes, Integer> matchId) {
         String url = matchUrl.replace("{game_id}", matchId.getRight().toString());
-        String response = "";
-        try {
-            response = restTemplate.exchange(url,
-                    HttpMethod.GET, null, String.class).getBody();
-        } catch (RestClientException restClientException) {
-            scraperTrackerService.addFailedPlayersRequest(matchId);
-            return Optional.empty();
-        }
+        return Triple.of(matchId.getLeft(), ScraperType.MATCH, url);
+    }
 
-        return process(Parser.htmlParser().parseInput(response, ""), matchId.getRight());
+    public Optional<Lineup> scrape(String url, String response) {
+        var matchId = Integer.valueOf(url.substring(url.lastIndexOf("/")+1));
+        return process(Parser.htmlParser().parseInput(response, ""), matchId);
     }
 
     private Optional<Lineup> process(Document document, Integer matchId) {
@@ -73,7 +63,7 @@ public class PlayerScraper {
                     .select(".accordion-item")
                     .forEach(item -> addPlayerToLineup(data, "away", createPlayer(item)));
 
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("lineup has failed for matchId {}", matchId);
             return setData(lineup, data);
         }
@@ -82,17 +72,17 @@ public class PlayerScraper {
 
     }
 
-    private void addPlayerToLineup(JSONObject data, String key, JSONObject player){
-         //dont add duplicates.  bug in source scrape
-         boolean found = false;
-         for(int i=0;i<data.getJSONArray(key).length(); i++){
-             if(player.getString("espnId").equals(data.getJSONArray(key).getJSONObject(i).getString("espnId"))){
-                 found = true;
-             }
-         }
-         if(!found) {
-             data.getJSONArray(key).put(player);
-         }
+    private void addPlayerToLineup(JSONObject data, String key, JSONObject player) {
+        //dont add duplicates.  bug in source scrape
+        boolean found = false;
+        for (int i = 0; i < data.getJSONArray(key).length(); i++) {
+            if (player.getString("espnId").equals(data.getJSONArray(key).getJSONObject(i).getString("espnId"))) {
+                found = true;
+            }
+        }
+        if (!found) {
+            data.getJSONArray(key).put(player);
+        }
     }
 
     private JSONObject createPlayer(Element element) {

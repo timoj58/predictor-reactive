@@ -88,8 +88,7 @@ class LineupPlayerServiceImplTest {
                 resultData.getLineups().getJSONObject("data").getJSONArray("home"),
                 team,
                 teamStatsId,
-                LocalDateTime.now(),
-                resultData
+                LocalDateTime.now()
         );
 
         verify(playerRepo, atLeastOnce()).save(any(Player.class));
