@@ -2,6 +2,12 @@
 server:
   port: 8098
 
+spring:
+  application:
+    name: predictor-event-scraper-reactive
+  config:
+    import:  "optional:configserver:http://172.31.24.130:8888"
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html

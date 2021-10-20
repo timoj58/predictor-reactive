@@ -10,9 +10,11 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.annotation.PostConstruct;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
@@ -82,6 +84,24 @@ public class ScraperServiceImpl implements ScraperService {
 
     }
 
-    //need to init the history again, once historic finished.
+    @PostConstruct
+    private void init(){
+        //if we have no history based on historic run.
+        var count = scraperHistoryRepo.count();
+
+        if(count == 0){
+            ScraperHistory scraperHistory = new ScraperHistory();
+
+            scraperHistory.setId(UUID.randomUUID());
+            scraperHistory.setDate(LocalDateTime.parse("19/10/2021", DateTimeFormatter.ofPattern("d/MM/yyyy")));
+            scraperHistory.setDaysScraped((int)
+                    Duration.between(
+                            scraperHistory.getDate(),
+                            LocalDate.now().atStartOfDay()
+                    ).toDays());
+
+            scraperHistoryRepo.save(scraperHistory);
+        }
+    }
 
 }

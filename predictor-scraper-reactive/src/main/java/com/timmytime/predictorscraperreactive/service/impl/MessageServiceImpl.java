@@ -87,7 +87,6 @@ public class MessageServiceImpl implements MessageService {
     private void send() {
         log.info("sending scrape completed message");
         webClientFacade.send(dataHost + "/completed");
-
     }
 
     private void sendMessage(JsonNode message) {

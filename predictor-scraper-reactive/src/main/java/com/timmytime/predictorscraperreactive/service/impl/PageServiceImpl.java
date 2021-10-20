@@ -32,7 +32,6 @@ public class PageServiceImpl implements PageService {
 
     @Autowired
     public PageServiceImpl(
-            WebClientFacade webClientFacade,
             ScraperFactory scraperFactory,
             MessageService messageService
     ) {

@@ -4,8 +4,10 @@ package com.timmytime.predictorscraperreactive.service.impl;
 import com.timmytime.predictorscraperreactive.enumerator.CompetitionFixtureCodes;
 import com.timmytime.predictorscraperreactive.enumerator.ScraperType;
 import com.timmytime.predictorscraperreactive.enumerator.TrackerQueueAction;
+import com.timmytime.predictorscraperreactive.request.Message;
 import com.timmytime.predictorscraperreactive.service.MessageService;
 import com.timmytime.predictorscraperreactive.service.ScraperTrackerService;
+import com.timmytime.predictorscraperreactive.util.TripSwitch;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -16,19 +18,18 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 
-import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
+
 
 @Slf4j
 @Service
 public class ScraperTrackerServiceImpl implements ScraperTrackerService {
 
-    private static final Integer TRIP_THRESHOLD = 5;
     private final MessageService messageService;
+    private final TripSwitch tripSwitch = new TripSwitch();
 
     private final Deque<Triple<CompetitionFixtureCodes, ScraperType, String>> failedResultsRequests = new ArrayDeque();
     private final Deque<Triple<CompetitionFixtureCodes, ScraperType, String>> failedPlayersRequests = new ArrayDeque();
@@ -36,7 +37,6 @@ public class ScraperTrackerServiceImpl implements ScraperTrackerService {
 
     private final Map<CompetitionFixtureCodes, AtomicBoolean> latch = new HashMap<>();
     private final AtomicInteger previousMessagesSentCount = new AtomicInteger(0);
-    private final AtomicInteger tripSwitch = new AtomicInteger(TRIP_THRESHOLD);
     private final AtomicInteger requests = new AtomicInteger(0);
     private final AtomicInteger previousRequests = new AtomicInteger(0);
     private final AtomicInteger failedCount = new AtomicInteger(0);
@@ -66,7 +66,7 @@ public class ScraperTrackerServiceImpl implements ScraperTrackerService {
 
     @Override
     public void addFailedResultsRequest(Triple<CompetitionFixtureCodes, ScraperType, String> request) {
-        if (tripSwitch.get() >= 0) {
+        if (tripSwitch.getTripSwitch().get() >= 0) {
             failedCount.incrementAndGet();
             failedResultsRequests.add(request);
         }
@@ -74,16 +74,18 @@ public class ScraperTrackerServiceImpl implements ScraperTrackerService {
 
     @Override
     public void addFailedPlayersRequest(Triple<CompetitionFixtureCodes, ScraperType,  String> request) {
-        if (tripSwitch.get() >= 0) {
+        if (tripSwitch.getTripSwitch().get() >= 0) {
             failedCount.incrementAndGet();
             failedPlayersRequests.add(request);
         }
     }
 
     @Override
-    public List<Triple<CompetitionFixtureCodes, ScraperType, String>> getFailedResultsRequests() {
+    public List<Triple<CompetitionFixtureCodes, ScraperType, String>> getFailedRequests() {
         log.info("iteration failed results count {}", failedResultsRequests.size());
-        if (tripSwitch.get() < 0) {
+        log.info("iteration failed player count {}", failedPlayersRequests.size());
+
+        if (tripSwitch.getTripSwitch().get() < 0) {
             return Collections.emptyList();
         }
 
@@ -93,21 +95,10 @@ public class ScraperTrackerServiceImpl implements ScraperTrackerService {
             popped.add(failedResultsRequests.pop());
         }
 
-        return popped;
-    }
-
-    @Override
-    public List<Triple<CompetitionFixtureCodes, ScraperType, String>> getFailedPlayersRequests() {
-        log.info("iteration failed player count {}", failedPlayersRequests.size());
-        if (tripSwitch.get() < 0) {
-            return Collections.emptyList();
-        }
-
-        List<Triple<CompetitionFixtureCodes, ScraperType, String>> popped = new ArrayList<>();
-
         while (!failedPlayersRequests.isEmpty()) {
             popped.add(failedPlayersRequests.pop());
         }
+
         return popped;
     }
 
@@ -138,7 +129,7 @@ public class ScraperTrackerServiceImpl implements ScraperTrackerService {
 
 
     private void trackerQueueHandler(Triple<CompetitionFixtureCodes, String, TrackerQueueAction> item) {
-        if (tripSwitch.get() >= 0) {
+        if (tripSwitch.getTripSwitch().get() >= 0) {
             switch (item.getRight()) {
                 case ADD_MATCH:
                     matches.get(item.getLeft()).getRight().add(item.getMiddle());
@@ -181,13 +172,17 @@ public class ScraperTrackerServiceImpl implements ScraperTrackerService {
         log.info("messagesSent: {}, latchStatus: {}, queueTotal: {}", messageSentCount, latchStatus, queueTotal);
 
         if (latchStatus && messageSentCount == previousMessagesSentCount.get() && queueTotal < 5) {
-            log.info("trip activated {}", tripSwitch.decrementAndGet());
-            if (tripSwitch.get() < 0) {
-                tripSwitchActivated();
+            log.info("trip activated {}", tripSwitch.getTripSwitch().decrementAndGet());
+            if (tripSwitch.getTripSwitch().get() < 0) {
+                tripSwitch.tripSwitchActivated(
+                        failedResultsRequests,
+                        failedPlayersRequests,
+                        matches
+                );
             }
-        } else if (latchStatus && messageSentCount != previousMessagesSentCount.get() && tripSwitch.get() != TRIP_THRESHOLD) {
+        } else if (latchStatus && messageSentCount != previousMessagesSentCount.get() && tripSwitch.getTripSwitch().get() != TripSwitch.TRIP_THRESHOLD) {
             log.info("trip reset");
-            tripSwitch.set(TRIP_THRESHOLD);
+            tripSwitch.getTripSwitch().set(TripSwitch.TRIP_THRESHOLD);
         }
 
         matches.keySet().forEach(
@@ -202,7 +197,7 @@ public class ScraperTrackerServiceImpl implements ScraperTrackerService {
 
                         if (info.getLeft().get() == 0 && info.getRight().isEmpty()) {
                             latch.get(key).set(Boolean.FALSE);
-                            //TODO put back messageService.send(new Message(key.name().toLowerCase()));
+                            messageService.send(new Message(key.name().toLowerCase()));
                         }
                     }
                 }
@@ -213,28 +208,5 @@ public class ScraperTrackerServiceImpl implements ScraperTrackerService {
         previousFailedCount.set(failedCount.get());
     }
 
-    private void tripSwitchActivated() {
-        log.info("trip switch activated");
-
-        while (!failedResultsRequests.isEmpty()) {
-            var failed = failedResultsRequests.pop();
-            log.warn("clearing results: {}, date: {},",
-                    failed.getLeft().name().toLowerCase(),
-                    failed.getRight().toString());
-        }
-
-        while (!failedPlayersRequests.isEmpty()) {
-            var failed = failedPlayersRequests.pop();
-            log.warn("clearing match: {}, matchId: {},",
-                    failed.getLeft().name().toLowerCase(),
-                    failed.getRight());
-        }
-
-        Stream.of(CompetitionFixtureCodes.values())
-                .forEach(key -> {
-                    matches.get(key).getRight().clear();
-                    matches.get(key).getLeft().set(0);
-                });
-    }
 
 }

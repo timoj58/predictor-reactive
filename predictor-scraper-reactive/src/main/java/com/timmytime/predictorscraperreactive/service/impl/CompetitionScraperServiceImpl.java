@@ -52,10 +52,9 @@ public class CompetitionScraperServiceImpl implements CompetitionScraperService 
         pageService.addPageRequest(request);
     }
 
-
     @Scheduled(fixedRateString = "${scheduler.retry}")
     private void retry() {
-        Flux.fromStream(scraperFactory.getScraperTrackerService().getFailedResultsRequests().stream())
+        Flux.fromStream(scraperFactory.getScraperTrackerService().getFailedRequests().stream())
                 .subscribe(this::consume);
     }
 }

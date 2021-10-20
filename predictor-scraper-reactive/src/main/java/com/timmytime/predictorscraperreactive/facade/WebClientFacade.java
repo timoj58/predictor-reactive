@@ -12,14 +12,6 @@ import reactor.core.publisher.Mono;
 @Component
 public class WebClientFacade {
 
-    private final WebClient pageWebClient = WebClient.builder()
-            .exchangeStrategies(ExchangeStrategies.builder()
-                    .codecs(config -> config
-                            .defaultCodecs()
-                            .maxInMemorySize(16 * 1024 * 1024))
-                    .build())
-            .build();
-
     public void send(String url) {
         WebClient.builder().build()
                 .post()
@@ -48,13 +40,4 @@ public class WebClientFacade {
                 .subscribe();
     }
 
-    public Mono<String> getPage(String url) {
-        return pageWebClient
-                .get()
-                .uri(url)
-                .retrieve()
-                .bodyToMono(String.class)
-                .onErrorReturn("PAGE_ERROR");
-
-    }
 }

@@ -12,9 +12,7 @@ public interface ScraperTrackerService {
 
     void addFailedPlayersRequest(Triple<CompetitionFixtureCodes, ScraperType, String> request);
 
-    List<Triple<CompetitionFixtureCodes, ScraperType, String>> getFailedResultsRequests();
-
-    List<Triple<CompetitionFixtureCodes, ScraperType, String>> getFailedPlayersRequests();
+    List<Triple<CompetitionFixtureCodes, ScraperType, String>> getFailedRequests();
 
     void addResultsInQueue(CompetitionFixtureCodes competition, int total);
 
@@ -24,6 +22,6 @@ public interface ScraperTrackerService {
 
     void removeMatch(Pair<CompetitionFixtureCodes, String> matchRequest);
 
-    public void incrementRequest();
+    void incrementRequest();
 
 }

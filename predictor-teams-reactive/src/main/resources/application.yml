@@ -14,11 +14,22 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
-#MongoDB Properties
+connection:
+  details:
+    host: 'localhost'
+    port: 27017
+    database: 'predictor-db'
+    username: 'predictor'
+    password: 'predictor'
+
 spring:
+  application:
+    name: predictor-teams-reactive
   data:
     mongodb:
-      uri: mongodb://localhost:27017/predictor-db
+      uri: mongodb://${connection.details.username}:${connection.details.password}@${connection.details.host}:${connection.details.port}/${connection.details.database}?authSource=admin&authMechanism=SCRAM-SHA-1
+  config:
+    import:  "optional:configserver:http://172.31.24.130:8888"
 
 
 delays:

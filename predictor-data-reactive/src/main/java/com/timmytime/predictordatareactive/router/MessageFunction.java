@@ -30,13 +30,4 @@ public class MessageFunction {
                 , messageHandler::completed);
     }
 
-
-    @Bean
-    @RouterOperation(beanClass = MessageReceivedService.class, beanMethod = "repair")
-    RouterFunction<ServerResponse> repair(MessageHandler messageHandler) {
-        return route(RequestPredicates.POST("/repair")
-                , messageHandler::repair);
-    }
-
-
 }

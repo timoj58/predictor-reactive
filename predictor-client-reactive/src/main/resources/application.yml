@@ -5,6 +5,13 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
+spring:
+  application:
+    name: predictor-client-reactive
+  config:
+    import:  "optional:configserver:http://172.31.24.130:8888"
+
+
 clients:
   data: http://localhost:8092
   event: http://localhost:8094
