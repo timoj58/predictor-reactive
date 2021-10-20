@@ -1,8 +1,6 @@
 package com.timmytime.predictoreventdatareactive.service.impl;
 
-import com.timmytime.predictoreventdatareactive.configuration.SpecialCase;
 import com.timmytime.predictoreventdatareactive.enumerator.CountryCompetitions;
-import com.timmytime.predictoreventdatareactive.factory.SpecialCasesFactory;
 import com.timmytime.predictoreventdatareactive.model.Team;
 import com.timmytime.predictoreventdatareactive.service.TeamService;
 import lombok.extern.slf4j.Slf4j;
@@ -19,30 +17,21 @@ import java.util.*;
 @Service("teamService")
 public class TeamServiceImpl implements TeamService {
 
-    private final SpecialCasesFactory specialCasesFactory;
 
     private final Map<String, Map<UUID, Team>> teams = new HashMap<>();
     private final String dataHost;
 
     @Autowired
     public TeamServiceImpl(
-            @Value("${clients.data}") String dataHost,
-            SpecialCasesFactory specialCasesFactory
+            @Value("${clients.data}") String dataHost
     ) {
-        this.specialCasesFactory = specialCasesFactory;
         this.dataHost = dataHost;
     }
 
     @Override
     public Optional<Team> find(String label, String competition) {
 
-        return findByLabelLike(
-                specialCasesFactory.getSpecialCase(
-                        label)
-                        .orElse(
-                                new SpecialCase(label)
-                        ).getName(),
-                competition);
+        return findByLabelLike(label, competition);
     }
 
     @Override
@@ -72,6 +61,7 @@ public class TeamServiceImpl implements TeamService {
 
     }
 
+    //TODO this is not required given its all same data source now.
     private Optional<Team> findByLabelLike(String label, String competition) {
         Optional<Team> team = findByLabelIgnoreCaseAndCountry(label, competition);
         if (label.contains(" ")) {

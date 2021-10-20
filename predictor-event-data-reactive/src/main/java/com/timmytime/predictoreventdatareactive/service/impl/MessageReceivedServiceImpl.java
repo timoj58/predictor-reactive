@@ -37,9 +37,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
 
     @Override
     public Mono<Void> receive(Mono<JsonNode> received) {
-        return
-                received.doOnNext(receive)
-                        .thenEmpty(Mono.empty());
+        return received.doOnNext(receive).thenEmpty(Mono.empty());
     }
 
     @Override
