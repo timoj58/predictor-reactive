@@ -6,6 +6,7 @@ import com.timmytime.predictordatareactive.repo.TeamRepo;
 import com.timmytime.predictordatareactive.service.TeamService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -125,6 +126,7 @@ public class TeamServiceImpl implements TeamService {
 
     @PostConstruct
     private void initDb() {
+
         teamRepo.findAll().count().filter(count -> count == 0).doOnNext(
                 then -> Flux.fromArray(CountryCompetitions.values())
                         .subscribe(country ->

@@ -9,6 +9,7 @@ import com.timmytime.predictordatareactive.service.MatchService;
 import com.timmytime.predictordatareactive.service.TeamService;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.FileSystemResource;
 import reactor.core.publisher.Mono;
@@ -21,6 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+@Disabled
 class MatchFactoryTest {
 
     private static final Result result = new Result();

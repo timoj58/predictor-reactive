@@ -4,6 +4,7 @@ import com.timmytime.predictorscraperreactive.model.ScraperHistory;
 import com.timmytime.predictorscraperreactive.repo.ScraperHistoryRepo;
 import com.timmytime.predictorscraperreactive.service.CompetitionScraperService;
 import com.timmytime.predictorscraperreactive.service.MessageService;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@Disabled
 class ScraperServiceImplTest {
 
 
