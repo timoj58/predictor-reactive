@@ -3,7 +3,6 @@ import csv
 import logging
 import os
 import os.path
-import time
 from botocore.exceptions import ClientError
 
 from service.config_service import get_dir_cfg
@@ -21,10 +20,10 @@ local_dir = get_dir_cfg()['local']
 
 
 def on_finish(tf_models_dir, aws_model_dir):
-    logger.info(' write index ' + tf_models_dir)
-    write_filenames_index(tf_models_dir)
+    logger.info(' on finish write index ' + tf_models_dir)
+    write_filenames_index(local_dir + aws_model_dir)
     try:
-        write_filenames_index(tf_models_dir + '/eval')
+        write_filenames_index(local_dir + aws_model_dir + '/eval')
     except Exception as e:
         logger.info('eval dir not created')
 
@@ -43,16 +42,20 @@ def clear_directory(path):
     if aws:
         for file in os.listdir(path):
             if not os.path.isdir(path + '/' + file):
-                if file != "index.json":  # dont delete the index...doh.
-                    logger.info(' deleting ' + file)
-                    file_path = os.path.join(path, file)
-                    os.unlink(file_path)
+                # if file != "index.json":  # dont delete the index...doh.  index is now going to AWS.
+                logger.info(' deleting ' + file)
+                file_path = os.path.join(path, file)
+                os.unlink(file_path)
 
 
 def get_indexes(path):
-    if os.path.isfile(path + '/index.json'):
-        logger.info('we have an index file')
-        return read_index(path)
+    # try and load it from AWS.  need to handle it not being present.
+    try:
+        if get_aws_file(path, '/index.json'):
+            # need to fix all the path mess crap.
+            return read_index(local_dir + path)
+    except Exception as e:
+        return {}
     return {}
 
 
@@ -68,7 +71,7 @@ def write_filenames_index_from_filename(filename):
 
 def write_filenames_index(path):
     logger.info("index for " + path)
-    index = get_indexes(path)
+    index = read_index(path)
     files = os.listdir(path)
 
     process_index(index, files, path)
@@ -76,36 +79,26 @@ def write_filenames_index(path):
 
 def get_aws_file(path, filename):
     if aws:
-        logger.info('getting aws file ' + aws_url + filename)
-        download_file(path + filename, local_dir + path + filename, retry_count=3)
-        #   response = get_file(url=aws_url+path+filename, retry_count=3)
-        #   if response.status_code == 200:
-        #    with open(local_dir+path+filename, 'wb') as f:
-        #     f.write(response.content)
-        #   elif response.status_code == 404:
-        #     open(local_dir+path+filename, 'a').close()
+        logger.info('getting aws file ' + path + filename)
+        download_file(path + filename, local_dir + path + filename)
 
-        return os.path.getsize(local_dir + path + filename) > 0
+    return os.path.getsize(local_dir + path + filename) > 0
 
 
 def put_aws_files_from_dir(path):
     logger.info('getting indexes for ' + local_dir + path)
-    indexes = get_indexes(local_dir + path)
+    indexes = read_index(local_dir + path)
     for attribute, value in indexes.items():
         if value['active'] == True:
             put_aws_file_with_path(path, attribute)
+    # finally save the index file
+    if os.path.isfile(local_dir + path + 'index.json'):
+        put_aws_file_with_path(path, 'index.json')
 
 
 def put_aws_file_with_path(aws_path, filename):
     if aws:
-        head, tail = os.path.split(filename)
-        logger.info('putting file to aws - ' + aws_url + aws_path + tail)
-
-        s3_call_with_error_handling(aws_path, filename)
-
-    # with open(local_dir+aws_path+filename,'rb') as filedata:
-    #   s3_call_with_error_handling(aws_url+aws_path+tail, filedata)
-    # requests.put(aws_url+aws_path+tail, data=filedata, headers={})
+        upload_file(aws_path, filename)
 
 
 def is_on_file(filename):
@@ -135,87 +128,20 @@ def write_csv(filename, data):
     return has_data
 
 
-# def put_file(url, filedata):
-#    try:
-#        requests.put(url, data=filedata, headers={})
-#        return None
-#    except requests.exceptions.HTTPError as err:
-#        logger.info('put failed')
-#        return err
-#    except requests.exceptions.ConnectionError as conn_err:
-#        logger.info('put failed')
-#        return conn_err
-
-# def get_file(url, retry_count):
-#    try:
-#        response = requests.get(url, headers={})
-#        return response
-#    except requests.exceptions.HTTPError as err:
-#        logger.info('put failed')
-#        time.sleep(1)
-#        if retry_count > 0:
-#            return get_file(url, retry_count - 1)
-#        else:
-#            raise err
-#    except requests.exceptions.ConnectionError as conn_err:
-#        logger.info('put failed')
-#        time.sleep(1)
-#        if retry_count > 0:
-#            return get_file(url, retry_count - 1)
-#        else:
-#            raise conn_err
-
-# def s3_call_with_error_handling(url, filedata):
-#    retry_count = 0
-#
-#    result = False
-#
-#    while retry_count < 3 and result is not None:
-#        result = put_file(url, filedata)
-#        if result is not None:
-#            time.sleep(1)
-#
-#        retry_count = retry_count + 1
-#
-#    if result is not None:
-#        raise result
-
-def s3_call_with_error_handling(aws_path, filename):
-    retry_count = 0
-
-    result = False
-
-    while retry_count < 3 and result is not None:
-        # result = put_file(url, filedata)
-        result = upload_file(aws_path, filename)
-        if result is not None:
-            time.sleep(1)
-
-        retry_count = retry_count + 1
-
-    if result is not None:
-        raise result
-
-
 # replacment s3 client utils
-def download_file(key, filepath, retry_count):
+def download_file(key, filepath):
     try:
         logger.info('trying to access ' + key + ' ' + filepath)
         s3_client.download_file(aws_bucket, key, filepath)
     except ClientError as e:
         logger.info('get failed')
-        time.sleep(1)
-        if retry_count > 0:
-            return download_file(key, filepath, retry_count - 1)
-        else:
-            raise err
+        raise err
 
 
 # need download equivalent.  can reduce code a lot.
 def upload_file(aws_path, filename):
     try:
-        logger.info('file ' + local_dir + aws_path + filename)
-
+        logger.info('file uploading ' + local_dir + aws_path + filename)
         s3_client.upload_file(local_dir + aws_path + filename, aws_bucket, aws_path + filename)
         return None
     except ClientError as e:

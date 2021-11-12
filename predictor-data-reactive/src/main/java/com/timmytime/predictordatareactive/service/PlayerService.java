@@ -19,4 +19,6 @@ public interface PlayerService {
 
     Flux<Player> findByCompetition(@PathVariable String competition, @RequestParam String date);
 
+    Flux<Player> findAll();
+
  }

@@ -75,6 +75,11 @@ public class PlayerServiceImpl implements PlayerService {
                 .filter(f -> f.getLastAppearance().isAfter(localDate));
     }
 
+    @Override
+    public Flux<Player> findAll() {
+        return playerRepo.findAll();
+    }
+
 
     private List<Mono<Player>> createLineup(List<JSONObject> lineup) {
 
@@ -122,11 +127,11 @@ public class PlayerServiceImpl implements PlayerService {
         return player;
     }
 
-   //TODO not important for now.  need a think about... @PostConstruct
+   @PostConstruct
     private void initDb(){
         playerRepo.findAll().count().filter(count -> count == 0).subscribe(
                 then -> Flux.fromStream(
-                        IntStream.range(0, 200000).boxed()
+                        IntStream.range(0, 10000).boxed()
                 ).subscribe(
                         index ->
                                 playerRepo.save(

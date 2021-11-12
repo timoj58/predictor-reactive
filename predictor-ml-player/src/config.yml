@@ -15,26 +15,7 @@ learning:
       steps: 1000
       hash_bins: 1000
       hidden_units: [10, 20, 10]
-      evaluate: False
-
-  saves:
-
-    default:
-      batch_size: 500
-      steps: 1000
-      hash_bins: 1000
-      hidden_units: [10, 20, 10]
-      evaluate: False
-
-  minutes:
-
-    default:
-      batch_size: 500
-      steps: 1000
-      hash_bins: 1000
-      hidden_units: [10, 20, 10]
-      evaluate: False
-
+      evaluate: True
 
   assists:
 
@@ -43,26 +24,7 @@ learning:
       steps: 1000
       hash_bins: 1000
       hidden_units: [10, 20, 10]
-      evaluate: False
-
-  conceded:
-
-    default:
-      batch_size: 500
-      steps: 1000
-      months_per_cycle: 12
-      hash_bins: 1000
-      hidden_units: [10, 20, 10]
-      evaluate: False
-
-  red:
-
-    default:
-      batch_size: 500
-      steps: 1000
-      hash_bins: 1000
-      hidden_units: [10, 20, 10]
-      evaluate: False
+      evaluate: True
 
   yellow:
 
@@ -71,7 +33,7 @@ learning:
       steps: 1000
       hash_bins: 1000
       hidden_units: [10, 20, 10]
-      evaluate: False
+      evaluate: True
 
 
 analysis:

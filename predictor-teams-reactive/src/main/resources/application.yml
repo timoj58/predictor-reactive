@@ -38,4 +38,4 @@ delays:
   training-init: 1
 
 training:
-  evaluation: false
+  evaluation: true

@@ -11,14 +11,14 @@ local_dir = get_dir_cfg()['local']
 
 
 def create(feature_columns, classes, model_dir, learning_cfg):
-    logger.info('model dir for classifier ' + local_dir + model_dir)
+    logger.info('model dir for classifier ' + model_dir)
 
-    indexes = get_indexes(local_dir + model_dir)
+    indexes = get_indexes(model_dir)
     for attribute, value in indexes.items():
         if value['active'] is True:
             get_aws_file(model_dir + '/', attribute)
 
-    indexes = get_indexes(local_dir + model_dir + '/eval')
+    indexes = get_indexes(model_dir + '/eval')
     for attribute, value in indexes.items():
         if value['active'] is True:
             get_aws_file(model_dir + '/eval/', attribute)

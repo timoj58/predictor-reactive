@@ -38,4 +38,12 @@ public class PlayerFunction {
                 , playerHandler::getTotalAppearances);
     }
 
+
+    @Bean
+    @RouterOperation(beanClass = PlayerService.class, beanMethod = "findAll")
+    RouterFunction<ServerResponse> allPlayers(PlayerHandler playerHandler) {
+        return route(RequestPredicates.GET("/players")
+                , playerHandler::getAllPlayers);
+    }
+
 }

@@ -19,6 +19,13 @@ public class PlayerHandler {
     private final PlayerService playerService;
     private final LineupPlayerService lineupPlayerService;
 
+    public Mono<ServerResponse> getAllPlayers(ServerRequest serverRequest) {
+
+        return ServerResponse.ok().body(
+                playerService.findAll(),
+                Player.class
+        );
+    }
     public Mono<ServerResponse> getByCompetition(ServerRequest serverRequest) {
 
         return ServerResponse.ok().body(

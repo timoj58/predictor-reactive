@@ -72,7 +72,7 @@ public class VocabService {
             //players (async fine)
             CompletableFuture.runAsync(() ->
                     webClientFacade.getFantasyPlayers(
-                            dataHost + "/players/fantasy"
+                            dataHost + "/players"
                     ).collectList()
                             .subscribe(players -> {
                                 StringBuilder playerVocab = new StringBuilder();

@@ -50,7 +50,6 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
 
     @Override
     public void load(CountryMatch match) {
-        log.info("loading match {} vs {}", match.getMatch().getHomeTeam(), match.getMatch().getAwayTeam());
         this.consumer.accept(match);
     }
 
