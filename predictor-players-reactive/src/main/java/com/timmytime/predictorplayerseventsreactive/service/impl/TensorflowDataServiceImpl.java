@@ -36,19 +36,13 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
 
 
     private void process(PlayerMatch playerMatch) {
-        playerMatchRepo.save(
-                playerMatch.toBuilder().id(UUID.randomUUID()).build()
-        );
+        playerMatchRepo.findByDateAndPlayerId(playerMatch.getDate(), playerMatch.getPlayerId())
+                .ifPresentOrElse(then -> {}, () -> playerMatchRepo.save(playerMatch.toBuilder().id(UUID.randomUUID()).build()));
     }
 
     @Override
     public void load(PlayerMatch match) {
         this.consumer.accept(match);
-    }
-
-    @Override
-    public void delete() {
-        playerMatchRepo.deleteAll();
     }
 
     @Override

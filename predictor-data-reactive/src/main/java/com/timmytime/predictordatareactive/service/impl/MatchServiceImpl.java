@@ -26,9 +26,8 @@ public class MatchServiceImpl implements MatchService {
 
 
     @Override
-    public Mono<Match> find(UUID uuid) {
-        //always return from cache.
-        return matchRepo.findById(uuid);
+    public Mono<Match> find(UUID id) {
+        return matchRepo.findById(id);
     }
 
     @Override

@@ -49,7 +49,7 @@ class TrainingServiceImplTest {
     public void loadAndTrainTest() throws InterruptedException {
 
         PlayersTrainingHistory playersTrainingHistory = new PlayersTrainingHistory(
-                FantasyEventTypes.MINUTES, LocalDateTime.now().minusYears(1), LocalDateTime.now().minusYears(1)
+                FantasyEventTypes.GOALS, LocalDateTime.now().minusYears(1), LocalDateTime.now().minusYears(1)
         );
 
         when(playersTrainingHistoryService.save(any())).thenReturn(Mono.just(playersTrainingHistory));

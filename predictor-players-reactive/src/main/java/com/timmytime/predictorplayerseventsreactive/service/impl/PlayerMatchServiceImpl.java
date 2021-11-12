@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -57,31 +58,45 @@ public class PlayerMatchServiceImpl implements PlayerMatchService {
             Consumer<PlayerMatch> consumer) {
 
         log.info("creating {}", player);
-
         getAppearances(player)
                 .limitRate(1)
-                .subscribe(appearance ->
-                        getMatch(appearance.getMatchId())
-                                .subscribe(match -> {
-                                            PlayerMatch playerMatch =
-                                                    PlayerMatch.builder()
-                                                            .date(match.getDate().toLocalDate())
-                                                            .playerId(player)
-                                                            .opponent(appearance.getTeamId().equals(match.getHomeTeam()) ? match.getAwayTeam() : match.getHomeTeam())
-                                                            .home(appearance.getTeamId().equals(match.getHomeTeam()) ? Boolean.TRUE : Boolean.FALSE)
-                                                            .minutes(appearance.getAppearance() < 0 ? 0 : appearance.getAppearance() > 90 ? 90 : appearance.getAppearance())
-                                                            .stats(new ArrayList<>())
-                                                            .conceded(appearance.getTeamId().equals(match.getHomeTeam()) ? match.getAwayScore() : match.getHomeScore())
-                                                            .build();
+                .subscribe(appearance -> processPlayerMatch(
+                        appearance, consumer
+                        )
+                );
+    }
 
-                                            getStats(match.getId(), player)
-                                                    .doOnNext(stat -> playerMatch.getStats().add(stat))
-                                                    .doFinally(save ->
-                                                            consumer.accept(playerMatch)
-                                                    )
-                                                    .subscribe();
-                                        }
-                                )
+    @Override
+    public void next(UUID player, LocalDate date, Consumer<PlayerMatch> consumer) {
+        getAppearances(player)
+                .filter(f -> f.getDate().toLocalDate().isAfter(date))
+                .limitRate(1)
+                .subscribe(appearance -> processPlayerMatch(
+                        appearance, consumer
+                ));
+
+    }
+
+    private void processPlayerMatch(LineupPlayer appearance, Consumer<PlayerMatch> consumer) {
+        getMatch(appearance.getMatchId())
+                .subscribe(match -> {
+                            PlayerMatch playerMatch =
+                                    PlayerMatch.builder()
+                                            .date(match.getDate().toLocalDate())
+                                            .playerId(appearance.getPlayer())
+                                            .opponent(appearance.getTeamId().equals(match.getHomeTeam()) ? match.getAwayTeam() : match.getHomeTeam())
+                                            .home(appearance.getTeamId().equals(match.getHomeTeam()) ? Boolean.TRUE : Boolean.FALSE)
+                                            .stats(new ArrayList<>())
+                                            .build();
+
+                            getStats(match.getId(), appearance.getPlayer())
+                                    .limitRate(1)
+                                    .doOnNext(stat -> playerMatch.getStats().add(stat))
+                                    .doFinally(save ->
+                                            consumer.accept(playerMatch)
+                                    )
+                                    .subscribe();
+                        }
                 );
     }
 

@@ -7,6 +7,7 @@ import com.timmytime.predictorplayerseventsreactive.model.StatMetric;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -18,4 +19,6 @@ public interface PlayerMatchService {
     Flux<StatMetric> getStats(UUID match, UUID player);
 
     void create(UUID player, Consumer<PlayerMatch> consumer);
+
+    void next(UUID player, LocalDate date, Consumer<PlayerMatch> consumer);
 }

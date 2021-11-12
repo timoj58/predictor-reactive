@@ -1,7 +1,7 @@
 import yaml
 
 with open("config.yml", 'r') as ymlfile:
-    cfg = yaml.load(ymlfile)
+    cfg = yaml.safe_load(ymlfile)
 
 
 def get_dir_cfg():

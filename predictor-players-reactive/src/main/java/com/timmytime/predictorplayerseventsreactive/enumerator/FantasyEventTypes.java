@@ -3,11 +3,9 @@ package com.timmytime.predictorplayerseventsreactive.enumerator;
 
 //TODO slimming this all down.. only goals, assists, yellows cards now.
 public enum FantasyEventTypes {
-    MINUTES(Boolean.FALSE, -1), //some data has incorrect range numbers...from scraper
     GOALS(Boolean.TRUE, 0),
     ASSISTS(Boolean.TRUE, 1),
     YELLOW_CARD(Boolean.TRUE, 2),
-    SAVES(Boolean.FALSE, 3),
     UNKNOWN(Boolean.FALSE, -1);
 
     /*

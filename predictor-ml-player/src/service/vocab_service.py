@@ -3,6 +3,7 @@ import os
 import os.path
 
 from service.config_service import get_dir_cfg
+from util.file_utils import get_aws_file
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +20,6 @@ def create_vocab(filename):
     head, tail = os.path.split(filename)
     logger.info('get from aws ' + tail)
     # need to load the file from aws potentially
-    # get_aws_file(vocab_path, tail)
+    get_aws_file(vocab_path, tail)
 
     return filename

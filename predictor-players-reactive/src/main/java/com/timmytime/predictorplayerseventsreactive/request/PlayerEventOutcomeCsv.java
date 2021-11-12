@@ -38,34 +38,19 @@ public class PlayerEventOutcomeCsv {
         this.opponent = playerMatch.getOpponent();
         this.home = playerMatch.getHome() ? "home" : "away";
 
-        playerMatch.getStats().forEach(stat -> setStats(stat));
+        playerMatch.getStats().forEach(this::setStats);
     }
 
     private void setStats(StatMetric stat) {
 
         switch (stat.getLabel()) {
-            case "Yellow Card":
+            case "yellows":
                 this.yellow += stat.getValue();
                 break;
-            case "goals":    //need to fix this.  double counting i think. due to old stats still present.
+            case "goals":
                 this.goals += stat.getValue();
                 break;
-            case "Goal":
-            case "Goal - Free-kick":
-            case "Goal - Header":
-            case "Penalty - Scored":
-                break;
-            case "Own Goal":
-                break;
-            case "totalShots":
-                break;
-            case "shotsOnTarget":
-                break;
-            case "foulsCommited":
-                break;
-            case "foulsSuffered":
-                break;
-            case "goalAssists":
+            case "assists":
                 this.assists += stat.getValue();
                 break;
             default:

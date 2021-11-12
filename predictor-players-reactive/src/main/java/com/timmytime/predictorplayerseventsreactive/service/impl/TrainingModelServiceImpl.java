@@ -4,13 +4,14 @@ import com.timmytime.predictorplayerseventsreactive.model.PlayersTrainingHistory
 import com.timmytime.predictorplayerseventsreactive.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.SignalType;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service("trainingModelService")
@@ -22,22 +23,15 @@ public class TrainingModelServiceImpl implements TrainingModelService {
     private final TrainingService trainingService;
     private final TensorflowDataService tensorflowDataService;
 
-    private final Integer playerDelay;
-    private final Boolean deleteMode;
-
 
     @Autowired
     public TrainingModelServiceImpl(
-            @Value("${training.player-delay}") Integer playerDelay,
-            @Value("${training.delete-mode}") Boolean deleteMode,
             PlayerService playerService,
             PlayersTrainingHistoryService playersTrainingHistoryService,
             PlayerMatchService playerMatchService,
             TrainingService trainingService,
             TensorflowDataService tensorflowDataService
     ) {
-        this.playerDelay = playerDelay;
-        this.deleteMode = deleteMode;
         this.playerService = playerService;
         this.playersTrainingHistoryService = playersTrainingHistoryService;
         this.playerMatchService = playerMatchService;
@@ -49,40 +43,36 @@ public class TrainingModelServiceImpl implements TrainingModelService {
     @Override
     public void create() {
 
-        var players = playerService.get();
-        log.info("processing {} players", players.size());
-        CompletableFuture.runAsync(() -> {
-            if (deleteMode  == Boolean.TRUE) {
-                tensorflowDataService.delete();
-            }
-        })
-                .thenRun(() ->
-                        Flux.fromStream(players.stream())
-                                .limitRate(1)
-                                .delayElements(Duration.ofMillis(playerDelay)) //maybe not needed.
-                                .doOnNext(player -> playerMatchService.create(
-                                        player.getId(),
-                                        tensorflowDataService::load))
-                                .doFinally(this::startTraining)
-                                .subscribe()
-                );
+        var players = playerService.get().stream()
+                .filter(f -> f.getLastAppearance().atStartOfDay().isAfter(LocalDateTime.now().minusYears(2)))
+                .collect(Collectors.toList());
+
+        log.info("processing {} players active in last two years", players.size());
+        Flux.fromStream(players.stream())
+                .limitRate(1)
+                .delayElements(Duration.ofSeconds(2))
+                .doOnNext(player -> playerMatchService.create(
+                        player.getId(),
+                        tensorflowDataService::load))
+                .doFinally(this::startTraining)
+                .subscribe();
     }
 
     @Override
     public void next(PlayersTrainingHistory playersTrainingHistory) {
-        var players = playerService.get();
+        var players = playerService.get().stream()
+                .filter(f -> f.getLastAppearance().atStartOfDay().isAfter(LocalDateTime.now().minusYears(2)))
+                .collect(Collectors.toList());
+
         log.info("processing {} players", players.size());
         CompletableFuture.runAsync(() ->
                 Flux.fromStream(players.stream())
                         .limitRate(1)
-                        .delayElements(Duration.ofMillis(playerDelay))
-                        .doOnNext(player -> playerMatchService.create(
+                        .delayElements(Duration.ofSeconds(2))
+                        .doOnNext(player -> playerMatchService.next(
                                 player.getId(),
-                                playerMatch -> {
-                                    if (playerMatch.getDate().atStartOfDay().isAfter(playersTrainingHistory.getFromDate())) {
-                                        tensorflowDataService.load(playerMatch);
-                                    }
-                                })
+                                playersTrainingHistory.getFromDate().toLocalDate(),
+                                tensorflowDataService::load)
                         )
                         .doFinally(this::startTraining)
                         .subscribe()

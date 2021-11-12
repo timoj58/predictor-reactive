@@ -24,7 +24,4 @@ public class PlayerMatch {
     private Boolean home;
     //and then we need the stats...
     private List<StatMetric> stats;
-    //duration and conceded also required
-    private Integer minutes;
-    private Integer conceded;
 }
