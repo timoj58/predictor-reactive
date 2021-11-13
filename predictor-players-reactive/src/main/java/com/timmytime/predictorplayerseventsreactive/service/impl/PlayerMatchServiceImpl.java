@@ -53,9 +53,7 @@ public class PlayerMatchServiceImpl implements PlayerMatchService {
     }
 
     @Override
-    public void create(
-            UUID player,
-            Consumer<PlayerMatch> consumer) {
+    public void create(UUID player, Consumer<PlayerMatch> consumer) {
 
         log.info("creating {}", player);
         getAppearances(player)

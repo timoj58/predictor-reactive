@@ -37,7 +37,8 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
 
     private void process(PlayerMatch playerMatch) {
         playerMatchRepo.findByDateAndPlayerId(playerMatch.getDate(), playerMatch.getPlayerId())
-                .ifPresentOrElse(then -> {}, () -> playerMatchRepo.save(playerMatch.toBuilder().id(UUID.randomUUID()).build()));
+                .ifPresentOrElse(then -> {
+                }, () -> playerMatchRepo.save(playerMatch.toBuilder().id(UUID.randomUUID()).build()));
     }
 
     @Override

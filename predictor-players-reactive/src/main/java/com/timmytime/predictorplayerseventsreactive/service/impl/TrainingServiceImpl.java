@@ -83,7 +83,7 @@ public class TrainingServiceImpl implements TrainingService {
                             train(next);
                             toTrain.remove(next);
                         } else {
-                            log.info("training is complete"); //we only train off-line not in realtime.
+                            log.info("training is complete"); //we only train off-line not in realtime.  TODO reviewing this
                         }
                     }
                 });

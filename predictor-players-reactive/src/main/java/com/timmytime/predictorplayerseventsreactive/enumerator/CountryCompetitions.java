@@ -3,7 +3,10 @@ package com.timmytime.predictorplayerseventsreactive.enumerator;
 import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Getter
 public enum CountryCompetitions {
@@ -27,5 +30,12 @@ public enum CountryCompetitions {
 
     CountryCompetitions(List<String> competitions) {
         this.competitions = competitions;
+    }
+
+    public static List<String> allCompetitions() {
+        return Stream.of(CountryCompetitions.values())
+                .map(CountryCompetitions::getCompetitions)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 }

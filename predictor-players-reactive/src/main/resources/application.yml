@@ -33,3 +33,4 @@ spring:
 training:
   interval: 1
   delay: 1
+  load: true
