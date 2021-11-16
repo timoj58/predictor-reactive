@@ -6,44 +6,42 @@ import com.timmytime.predictorteamsreactive.model.Match;
 import com.timmytime.predictorteamsreactive.model.TrainingHistory;
 import com.timmytime.predictorteamsreactive.service.TensorflowDataService;
 import com.timmytime.predictorteamsreactive.service.TensorflowTrainService;
+import com.timmytime.predictorteamsreactive.service.TrainingHistoryService;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 
 import java.time.LocalDateTime;
 
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-class TrainingServiceImplTest {
+class TrainingModelServiceImplTest {
 
     TensorflowDataService tensorflowDataService = mock(TensorflowDataService.class);
     TensorflowTrainService tensorflowTrainService = mock(TensorflowTrainService.class);
+    TrainingHistoryService trainingHistoryService = mock(TrainingHistoryService.class);
     WebClientFacade webClientFacade = mock(WebClientFacade.class);
 
-    private final TrainingServiceImpl trainingService
-            = new TrainingServiceImpl("data", 0, false,
-            tensorflowDataService, tensorflowTrainService, webClientFacade);
+    private final TrainingModelServiceImpl trainingModelService
+            = new TrainingModelServiceImpl("data", 0,
+            tensorflowDataService, tensorflowTrainService, trainingHistoryService, webClientFacade
+    );
 
     @Test
-    public void trainResults() {
+    public void create() {
+
+        when(trainingHistoryService.next(any(Training.class), anyString(), anyInt()))
+                .thenReturn(TrainingHistory.builder()
+                        .country("england")
+                        .fromDate(LocalDateTime.now())
+                        .toDate(LocalDateTime.now()).build());
 
         when(webClientFacade.getMatches(anyString()))
                 .thenReturn(Flux.just(Match.builder().build()));
 
-        trainingService.train((i) -> TrainingHistory.builder()
-                .type(Training.TRAIN_RESULTS)
-                .toDate(LocalDateTime.now())
-                .fromDate(LocalDateTime.now()).build());
+        trainingModelService.create();
 
         verify(tensorflowDataService, atLeastOnce()).load(any());
-        verify(tensorflowTrainService, atLeastOnce()).train(any());
-    }
-
-    @Test
-    public void trainGoals() {
-        trainingService.train((i) -> TrainingHistory.builder()
-                .type(Training.TRAIN_GOALS).build());
-
-        verify(webClientFacade, never()).getMatches(anyString());
         verify(tensorflowTrainService, atLeastOnce()).train(any());
     }
 }

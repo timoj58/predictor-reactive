@@ -54,7 +54,7 @@ public class TrainingModelServiceImpl implements TrainingModelService {
         if (load) {
             getPlayers(f -> f.getLastAppearance().atStartOfDay().isAfter(LocalDateTime.now().minusYears(2)))
                     .limitRate(1)
-                    .delayElements(Duration.ofSeconds(2))
+                    .delayElements(Duration.ofSeconds(3))
                     .doOnNext(player -> playerMatchService.create(
                             player.getId(),
                             tensorflowDataService::load))

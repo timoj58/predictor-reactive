@@ -72,10 +72,10 @@ public class TrainingServiceImpl implements TrainingService {
         playersTrainingHistory.setCompleted(Boolean.TRUE);
         playersTrainingHistoryService.save(playersTrainingHistory)
                 .subscribe(history -> {
-                    if (playersTrainingHistory.getToDate().isBefore(LocalDate.now().atStartOfDay())) {
+                    if (history.getToDate().isBefore(LocalDate.now().atStartOfDay())) {
                         train(history.getType());
                     } else {
-                        log.info("training is complete for {}", playersTrainingHistory.getType());
+                        log.info("training is complete for {}", history.getType());
                         //need to start the next item available in list...
                         if (!toTrain.isEmpty()) {
                             FantasyEventTypes next = toTrain.stream().findFirst().get();

@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -31,14 +32,16 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
         this.playerMatchRepo = playerMatchRepo;
 
         Flux<PlayerMatch> receiver = Flux.push(sink -> consumer = sink::next, FluxSink.OverflowStrategy.BUFFER);
-        receiver.limitRate(1).subscribe(this::process);
+        receiver.limitRate(20).subscribe(this::process);
     }
 
 
     private void process(PlayerMatch playerMatch) {
+        //hack due to messing about with data.  need to add compound index..
+        CompletableFuture.runAsync(() ->
         playerMatchRepo.findByDateAndPlayerId(playerMatch.getDate(), playerMatch.getPlayerId())
                 .ifPresentOrElse(then -> {
-                }, () -> playerMatchRepo.save(playerMatch.toBuilder().id(UUID.randomUUID()).build()));
+                }, () -> playerMatchRepo.save(playerMatch.toBuilder().id(UUID.randomUUID()).build())));
     }
 
     @Override

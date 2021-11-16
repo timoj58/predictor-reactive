@@ -8,102 +8,79 @@ import com.timmytime.predictorteamsreactive.service.TensorflowDataService;
 import com.timmytime.predictorteamsreactive.service.TrainingHistoryService;
 import com.timmytime.predictorteamsreactive.service.TrainingModelService;
 import com.timmytime.predictorteamsreactive.service.TrainingService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.mockito.Mockito.*;
 
-@Disabled
 class MessageReceivedServiceImplTest {
 
-    private final TrainingHistoryService trainingHistoryService = mock(TrainingHistoryService.class);
-    private final WebClientFacade webClientFacade = mock(WebClientFacade.class);
-    private final TrainingService trainingService = mock(TrainingService.class);
+    TrainingHistoryService trainingHistoryService = mock(TrainingHistoryService.class);
+    TrainingModelService trainingModelService = mock(TrainingModelService.class);
+    TrainingService trainingService = mock(TrainingService.class);
+    TensorflowDataService tensorflowDataService = mock(TensorflowDataService.class);
+    WebClientFacade webClientFacade = mock(WebClientFacade.class);
 
     private final MessageReceivedServiceImpl messageReceivedService
-            = new MessageReceivedServiceImpl(
-            "dummy",
-            "dummy",
-            true,
-            trainingHistoryService,
-            mock(TrainingModelService.class),
-            trainingService,
-            mock(TensorflowDataService.class),
-            webClientFacade);
+            = new MessageReceivedServiceImpl("events", "players", false,
+            trainingHistoryService, trainingModelService, trainingService, tensorflowDataService, webClientFacade);
 
     @Test
-    public void messageNotProcessedTest() throws InterruptedException {
+    void receiveNotStart() {
+        messageReceivedService.receive(Mono.just(Message.builder()
+                .competition("england_1")
+                .country("england").build())).subscribe();
 
-        Message message = new Message();
-        message.setCountry("england");
-        message.setCompetition("england_1");
-
-        messageReceivedService.receive(
-                Mono.just(message)
-        ).subscribe();
-
-        Thread.sleep(1000L);
-
+        verify(webClientFacade, never()).sendMessage(anyString(), any());
+        verify(tensorflowDataService, never()).loadOutstanding(anyString(), any());
     }
 
 
     @Test
-    public void messageProcessedTest() throws InterruptedException {
+    void receiveStart() {
+        messageReceivedService.receive(Mono.just(Message.builder()
+                .competition("greece_1")
+                .country("greece").build())).subscribe();
 
-        Message message = new Message();
-        message.setCountry("italy");
-        message.setCompetition("italy_1");
+        verify(webClientFacade, atLeastOnce()).sendMessage(anyString(), any());
+        verify(tensorflowDataService, atLeastOnce()).loadOutstanding(anyString(), any());
+    }
 
-        Message message2 = new Message();
-        message2.setCountry("italy");
-        message2.setCompetition("italy_2");
 
-        messageReceivedService.receive(
-                Mono.just(message)
-        ).subscribe();
-
-        messageReceivedService.receive(
-                Mono.just(message2)
-        ).subscribe();
-
-        Thread.sleep(1000L);
-
-        verify(trainingHistoryService, atLeastOnce()).find(any(), any());
+    @Test
+    void create() {
+        messageReceivedService.createTrainingModels();
+        verify(trainingModelService, atLeastOnce()).create();
     }
 
     @Test
-    public void trainingFinishedTest() throws InterruptedException {
+    void trainingNext() {
+        var id = UUID.randomUUID();
+        when(trainingHistoryService.find(id)).thenReturn(TrainingHistory.builder()
+                .toDate(LocalDateTime.now().plusDays(1))
+                .type(Training.TRAIN_RESULTS).build());
 
-        TrainingHistory trainingHistory = new TrainingHistory();
-        trainingHistory.setCountry("england");
-        trainingHistory.setType(Training.TRAIN_GOALS);
-
-        when(trainingHistoryService.find(any(UUID.class))).thenReturn(trainingHistory);
-        //when(trainingService.train(any(), any())).thenReturn(Boolean.FALSE);
-
-        messageReceivedService.training(UUID.randomUUID()).subscribe();
-
-        Thread.sleep(1000L);
-
-        verify(webClientFacade, atLeastOnce()).sendMessage(any(), any());
-
+        messageReceivedService.training(id).subscribe();
+        verify(trainingService, atLeastOnce()).train(any());
     }
 
     @Test
-    public void trainingNotFinishedTest() throws InterruptedException {
+    void trainingComplete() {
+        var id = UUID.randomUUID();
+        when(trainingHistoryService.find(id)).thenReturn(TrainingHistory.builder()
+                .toDate(LocalDateTime.now().plusDays(1))
+                .country("country")
+                .type(Training.TRAIN_GOALS).build());
 
-        when(trainingHistoryService.find(any(UUID.class))).thenReturn(new TrainingHistory());
-        //when(trainingService.train(any(), any())).thenReturn(Boolean.TRUE);
+        messageReceivedService.training(id).subscribe();
 
-        messageReceivedService.training(UUID.randomUUID()).subscribe();
-
-        Thread.sleep(1000L);
-
-        verify(webClientFacade, never()).sendMessage(any(), any());
-
+        verify(trainingService, never()).train(any());
+        verify(tensorflowDataService, atLeastOnce()).clear("country");
+        verify(webClientFacade, atLeastOnce()).sendMessage(anyString(), any());
     }
+
 
 }

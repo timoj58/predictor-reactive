@@ -1,22 +1,15 @@
 package com.timmytime.predictorteamsreactive.model;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CountryMatch {
 
     private String country;
     private Match match;
 
-    public CountryMatch(
-            String country,
-            Match match
-    ) {
-        this.country = country;
-        this.match = match;
-    }
 }

@@ -3,6 +3,7 @@ package com.timmytime.predictorteamsreactive.facade;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.timmytime.predictorteamsreactive.model.EventOutcome;
 import com.timmytime.predictorteamsreactive.model.Match;
+import com.timmytime.predictorteamsreactive.model.Team;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -61,5 +62,13 @@ public class WebClientFacade {
                 .uri(url)
                 .exchange()
                 .subscribe();
+    }
+
+    public Flux<Team> getTeams(String url){
+        return WebClient.builder().build()
+                .get()
+                .uri(url)
+                .retrieve()
+                .bodyToFlux(Team.class);
     }
 }

@@ -1,64 +1,49 @@
 package com.timmytime.predictorscraperreactive.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.timmytime.predictorscraperreactive.configuration.ResultsConfiguration;
+import com.timmytime.predictorscraperreactive.enumerator.CompetitionFixtureCodes;
 import com.timmytime.predictorscraperreactive.factory.ScraperFactory;
-import com.timmytime.predictorscraperreactive.model.Result;
-import com.timmytime.predictorscraperreactive.model.ScraperHistory;
-import com.timmytime.predictorscraperreactive.model.ScraperModel;
 import com.timmytime.predictorscraperreactive.scraper.ResultScraper;
-import com.timmytime.predictorscraperreactive.service.MessageService;
-import org.junit.jupiter.api.BeforeAll;
+import com.timmytime.predictorscraperreactive.service.PageService;
+import com.timmytime.predictorscraperreactive.service.ScraperTrackerService;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class CompetitionScraperServiceImplTest {
 
- /*   private static final ScraperFactory scraperFactory = mock(ScraperFactory.class);
-    private final MessageService messageService = mock(MessageService.class);
-    private final CompetitionScraperServiceImpl
-            competitionScraperService = new CompetitionScraperServiceImpl(
-            scraperFactory,
-            messageService,
-            null,
-            null
+    private final ScraperFactory scraperFactory = mock(ScraperFactory.class);
+    private final PageService pageService = mock(PageService.class);
+    private final ResultsConfiguration resultsConfiguration = mock(ResultsConfiguration.class);
+
+    private final CompetitionScraperServiceImpl competitionScraperService
+            = new CompetitionScraperServiceImpl(
+            scraperFactory, pageService, resultsConfiguration
     );
 
-    @BeforeAll
-    public static void setUp() throws JsonProcessingException {
-
+    @Test
+    void scrape() {
         ResultScraper resultScraper = mock(ResultScraper.class);
+        when(scraperFactory.getResultScraper()).thenReturn(resultScraper);
+        when(resultsConfiguration.getUrls())
+                .thenReturn(Arrays.asList(
+                        Pair.of(CompetitionFixtureCodes.ITALY_1, "")
+                ));
+        competitionScraperService.scrape(LocalDateTime.now());
 
-        when(resultScraper.scrape(any(), any()))
-                .thenReturn(Arrays.asList(new Result()));
-
-
-        when(scraperFactory.getResultScraper())
-                .thenReturn(resultScraper);
-
+        verify(resultScraper, atLeastOnce()).createRequest(any(), any());
     }
 
     @Test
-    public void competitionTest() throws InterruptedException {
-
-
-        ScraperHistory scraperHistory = new ScraperHistory();
-        scraperHistory.setDate(LocalDateTime.now());
-        scraperHistory.setDaysScraped(1);
-
-
-        competitionScraperService.scrape(null);
-
-        Thread.sleep(1000L);
-
-        verify(messageService, atLeastOnce()).send(any(ScraperModel.class));
-
+    void setResultsInQueue() {
+        ScraperTrackerService scraperTrackerService = mock(ScraperTrackerService.class);
+        when(scraperFactory.getScraperTrackerService()).thenReturn(scraperTrackerService);
+        competitionScraperService.setResultsInQueue(1);
+        verify(scraperTrackerService, atLeastOnce()).addResultsInQueue(CompetitionFixtureCodes.ENGLAND_1, 1);
     }
-    */
-
 
 }
