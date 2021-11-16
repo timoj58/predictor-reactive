@@ -2,8 +2,10 @@ package com.timmytime.predictorplayerseventsreactive.service.impl;
 
 import com.timmytime.predictorplayerseventsreactive.enumerator.FantasyEventTypes;
 import com.timmytime.predictorplayerseventsreactive.model.PlayersTrainingHistory;
-import com.timmytime.predictorplayerseventsreactive.service.*;
-import org.junit.jupiter.api.Disabled;
+import com.timmytime.predictorplayerseventsreactive.service.PlayerMatchService;
+import com.timmytime.predictorplayerseventsreactive.service.PlayersTrainingHistoryService;
+import com.timmytime.predictorplayerseventsreactive.service.TensorflowTrainingService;
+import com.timmytime.predictorplayerseventsreactive.service.TrainingService;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
@@ -12,52 +14,74 @@ import java.time.LocalDateTime;
 import static org.mockito.Mockito.*;
 
 
-@Disabled
 class TrainingServiceImplTest {
 
-    PlayersTrainingHistoryService playersTrainingHistoryService = mock(PlayersTrainingHistoryService.class);
-    TensorflowTrainingService tensorflowTrainingService = mock(TensorflowTrainingService.class);
-    PlayerMatchService playerMatchService = mock(PlayerMatchService.class);
-
-    private TrainingServiceImpl trainingService
+    private final  PlayersTrainingHistoryService playersTrainingHistoryService = mock(PlayersTrainingHistoryService.class);
+    private final TensorflowTrainingService tensorflowTrainingService = mock(TensorflowTrainingService.class);
+    private final TrainingService trainingService
             = new TrainingServiceImpl(
             0,
             playersTrainingHistoryService,
             tensorflowTrainingService);
 
     @Test
-    public void justTrainTest() {
-        PlayersTrainingHistory playersTrainingHistory = new PlayersTrainingHistory(
-                FantasyEventTypes.ASSISTS, LocalDateTime.now().minusYears(1), LocalDateTime.now().minusYears(1)
-        );
-        when(playersTrainingHistoryService.save(any())).thenReturn(Mono.just(playersTrainingHistory));
-        when(playersTrainingHistoryService.find(any(FantasyEventTypes.class))).thenReturn(Mono.just(playersTrainingHistory));
+    void trainEvent(){
+        var history =  PlayersTrainingHistory.builder()
+                .fromDate(LocalDateTime.now())
+                .toDate(LocalDateTime.now()).build();
+        when(playersTrainingHistoryService.find(any(FantasyEventTypes.class)))
+                .thenReturn(Mono.just(history));
+        when(playersTrainingHistoryService.save(any(PlayersTrainingHistory.class)))
+                .thenReturn(Mono.just(history));
+        trainingService.train(FantasyEventTypes.GOALS);
 
-
-        trainingService.train(playersTrainingHistory);
-
-        verify(playerMatchService, never()).create(any(), any());
         verify(tensorflowTrainingService, atLeastOnce()).train(any());
-
     }
 
     @Test
-    public void loadAndTrainTest() throws InterruptedException {
+    void trainHistory(){
+        var history =  PlayersTrainingHistory.builder()
+                .type(FantasyEventTypes.GOALS)
+                .fromDate(LocalDateTime.now())
+                .toDate(LocalDateTime.now()).build();
 
-        PlayersTrainingHistory playersTrainingHistory = new PlayersTrainingHistory(
-                FantasyEventTypes.GOALS, LocalDateTime.now().minusYears(1), LocalDateTime.now().minusYears(1)
-        );
+        when(playersTrainingHistoryService.find(any(FantasyEventTypes.class)))
+                .thenReturn(Mono.just(history));
+        when(playersTrainingHistoryService.save(any(PlayersTrainingHistory.class)))
+                .thenReturn(Mono.just(history));
 
-        when(playersTrainingHistoryService.save(any())).thenReturn(Mono.just(playersTrainingHistory));
-        when(playersTrainingHistoryService.find(any(FantasyEventTypes.class))).thenReturn(Mono.just(playersTrainingHistory));
+        trainingService.train(history);
 
-        trainingService.train(playersTrainingHistory);
-
-        Thread.sleep(1000L);
-
-        verify(playerMatchService, atLeastOnce()).create(any(), any());
         verify(tensorflowTrainingService, atLeastOnce()).train(any());
+    }
 
+    @Test
+    void trainHistoryStop(){
+        var history =  PlayersTrainingHistory.builder()
+                .type(FantasyEventTypes.GOALS)
+                .fromDate(LocalDateTime.now().plusDays(1))
+                .toDate(LocalDateTime.now().plusDays(1)).build();
+
+        when(playersTrainingHistoryService.find(any(FantasyEventTypes.class)))
+                .thenReturn(Mono.just(history));
+        when(playersTrainingHistoryService.save(any(PlayersTrainingHistory.class)))
+                .thenReturn(Mono.just(history));
+
+        trainingService.train(history);
+        history =  PlayersTrainingHistory.builder()
+                .type(FantasyEventTypes.ASSISTS)
+                .fromDate(LocalDateTime.now().plusDays(1))
+                .toDate(LocalDateTime.now().plusDays(1)).build();
+        trainingService.train(history);
+
+        history =  PlayersTrainingHistory.builder()
+                .type(FantasyEventTypes.YELLOW_CARD)
+                .fromDate(LocalDateTime.now().plusDays(1))
+                .toDate(LocalDateTime.now().plusDays(1)).build();
+        trainingService.train(history);
+
+
+        verify(tensorflowTrainingService, atMost(2)).train(any());
     }
 
 }

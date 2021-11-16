@@ -1,58 +1,74 @@
 package com.timmytime.predictorplayerseventsreactive.service.impl;
 
+import com.timmytime.predictorplayerseventsreactive.enumerator.CountryCompetitions;
+import com.timmytime.predictorplayerseventsreactive.enumerator.FantasyEventTypes;
+import com.timmytime.predictorplayerseventsreactive.model.PlayersTrainingHistory;
 import com.timmytime.predictorplayerseventsreactive.request.Message;
+import com.timmytime.predictorplayerseventsreactive.service.MessageReceivedService;
 import com.timmytime.predictorplayerseventsreactive.service.PlayersTrainingHistoryService;
+import com.timmytime.predictorplayerseventsreactive.service.TrainingModelService;
 import com.timmytime.predictorplayerseventsreactive.service.TrainingService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Mono;
 
-@Disabled
+import java.util.UUID;
+import java.util.stream.Stream;
+
+import static org.mockito.Mockito.*;
+
+
 class MessageReceivedServiceImplTest {
 
-    @Mock
-    private TrainingService trainingService;
+    private final TrainingService trainingService = mock(TrainingService.class);
+    private final TrainingModelService trainingModelService = mock(TrainingModelService.class);
+    private final PlayersTrainingHistoryService playersTrainingHistoryService = mock(PlayersTrainingHistoryService.class);
 
-    @Mock
-    private PlayersTrainingHistoryService playersTrainingHistoryService;
-
-    @InjectMocks
-    private MessageReceivedServiceImpl messageReceivedService;
-
-    @BeforeEach
-    public void init() {
-        MockitoAnnotations.initMocks(this);
-    }
-
+    private final MessageReceivedService messageReceivedService
+            = new MessageReceivedServiceImpl(
+            trainingService, trainingModelService, playersTrainingHistoryService
+    );
 
     @Test
-    public void messageProcessTest() {
+    void receive() {
 
-        Message message = new Message();
-        message.setCountry("portugal");
-        messageReceivedService.receive(Mono.just(message)).subscribe();
+        when(playersTrainingHistoryService.find(any(FantasyEventTypes.class)))
+                .thenReturn(Mono.just(
+                        PlayersTrainingHistory.builder().build()
+                ));
 
-        Message message2 = new Message();
-        message2.setCountry("portugal");
-        messageReceivedService.receive(Mono.just(message2)).subscribe();
+        when(trainingService.firstTrainingEvent()).thenReturn(FantasyEventTypes.GOALS);
 
-        //    verify(predictionService, atLeastOnce()).start(any());
+        Stream.of(CountryCompetitions.values())
+                .forEach(c ->
+                        c.getCompetitions().forEach(comp ->
+
+                                messageReceivedService.receive(Mono.just(
+                                        Message.builder()
+                                                .country(c.name().toLowerCase())
+                                                .competition(comp)
+                                                .build()
+                                )).subscribe()));
+
+        verify(trainingModelService, atLeastOnce()).next(any());
     }
 
+    @Test
+    void training() {
+        var id = UUID.randomUUID();
+        when(playersTrainingHistoryService.find(id)).thenReturn(
+                Mono.just(PlayersTrainingHistory.builder().build())
+        );
+
+        messageReceivedService.training(id).subscribe();
+
+        verify(trainingService, atLeastOnce()).train(any(PlayersTrainingHistory.class));
+    }
 
     @Test
-    public void messageNoProcessTest() {
-
-        Message message = new Message();
-        message.setCountry("portugal");
-        messageReceivedService.receive(Mono.just(message)).subscribe();
-
-        //     verify(predictionService, never()).start(any());
-
+    void createTrainingModel() throws InterruptedException {
+        messageReceivedService.createTrainingModel().subscribe();
+        Thread.sleep(100);
+        verify(trainingModelService, atLeastOnce()).create();
     }
 
 }

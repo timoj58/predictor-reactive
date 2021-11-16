@@ -20,6 +20,7 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+//me testing webflux tests not much use but can leave as example.
 @ExtendWith(SpringExtension.class)
 @WebFluxTest(DataFunction.class)
 @ContextConfiguration(classes = {DataFunction.class, DataHandler.class})
@@ -66,7 +67,6 @@ class DataFunctionTest {
                 .expectStatus().isOk()
                 .expectBodyList(PlayerEventOutcomeCsv.class)
                 .value(l -> assertTrue(l.isEmpty()));
-
 
     }
 
