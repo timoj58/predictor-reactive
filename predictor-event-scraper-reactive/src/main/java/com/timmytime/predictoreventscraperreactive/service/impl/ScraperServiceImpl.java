@@ -20,12 +20,9 @@ public class ScraperServiceImpl implements ScraperService {
     @Override
     public Mono<Void> scrape() {
         log.info("scraping...");
-
-        Mono.just(espnService)
-        .subscribe(BookmakerService::scrape);
+        Mono.just(espnService).subscribe(BookmakerService::scrape);
 
         return Mono.empty();
-
     }
 
 }
