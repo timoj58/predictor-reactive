@@ -36,5 +36,5 @@ training:
   delay: 1
   create-delay: 3
   update-delay: 500
-  load: true
+  load: false
   cutoff:

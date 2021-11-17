@@ -5,6 +5,7 @@ import com.timmytime.predictoreventsreactive.facade.WebClientFacade;
 import com.timmytime.predictoreventsreactive.model.EventOutcome;
 import com.timmytime.predictoreventsreactive.model.Match;
 import com.timmytime.predictoreventsreactive.service.EventOutcomeService;
+import com.timmytime.predictoreventsreactive.service.ValidationService;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -25,7 +26,7 @@ class ValidationServiceImplTest {
     private final EventOutcomeService eventOutcomeService = mock(EventOutcomeService.class);
     private final WebClientFacade webClientFacade = mock(WebClientFacade.class);
 
-    private final ValidationServiceImpl validationService
+    private final ValidationService validationService
             = new ValidationServiceImpl("", eventOutcomeService, webClientFacade);
 
     @Test

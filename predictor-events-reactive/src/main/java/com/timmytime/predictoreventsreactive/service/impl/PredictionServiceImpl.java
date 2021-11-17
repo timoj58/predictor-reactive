@@ -11,6 +11,8 @@ import com.timmytime.predictoreventsreactive.service.PredictionService;
 import com.timmytime.predictoreventsreactive.service.TensorflowPredictionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -20,7 +22,6 @@ import static java.time.Duration.ofMinutes;
 import static reactor.core.publisher.Flux.fromArray;
 import static reactor.core.publisher.Flux.fromStream;
 
-@RequiredArgsConstructor
 @Slf4j
 @Service("predictionService")
 public class PredictionServiceImpl implements PredictionService {
@@ -30,13 +31,29 @@ public class PredictionServiceImpl implements PredictionService {
     private final TensorflowPredictionService tensorflowPredictionService;
     private final EventOutcomeService eventOutcomeService;
 
+    private final Integer delay;
+
+    @Autowired
+    public PredictionServiceImpl(
+            @Value("${delays.competition}") Integer delay,
+            EventService eventService,
+            TensorflowPredictionService tensorflowPredictionService,
+            EventOutcomeService eventOutcomeService
+    ){
+        this.delay = delay;
+        this.eventService = eventService;
+        this.tensorflowPredictionService = tensorflowPredictionService;
+        this.eventOutcomeService = eventOutcomeService;
+
+    }
+
     @Override
     public void start(String country) {
         log.info("starting predictions for {}", country);
         fromStream(
                 CountryCompetitions.valueOf(country).getCompetitions().stream()
         )
-                .delayElements(ofMinutes(1))
+                .delayElements(ofMinutes(delay))
                 .subscribe(competition ->
                         eventService.getEvents(competition)
                                 .subscribe(event ->

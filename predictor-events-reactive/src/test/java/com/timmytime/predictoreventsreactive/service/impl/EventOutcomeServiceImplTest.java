@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -75,9 +76,8 @@ class EventOutcomeServiceImplTest {
     @Test
     public void limitTest() {
 
-        eventOutcomeService.previousEventsByTeam(UUID.randomUUID()).subscribe(
-                s -> System.out.println(s.getDate())
-        );
+        assertTrue(eventOutcomeService.previousEventsByTeam(UUID.randomUUID()).collectList()
+                .block().size() == 6);
     }
 
 }

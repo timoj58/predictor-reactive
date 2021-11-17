@@ -2,6 +2,7 @@ package com.timmytime.predictoreventsreactive.facade;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.timmytime.predictoreventsreactive.model.Event;
 import com.timmytime.predictoreventsreactive.model.Match;
 import com.timmytime.predictoreventsreactive.request.Prediction;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -47,4 +49,14 @@ public class WebClientFacade {
                 .bodyToMono(Match.class);
 
     }
+
+    public Flux<Event> getEvents(String url){
+        return WebClient.builder().build()
+                .get()
+                .uri(url)
+                .retrieve()
+                .bodyToFlux(Event .class);
+
+    }
+
 }

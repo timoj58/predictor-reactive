@@ -19,28 +19,23 @@ import java.util.stream.Collectors;
 public class PredictionResultServiceImpl implements PredictionResultService {
 
     private final EventOutcomeService eventOutcomeService;
-    private final Integer competitionDelay;
 
     @Autowired
     public PredictionResultServiceImpl(
-            @Value("${delays.competition}") Integer competitionDelay,
             EventOutcomeService eventOutcomeService
     ) {
-        this.competitionDelay = competitionDelay;
         this.eventOutcomeService = eventOutcomeService;
     }
 
     @Override
-    public void result(UUID id, JSONObject result, Consumer<UUID> fix) {
+    public void result(UUID id, JSONObject result) {
         log.info("received a result {}", id.toString());
         CompletableFuture.runAsync(() ->
-                //need to sort out the fix stuff.  to do.  on end of stream i guess. makes more sense...
                 eventOutcomeService.find(id)
                         .subscribe(eventOutcome -> {
                             eventOutcome.setPrediction(normalize(result).toString());
                             log.info("saving {}", eventOutcome.getId());
                             eventOutcomeService.save(eventOutcome).subscribe();
-
                         })
         );
     }

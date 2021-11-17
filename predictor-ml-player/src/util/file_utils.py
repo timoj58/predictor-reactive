@@ -87,17 +87,18 @@ def get_aws_file(path, filename):
 
 def put_aws_files_from_dir(path):
     logger.info('getting indexes for ' + local_dir + path)
-    indexes = get_indexes(local_dir + path)
+    indexes = read_index(local_dir + path)
     for attribute, value in indexes.items():
         if value['active'] == True:
             put_aws_file_with_path(path, attribute)
+    # finally save the index file
+    if os.path.isfile(local_dir + path + 'index.json'):
+        put_aws_file_with_path(path, 'index.json')
 
 
 def put_aws_file_with_path(aws_path, filename):
     if aws:
-        head, tail = os.path.split(filename)
-        logger.info('putting file to aws - ' + aws_url + aws_path + tail)
-        download_file(aws_path, filename)
+        upload_file(aws_path, filename)
 
 
 def is_on_file(filename):

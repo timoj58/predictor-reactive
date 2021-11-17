@@ -32,10 +32,12 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     private final PredictionMonitorService predictionMonitorService;
 
     private final String playersHost;
+    private final Integer delay;
 
     @Autowired
     public MessageReceivedServiceImpl(
             @Value("${clients.players}") String playersHost,
+            @Value("${delays.competition}") Integer delay,
             PredictionService predictionService,
             PredictionResultService predictionResultService,
             PredictionMonitorService predictionMonitorService,
@@ -43,6 +45,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
             WebClientFacade webClientFacade
     ) {
         this.playersHost = playersHost;
+        this.delay = delay;
         this.predictionService = predictionService;
         this.predictionResultService = predictionResultService;
         this.predictionMonitorService = predictionMonitorService;
@@ -72,7 +75,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                                     predictionService.start(country);
                                 }).thenRun(() ->
                                         Mono.just(country.toUpperCase())
-                                                .delayElement(Duration.ofMinutes(1))
+                                                .delayElement(Duration.ofMinutes(delay))
                                                 .subscribe(v -> predictionMonitorService.addCountry(CountryCompetitions.valueOf(v))))
                         );
 
@@ -86,7 +89,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     @Override
     public Mono<Void> prediction(UUID id, Mono<JsonNode> prediction) {
         return prediction.doOnNext(
-                msg -> predictionResultService.result(id, new JSONObject(msg.toString()), c -> predictionService.reProcess())
+                msg -> predictionResultService.result(id, new JSONObject(msg.toString()))
         ).thenEmpty(Mono.empty());
     }
 

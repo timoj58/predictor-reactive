@@ -1,10 +1,7 @@
 package com.timmytime.predictoreventsreactive.request;
 
 import com.timmytime.predictoreventsreactive.model.EventOutcome;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -12,6 +9,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Prediction {
     private UUID id;
     private UUID home;
