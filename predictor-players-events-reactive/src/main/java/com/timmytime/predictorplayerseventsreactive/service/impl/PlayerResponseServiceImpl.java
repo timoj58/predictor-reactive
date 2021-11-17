@@ -105,9 +105,7 @@ public class PlayerResponseServiceImpl implements PlayerResponseService {
                     //need to sort these out at some point.  needs util to do it.
                     playerResponse.setGoals(getTotals.apply(playerMatches, FantasyEventTypes.GOALS));
                     playerResponse.setAssists(getTotals.apply(playerMatches, FantasyEventTypes.ASSISTS));
-                    playerResponse.setRedCards(getTotals.apply(playerMatches, FantasyEventTypes.RED_CARD));
                     playerResponse.setYellowCards(getTotals.apply(playerMatches, FantasyEventTypes.YELLOW_CARD));
-                    playerResponse.setSaves(getTotals.apply(playerMatches, FantasyEventTypes.SAVES));
 
                     if (!playerResponse.getFantasyOutcomes().isEmpty()) {
 

@@ -25,14 +25,7 @@ public class FantasyResponseTransformer {
 
     public BiFunction<List<FantasyOutcome>, FantasyEventTypes, Double> total = (outcomes, event) -> {
         JSONObject result = new JSONObject().put("accumulator", 0.0);
-        switch (event) {
-            case SAVES:
-            case MINUTES:
-                outcomes.forEach(f -> result.put("accumulator", result.getDouble("accumulator") + getAverage(f.getPrediction())));
-                break;
-            default:
-                outcomes.forEach(f -> result.put("accumulator", result.getDouble("accumulator") + getScores(f.getPrediction()).values().stream().mapToDouble(m -> m).sum()));
-        }
+        outcomes.forEach(f -> result.put("accumulator", result.getDouble("accumulator") + getScores(f.getPrediction()).values().stream().mapToDouble(m -> m).sum()));
 
         return result.getDouble("accumulator");
     };
@@ -69,20 +62,6 @@ public class FantasyResponseTransformer {
         return fantasyResponse;
     };
 
-    private Double getAverage(String prediction) {
-        JSONArray results = legacyIssue(prediction);
-
-        //weight the total and dont ceil it....for fuck sake,  no wonder! its 50/50 now. well it was...now its really accurate.
-        Double weightedGoals = 0.0;
-        for (int i = 0; i < results.length(); i++) {
-            if (results.getJSONObject(i).getDouble("score") > 0.0) {
-                weightedGoals += (results.getJSONObject(i).getDouble("key") * (results.getJSONObject(i).getDouble("score") / 100));
-            }
-        }
-
-        return weightedGoals;
-
-    }
 
     private Map<Integer, Double> getScores(String prediction) {
 

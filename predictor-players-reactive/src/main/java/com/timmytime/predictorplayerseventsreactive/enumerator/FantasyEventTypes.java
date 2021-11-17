@@ -8,14 +8,6 @@ public enum FantasyEventTypes {
     YELLOW_CARD(Boolean.TRUE, 2),
     UNKNOWN(Boolean.FALSE, -1);
 
-    /*
-      reviewed ESPN its possible to get ASSISTS and PEN's
-
-      need to fix all the data retrospectively for this now...hmmm.
-
-      leave it for the top 5 leagues only -> and only for these stats.
-
-     */
 
     private final Boolean predict;
     private final Integer order;
@@ -29,9 +21,6 @@ public enum FantasyEventTypes {
         return predict;
     }
 
-    public Integer getOrder() {
-        return order;
-    }
 
 
 }
