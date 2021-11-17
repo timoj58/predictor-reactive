@@ -28,11 +28,15 @@ public class TrainingModelServiceImpl implements TrainingModelService {
 
     private final String dataHost;
     private final Boolean load;
+    private final Integer createDelay;
+    private final Integer updateDelay;
 
     @Autowired
     public TrainingModelServiceImpl(
             @Value("${clients.data}") String dataHost,
             @Value("${training.load}") Boolean load,
+            @Value("${training.create-delay}") Integer createDelay,
+            @Value("${training.update-delay}") Integer updateDelay,
             WebClientFacade webClientFacade,
             PlayersTrainingHistoryService playersTrainingHistoryService,
             PlayerMatchService playerMatchService,
@@ -41,6 +45,8 @@ public class TrainingModelServiceImpl implements TrainingModelService {
     ) {
         this.dataHost = dataHost;
         this.load = load;
+        this.createDelay = createDelay;
+        this.updateDelay = updateDelay;
         this.webClientFacade = webClientFacade;
         this.playersTrainingHistoryService = playersTrainingHistoryService;
         this.playerMatchService = playerMatchService;
@@ -54,7 +60,7 @@ public class TrainingModelServiceImpl implements TrainingModelService {
         if (load) {
             getPlayers(f -> f.getLastAppearance().atStartOfDay().isAfter(LocalDateTime.now().minusYears(2)))
                     .limitRate(1)
-                    .delayElements(Duration.ofSeconds(3))
+                    .delayElements(Duration.ofSeconds(createDelay))
                     .doOnNext(player -> playerMatchService.create(
                             player.getId(),
                             tensorflowDataService::load))
@@ -70,7 +76,7 @@ public class TrainingModelServiceImpl implements TrainingModelService {
         CompletableFuture.runAsync(() ->
                 getPlayers(f -> f.getLastAppearance().atStartOfDay().isAfter(playersTrainingHistory.getToDate()))
                         .limitRate(1)
-                        .delayElements(Duration.ofMillis(500))
+                        .delayElements(Duration.ofMillis(updateDelay))
                         .doOnNext(player -> playerMatchService.next(
                                 player.getId(),
                                 playersTrainingHistory.getToDate().toLocalDate(),

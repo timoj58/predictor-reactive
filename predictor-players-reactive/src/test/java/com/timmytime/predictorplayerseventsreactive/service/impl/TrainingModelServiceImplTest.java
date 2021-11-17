@@ -22,7 +22,7 @@ class TrainingModelServiceImplTest {
     private final TensorflowDataService tensorflowDataService = mock(TensorflowDataService.class);
 
     private final TrainingModelService trainingModelService
-            = new TrainingModelServiceImpl("data", true,
+            = new TrainingModelServiceImpl("data", true, 0, 0,
             webClientFacade, playersTrainingHistoryService, playerMatchService, trainingService, tensorflowDataService);
 
     @Test
@@ -39,7 +39,7 @@ class TrainingModelServiceImplTest {
 
         trainingModelService.create();
 
-        Thread.sleep(4000);
+        Thread.sleep(100);
 
         verify(trainingService, atLeastOnce()).train(any(PlayersTrainingHistory.class));
 
@@ -59,7 +59,7 @@ class TrainingModelServiceImplTest {
 
         trainingModelService.next(PlayersTrainingHistory.builder().build());
 
-        Thread.sleep(600);
+        Thread.sleep(100);
 
         verify(trainingService, atLeastOnce()).train(any(PlayersTrainingHistory.class));
 

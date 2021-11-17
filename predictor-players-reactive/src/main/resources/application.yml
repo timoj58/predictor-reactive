@@ -34,5 +34,7 @@ spring:
 training:
   interval: 1
   delay: 1
+  create-delay: 3
+  update-delay: 500
   load: true
   cutoff:
