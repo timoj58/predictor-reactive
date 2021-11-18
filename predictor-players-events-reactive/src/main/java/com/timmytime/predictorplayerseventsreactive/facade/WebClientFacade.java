@@ -93,16 +93,8 @@ public class WebClientFacade {
                 .subscribe();
     }
 
-    public void train(String url) {
-        log.info("url post {}", url);
-        WebClient.builder().build()
-                .post()
-                .uri(url)
-                .exchange()
-                .subscribe();
-    }
-
     public void config(String url) {
+        log.info("url {}", url);
         WebClient.builder().build()
                 .put()
                 .uri(url)

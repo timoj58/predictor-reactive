@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
+import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
@@ -50,7 +51,6 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
     public void predict(TensorflowPrediction tensorflowPrediction) {
         CompletableFuture.runAsync(() -> consumer.accept(tensorflowPrediction));
     }
-
 
     private void process(TensorflowPrediction tensorflowPrediction) {
         log.info("predicting id {} {} {}",

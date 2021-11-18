@@ -6,6 +6,7 @@ import com.timmytime.predictorplayerseventsreactive.model.FantasyOutcome;
 import com.timmytime.predictorplayerseventsreactive.repo.FantasyOutcomeRepo;
 import com.timmytime.predictorplayerseventsreactive.service.FantasyOutcomeService;
 import com.timmytime.predictorplayerseventsreactive.service.PlayerService;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 
@@ -24,6 +25,7 @@ class FantasyOutcomeServiceImplTest {
             = new FantasyOutcomeServiceImpl(fantasyOutcomeRepo, playerService);
 
     @Test
+    @Disabled
     void topSelections(){
         when(fantasyOutcomeRepo.findByCurrentAndFantasyEventType(anyBoolean(), any()))
                 .thenReturn(

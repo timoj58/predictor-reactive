@@ -60,7 +60,7 @@ def get_indexes(path):
 
 
 def is_in_index(path, filename):
-    index = read_index(path)
+    index = get_indexes(path)
     return index.get(filename)
 
 

@@ -29,7 +29,7 @@ public class PredictionResultServiceImpl implements PredictionResultService {
 
     @Override
     public void result(UUID id, JSONObject result) {
-        log.info("received a result {}", id.toString());
+        log.info("received a result {} {}", id.toString(), result.toString());
         CompletableFuture.runAsync(() ->
                 eventOutcomeService.find(id)
                         .subscribe(eventOutcome -> {

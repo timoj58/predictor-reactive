@@ -4,6 +4,7 @@ import com.timmytime.predictoreventsreactive.enumerator.Predictions;
 import com.timmytime.predictoreventsreactive.facade.WebClientFacade;
 import com.timmytime.predictoreventsreactive.model.Event;
 import com.timmytime.predictoreventsreactive.model.EventOutcome;
+import com.timmytime.predictoreventsreactive.request.TensorflowPrediction;
 import com.timmytime.predictoreventsreactive.service.EventOutcomeService;
 import com.timmytime.predictoreventsreactive.service.EventService;
 import com.timmytime.predictoreventsreactive.service.PredictionService;
@@ -43,7 +44,7 @@ class PredictionServiceImplTest {
         predictionService.start("GREECE");
 
         Thread.sleep(100);
-        verify(tensorflowPredictionService, atLeastOnce()).predict(any());
+        verify(tensorflowPredictionService, atLeastOnce()).predict(any(TensorflowPrediction.class));
     }
 
     @Test
@@ -53,7 +54,7 @@ class PredictionServiceImplTest {
                         .eventType(Predictions.PREDICT_RESULTS.name()).build())
         );
         predictionService.reProcess();
-        verify(tensorflowPredictionService, atLeastOnce()).predict(any());
+        verify(tensorflowPredictionService, atLeastOnce()).predict(any(TensorflowPrediction.class));
 
     }
 

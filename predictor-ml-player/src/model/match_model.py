@@ -3,7 +3,6 @@ import dataset.match_dataset as match_dataset
 import featureset.match_featureset as match_featureset
 import logging
 import service.vocab_service as vocab_service
-import time
 import util.classifier_utils as classifier_utils
 from model.model_utils import tidy_up
 from service.config_service import get_dir_cfg
@@ -80,7 +79,5 @@ def create(train, label, label_values, model_dir, train_filename, test_filename,
                 tf_models_dir=tf_models_dir,
                 aws_model_dir=aws_model_dir,
                 train_filename=train_filename)
-
-            time.sleep(30)
 
     return classifier

@@ -24,7 +24,7 @@ public class PredictionResultServiceImpl implements PredictionResultService {
 
     @Override
     public void result(UUID id, JSONObject result, Consumer<UUID> fix) {
-        log.info("processing prediction result");
+        log.info("processing prediction result {}", result.toString());
         CompletableFuture.runAsync(() ->
 
                 fantasyOutcomeService.find(id)
