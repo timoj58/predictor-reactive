@@ -64,6 +64,7 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
 
     @Override
     public void init(String type) {
+        //TODO review
         webClientFacade.config(
                 trainingHost
                         + initUrl.replace("<type>", type));
