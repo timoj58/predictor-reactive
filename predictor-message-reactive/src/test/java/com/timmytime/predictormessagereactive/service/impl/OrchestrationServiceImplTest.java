@@ -43,7 +43,7 @@ class OrchestrationServiceImplTest {
     }
 
     @Test
-    void start(){
+    void start() throws InterruptedException {
         orchestrationService.process(
                 CycleEvent.builder()
                         .message(
@@ -53,6 +53,8 @@ class OrchestrationServiceImplTest {
                                         .build()
                         ).build()
         );
+
+        Thread.sleep(100);
 
         verify(webClientFacade, atLeast(2)).scrape(anyString());
 

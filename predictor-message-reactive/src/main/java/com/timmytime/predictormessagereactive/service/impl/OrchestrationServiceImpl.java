@@ -17,10 +17,13 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class OrchestrationServiceImpl implements OrchestrationService {
@@ -28,26 +31,25 @@ public class OrchestrationServiceImpl implements OrchestrationService {
     private final List<Event> PLAYER_PREDICTION_EVENTS = Arrays.asList(Event.PLAYERS_TRAINED, Event.EVENTS_LOADED);
     private final List<Event> TEAM_PREDICTION_EVENTS = Arrays.asList(Event.TEAMS_TRAINED, Event.EVENTS_LOADED);
 
-    private final BiFunction<List<CycleEvent>, Consumer<String>, Boolean> training = (ce, c) -> {
-        if (ce.stream().filter(f -> f.getMessage().getEvent().equals(Event.DATA_LOADED))
-                .map(m -> m.getMessage().getEventType())
-                .collect(Collectors.toList())
+    private final Function<Stream<CycleEvent>, List<EventType>> transform = (events) ->
+            events.map(m -> m.getMessage().getEventType()).collect(Collectors.toList());
+
+    private final BiFunction<List<CycleEvent>, Consumer<String>, Boolean> training = (events, train) -> {
+        if (transform.apply(events.stream().filter(f -> f.getMessage().getEvent().equals(Event.DATA_LOADED)))
                 .containsAll(EventType.competitions())
         ) {
-            EventType.countries().forEach(country -> c.accept(country.name()));
+            EventType.countries().forEach(country -> train.accept(country.name()));
             return true;
         }
         return false;
 
     };
 
-    private final BiFunction<Pair<List<CycleEvent>, List<Event>>, Consumer<String>, Boolean> predictions = (ce, c) -> {
-        if (ce.getLeft().stream().filter(f -> ce.getRight().contains(f.getMessage().getEvent()))
-                .map(m -> m.getMessage().getEventType())
-                .collect(Collectors.toList())
+    private final BiFunction<Pair<List<CycleEvent>, List<Event>>, Consumer<String>, Boolean> predictions = (events, predict) -> {
+        if (transform.apply(events.getLeft().stream().filter(f -> events.getRight().contains(f.getMessage().getEvent())))
                 .containsAll(EventType.countriesAndAll())
         ) {
-            EventType.countries().forEach(country -> c.accept(country.name()));
+            EventType.countries().forEach(country -> predict.accept(country.name()));
             return true;
         }
         return false;
@@ -89,8 +91,8 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                 .processed(Boolean.FALSE)
                 .handler((ce) -> {
                     if (ce.stream().anyMatch(m -> m.getMessage().getEvent().equals(Event.START))) {
-                        webClientFacade.scrape("");
-                        webClientFacade.scrape("");
+                        CompletableFuture.runAsync(() -> webClientFacade.scrape(""))
+                                .thenRun(() -> webClientFacade.scrape(""));
                         return true;
                     }
                     return false;
