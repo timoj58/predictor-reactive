@@ -1,6 +1,5 @@
 package com.timmytime.predictoreventsreactive.e2e;
 
-import com.timmytime.predictoreventsreactive.enumerator.Messages;
 import com.timmytime.predictoreventsreactive.facade.WebClientFacade;
 import com.timmytime.predictoreventsreactive.model.Event;
 import com.timmytime.predictoreventsreactive.model.EventOutcome;

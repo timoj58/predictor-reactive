@@ -12,14 +12,6 @@ import reactor.core.publisher.Mono;
 @Component
 public class WebClientFacade {
 
-    public void send(String url) {
-        WebClient.builder().build()
-                .post()
-                .uri(url)
-                .exchangeToMono(Mono::just)
-                .subscribe();
-    }
-
     public void send(String url, Message message) {
         WebClient.builder().build()
                 .post()

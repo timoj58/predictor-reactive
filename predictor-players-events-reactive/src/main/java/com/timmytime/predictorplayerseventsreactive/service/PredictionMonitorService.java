@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @Service("predictionMonitorService")
 public class PredictionMonitorService {
 
-    private final String clientHost;
+    private final String messageHost;
 
     private final PredictionService predictionService;
     private final WebClientFacade webClientFacade;
@@ -35,11 +35,11 @@ public class PredictionMonitorService {
 
     @Autowired
     public PredictionMonitorService(
-            @Value("${clients.client}") String clientHost,
+            @Value("${clients.message}") String messageHost,
             PredictionService predictionService,
             WebClientFacade webClientFacade
     ) {
-        this.clientHost = clientHost;
+        this.messageHost = messageHost;
         this.predictionService = predictionService;
         this.webClientFacade = webClientFacade;
     }
@@ -62,7 +62,7 @@ public class PredictionMonitorService {
                             CompletableFuture.runAsync(predictionService::reProcess);
                         } else if (count == 0 && countriesProcessed.containsAll(ApplicableFantasyLeagues.getCountries())) {
                             log.info("finishing");
-                            webClientFacade.sendMessage(clientHost + "/message", createMessage());
+                            webClientFacade.sendMessage(messageHost + "/message", createMessage());
                             process.set(false);
                         }
                         previousCount.set(count);

@@ -11,9 +11,10 @@ local_dir = get_dir_cfg()['local']
 
 
 def init_models(model_dir):
-    logger.info('calling init')
+    logger.info('calling init '+model_dir)
     indexes = get_indexes(model_dir)
     for attribute, value in indexes.items():
+        logger.info('getting '+value);
         if (value['active'] == True):
             get_aws_file(model_dir + '/', attribute)
 

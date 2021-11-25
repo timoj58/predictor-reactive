@@ -26,20 +26,19 @@ import java.util.function.Consumer;
 public class MessageServiceImpl implements MessageService {
 
     private final String dataHost;
-    private final String teamHost;
+    private final String messageHost;
     private final WebClientFacade webClientFacade;
-    private final List<CompetitionFixtureCodes> sent = new ArrayList<>();
     private final AtomicInteger messageSentCounter = new AtomicInteger(0);
     private Consumer<JsonNode> messageConsumer;
 
     @Autowired
     public MessageServiceImpl(
             @Value("${clients.data}") String dataHost,
-            @Value("${clients.team}") String teamHost,
+            @Value("${clients.message}") String messageHost,
             WebClientFacade webClientFacade
     ) {
         this.dataHost = dataHost;
-        this.teamHost = teamHost;
+        this.messageHost = messageHost;
         this.webClientFacade = webClientFacade;
 
 
@@ -61,20 +60,9 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public void send(Message message) {
         log.info("competition {} completed", message.getCompetition());
-        Mono.just(
-                CompetitionFixtureCodes.valueOf(message.getCompetition().toUpperCase())
-        )
-                .doOnNext(sent::add)
-                .doFinally(send ->
-                        Mono.just(message)
-                                .doOnNext(msg -> webClientFacade.send(teamHost + "/message", msg))
-                                .doFinally(finish -> {
-                                    if (sent.containsAll(Arrays.asList(CompetitionFixtureCodes.values()))) {
-                                        send();
-                                    }
-                                })
-                                .subscribe()
-                )
+
+        Mono.just(message)
+                .doOnNext(msg -> webClientFacade.send(messageHost + "/message", msg))
                 .subscribe();
 
     }
@@ -84,10 +72,6 @@ public class MessageServiceImpl implements MessageService {
         return messageSentCounter.get();
     }
 
-    private void send() {
-        log.info("sending scrape completed message");
-        webClientFacade.send(dataHost + "/completed");
-    }
 
     private void sendMessage(JsonNode message) {
         messageSentCounter.incrementAndGet();

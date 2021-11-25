@@ -20,8 +20,6 @@ import java.util.concurrent.CompletableFuture;
 @Service("messageReceivedService")
 public class MessageReceivedServiceImpl implements MessageReceivedService {
 
-    private final List<String> messages = new ArrayList<>();
-
     private final TrainingService trainingService;
     private final TrainingModelService trainingModelService;
     private final PlayersTrainingHistoryService playersTrainingHistoryService;
@@ -41,17 +39,8 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     public Mono<Void> receive(Mono<Message> message) {
 
         return message.doOnNext(
-                msg -> {
-                    log.info("received {} {}", msg.getCountry(), msg.getCompetition());
-                    messages.add(msg.getCompetition().toLowerCase());
-                    if (messages.containsAll(CountryCompetitions.allCompetitions())
-                    ) {
-                        log.info("start player training");
-                        playersTrainingHistoryService.find(trainingService.firstTrainingEvent())
-                                .subscribe(trainingModelService::next);
-                        //TODO note we now need to send a message to player events once completed
-                    }
-                }
+                msg -> playersTrainingHistoryService.find(trainingService.firstTrainingEvent())
+                        .subscribe(trainingModelService::next)
         ).thenEmpty(Mono.empty());
     }
 

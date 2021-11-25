@@ -1,16 +1,16 @@
 package com.timmytime.predictorplayerseventsreactive.service.impl;
 
 import com.timmytime.predictorplayerseventsreactive.enumerator.FantasyEventTypes;
-import com.timmytime.predictorplayerseventsreactive.model.FantasyEvent;
 import com.timmytime.predictorplayerseventsreactive.model.FantasyOutcome;
 import com.timmytime.predictorplayerseventsreactive.repo.FantasyOutcomeRepo;
 import com.timmytime.predictorplayerseventsreactive.service.FantasyOutcomeService;
 import com.timmytime.predictorplayerseventsreactive.service.PlayerService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.time.LocalDateTime;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
@@ -25,17 +25,31 @@ class FantasyOutcomeServiceImplTest {
             = new FantasyOutcomeServiceImpl(fantasyOutcomeRepo, playerService);
 
     @Test
-    @Disabled
     void topSelections(){
+
+        var predictions = "[]";
+
         when(fantasyOutcomeRepo.findByCurrentAndFantasyEventType(anyBoolean(), any()))
                 .thenReturn(
                         Flux.just(
-                                FantasyOutcome.builder().build(),
-                                FantasyOutcome.builder().build(),
-                                FantasyOutcome.builder().build()
+                                FantasyOutcome.builder()
+                                        .eventDate(LocalDateTime.now().minusDays(10))
+                                        .prediction(predictions)
+                                        .build(),
+                                FantasyOutcome.builder()
+                                        .eventDate(LocalDateTime.now().minusDays(2))
+                                        .prediction(predictions)
+                                        .build(),
+                                FantasyOutcome.builder()
+                                        .eventDate(LocalDateTime.now().minusDays(3))
+                                        .prediction(predictions)
+                                        .build()
                                 )
                 );
 
         var result = fantasyOutcomeService.topSelections(FantasyEventTypes.GOALS.name(), 70).collectList().block();
+
+        assertTrue(result.size() == 2);
     }
+
 }

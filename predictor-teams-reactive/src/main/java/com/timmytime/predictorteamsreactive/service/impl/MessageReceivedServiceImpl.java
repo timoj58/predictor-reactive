@@ -26,22 +26,18 @@ import java.util.UUID;
 @Service("messageReceivedService")
 public class MessageReceivedServiceImpl implements MessageReceivedService {
 
-    private final List<String> received = new ArrayList<>();
-
     private final TrainingHistoryService trainingHistoryService;
     private final TrainingService trainingService;
     private final TrainingModelService trainingModelService;
     private final TensorflowDataService tensorflowDataService;
     private final WebClientFacade webClientFacade;
-    private final String eventsHost;
-    private final String playersHost;
+    private final String messageHost;
     private final Boolean trainingEvaluation;
 
 
     @Autowired
     public MessageReceivedServiceImpl(
-            @Value("${clients.events}") String eventsHost,
-            @Value("${clients.players}") String playersHost,
+            @Value("${clients.message}") String messageHost,
             @Value("${training.evaluation}") Boolean trainingEvaluation,
             TrainingHistoryService trainingHistoryService,
             TrainingModelService trainingModelService,
@@ -49,8 +45,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
             TensorflowDataService tensorflowDataService,
             WebClientFacade webClientFacade
     ) {
-        this.eventsHost = eventsHost;
-        this.playersHost = playersHost;
+        this.messageHost = messageHost;
         this.trainingEvaluation = trainingEvaluation;
         this.trainingHistoryService = trainingHistoryService;
         this.trainingModelService = trainingModelService;
@@ -61,17 +56,15 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
 
     @Override
     public Mono<Void> receive(Mono<Message> message) {
-        return message.doOnNext(
-                msg -> {
-                    received.add(msg.getCompetition());
 
-                    if (received.containsAll(
-                            CountryCompetitions.valueOf(msg.getCountry().toUpperCase()).getCompetitions()
-                    )) {
-                        webClientFacade.sendMessage(
-                                playersHost + "/message",
-                                createMessage(msg.getCountry().toUpperCase(), "DATA_LOADED")
-                        );
+        /*
+          TODO need to fix this into a pipeline, so only one country trains at a time.
+
+          or do it in message service, but sort of pointless.
+         */
+
+        return message.doOnNext(
+                msg ->
                         tensorflowDataService.loadOutstanding(msg.getCountry().toLowerCase(), () ->
                                 trainingService.train(i -> {
                                     var trainingHistory = trainingHistoryService.find(Training.TRAIN_RESULTS, msg.getCountry());
@@ -84,9 +77,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                                                             LocalDateTime.now() : trainingHistory.getToDate().plusYears(i))
                                     );
                                 })
-                        );
-                    }
-                }
+                        )
         ).thenEmpty(Mono.empty());
 
     }
@@ -115,7 +106,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                             trainingModelService.create();
                         } else {
                             webClientFacade.sendMessage(
-                                    eventsHost + "/message",
+                                    messageHost + "/message",
                                     createMessage(history.getCountry().toUpperCase(), "TRAINING_COMPLETED")
                             );
                         }

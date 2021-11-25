@@ -25,7 +25,7 @@ import static com.timmytime.predictoreventscraperreactive.enumerator.Providers.E
 public class MessageServiceImpl implements MessageService {
 
     private final String eventsDataHost;
-    private final String eventsHost;
+    private final String messageHost;
 
     private final WebClientFacade webClientFacade;
 
@@ -34,11 +34,11 @@ public class MessageServiceImpl implements MessageService {
     @Autowired
     public MessageServiceImpl(
             @Value("${clients.event-data}") String eventsDataHost,
-            @Value("${clients.events}") String eventsHost,
+            @Value("${clients.message}") String messageHost,
             WebClientFacade webClientFacade
     ) {
         this.eventsDataHost = eventsDataHost;
-        this.eventsHost = eventsHost;
+        this.messageHost = messageHost;
 
         this.webClientFacade = webClientFacade;
 
@@ -63,7 +63,7 @@ public class MessageServiceImpl implements MessageService {
                                 .toString()
                 );
                 webClientFacade.send(
-                        eventsHost + "/message", message
+                        messageHost + "/message", message
                 );
 
             } catch (

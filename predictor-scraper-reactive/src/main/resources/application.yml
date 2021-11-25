@@ -25,7 +25,7 @@ springdoc:
 
 clients:
   data: http://127.0.0.1:8092
-  team: http://127.0.0.1:8090
+  message: http://127.0.0.1:8090
 
 scraper:
   match: "https://www.espn.co.uk/football/match/_/gameId/{game_id}"

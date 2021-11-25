@@ -15,7 +15,7 @@ springdoc:
 clients:
   data: http://127.0.0.1:8092
   event-data: http://127.0.0.1:8093
-  events: http://127.0.0.1:8091
+  message: http://127.0.0.1:8091
 
 fixtures:
   url: "https://www.espn.co.uk/soccer/fixtures/_/date/{date}/league/{competition}"

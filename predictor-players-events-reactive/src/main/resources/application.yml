@@ -9,7 +9,7 @@ clients:
   data: http://localhost:8092
   training: http://localhost
   event-data: http://localhost:8093
-  client: http://localhost:8100
+  message: http://localhost:8100
   ml-predict-goals: /predict/goals/<init>/<receipt>
   ml-predict-assists: /predict/assists/<init>/<receipt>
   ml-predict-yellow: /predict/yellow-card/<init>/<receipt>

@@ -22,8 +22,6 @@ import java.util.concurrent.CompletableFuture;
 @Service("messageReceivedService")
 public class MessageReceivedServiceImpl implements MessageReceivedService {
 
-    private final Map<String, List<Messages>> messages = new HashMap<>();
-
     private final PredictionService predictionService;
     private final PredictionResultService predictionResultService;
     private final PredictionMonitorService predictionMonitorService;
@@ -38,13 +36,6 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         this.predictionResultService = predictionResultService;
         this.predictionMonitorService = predictionMonitorService;
 
-        Arrays.stream(
-                ApplicableFantasyLeagues.values()
-        )
-                .map(ApplicableFantasyLeagues::getCountry)
-                .distinct()
-                .forEach(country -> messages.put(country.toLowerCase(), new ArrayList<>()));
-
     }
 
     @Override
@@ -53,20 +44,13 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         return message.doOnNext(
                 msg -> {
                     log.info("received {} {}", msg.getType(), msg.getCountry());
-                    if (messages.containsKey(msg.getCountry().toLowerCase())) {
-                        messages.get(msg.getCountry().toLowerCase()).add(msg.getType());
-
-                        if (messages.get(msg.getCountry().toLowerCase()).containsAll(Arrays.asList(Messages.values()))) {
-                            CompletableFuture.runAsync(() -> predictionService.start(msg.getCountry().toLowerCase()))
-                                    .thenRun(() -> Mono.just(msg.getCountry().toLowerCase())
-                                            .delayElement(Duration.ofMinutes(1))
-                                            .subscribe(predictionMonitorService::addCountry)
-                                    );
-                        }
-                    } else {
-                        log.info("skipping {} not applicable", msg.getCountry());
+                    if(ApplicableFantasyLeagues.getCountries().contains(msg.getCountry().toLowerCase())) {
+                        CompletableFuture.runAsync(() -> predictionService.start(msg.getCountry().toLowerCase()))
+                                .thenRun(() -> Mono.just(msg.getCountry().toLowerCase())
+                                        .delayElement(Duration.ofMinutes(1))
+                                        .subscribe(predictionMonitorService::addCountry)
+                                );
                     }
-
                 }
         ).thenEmpty(Mono.empty());
     }

@@ -8,6 +8,7 @@ springdoc:
 clients:
   data: http://localhost:8092
   training: http://localhost
+  message:
   ml-train-goals: /train/goals/<from>/<to>/<receipt>
   ml-train-assists: /train/assists/<from>/<to>/<receipt>
   ml-train-yellow: /train/yellow-card/<from>/<to>/<receipt>

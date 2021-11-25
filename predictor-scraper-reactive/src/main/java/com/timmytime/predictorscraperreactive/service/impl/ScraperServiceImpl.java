@@ -49,7 +49,11 @@ public class ScraperServiceImpl implements ScraperService {
         scraperHistory.setDate(LocalDateTime.now());
         scraperHistory.setDaysScraped((int)
                 Duration.between(
-                        scraperHistoryRepo.findFirstByOrderByDateDesc().getDate().toLocalDate().atStartOfDay(),
+                        scraperHistoryRepo.findFirstByOrderByDateDesc().orElse(
+                                ScraperHistory.builder().date(
+                                        LocalDateTime.now().minusDays(3)
+                                ).build()
+                        ).getDate().toLocalDate().atStartOfDay(),
                         LocalDate.now().atStartOfDay()
                 ).toDays());
 
