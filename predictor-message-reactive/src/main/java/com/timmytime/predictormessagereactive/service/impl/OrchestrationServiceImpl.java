@@ -12,6 +12,8 @@ import com.timmytime.predictormessagereactive.service.OrchestrationService;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -19,7 +21,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class OrchestrationServiceImpl implements OrchestrationService {
@@ -129,14 +130,18 @@ public class OrchestrationServiceImpl implements OrchestrationService {
 
     @Override
     public void process(CycleEvent cycleEvent) {
-        events.add(cycleEvent);
 
-        Stream.of(Action.values())
-                .filter(action -> !eventManager.get(action).getProcessed())
-                .forEach(action -> {
-                    var actionEvent = eventManager.get(action);
-                    eventManager.get(action).setProcessed(actionEvent.getHandler().apply(events));
-                });
+        Mono.just(cycleEvent)
+                .doOnNext(events::add)
+                .doFinally(check ->
+                        Flux.just(Action.values())
+                                .filter(action -> !eventManager.get(action).getProcessed())
+                                .subscribe(action -> {
+                                    var actionEvent = eventManager.get(action);
+                                    eventManager.get(action).setProcessed(actionEvent.getHandler().apply(events));
+                                }))
+                .subscribe();
+
 
     }
 
