@@ -2,7 +2,6 @@ package com.timmytime.predictorplayerseventsreactive.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.timmytime.predictorplayerseventsreactive.enumerator.ApplicableFantasyLeagues;
-import com.timmytime.predictorplayerseventsreactive.enumerator.Messages;
 import com.timmytime.predictorplayerseventsreactive.request.Message;
 import com.timmytime.predictorplayerseventsreactive.service.MessageReceivedService;
 import com.timmytime.predictorplayerseventsreactive.service.PredictionMonitorService;
@@ -43,10 +42,10 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
 
         return message.doOnNext(
                 msg -> {
-                    log.info("received {} {}", msg.getType(), msg.getCountry());
-                    if(ApplicableFantasyLeagues.getCountries().contains(msg.getCountry().toLowerCase())) {
-                        CompletableFuture.runAsync(() -> predictionService.start(msg.getCountry().toLowerCase()))
-                                .thenRun(() -> Mono.just(msg.getCountry().toLowerCase())
+                    log.info("received {}", msg.getEventType());
+                    if(ApplicableFantasyLeagues.getCountries().contains(msg.getEventType().toLowerCase())) {
+                        CompletableFuture.runAsync(() -> predictionService.start(msg.getEventType().toLowerCase()))
+                                .thenRun(() -> Mono.just(msg.getEventType().toLowerCase())
                                         .delayElement(Duration.ofMinutes(1))
                                         .subscribe(predictionMonitorService::addCountry)
                                 );

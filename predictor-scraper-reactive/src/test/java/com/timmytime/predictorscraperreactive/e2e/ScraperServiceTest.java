@@ -11,8 +11,11 @@ import com.timmytime.predictorscraperreactive.service.impl.*;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
@@ -49,10 +52,16 @@ public class ScraperServiceTest {
                 ));
 
         when(scraperHistoryRepo.findFirstByOrderByDateDesc())
-                .thenReturn(ScraperHistory.builder()
-                        .date(LocalDateTime.now().minusDays(10)).build());
+                .thenReturn(Optional.of(
+                        ScraperHistory.builder()
+                        .date(LocalDateTime.now().minusDays(10)).build()));
 
         scraperService.scrape().subscribe();
         verify(webClientFacade, atLeastOnce()).send(anyString(), any(JsonNode.class));
+    }
+
+    @Test
+    void sanity(){
+        LocalDate.parse("19/10/2021", DateTimeFormatter.ofPattern("d/MM/yyyy"));
     }
 }

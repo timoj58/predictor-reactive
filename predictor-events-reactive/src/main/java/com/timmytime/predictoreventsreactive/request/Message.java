@@ -8,5 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class Message {
-    private String country;
+    private String event;
+    private String eventType;
 }

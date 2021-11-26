@@ -2,6 +2,7 @@ package com.timmytime.predictorclientreactive.handler;
 
 import com.timmytime.predictorclientreactive.request.Message;
 import com.timmytime.predictorclientreactive.service.MessageReceivedService;
+import com.timmytime.predictorclientreactive.service.StartupService;
 import com.timmytime.predictorclientreactive.service.VocabService;
 import com.timmytime.predictorclientreactive.service.impl.BetServiceImpl;
 import com.timmytime.predictorclientreactive.service.impl.PlayersMatchServiceImpl;
@@ -19,36 +20,21 @@ public class MessageHandler {
 
     private final MessageReceivedService messageReceivedService;
     private final VocabService vocabService;
-    private final BetServiceImpl betService;
-    private final PlayersMatchServiceImpl playersMatchService;
+    private final StartupService startupService;
 
     public Mono<ServerResponse> createVocab(ServerRequest request) {
 
-        return ServerResponse.ok().build(
-                vocabService.createVocab()
-        );
+        return ServerResponse.ok().build(vocabService.createVocab());
     }
 
     public Mono<ServerResponse> receive(ServerRequest request) {
 
         Mono<Message> message = request.bodyToMono(Message.class);
-
-        return ServerResponse.ok().build(
-                messageReceivedService.receive(message)
-        );
+        return ServerResponse.ok().build(messageReceivedService.receive(message));
     }
 
-    public Mono<ServerResponse> test(ServerRequest request) {
-        return ServerResponse.ok().build(processTest());
-    }
-
-    private Mono<Void> processTest(){
-        return Mono.just("test")
-                .doOnNext(v -> {
-                    CompletableFuture.runAsync(betService::load)
-                            .thenRun(playersMatchService::load);
-                })
-                .thenEmpty(Mono.empty());
+    public Mono<ServerResponse> start(ServerRequest request) {
+        return ServerResponse.ok().build(startupService.conduct());
     }
 
 }

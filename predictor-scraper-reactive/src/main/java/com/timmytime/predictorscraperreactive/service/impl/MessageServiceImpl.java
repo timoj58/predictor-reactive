@@ -59,7 +59,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public void send(Message message) {
-        log.info("competition {} completed", message.getCompetition());
+        log.info("competition {} completed", message.getEventType());
 
         Mono.just(message)
                 .doOnNext(msg -> webClientFacade.send(messageHost + "/message", msg))

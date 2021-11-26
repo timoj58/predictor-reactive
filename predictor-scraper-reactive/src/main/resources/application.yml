@@ -1,10 +1,10 @@
 # general properties
 server:
-  port: 8097
+  port: 8101
 
 connection:
   details:
-    host: 'localhost'
+    host: 172.22.0.16
     port: 27017
     database: 'predictor-db'
     username: 'predictor'
@@ -24,8 +24,8 @@ springdoc:
     path: /swagger-ui.html
 
 clients:
-  data: http://127.0.0.1:8092
-  message: http://127.0.0.1:8090
+  data: http://127.0.0.1:8103
+  message: http://127.0.0.1:8100
 
 scraper:
   match: "https://www.espn.co.uk/football/match/_/gameId/{game_id}"

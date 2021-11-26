@@ -35,8 +35,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    @PostConstruct
-    public void loadTeams() {
+    public void init() {
 
         Flux.fromStream(
                 CountryCompetitions.getAllCompetitions().stream()

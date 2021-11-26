@@ -16,12 +16,10 @@ public class ResultsConfiguration {
 
     @Getter
     private final List<Pair<CompetitionFixtureCodes, String>> urls = new ArrayList<>();
-    @Value("${scraper.results}")
-    String resultsUrl;
 
-    @PostConstruct
-    private void init() {
-
+    public ResultsConfiguration(
+            @Value("${scraper.results}") String resultsUrl
+    ){
         Flux.fromArray(CompetitionFixtureCodes.values())
                 .subscribe(code -> urls.add(
                         Pair.of(
@@ -30,6 +28,6 @@ public class ResultsConfiguration {
                                 )
                         )
                 ));
-
     }
+
 }

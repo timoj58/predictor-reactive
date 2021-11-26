@@ -6,6 +6,7 @@ import com.timmytime.predictorscraperreactive.service.CompetitionScraperService;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
@@ -21,8 +22,8 @@ class ScraperServiceImplTest {
     void scrape() {
 
         when(scraperHistoryRepo.findFirstByOrderByDateDesc())
-                .thenReturn(ScraperHistory.builder()
-                        .date(LocalDateTime.now().minusDays(1)).build());
+                .thenReturn(Optional.of(ScraperHistory.builder()
+                        .date(LocalDateTime.now().minusDays(1)).build()));
 
         scraperService.scrape().subscribe();
         verify(competitionScraperService, atLeastOnce()).scrape(any());

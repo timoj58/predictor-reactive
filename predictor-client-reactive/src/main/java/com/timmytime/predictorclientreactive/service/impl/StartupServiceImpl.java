@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
 
@@ -55,64 +56,54 @@ public class StartupServiceImpl implements StartupService {
     }
 
 
-    @Override
     @PostConstruct
-    public void start() {
-
-        log.info("starting...");
-
-        if (orchestrationEnabled) {
-
-            log.info("orchestration mode");
-
-            runAsync(() ->
-
-                    fromStream(
-                            of(
-                                    "fixtures",
-                                    "player-events",
-                                    "previous-events",
-                                    "previous-fixtures",
-                                    "top-performers",
-                                    "upcoming-events",
-                                    "selected-bets"
-                            )
-                    )
-                            .limitRate(1)
-                            .doOnNext(s3Facade::archive)
-                            .doFinally(start ->
-
-                                    fromStream(
-                                            of(
-                                                    LambdaFunctions.DATABASE,
-                                                    LambdaFunctions.PRE_START,
-                                                    LambdaFunctions.START
-                                            )
-                                    )
-                                            .limitRate(1)
-                                            .delayElements(ofMinutes(startDelay))
-                                            .map(LambdaFunctions::getFunctionName)
-                                            .doOnNext(lambdaFacade::invoke)
-                                            .doFinally(wakeup ->
-                                                    just("/scrape")
-                                                            .delayElement(ofMinutes(startDelay))
-                                                            .subscribe(this::completeStartup))
-                                            .subscribe()
-                            )
-                            .subscribe()
-            );
-        } else {
-            log.info("stand alone mode");
+    private void start() {
+        if (orchestrationEnabled)
+            conduct();
+        else
             runAsync(teamService::loadTeams);
-        }
-
     }
 
-    private void completeStartup(String url) {
+    private void completeStartup(String url) {//TODO this will just call message now
         log.info("starting scrapers and loading teams");
         runAsync(() -> webClientFacade.startScraper(dataScraperHost + url))
                 .thenRun(() -> webClientFacade.startScraper(eventScraperHost + url))
                 .thenRun(teamService::loadTeams);
     }
+
+    @Override
+    public Mono<Void> conduct(){
+        runAsync(() ->
+
+                fromStream(
+                        of(
+                                "fixtures",
+                                "player-events",
+                                "previous-events",
+                                "previous-fixtures",
+                                "top-performers",
+                                "upcoming-events",
+                                "selected-bets"
+                        )
+                )
+                        .limitRate(1)
+                        .doOnNext(s3Facade::archive)
+                        .doFinally(start ->
+                                Mono.just(LambdaFunctions.START)
+                                        .delayElement(ofMinutes(startDelay))
+                                        .map(LambdaFunctions::getFunctionName)
+                                        .doOnNext(lambdaFacade::invoke)
+                                        .doFinally(wakeup ->
+                                                just("/scrape")
+                                                        .delayElement(ofMinutes(startDelay))
+                                                        .subscribe(this::completeStartup))
+                                        .subscribe()
+                        )
+                        .subscribe()
+        );
+
+        return Mono.empty();
+    }
+
 
 }

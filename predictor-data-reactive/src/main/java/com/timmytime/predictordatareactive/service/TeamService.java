@@ -23,4 +23,6 @@ public interface TeamService {
 
     Team createNewTeam(Team team);
 
+    void init();
+
 }

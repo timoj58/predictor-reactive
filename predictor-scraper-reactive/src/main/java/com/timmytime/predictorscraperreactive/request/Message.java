@@ -7,11 +7,11 @@ import lombok.*;
 @NoArgsConstructor
 public class Message {
 
-    private String country;
-    private String competition;
+    private String event;
+    private String eventType;
 
     public Message(String competition) {
-        this.country = competition.split("_")[0];
-        this.competition = competition;
+        this.eventType = competition.toUpperCase();
+        this.event = "DATA_LOADED";
     }
 }

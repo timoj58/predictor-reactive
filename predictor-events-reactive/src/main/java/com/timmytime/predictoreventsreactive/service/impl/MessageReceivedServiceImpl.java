@@ -46,8 +46,8 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     public Mono<Void> receive(Mono<Message> message) {
         return message.doOnNext(
                 msg -> {
-                        log.info("processing {}", msg.getCountry());
-                        validationService.resetLast(msg.getCountry(), (country) ->
+                        log.info("processing {}", msg.getEventType());
+                        validationService.resetLast(msg.getEventType().toLowerCase(), (country) ->
                                 CompletableFuture.runAsync(() -> {
                                     log.info("starting predictions {}", country);
                                     validationService.validate(country);

@@ -26,10 +26,7 @@ public class MessageServiceImpl implements MessageService {
 
     private final String eventsDataHost;
     private final String messageHost;
-
     private final WebClientFacade webClientFacade;
-
-    private final Map<String, List<String>> messages = new HashMap<>();
 
     @Autowired
     public MessageServiceImpl(
@@ -39,27 +36,17 @@ public class MessageServiceImpl implements MessageService {
     ) {
         this.eventsDataHost = eventsDataHost;
         this.messageHost = messageHost;
-
         this.webClientFacade = webClientFacade;
-
-        messages.put(ESPN_ODDS.name(), new ArrayList<>());
     }
 
     @Override
     public void send(String provider, String competition) {
         log.info("provider {} finished for {}", provider, competition);
-        messages.get(provider).add(competition);
-
-        CountryCompetitions countryCompetitions = CountryCompetitions.findByCompetition(competition);
-
-
-        if (messages.get(provider).containsAll(countryCompetitions.getCompetitions())) {
-            log.info("all competitions received, sending notification {}", countryCompetitions.name());
-            try {
+        try {
                 JsonNode message = new ObjectMapper().readTree(
                         new JSONObject()
-                                .put("type", provider)
-                                .put("country", countryCompetitions.name())
+                                .put("event", "EVENTS_LOADED")
+                                .put("eventType", competition.toUpperCase())
                                 .toString()
                 );
                 webClientFacade.send(
@@ -70,7 +57,6 @@ public class MessageServiceImpl implements MessageService {
                     JsonProcessingException e) {
                 log.error("message issue", e);
             }
-        }
     }
 
     @Override

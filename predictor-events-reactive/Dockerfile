@@ -1,4 +1,4 @@
-FROM openjdk:11-jdk
+FROM openjdk:17-jdk
 RUN groupadd  -r predictor && useradd -r predictor-user -g predictor
 
 USER predictor-user:predictor

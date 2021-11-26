@@ -42,7 +42,7 @@ public class TeamsServiceTest {
             trainingHistoryService, webClientFacade);
 
     private final MessageReceivedServiceImpl messageReceivedService
-            = new MessageReceivedServiceImpl("events", "players", false,
+            = new MessageReceivedServiceImpl("events", false,
             trainingHistoryService, trainingModelService, trainingService, tensorflowDataService, webClientFacade);
 
     @Test
@@ -71,7 +71,7 @@ public class TeamsServiceTest {
                 .thenReturn(Flux.just(Match.builder().build()));
 
         messageReceivedService.receive(Mono.just(
-                Message.builder().country("greece").competition("greece_1").build()
+                Message.builder().country("greece").build()
         )).subscribe();
 
         verify(webClientFacade, atLeastOnce()).train(anyString());

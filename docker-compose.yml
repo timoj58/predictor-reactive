@@ -1,0 +1,71 @@
+version: "3"
+services:
+
+  mongo:
+    image: mongo:latest
+    container_name: predictor-mongo
+    ports:
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: predictor
+      MONGO_INITDB_ROOT_PASSWORD: predictor
+      MONGO_INITDB_DATABASE: predictor-db
+    networks:
+      predictornet:
+        ipv4_address: 172.22.0.16
+
+  message:
+    image: timmytime/predictor-message-reactive:latest
+    container_name: predictor-message-reactive
+    ports:
+      - "8100:8100"
+    networks:
+      predictornet:
+        ipv4_address: 172.22.0.18
+
+  scraper:
+    image: timmytime/predictor-scraper-reactive:latest
+    container_name: predictor-scraper-reactive
+    ports:
+      - "8101:8101"
+    networks:
+      predictornet:
+        ipv4_address: 172.22.0.19
+
+  event-scraper:
+    image: timmytime/predictor-event-scraper-reactive:latest
+    container_name: predictor-event-scraper-reactive
+    ports:
+      - "8102:8102"
+    networks:
+      predictornet:
+        ipv4_address: 172.22.0.20
+
+  data:
+    image: timmytime/predictor-data-reactive:latest
+    container_name: predictor-data-reactive
+    ports:
+      - "8103:8103"
+    networks:
+      predictornet:
+        ipv4_address: 172.22.0.21
+
+  event-data:
+    image: timmytime/predictor-event-data-reactive:latest
+    container_name: predictor-event-data-reactive
+    ports:
+      - "8104:8104"
+    networks:
+      predictornet:
+        ipv4_address: 172.22.0.22
+
+networks:
+  predictornet:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "false"
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.22.0.0/16
+

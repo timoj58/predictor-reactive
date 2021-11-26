@@ -62,10 +62,17 @@ public enum EventType {
                 .collect(Collectors.toList());
     }
 
-    public static List<EventType> countriesAndAll(){
+    public static List<EventType> competitionsAndAll(){
+        return Stream.concat(
+                EventType.competitions().stream(),
+                Stream.of(EventType.ALL)
+        ).collect(Collectors.toList());
+    }
+
+    public static List<EventType> countriesAndCompetitions(){
         return Stream.concat(
                 EventType.countries().stream(),
-                Stream.of(EventType.ALL)
+                EventType.competitions().stream()
         ).collect(Collectors.toList());
     }
 

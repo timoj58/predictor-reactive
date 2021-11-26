@@ -35,7 +35,7 @@ class StartupServiceImplTest {
     @Test
     public void test() throws InterruptedException {
 
-        startupService.start();
+        startupService.conduct();
 
         Thread.sleep(1000L);
 

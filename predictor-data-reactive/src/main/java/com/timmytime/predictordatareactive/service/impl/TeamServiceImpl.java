@@ -124,8 +124,8 @@ public class TeamServiceImpl implements TeamService {
                 });
     }
 
-    @PostConstruct
-    private void initDb() {
+    @Override
+    public void init() {
 
         teamRepo.findAll().count().filter(count -> count == 0).doOnNext(
                 then -> Flux.fromArray(CountryCompetitions.values())

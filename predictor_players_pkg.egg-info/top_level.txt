@@ -1,2 +1,0 @@
-predictor-ml-model
-predictor-ml-player

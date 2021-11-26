@@ -54,6 +54,7 @@ public class ShutdownServiceImpl implements ShutdownService {
     @Override
     public void shutdown() {
         log.info("shutting down");
+        //call message service first.....to log run.
         Mono.just(LambdaFunctions.SHUTDOWN)
                 .delayElement(ofMinutes(1)) //review.  probably not required
                 .map(LambdaFunctions::getFunctionName)

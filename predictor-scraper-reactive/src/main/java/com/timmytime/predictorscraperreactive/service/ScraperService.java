@@ -6,4 +6,7 @@ public interface ScraperService {
     Mono<Void> scrape();
 
     Mono<Void> historic();
+
+    Mono<Void> init();
+
 }

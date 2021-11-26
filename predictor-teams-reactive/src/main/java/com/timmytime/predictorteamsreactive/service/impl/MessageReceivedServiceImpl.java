@@ -18,9 +18,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Service("messageReceivedService")
@@ -34,6 +32,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     private final String messageHost;
     private final Boolean trainingEvaluation;
 
+    private final Deque<Message> messages = new ArrayDeque();
 
     @Autowired
     public MessageReceivedServiceImpl(
@@ -57,29 +56,13 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     @Override
     public Mono<Void> receive(Mono<Message> message) {
 
-        /*
-          TODO need to fix this into a pipeline, so only one country trains at a time.
-
-          or do it in message service, but sort of pointless.
-         */
-
         return message.doOnNext(
-                msg ->
-                        tensorflowDataService.loadOutstanding(msg.getCountry().toLowerCase(), () ->
-                                trainingService.train(i -> {
-                                    var trainingHistory = trainingHistoryService.find(Training.TRAIN_RESULTS, msg.getCountry());
-                                    return trainingHistoryService.save(
-                                            new TrainingHistory(
-                                                    trainingHistory.getType(),
-                                                    trainingHistory.getCountry(),
-                                                    trainingHistory.getToDate(),
-                                                    trainingHistory.getToDate().plusYears(i).isAfter(LocalDateTime.now()) ?
-                                                            LocalDateTime.now() : trainingHistory.getToDate().plusYears(i))
-                                    );
-                                })
-                        )
-        ).thenEmpty(Mono.empty());
+                msg -> {
+                    if(messages.isEmpty())
+                        process(msg);
 
+                    messages.add(msg);
+                }).thenEmpty(Mono.empty());
     }
 
     @Override
@@ -105,9 +88,12 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                         if (trainingEvaluation) {
                             trainingModelService.create();
                         } else {
+                            if(!messages.isEmpty())
+                                process(messages.pop());
+
                             webClientFacade.sendMessage(
                                     messageHost + "/message",
-                                    createMessage(history.getCountry().toUpperCase(), "TRAINING_COMPLETED")
+                                    createMessage(history.getCountry().toUpperCase(), "TEAMS_TRAINED")
                             );
                         }
 
@@ -138,13 +124,29 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         try {
             return new ObjectMapper().readTree(
                     new JSONObject()
-                            .put("type", type)
-                            .put("country", country)
+                            .put("event", type)
+                            .put("eventType", country)
                             .toString()
             );
         } catch (JsonProcessingException e) {
             return null;
         }
+    }
+
+    private void process(Message message){
+        tensorflowDataService.loadOutstanding(message.getEventType().toLowerCase(), () ->
+                trainingService.train(i -> {
+                    var trainingHistory = trainingHistoryService.find(Training.TRAIN_RESULTS, message.getEventType());
+                    return trainingHistoryService.save(
+                            new TrainingHistory(
+                                    trainingHistory.getType(),
+                                    trainingHistory.getCountry(),
+                                    trainingHistory.getToDate(),
+                                    trainingHistory.getToDate().plusYears(i).isAfter(LocalDateTime.now()) ?
+                                            LocalDateTime.now() : trainingHistory.getToDate().plusYears(i))
+                    );
+                })
+        );
     }
 
 }

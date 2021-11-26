@@ -40,8 +40,8 @@ public class EventsServiceTest {
 
 
     private final MessageReceivedService messageReceivedService
-            = new MessageReceivedServiceImpl("players", 0, predictionService,
-            predictionResultService, predictionMonitorService, validationService, webClientFacade);
+            = new MessageReceivedServiceImpl(0, predictionService,
+            predictionResultService, predictionMonitorService, validationService);
 
     @Test
     void predict() throws InterruptedException {
@@ -60,16 +60,13 @@ public class EventsServiceTest {
                 Flux.just(Event.builder().build())
         );
 
-        Stream.of(Messages.values()).forEach(msg ->
                 messageReceivedService.receive(
                         Mono.just(
                                 Message.builder()
-                                        .type(msg)
                                         .country("GREECE")
                                         .build()
                         )
-                ).subscribe()
-        );
+                ).subscribe();
 
         Thread.sleep(250);
 

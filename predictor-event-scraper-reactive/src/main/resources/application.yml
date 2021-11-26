@@ -1,6 +1,6 @@
 # general properties
 server:
-  port: 8098
+  port: 8102
 
 spring:
   application:
@@ -13,9 +13,9 @@ springdoc:
     path: /swagger-ui.html
 
 clients:
-  data: http://127.0.0.1:8092
-  event-data: http://127.0.0.1:8093
-  message: http://127.0.0.1:8091
+  data: http://127.0.0.1:8103
+  event-data: http://127.0.0.1:8104
+  message: http://127.0.0.1:8100
 
 fixtures:
   url: "https://www.espn.co.uk/soccer/fixtures/_/date/{date}/league/{competition}"

@@ -23,4 +23,5 @@ public class PredictorCycle {
     private final UUID id;
     private final LocalDateTime date;
     private final List<CycleEvent> cycleEvents;
+    private final List<ActionEvent> actionEvents;
 }

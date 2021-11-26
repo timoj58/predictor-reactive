@@ -39,4 +39,12 @@ public class ScrapeFunction {
                 (scrape) -> ServerResponse.ok().build(scraperService.historic()));
     }
 
+    @Bean
+    @RouterOperation(beanClass = ScraperService.class, beanMethod = "init")
+    RouterFunction<ServerResponse> init() {
+
+        return route(RequestPredicates.POST("/init"),
+                (scrape) -> ServerResponse.ok().build(scraperService.init()));
+    }
+
 }

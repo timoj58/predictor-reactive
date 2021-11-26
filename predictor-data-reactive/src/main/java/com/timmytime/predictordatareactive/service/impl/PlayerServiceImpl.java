@@ -127,8 +127,8 @@ public class PlayerServiceImpl implements PlayerService {
         return player;
     }
 
-   @PostConstruct
-    private void initDb(){
+    @Override
+    public void init(){
         playerRepo.findAll().count().filter(count -> count == 0).subscribe(
                 then -> Flux.fromStream(
                         IntStream.range(0, 10000).boxed()

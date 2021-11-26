@@ -1,16 +1,16 @@
 # general properties
 server:
-  port: 8093
+  port: 8104
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
 clients:
-  data: http://localhost:8092
+  data: http://localhost:8103
 
 connection:
   details:
-    host: 'localhost'
+    host: 172.22.0.16
     port: 27017
     database: 'predictor-db'
     username: 'predictor'

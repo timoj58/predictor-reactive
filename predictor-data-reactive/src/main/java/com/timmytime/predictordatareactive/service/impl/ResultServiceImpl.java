@@ -70,8 +70,8 @@ public class ResultServiceImpl implements ResultService {
                 });
     }
 
-    @PostConstruct
-    private void init() {
+   @Override
+   public void init() {
         resultRepo.deleteAll().subscribe();
     }
 

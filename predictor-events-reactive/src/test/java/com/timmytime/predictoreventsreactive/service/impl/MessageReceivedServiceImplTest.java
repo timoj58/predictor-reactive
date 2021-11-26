@@ -31,9 +31,9 @@ class MessageReceivedServiceImplTest {
             new ValidationServiceImpl("data", eventOutcomeService,webClientFacade);
 
     private final MessageReceivedService messageReceivedService
-            = new MessageReceivedServiceImpl("players", 0,
+            = new MessageReceivedServiceImpl( 0,
             predictionService, predictionResultService, predictionMonitorService,
-            validationService, webClientFacade);
+            validationService);
 
     @Test
     void receive() throws InterruptedException {
@@ -50,13 +50,11 @@ class MessageReceivedServiceImplTest {
                         .build()));
         when(webClientFacade.getMatch(any())).thenReturn(Mono.just(Match.builder().build()));
 
-        Stream.of(Messages.values())
-                .forEach(msg ->
+
                         messageReceivedService.receive(
                                 Mono.just(Message.builder()
-                                        .country("GREECE")
-                                        .type(msg).build())
-                        ).subscribe());
+                                        .country("GREECE").build())
+                        ).subscribe();
 
         Thread.sleep(250);
 

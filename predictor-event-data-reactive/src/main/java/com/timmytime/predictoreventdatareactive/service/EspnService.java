@@ -87,8 +87,7 @@ public class EspnService {
         return 4;
     }
 
-    @PostConstruct
-    private void init() {
+    public void init() {
         eventOddsService.delete(Providers.ESPN_ODDS).subscribe();
     }
 }

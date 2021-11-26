@@ -2,6 +2,7 @@ package com.timmytime.predictorclientreactive.router;
 
 import com.timmytime.predictorclientreactive.handler.MessageHandler;
 import com.timmytime.predictorclientreactive.service.MessageReceivedService;
+import com.timmytime.predictorclientreactive.service.StartupService;
 import com.timmytime.predictorclientreactive.service.VocabService;
 import com.timmytime.predictorclientreactive.service.impl.BetServiceImpl;
 import org.springdoc.core.annotations.RouterOperation;
@@ -36,12 +37,11 @@ public class MessageFunction {
     }
 
     @Bean
-    @RouterOperation(beanClass = BetServiceImpl.class, beanMethod = "load")
-    RouterFunction<ServerResponse> test(MessageHandler messageHandler) {
-
-        return route(RequestPredicates.POST("/test")
-                        .and(RequestPredicates.accept(MediaType.APPLICATION_STREAM_JSON)),
-                messageHandler::test);
+    @RouterOperation(beanClass = StartupService.class, beanMethod = "start")
+    RouterFunction<ServerResponse> start(MessageHandler messageHandler) {
+        return route(RequestPredicates.POST("/start")
+                        .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON))
+                , messageHandler::start);
     }
 
 }

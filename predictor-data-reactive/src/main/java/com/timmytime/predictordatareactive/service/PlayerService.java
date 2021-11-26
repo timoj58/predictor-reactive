@@ -21,4 +21,6 @@ public interface PlayerService {
 
     Flux<Player> findAll();
 
+    void init();
+
  }

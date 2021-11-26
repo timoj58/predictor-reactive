@@ -10,4 +10,6 @@ public interface ResultService {
     Mono<Result> findByMatch(Integer matchId);
 
     void repair();
+
+    void init();
 }

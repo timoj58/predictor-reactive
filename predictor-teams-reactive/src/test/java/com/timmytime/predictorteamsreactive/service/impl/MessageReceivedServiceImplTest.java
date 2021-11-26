@@ -8,6 +8,7 @@ import com.timmytime.predictorteamsreactive.service.TensorflowDataService;
 import com.timmytime.predictorteamsreactive.service.TrainingHistoryService;
 import com.timmytime.predictorteamsreactive.service.TrainingModelService;
 import com.timmytime.predictorteamsreactive.service.TrainingService;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
@@ -25,27 +26,26 @@ class MessageReceivedServiceImplTest {
     WebClientFacade webClientFacade = mock(WebClientFacade.class);
 
     private final MessageReceivedServiceImpl messageReceivedService
-            = new MessageReceivedServiceImpl("events", "players", false,
+            = new MessageReceivedServiceImpl("events", false,
             trainingHistoryService, trainingModelService, trainingService, tensorflowDataService, webClientFacade);
 
     @Test
     void receiveNotStart() {
         messageReceivedService.receive(Mono.just(Message.builder()
-                .competition("england_1")
                 .country("england").build())).subscribe();
 
-        verify(webClientFacade, never()).sendMessage(anyString(), any());
-        verify(tensorflowDataService, never()).loadOutstanding(anyString(), any());
+        messageReceivedService.receive(Mono.just(Message.builder()
+                .country("greece").build())).subscribe();
+
+        verify(tensorflowDataService, atMostOnce()).loadOutstanding(anyString(), any());
     }
 
 
     @Test
     void receiveStart() {
         messageReceivedService.receive(Mono.just(Message.builder()
-                .competition("greece_1")
                 .country("greece").build())).subscribe();
 
-        verify(webClientFacade, atLeastOnce()).sendMessage(anyString(), any());
         verify(tensorflowDataService, atLeastOnce()).loadOutstanding(anyString(), any());
     }
 

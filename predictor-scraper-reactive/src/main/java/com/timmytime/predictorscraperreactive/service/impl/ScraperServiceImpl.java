@@ -88,8 +88,8 @@ public class ScraperServiceImpl implements ScraperService {
 
     }
 
-    @PostConstruct
-    private void init(){
+    @Override
+    public Mono<Void> init(){
         //if we have no history based on historic run.
         var count = scraperHistoryRepo.count();
 
@@ -97,7 +97,7 @@ public class ScraperServiceImpl implements ScraperService {
             ScraperHistory scraperHistory = new ScraperHistory();
 
             scraperHistory.setId(UUID.randomUUID());
-            scraperHistory.setDate(LocalDateTime.parse("19/10/2021", DateTimeFormatter.ofPattern("d/MM/yyyy")));
+            scraperHistory.setDate(LocalDate.parse("19/10/2021", DateTimeFormatter.ofPattern("d/MM/yyyy")).atStartOfDay());
             scraperHistory.setDaysScraped((int)
                     Duration.between(
                             scraperHistory.getDate(),
@@ -106,6 +106,8 @@ public class ScraperServiceImpl implements ScraperService {
 
             scraperHistoryRepo.save(scraperHistory);
         }
+
+        return Mono.empty();
     }
 
 }
