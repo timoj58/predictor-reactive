@@ -15,10 +15,18 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class TeamFunction {
 
     @Bean
-    @RouterOperation(beanClass = TeamService.class, beanMethod = "getTeams")
+    @RouterOperation(beanClass = TeamService.class, beanMethod = "getTeamsFlux")
     RouterFunction<ServerResponse> getTeamsByCountry(TeamHandler teamHandler) {
         return route(RequestPredicates.GET("/teams/country/{country}")
                 , teamHandler::findByCountry);
+    }
+
+
+    @Bean
+    @RouterOperation(beanClass = TeamService.class, beanMethod = "getMatchTeams")
+    RouterFunction<ServerResponse> getMatchTeams(TeamHandler teamHandler) {
+        return route(RequestPredicates.GET("/match/teams/{competition}")
+                , teamHandler::getMatchTeams);
     }
 
 }

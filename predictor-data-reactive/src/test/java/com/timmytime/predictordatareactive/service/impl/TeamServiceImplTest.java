@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@Disabled
 class TeamServiceImplTest {
 
     private static final TeamRepo teamRepo = mock(TeamRepo.class);
@@ -40,51 +40,31 @@ class TeamServiceImplTest {
         ).thenReturn(Flux.fromStream(teams.stream()));
     }
 
-
     @Test
-    public void findByIdTest() throws InterruptedException {
+    void matchTeams(){
 
-        List<Team> teams = new ArrayList<>();
+        var home = UUID.randomUUID();
+        var away = UUID.randomUUID();
 
-        Team test = new Team();
-        test.setLabel("something united");
-        test.setCountry("england");
-        test.setCompetition("england_1");
-        test.setId(teamToFind);
+        when(teamRepo.findByCompetitionAndLabel("england_1", "away"))
+                .thenReturn(Mono.just(Team.builder()
+                        .id(away)
+                        .label("away").build()));
 
-        teams.add(test);
+        when(teamRepo.findByCompetitionAndLabel("england_1", "home"))
+                .thenReturn(Mono.just(Team.builder()
+                        .id(home)
+                        .label("home").build()));
 
-        when(
-                teamRepo.findAll()
-        ).thenReturn(Flux.fromStream(teams.stream()));
+        var result = teamService.getMatchTeams("england_1", "home", "away").block();
 
-        assertTrue(
-                teamService.find(teamToFind, "england").getId().equals(teamToFind)
-        );
+        assertTrue(result.getAway().get().getId().equals(away) &&
+                result.getHome().get().getId().equals(home));
+
     }
 
-    @Test
-    public void findByLabelTest() throws InterruptedException {
 
-        List<Team> teams = new ArrayList<>();
 
-        Team test = new Team();
-        test.setLabel("something united");
-        test.setCountry("england");
-        test.setCompetition("england_1");
-        test.setId(teamToFind);
-
-        teams.add(test);
-
-        when(
-                teamRepo.findAll()
-        ).thenReturn(Flux.fromStream(teams.stream()));
-
-        assertTrue(
-                teamService.getTeam("something u", "england", "").get().getId().equals(teamToFind)
-        );
-
-    }
 
 
 }

@@ -58,7 +58,7 @@ public class ScraperTrackerServiceImpl implements ScraperTrackerService {
                     latch.put(competition, new AtomicBoolean(Boolean.FALSE));
                 });
 
-        Flux<Triple<CompetitionFixtureCodes, String, TrackerQueueAction>> trackerQueue = Flux.push(sink ->
+        Flux<Triple<CompetitionFixtureCodes, String, TrackerQueueAction>> trackerQueue = Flux.create(sink ->
                 ScraperTrackerServiceImpl.this.matchTracker = sink::next, FluxSink.OverflowStrategy.BUFFER);
 
         trackerQueue.limitRate(1).subscribe(this::trackerQueueHandler);

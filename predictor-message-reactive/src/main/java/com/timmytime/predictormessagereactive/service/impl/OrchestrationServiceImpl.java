@@ -1,21 +1,24 @@
 package com.timmytime.predictormessagereactive.service.impl;
 
 import com.timmytime.predictormessagereactive.action.EventAction;
+import com.timmytime.predictormessagereactive.configuration.HostsConfiguration;
 import com.timmytime.predictormessagereactive.enumerator.Action;
 import com.timmytime.predictormessagereactive.enumerator.Event;
 import com.timmytime.predictormessagereactive.enumerator.EventType;
-import com.timmytime.predictormessagereactive.facade.LambdaFacade;
 import com.timmytime.predictormessagereactive.facade.WebClientFacade;
 import com.timmytime.predictormessagereactive.model.ActionEvent;
 import com.timmytime.predictormessagereactive.model.CycleEvent;
 import com.timmytime.predictormessagereactive.model.PredictorCycle;
 import com.timmytime.predictormessagereactive.repo.PredictorCycleRepo;
+import com.timmytime.predictormessagereactive.request.Message;
+import com.timmytime.predictormessagereactive.service.InitService;
 import com.timmytime.predictormessagereactive.service.OrchestrationService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -66,15 +69,21 @@ public class OrchestrationServiceImpl implements OrchestrationService {
     @Autowired
     public OrchestrationServiceImpl(
             WebClientFacade webClientFacade,
-            LambdaFacade lambdaFacade,
-            PredictorCycleRepo predictorCycleRepo
+            PredictorCycleRepo predictorCycleRepo,
+            InitService initService,
+            HostsConfiguration hostsConfiguration
     ) {
-
         eventManager.put(Action.TRAIN_TEAMS, EventAction.builder()
                 .processed(Boolean.FALSE)
                 .handler((ce) -> training.apply(
                         ce,
-                        () -> EventType.countries().forEach(country -> webClientFacade.train(""))))
+                        () -> EventType.countries().forEach(country -> webClientFacade.train(
+                                hostsConfiguration.getTeams()+"/message",
+                                Message.builder()
+                                        .event(Event.TEAMS_TRAINED)
+                                        .eventType(country)
+                                        .build()
+                        ))))
                 .build());
 
         eventManager.put(Action.TRAIN_PLAYERS, EventAction.builder()
@@ -82,7 +91,12 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                 //input data loaded for all competitions, output -> train all
                 .handler((ce) -> training.apply(
                         ce,
-                        () -> webClientFacade.train("")))
+                        () -> webClientFacade.train(hostsConfiguration.getPlayers()+"/message",
+                                Message.builder()
+                                        .event(Event.PLAYERS_TRAINED)
+                                        .eventType(EventType.ALL)
+                                        .build()
+                                )))
                 .build());
 
         eventManager.put(Action.PREDICT_TEAMS, EventAction.builder()
@@ -102,8 +116,10 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                 .processed(Boolean.FALSE)
                 .handler((ce) -> {
                     if (ce.stream().anyMatch(m -> m.getMessage().getEvent().equals(Event.START))) {
-                        CompletableFuture.runAsync(() -> webClientFacade.scrape(""))
-                                .thenRun(() -> webClientFacade.scrape(""));
+                        initService.init().doFinally(scrape ->
+                             CompletableFuture.runAsync(() -> webClientFacade.scrape(hostsConfiguration.getDataScraper()+"/scrape"))
+                                .thenRun(() -> webClientFacade.scrape(hostsConfiguration.getEventsScraper()+"/scrape")))
+                                .subscribe();
                         return true;
                     }
                     return false;
@@ -134,7 +150,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                                         .date(LocalDateTime.now())
                                         .actionEvents(actions)
                                         .build()
-                        ).subscribe(result -> lambdaFacade.shutdown());
+                        ).subscribe();
                         return true;
                     }
                     return false;
@@ -144,7 +160,6 @@ public class OrchestrationServiceImpl implements OrchestrationService {
 
     @Override
     public void process(CycleEvent cycleEvent) {
-
         Mono.just(cycleEvent)
                 .doOnNext(events::add)
                 .doFinally(check ->

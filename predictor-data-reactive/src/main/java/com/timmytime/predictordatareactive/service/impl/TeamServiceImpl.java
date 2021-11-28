@@ -3,6 +3,7 @@ package com.timmytime.predictordatareactive.service.impl;
 import com.timmytime.predictordatareactive.enumerator.CountryCompetitions;
 import com.timmytime.predictordatareactive.model.Team;
 import com.timmytime.predictordatareactive.repo.TeamRepo;
+import com.timmytime.predictordatareactive.response.MatchTeams;
 import com.timmytime.predictordatareactive.service.TeamService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,6 @@ public class TeamServiceImpl implements TeamService {
 
         this.teamRepo = teamRepo;
         loadLookup();
-
     }
 
 
@@ -47,6 +47,11 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public List<Team> getTeams(String country) {
         return new ArrayList<>(lookup.get(country).values());
+    }
+
+    @Override
+    public Flux<Team> getTeamsFlux(String country) {
+        return teamRepo.findByCountry(country);
     }
 
     @Override
@@ -104,6 +109,25 @@ public class TeamServiceImpl implements TeamService {
         return placeholder;
     }
 
+    @Override
+    public Mono<MatchTeams> getMatchTeams(String competition, String home, String away) {
+        var homeTeam = teamRepo.findByCompetitionAndLabel(competition, home)
+                .switchIfEmpty(Mono.just(
+                        Team.builder().build()
+                ));
+        var awayTeam = teamRepo.findByCompetitionAndLabel(competition, away)
+             .switchIfEmpty(Mono.just(
+                Team.builder().build()
+        ));
+
+        return homeTeam.zipWith(awayTeam, (h,a) ->
+                MatchTeams.builder()
+                        .home(h.getId() != null ? Optional.of(h) : Optional.empty())
+                        .away(a.getId() != null ? Optional.of(a) : Optional.empty())
+                        .build());
+
+    }
+
     private void loadLookup() {
         this.teamRepo.findAll().groupBy(Team::getCountry)
                 .flatMap(Flux::collectList)
@@ -145,8 +169,7 @@ public class TeamServiceImpl implements TeamService {
                                     ).subscribe())
                                 )
                         )
-        ).doFinally(finishLookup ->
-                Mono.just(1).delayElement(Duration.ofSeconds(10)).subscribe(load -> loadLookup()))
+        ).doFinally(finishLookup -> loadLookup())
         .subscribe();
     }
 }

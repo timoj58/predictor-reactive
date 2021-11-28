@@ -71,7 +71,7 @@ public class TeamsServiceTest {
                 .thenReturn(Flux.just(Match.builder().build()));
 
         messageReceivedService.receive(Mono.just(
-                Message.builder().country("greece").build()
+                Message.builder().eventType("ENGLAND").build()
         )).subscribe();
 
         verify(webClientFacade, atLeastOnce()).train(anyString());

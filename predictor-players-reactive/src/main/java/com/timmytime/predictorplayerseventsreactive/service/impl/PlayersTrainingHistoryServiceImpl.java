@@ -48,8 +48,8 @@ public class PlayersTrainingHistoryServiceImpl implements PlayersTrainingHistory
         return Optional.ofNullable(playersTrainingHistoryRepo.findFirstByTypeOrderByDateDesc(type));
     }
 
-    @PostConstruct
-    private void init() {
+    @Override
+    public void init() {
 
         Arrays.stream(FantasyEventTypes.values())
                 .filter(f -> f.getPredict() == Boolean.TRUE)

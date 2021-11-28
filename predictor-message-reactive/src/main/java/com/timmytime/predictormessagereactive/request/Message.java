@@ -5,11 +5,13 @@ import com.timmytime.predictormessagereactive.enumerator.EventType;
 import lombok.*;
 
 @Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Message {
 
-    private final Event event;
-    private final EventType eventType;
+    private Event event;
+    private EventType eventType;
 
 }

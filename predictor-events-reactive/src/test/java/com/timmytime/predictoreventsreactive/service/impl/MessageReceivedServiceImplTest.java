@@ -53,7 +53,7 @@ class MessageReceivedServiceImplTest {
 
                         messageReceivedService.receive(
                                 Mono.just(Message.builder()
-                                        .country("GREECE").build())
+                                        .eventType("GREECE").build())
                         ).subscribe();
 
         Thread.sleep(250);

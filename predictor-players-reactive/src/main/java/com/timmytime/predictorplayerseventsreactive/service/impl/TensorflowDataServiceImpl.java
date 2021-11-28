@@ -31,7 +31,7 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
     ) {
         this.playerMatchRepo = playerMatchRepo;
 
-        Flux<PlayerMatch> receiver = Flux.push(sink -> consumer = sink::next, FluxSink.OverflowStrategy.BUFFER);
+        Flux<PlayerMatch> receiver = Flux.create(sink -> consumer = sink::next, FluxSink.OverflowStrategy.BUFFER);
         receiver.limitRate(20).subscribe(this::process);
     }
 

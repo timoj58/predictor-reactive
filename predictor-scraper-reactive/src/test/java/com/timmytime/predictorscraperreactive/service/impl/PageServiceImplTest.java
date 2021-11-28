@@ -57,7 +57,7 @@ class PageServiceImplTest {
     }
 
     @Test
-    void addPageRequestForMatch() {
+    void addPageRequestForMatch() throws InterruptedException {
 
         var url = "https://www.espn.co.uk/football/match/_/gameId/278345";
 
@@ -69,6 +69,8 @@ class PageServiceImplTest {
         pageService.addPageRequest(
                 Triple.of(CompetitionFixtureCodes.ITALY_1, ScraperType.MATCH, url)
         );
+
+        Thread.sleep(250);
 
         verify(scraperTrackerService, atLeastOnce()).incrementRequest();
         verify(scraperTrackerService, atLeastOnce()).removeMatch(any());

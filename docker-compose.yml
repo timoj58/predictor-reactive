@@ -7,12 +7,27 @@ services:
     ports:
       - "27018:27017"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: predictor
-      MONGO_INITDB_ROOT_PASSWORD: predictor
       MONGO_INITDB_DATABASE: predictor-db
     networks:
       predictornet:
         ipv4_address: 172.22.0.16
+
+  mongo-seed:
+    image: stefanwalther/mongo-seed
+    container_name: mongo-seed
+    environment:
+      - MONGODB_HOST=172.22.0.16
+      - MONGODB_PORT=27017
+    volumes:
+      - ./db-seed:/data
+    depends_on:
+      - mongo
+    command: [
+         "mongorestore --host 172.22.0.16 --port 27017 --db predictor-db -c team /data/team.bson"
+    ]
+    networks:
+      predictornet:
+        ipv4_address: 172.22.0.15
 
   message:
     image: timmytime/predictor-message-reactive:latest
@@ -58,6 +73,33 @@ services:
     networks:
       predictornet:
         ipv4_address: 172.22.0.22
+
+  teams:
+    image: timmytime/predictor-teams-reactive:latest
+    container_name: predictor-teams-reactive
+    ports:
+      - "8105:8105"
+    networks:
+      predictornet:
+        ipv4_address: 172.22.0.23
+
+  team-events:
+    image: timmytime/predictor-events-reactive:latest
+    container_name: predictor-events-reactive
+    ports:
+      - "8106:8106"
+    networks:
+      predictornet:
+        ipv4_address: 172.22.0.24
+
+  players:
+    image: timmytime/predictor-players-reactive:latest
+    container_name: predictor-players-reactive
+    ports:
+      - "8107:8107"
+    networks:
+      predictornet:
+        ipv4_address: 172.22.0.25
 
 networks:
   predictornet:

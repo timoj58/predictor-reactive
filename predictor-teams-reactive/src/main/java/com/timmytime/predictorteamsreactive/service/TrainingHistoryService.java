@@ -15,4 +15,6 @@ public interface TrainingHistoryService {
     TrainingHistory next(Training type, String country, Integer interval);
 
     void completeTraining(TrainingHistory trainingHistory);
+
+    void init();
 }

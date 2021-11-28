@@ -1,6 +1,7 @@
 package com.timmytime.predictordatareactive.handler;
 
 import com.timmytime.predictordatareactive.model.Team;
+import com.timmytime.predictordatareactive.response.MatchTeams;
 import com.timmytime.predictordatareactive.service.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -18,8 +19,19 @@ public class TeamHandler {
 
     public Mono<ServerResponse> findByCountry(ServerRequest serverRequest) {
 
-        return ServerResponse.ok().bodyValue(
-                teamService.getTeams(serverRequest.pathVariable("country"))
+        return ServerResponse.ok().body(
+                teamService.getTeamsFlux(serverRequest.pathVariable("country")),
+                Team.class
+        );
+    }
+
+    public Mono<ServerResponse> getMatchTeams(ServerRequest serverRequest) {
+
+        return ServerResponse.ok().body(
+                teamService.getMatchTeams(serverRequest.pathVariable("competition"),
+                        serverRequest.queryParam("home").get(),
+                        serverRequest.queryParam("away").get()),
+                MatchTeams.class
         );
     }
 

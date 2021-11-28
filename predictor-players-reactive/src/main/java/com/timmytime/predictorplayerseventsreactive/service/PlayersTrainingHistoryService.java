@@ -17,4 +17,6 @@ public interface PlayersTrainingHistoryService {
     Mono<PlayersTrainingHistory> find(FantasyEventTypes type);
 
     Optional<PlayersTrainingHistory> findOptional(FantasyEventTypes type);
+
+    void init();
 }

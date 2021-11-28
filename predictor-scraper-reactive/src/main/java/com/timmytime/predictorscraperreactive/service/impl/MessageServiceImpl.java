@@ -42,7 +42,7 @@ public class MessageServiceImpl implements MessageService {
         this.webClientFacade = webClientFacade;
 
 
-        Flux<JsonNode> messageQueue = Flux.push(sink ->
+        Flux<JsonNode> messageQueue = Flux.create(sink ->
                 MessageServiceImpl.this.messageConsumer = sink::next, FluxSink.OverflowStrategy.BUFFER);
 
         messageQueue.limitRate(10).subscribe(this::sendMessage);

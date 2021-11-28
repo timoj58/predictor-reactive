@@ -32,10 +32,10 @@ class MessageReceivedServiceImplTest {
     @Test
     void receiveNotStart() {
         messageReceivedService.receive(Mono.just(Message.builder()
-                .country("england").build())).subscribe();
+                .eventType("ENGLAND").build())).subscribe();
 
         messageReceivedService.receive(Mono.just(Message.builder()
-                .country("greece").build())).subscribe();
+                .eventType("GREECE").build())).subscribe();
 
         verify(tensorflowDataService, atMostOnce()).loadOutstanding(anyString(), any());
     }
@@ -44,7 +44,7 @@ class MessageReceivedServiceImplTest {
     @Test
     void receiveStart() {
         messageReceivedService.receive(Mono.just(Message.builder()
-                .country("greece").build())).subscribe();
+                .eventType("GREECE").build())).subscribe();
 
         verify(tensorflowDataService, atLeastOnce()).loadOutstanding(anyString(), any());
     }

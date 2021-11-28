@@ -58,6 +58,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
 
         return message.doOnNext(
                 msg -> {
+                    //fix this.  TODO.  need to manage it by receipts again.  not thread safe.
                     if(messages.isEmpty())
                         process(msg);
 

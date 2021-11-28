@@ -1,32 +1,30 @@
 # general properties
 server:
-  port: 8095
+  port: 8107
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
 clients:
-  data: http://localhost:8092
-  training: http://localhost
-  message:
+  data: http://172.22.0.21:8103
+  message: http://172.22.0.18:8100
+  training: http://172.22.0.18:8100/players
   ml-train-goals: /train/goals/<from>/<to>/<receipt>
   ml-train-assists: /train/assists/<from>/<to>/<receipt>
   ml-train-yellow: /train/yellow-card/<from>/<to>/<receipt>
 
 connection:
   details:
-    host: 'localhost'
+    host: 172.22.0.16
     port: 27017
     database: 'predictor-db'
-    username: 'predictor'
-    password: 'predictor'
 
 spring:
   application:
     name: predictor-players-reactive
   data:
     mongodb:
-      uri: mongodb://${connection.details.username}:${connection.details.password}@${connection.details.host}:${connection.details.port}/${connection.details.database}?authSource=admin&authMechanism=SCRAM-SHA-1
+      uri: mongodb://${connection.details.host}:${connection.details.port}/${connection.details.database}
       auto-index-creation: true
   config:
     import:  "optional:configserver:http://172.31.24.130:8888"

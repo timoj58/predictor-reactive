@@ -4,7 +4,6 @@ import com.timmytime.predictoreventdatareactive.handler.InitHandler;
 import com.timmytime.predictoreventdatareactive.service.InitService;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -18,8 +17,6 @@ public class InitFunction {
     @Bean
     @RouterOperation(beanClass = InitService.class, beanMethod = "init")
     RouterFunction<ServerResponse> init(InitHandler initHandler) {
-        return route(RequestPredicates.POST("/init")
-                        .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON))
-                , initHandler::init);
+        return route(RequestPredicates.POST("/init"), initHandler::init);
     }
 }

@@ -13,6 +13,7 @@ import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -28,7 +29,7 @@ public class EventOddsServiceImpl implements EventOddsService {
     ) {
         this.eventOddsRepo = eventOddsRepo;
 
-        Flux<EventOdds> events = Flux.push(sink ->
+        Flux<EventOdds> events = Flux.create(sink ->
                 EventOddsServiceImpl.this.receive = sink::next, FluxSink.OverflowStrategy.BUFFER);
 
         events.limitRate(1).subscribe(this::process);
@@ -57,6 +58,20 @@ public class EventOddsServiceImpl implements EventOddsService {
     }
 
     private void process(EventOdds eventOdds) {
-        create(eventOdds).doOnError(e -> log.error("saving error", e)).subscribe();
+        eventOdds.getMatchTeams().subscribe(
+                matchTeams -> {
+                    var homeTeam = matchTeams.getHome();
+                    var awayTeam = matchTeams.getAway();
+
+                    if(homeTeam.isPresent() && awayTeam.isPresent()) {
+                        create(eventOdds.toBuilder()
+                                .teams(Arrays.asList(
+                                        homeTeam.get().getId(), awayTeam.get().getId()
+                                ))
+                                .build()).doOnError(e -> log.error("saving error", e)).subscribe();
+                    }else{
+                        log.error("one or more teams NOF");
+                    }
+                });
     }
 }

@@ -13,9 +13,8 @@ springdoc:
     path: /swagger-ui.html
 
 clients:
-  data: http://127.0.0.1:8103
-  event-data: http://127.0.0.1:8104
-  message: http://127.0.0.1:8100
+  event-data: http://172.22.0.22:8104
+  message: http://172.22.0.18:8100
 
 fixtures:
   url: "https://www.espn.co.uk/soccer/fixtures/_/date/{date}/league/{competition}"

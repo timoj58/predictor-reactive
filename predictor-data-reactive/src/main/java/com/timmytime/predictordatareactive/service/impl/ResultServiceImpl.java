@@ -30,7 +30,7 @@ public class ResultServiceImpl implements ResultService {
     ) {
         this.resultRepo = resultRepo;
 
-        Flux<Result> results = Flux.push(sink ->
+        Flux<Result> results = Flux.create(sink ->
                 ResultServiceImpl.this.receive = sink::next, FluxSink.OverflowStrategy.BUFFER);
 
         results.subscribe(matchFactory::createMatch);

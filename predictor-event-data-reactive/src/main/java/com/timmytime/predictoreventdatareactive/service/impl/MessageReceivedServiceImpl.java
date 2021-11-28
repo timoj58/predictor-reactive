@@ -29,7 +29,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     ) {
         this.providerService = providerService;
 
-        Flux<JsonNode> results = Flux.push(sink ->
+        Flux<JsonNode> results = Flux.create(sink ->
                 MessageReceivedServiceImpl.this.receive = sink::next, FluxSink.OverflowStrategy.BUFFER);
 
         results.limitRate(1).delayElements(Duration.ofMillis(500)).subscribe(this::process);

@@ -38,7 +38,7 @@ public class PageServiceImpl implements PageService {
         this.scraperFactory = scraperFactory;
         this.messageService = messageService;
 
-        Flux<Triple<CompetitionFixtureCodes, ScraperType, String>> requestQueue = Flux.push(sink ->
+        Flux<Triple<CompetitionFixtureCodes, ScraperType, String>> requestQueue = Flux.create(sink ->
                 PageServiceImpl.this.requestConsumer = sink::next, FluxSink.OverflowStrategy.BUFFER);
 
         requestQueue.limitRate(1).subscribe(this::process);

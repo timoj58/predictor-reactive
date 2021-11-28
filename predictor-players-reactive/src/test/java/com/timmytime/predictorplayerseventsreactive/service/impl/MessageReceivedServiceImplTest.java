@@ -44,8 +44,7 @@ class MessageReceivedServiceImplTest {
 
                                 messageReceivedService.receive(Mono.just(
                                         Message.builder()
-                                                .country(c.name().toLowerCase())
-                                                .competition(comp)
+                                                .eventType("ALL")
                                                 .build()
                                 )).subscribe()));
 

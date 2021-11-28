@@ -40,7 +40,7 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
         this.eventsHost = eventsHost;
         this.dataHost = dataHost;
         this.webClientFacade = webClientFacade;
-        Flux<CountryMatch> receiver = Flux.push(sink -> consumer = sink::next, FluxSink.OverflowStrategy.BUFFER);
+        Flux<CountryMatch> receiver = Flux.create(sink -> consumer = sink::next, FluxSink.OverflowStrategy.BUFFER);
         receiver.subscribe(this::process);
 
         Arrays.asList(CountryCompetitions.values())

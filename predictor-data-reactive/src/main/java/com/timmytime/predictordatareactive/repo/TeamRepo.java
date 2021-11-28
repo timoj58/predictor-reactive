@@ -10,5 +10,6 @@ import java.util.UUID;
 
 @Repository
 public interface TeamRepo extends ReactiveMongoRepository<Team, UUID> {
-
+    Flux<Team> findByCountry(String country);
+    Mono<Team> findByCompetitionAndLabel(String competition, String label);
 }

@@ -4,6 +4,7 @@ import com.timmytime.predictormessagereactive.model.CycleEvent;
 import com.timmytime.predictormessagereactive.request.Message;
 import com.timmytime.predictormessagereactive.service.MessageReceivedService;
 import com.timmytime.predictormessagereactive.service.OrchestrationService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -12,6 +13,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.function.Consumer;
 
+@Slf4j
 @Service
 public class MessageReceivedServiceImpl implements MessageReceivedService {
 
@@ -24,9 +26,8 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     ){
         this.orchestrationService = orchestrationService;
 
-        Flux<Message> receiver = Flux.push(sink -> consumer = sink::next, FluxSink.OverflowStrategy.BUFFER);
+        Flux<Message> receiver = Flux.create(sink -> consumer = sink::next, FluxSink.OverflowStrategy.BUFFER);
         receiver.limitRate(1).subscribe(this::process);
-
     }
 
     @Override

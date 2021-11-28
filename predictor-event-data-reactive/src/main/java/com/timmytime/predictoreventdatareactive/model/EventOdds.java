@@ -3,7 +3,9 @@ package com.timmytime.predictoreventdatareactive.model;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,7 +17,7 @@ import java.util.UUID;
 @Document
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 public class EventOdds {
 
     @Id
@@ -27,5 +29,7 @@ public class EventOdds {
     private LocalDateTime eventDate;
     private LocalDateTime timestamp;
     private String provider;
+    @Transient
+    private Mono<MatchTeams> matchTeams;
 
 }

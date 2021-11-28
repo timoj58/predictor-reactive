@@ -1,29 +1,31 @@
 package com.timmytime.predictormessagereactive.service.impl;
 
+import com.timmytime.predictormessagereactive.configuration.HostsConfiguration;
 import com.timmytime.predictormessagereactive.enumerator.Event;
 import com.timmytime.predictormessagereactive.enumerator.EventType;
-import com.timmytime.predictormessagereactive.facade.LambdaFacade;
 import com.timmytime.predictormessagereactive.facade.WebClientFacade;
 import com.timmytime.predictormessagereactive.model.CycleEvent;
 import com.timmytime.predictormessagereactive.repo.PredictorCycleRepo;
 import com.timmytime.predictormessagereactive.request.Message;
+import com.timmytime.predictormessagereactive.service.InitService;
 import com.timmytime.predictormessagereactive.service.OrchestrationService;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class OrchestrationServiceImplTest {
 
     private final WebClientFacade webClientFacade = mock(WebClientFacade.class);
-    private final LambdaFacade lambdaFacade = mock(LambdaFacade.class);
     private final PredictorCycleRepo predictorCycleRepo = mock(PredictorCycleRepo.class);
+    private final InitService initService = mock(InitService.class);
+    private final HostsConfiguration hostsConfiguration = mock(HostsConfiguration.class);
 
     private final OrchestrationService orchestrationService
-            = new OrchestrationServiceImpl(webClientFacade, lambdaFacade, predictorCycleRepo);
+            = new OrchestrationServiceImpl(webClientFacade, predictorCycleRepo,initService, hostsConfiguration);
 
     @Test
     void stop(){
@@ -46,6 +48,9 @@ class OrchestrationServiceImplTest {
 
     @Test
     void start() throws InterruptedException {
+
+        when(initService.init()).thenReturn(Flux.just("1"));
+
         orchestrationService.process(
                 CycleEvent.builder()
                         .message(
@@ -93,7 +98,7 @@ class OrchestrationServiceImplTest {
                                 ).build()
                 ));
 
-        verify(webClientFacade, atLeast(EventType.countries().size())).train(anyString());
+        verify(webClientFacade, atLeast(EventType.countries().size())).train(anyString(), any());
 
     }
 
@@ -127,6 +132,7 @@ class OrchestrationServiceImplTest {
 
     @Test
     void trainTeams(){
+
         EventType.competitions()
                 .forEach(competition ->   orchestrationService.process(
                         CycleEvent.builder()
@@ -138,7 +144,7 @@ class OrchestrationServiceImplTest {
                                 ).build()
                 ));
 
-        verify(webClientFacade, atLeast(EventType.countries().size())).train(anyString());
+        verify(webClientFacade, atLeast(EventType.countries().size())).train(anyString(), any());
 
     }
 

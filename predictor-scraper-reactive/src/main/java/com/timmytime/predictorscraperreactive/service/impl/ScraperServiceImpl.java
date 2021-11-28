@@ -96,8 +96,10 @@ public class ScraperServiceImpl implements ScraperService {
         if(count == 0){
             ScraperHistory scraperHistory = new ScraperHistory();
 
+            //actual data 19/10/2021
+
             scraperHistory.setId(UUID.randomUUID());
-            scraperHistory.setDate(LocalDate.parse("19/10/2021", DateTimeFormatter.ofPattern("d/MM/yyyy")).atStartOfDay());
+            scraperHistory.setDate(LocalDateTime.now().minusDays(5));
             scraperHistory.setDaysScraped((int)
                     Duration.between(
                             scraperHistory.getDate(),

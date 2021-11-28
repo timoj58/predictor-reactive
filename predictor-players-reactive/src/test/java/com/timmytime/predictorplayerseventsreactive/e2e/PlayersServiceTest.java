@@ -83,8 +83,7 @@ public class PlayersServiceTest {
                 country.getCompetitions().forEach(competition ->
                         messageReceivedService.receive(
                                 Mono.just(Message.builder()
-                                        .competition(competition)
-                                        .country(country.name()).build())
+                                        .eventType("ALL").build())
                         ).subscribe()
                 ));
 

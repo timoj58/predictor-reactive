@@ -47,7 +47,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         return message.doOnNext(
                 msg -> {
                         log.info("processing {}", msg.getEventType());
-                        validationService.resetLast(msg.getEventType().toLowerCase(), (country) ->
+                        validationService.resetLast(msg.getEventType(), (country) ->
                                 CompletableFuture.runAsync(() -> {
                                     log.info("starting predictions {}", country);
                                     validationService.validate(country);

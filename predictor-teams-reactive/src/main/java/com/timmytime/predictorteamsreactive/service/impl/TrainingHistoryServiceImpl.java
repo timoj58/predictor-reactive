@@ -60,8 +60,8 @@ public class TrainingHistoryServiceImpl implements TrainingHistoryService {
         save(trainingHistory);
     }
 
-    @PostConstruct
-    private void init() {
+    @Override
+    public void init() {
         if (trainingHistoryRepo.count() == 0) {
             log.info("initialize history");
 

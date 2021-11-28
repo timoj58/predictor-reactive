@@ -63,7 +63,7 @@ public class EventsServiceTest {
                 messageReceivedService.receive(
                         Mono.just(
                                 Message.builder()
-                                        .country("GREECE")
+                                        .eventType("GREECE")
                                         .build()
                         )
                 ).subscribe();

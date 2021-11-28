@@ -21,7 +21,6 @@ public class InitFunction {
     @RouterOperation(beanClass = InitService.class, beanMethod = "init")
     RouterFunction<ServerResponse> init(InitHandler initHandler) {
         return route(RequestPredicates.POST("/init")
-                        .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON))
                 , initHandler::init);
     }
 }
