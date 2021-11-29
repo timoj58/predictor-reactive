@@ -29,7 +29,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public void loadTeams() {
+    public void load() {
 
         fromStream(
                 of(CountryCompetitions.values())

@@ -94,7 +94,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                                     messageHost + "/message",
                                     Message.builder()
                                             .eventType("TEAMS_TRAINED")
-                                            .event(history.getCountry().toUpperCase())
+                                            .eventType(history.getCountry().toUpperCase())
                                             .build()
                             );
                         }

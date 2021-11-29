@@ -4,6 +4,7 @@ import com.timmytime.predictorclientreactive.enumerator.LambdaFunctions;
 import com.timmytime.predictorclientreactive.facade.LambdaFacade;
 import com.timmytime.predictorclientreactive.facade.S3Facade;
 import com.timmytime.predictorclientreactive.facade.WebClientFacade;
+import com.timmytime.predictorclientreactive.request.Message;
 import com.timmytime.predictorclientreactive.service.StartupService;
 import com.timmytime.predictorclientreactive.service.TeamService;
 import lombok.extern.slf4j.Slf4j;
@@ -27,10 +28,8 @@ public class StartupServiceImpl implements StartupService {
     private final LambdaFacade lambdaFacade;
     private final WebClientFacade webClientFacade;
     private final S3Facade s3Facade;
-    private final TeamService teamService;
 
-    private final String dataScraperHost;
-    private final String eventScraperHost;
+    private final String messageHost;
     private final Integer startDelay;
     private final Boolean orchestrationEnabled;
 
@@ -38,21 +37,17 @@ public class StartupServiceImpl implements StartupService {
     public StartupServiceImpl(
             @Value("${orchestration.enabled}") Boolean orchestrationEnabled,
             @Value("${delays.start}") Integer startDelay,
-            @Value("${clients.data-scraper}") String dataScraperHost,
-            @Value("${clients.event-scraper}") String eventScraperHost,
+            @Value("${clients.message}") String messageHost,
             LambdaFacade lambdaFacade,
             WebClientFacade webClientFacade,
-            S3Facade s3Facade,
-            TeamService teamService
+            S3Facade s3Facade
     ) {
         this.orchestrationEnabled = orchestrationEnabled;
         this.startDelay = startDelay;
-        this.dataScraperHost = dataScraperHost;
-        this.eventScraperHost = eventScraperHost;
+        this.messageHost = messageHost;
         this.lambdaFacade = lambdaFacade;
         this.webClientFacade = webClientFacade;
         this.s3Facade = s3Facade;
-        this.teamService = teamService;
     }
 
 
@@ -60,15 +55,14 @@ public class StartupServiceImpl implements StartupService {
     private void start() {
         if (orchestrationEnabled)
             conduct();
-        else
-            runAsync(teamService::loadTeams);
     }
 
-    private void completeStartup(String url) {//TODO this will just call message now
-        log.info("starting scrapers and loading teams");
-        runAsync(() -> webClientFacade.startScraper(dataScraperHost + url))
-                .thenRun(() -> webClientFacade.startScraper(eventScraperHost + url))
-                .thenRun(teamService::loadTeams);
+    private void completeStartup(String url) {
+        runAsync(() -> webClientFacade.sendMessage(url,
+                        Message.builder()
+                                .event("START")
+                                .eventType("ALL")
+                                .build()));
     }
 
     @Override
@@ -94,7 +88,7 @@ public class StartupServiceImpl implements StartupService {
                                         .map(LambdaFunctions::getFunctionName)
                                         .doOnNext(lambdaFacade::invoke)
                                         .doFinally(wakeup ->
-                                                just("/scrape")
+                                                just(messageHost+"/message")
                                                         .delayElement(ofMinutes(startDelay))
                                                         .subscribe(this::completeStartup))
                                         .subscribe()

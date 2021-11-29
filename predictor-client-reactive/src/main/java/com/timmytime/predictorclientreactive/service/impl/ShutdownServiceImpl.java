@@ -2,9 +2,12 @@ package com.timmytime.predictorclientreactive.service.impl;
 
 import com.timmytime.predictorclientreactive.enumerator.LambdaFunctions;
 import com.timmytime.predictorclientreactive.facade.LambdaFacade;
+import com.timmytime.predictorclientreactive.facade.WebClientFacade;
+import com.timmytime.predictorclientreactive.request.Message;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -14,21 +17,25 @@ import java.util.List;
 
 import static java.time.Duration.ofMinutes;
 import static java.util.concurrent.CompletableFuture.runAsync;
-import static java.util.stream.Stream.of;
-import static reactor.core.publisher.Flux.fromStream;
 
 @Service("shutdownService")
 @Slf4j
 public class ShutdownServiceImpl implements ShutdownService {
 
     private final LambdaFacade lambdaFacade;
+    private final WebClientFacade webClientFacade;
+    private final String messageHost;
     private final List<String> received = new ArrayList<>();
 
     @Autowired
     public ShutdownServiceImpl(
-            LambdaFacade lambdaFacade
+            @Value("${clients.message}") String messageHost,
+            LambdaFacade lambdaFacade,
+            WebClientFacade webClientFacade
     ) {
+        this.messageHost = messageHost;
         this.lambdaFacade = lambdaFacade;
+        this.webClientFacade = webClientFacade;
     }
 
     @Override
@@ -55,10 +62,19 @@ public class ShutdownServiceImpl implements ShutdownService {
     public void shutdown() {
         log.info("shutting down");
         //call message service first.....to log run.
-        Mono.just(LambdaFunctions.SHUTDOWN)
-                .delayElement(ofMinutes(1)) //review.  probably not required
-                .map(LambdaFunctions::getFunctionName)
-                .subscribe(lambdaFacade::invoke);
+        Mono.just(Message.builder()
+                        .event("STOP")
+                        .eventType("ALL")
+                        .build())
+                .doOnNext(msg -> webClientFacade.sendMessage(
+                        messageHost+"/message", msg
+                ))
+                .doFinally(shutdown ->
+                        Mono.just(LambdaFunctions.SHUTDOWN)
+                                .delayElement(ofMinutes(1)) //review.  probably not required
+                                .map(LambdaFunctions::getFunctionName)
+                                .subscribe(lambdaFacade::invoke))
+                .subscribe();
 
     }
 }

@@ -60,7 +60,7 @@ public class PlayersMatchServiceImpl implements ILoadService {
     @Autowired
     public PlayersMatchServiceImpl(
             @Value("${clients.event-data}") String eventDataHost,
-            @Value("${clients.players}") String playersHost,
+            @Value("${clients.player-events}") String playersHost,
             @Value("${delays.delay}") Integer delay,
             S3Facade s3Facade,
             WebClientFacade webClientFacade,

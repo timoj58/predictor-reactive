@@ -7,6 +7,7 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -17,7 +18,7 @@ public class FantasyResponse implements Serializable {
     Map<Integer, Double> assists = new HashMap<>();
     Map<Integer, Double> redCards = new HashMap<>();
     Map<Integer, Double> yellowCards = new HashMap<>();
-    private String opponent;
+    private UUID opponent;
     private Boolean isHome;
     private Double minutes;
     private Double conceded;

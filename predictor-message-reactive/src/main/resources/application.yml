@@ -15,7 +15,7 @@ clients:
   players: http://172.22.0.25:8107
   team-events: http://172.22.0.24:8106
   player-events: http://172.22.0.26:8108
-  client:
+  client: http://172.22.0.27:8109
 
 
 connection:

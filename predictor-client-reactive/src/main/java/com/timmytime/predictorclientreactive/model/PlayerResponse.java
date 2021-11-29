@@ -16,7 +16,7 @@ public class PlayerResponse implements Serializable {
 
     private String label;
     private UUID id;
-    private String currentTeam;
+    private UUID currentTeam;
     private UUID teamId;
     private Integer appearances;
     private Integer goals;

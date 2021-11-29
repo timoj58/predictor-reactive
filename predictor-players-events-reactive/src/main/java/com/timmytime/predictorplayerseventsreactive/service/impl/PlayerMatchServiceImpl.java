@@ -73,9 +73,7 @@ public class PlayerMatchServiceImpl implements PlayerMatchService {
                                                             .playerId(player)
                                                             .opponent(appearance.getTeamId().equals(match.getHomeTeam()) ? match.getAwayTeam() : match.getHomeTeam())
                                                             .home(appearance.getTeamId().equals(match.getHomeTeam()) ? Boolean.TRUE : Boolean.FALSE)
-                                                            .minutes(appearance.getAppearance() < 0 ? 0 : appearance.getAppearance() > 90 ? 90 : appearance.getAppearance())
                                                             .stats(new ArrayList<>())
-                                                            .conceded(appearance.getTeamId().equals(match.getHomeTeam()) ? match.getAwayScore() : match.getHomeScore())
                                                             .build();
 
                                             getStats(match.getId(), player)

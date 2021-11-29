@@ -6,14 +6,19 @@ import com.timmytime.predictorclientreactive.facade.LambdaFacade;
 import com.timmytime.predictorclientreactive.request.Message;
 import com.timmytime.predictorclientreactive.service.ILoadService;
 import com.timmytime.predictorclientreactive.service.MessageReceivedService;
+import com.timmytime.predictorclientreactive.service.PlayerService;
+import com.timmytime.predictorclientreactive.service.TeamService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static java.util.concurrent.CompletableFuture.runAsync;
 import static reactor.core.publisher.Flux.fromStream;
@@ -25,28 +30,21 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     private final List<ILoadService> loaders = new ArrayList<>();
     private final List<Messages> received = new ArrayList<>();
 
+    private final TeamService teamService;
+    private final PlayerService playerService;
     private final LambdaFacade lambdaFacade;
 
     @Autowired
     public MessageReceivedServiceImpl(
-            CompetitionServiceImpl competitionService,
-            FixtureServiceImpl fixtureService,
-            PreviousFixtureServiceImpl previousFixtureService,
-            PlayersMatchServiceImpl playersMatchService,
-            TeamsMatchServiceImpl teamsMatchService,
-            PreviousOutcomesServiceImpl previousOutcomesService,
-            BetServiceImpl betService,
-            LambdaFacade lambdaFacade
+            Collection<ILoadService> loaders,
+            LambdaFacade lambdaFacade,
+            TeamService teamService,
+            PlayerService playerService
     ) {
-        this.loaders.add(competitionService);
-        this.loaders.add(fixtureService);
-        this.loaders.add(previousFixtureService);
-        this.loaders.add(playersMatchService);
-        this.loaders.add(teamsMatchService);
-        this.loaders.add(previousOutcomesService);
-        this.loaders.add(betService);
-
+        this.loaders.addAll(loaders);
         this.lambdaFacade = lambdaFacade;
+        this.teamService = teamService;
+        this.playerService = playerService;
     }
 
 
@@ -55,8 +53,8 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
 
         return message.doOnNext(
                 msg -> {
-                    log.info("received {}", msg.getType());
-                    runAsync(() -> process(msg.getType()))
+                    log.info("received {}", msg.getEvent());
+                    runAsync(() -> process(Messages.valueOf(msg.getEvent())))
                             .thenRun(() -> {
                                 if (ready()) {
                                     log.info("all messages received");
@@ -69,10 +67,13 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     }
 
     private void load() {
-        log.info("loading");
-        fromStream(
-                loaders.stream()
-        ).subscribe(ILoadService::load);
+        log.info("loading...");
+        CompletableFuture.runAsync(teamService::load)
+                .thenRun(playerService::load)
+                .thenRun(() ->
+                        Mono.just(loaders.stream())
+                                .delayElement(Duration.ofMinutes(1))
+                                .subscribe(stream -> fromStream(stream).subscribe(ILoadService::load)));
     }
 
     private Boolean ready() {
@@ -84,10 +85,10 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         received.add(msg);
 
         switch (msg) {
-            case MATCH_PREDICTIONS:
+            case TEAMS_PREDICTED:
                 lambdaFacade.invoke(LambdaFunctions.SHUTDOWN_ML_TEAMS.getFunctionName());
                 break;
-            case PLAYER_PREDICTIONS:
+            case PLAYERS_PREDICTED:
                 lambdaFacade.invoke(LambdaFunctions.SHUTDOWN_ML_PLAYERS.getFunctionName());
                 break;
         }

@@ -54,7 +54,6 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                                     predictionService.start(country);
                                 }).thenRun(() ->
                                         Mono.just(country.toUpperCase())
-                                                .delayElement(Duration.ofMinutes(delay))
                                                 .subscribe(v -> predictionMonitorService.addCountry(CountryCompetitions.valueOf(v))))
                         );
 

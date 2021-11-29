@@ -6,6 +6,7 @@ public enum Action {
     TRAIN_PLAYERS,
     PREDICT_TEAMS,
     PREDICT_PLAYERS,
-    FINISH,
+    STOP_TEAM_MACHINE,
+    STOP_PLAYERS_MACHINE,
     FINALISE
 }

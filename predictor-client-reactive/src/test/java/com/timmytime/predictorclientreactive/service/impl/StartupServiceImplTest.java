@@ -25,11 +25,9 @@ class StartupServiceImplTest {
             true,
             0,
             "",
-            "",
             lambdaFacade,
             webClientFacade,
-            s3Facade,
-            mock(TeamService.class)
+            s3Facade
     );
 
     @Test
@@ -40,8 +38,8 @@ class StartupServiceImplTest {
         Thread.sleep(1000L);
 
         verify(s3Facade, atLeast(6)).archive(anyString());
-        verify(lambdaFacade, atLeast(3)).invoke(anyString());
-        verify(webClientFacade, atLeast(2)).startScraper(anyString());
+        verify(lambdaFacade, atLeast(1)).invoke(anyString());
+        verify(webClientFacade, atLeast(1)).sendMessage(anyString(), any());
 
     }
 

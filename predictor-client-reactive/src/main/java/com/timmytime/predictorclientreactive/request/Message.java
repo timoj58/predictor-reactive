@@ -1,13 +1,13 @@
 package com.timmytime.predictorclientreactive.request;
 
-import com.timmytime.predictorclientreactive.enumerator.Messages;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Message {
-    private Messages type;
+    private String event;
+    private String eventType;
 }

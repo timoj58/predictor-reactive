@@ -110,6 +110,15 @@ services:
       predictornet:
         ipv4_address: 172.22.0.26
 
+  client:
+    image: timmytime/predictor-client-reactive:latest
+    container_name: predictor-client-reactive
+    ports:
+      - "8109:8109"
+    networks:
+      predictornet:
+        ipv4_address: 172.22.0.28
+
 networks:
   predictornet:
     driver: bridge

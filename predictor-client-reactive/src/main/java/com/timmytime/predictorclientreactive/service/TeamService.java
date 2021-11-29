@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface TeamService {
-    void loadTeams();
+    void load();
 
     Team getTeam(String country, UUID id);
 

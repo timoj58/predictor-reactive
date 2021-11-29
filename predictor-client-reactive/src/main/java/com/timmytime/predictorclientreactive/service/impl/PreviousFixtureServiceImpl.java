@@ -46,7 +46,7 @@ public class PreviousFixtureServiceImpl implements ILoadService {
 
     @Autowired
     public PreviousFixtureServiceImpl(
-            @Value("${clients.event}") String eventsHost,
+            @Value("${clients.events}") String eventsHost,
             @Value("${clients.data}") String dataHost,
             @Value("${delays.delay}") Integer delay,
             S3Facade s3Facade,

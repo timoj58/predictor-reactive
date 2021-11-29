@@ -19,6 +19,7 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 import static java.time.Duration.ofMinutes;
+import static java.time.Duration.ofSeconds;
 import static reactor.core.publisher.Flux.fromArray;
 import static reactor.core.publisher.Flux.fromStream;
 
@@ -53,7 +54,7 @@ public class PredictionServiceImpl implements PredictionService {
         fromStream(
                 CountryCompetitions.valueOf(country).getCompetitions().stream()
         )
-                .delayElements(ofMinutes(delay))
+                .delayElements(ofSeconds(delay))
                 .subscribe(competition ->
                         eventService.getEvents(competition)
                                 .subscribe(event ->

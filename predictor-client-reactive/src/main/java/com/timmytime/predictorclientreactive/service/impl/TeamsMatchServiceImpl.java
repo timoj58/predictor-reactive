@@ -45,7 +45,7 @@ public class TeamsMatchServiceImpl implements ILoadService {
 
     @Autowired
     public TeamsMatchServiceImpl(
-            @Value("${clients.event}") String eventsHost,
+            @Value("${clients.events}") String eventsHost,
             @Value("${delays.delay}") Integer delay,
             WebClientFacade webClientFacade,
             S3Facade s3Facade,

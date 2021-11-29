@@ -1,7 +1,8 @@
 package com.timmytime.predictormessagereactive.handler;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.timmytime.predictormessagereactive.service.TrainingTestService;
+import com.timmytime.predictormessagereactive.model.FileRequest;
+import com.timmytime.predictormessagereactive.service.TestApiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -14,10 +15,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TestHandler {
 
-    private final TrainingTestService trainingTestService;
+    private final TestApiService testApiService;
 
     public Mono<ServerResponse> trainTeams(ServerRequest request) {
-        return ServerResponse.ok().build(trainingTestService.trainTeams(
+        return ServerResponse.ok().build(testApiService.trainTeams(
                 UUID.fromString(request.pathVariable("receipt")),
                         request.pathVariable("to"),
                         request.pathVariable("from"),
@@ -26,7 +27,7 @@ public class TestHandler {
     }
 
     public Mono<ServerResponse> predictTeamResult(ServerRequest request) {
-        return ServerResponse.ok().build(trainingTestService.predictTeamResult(
+        return ServerResponse.ok().build(testApiService.predictTeamResult(
                 UUID.fromString(request.pathVariable("receipt")),
                 request.pathVariable("country"),
                 request.bodyToMono(JsonNode.class)
@@ -34,7 +35,7 @@ public class TestHandler {
     }
 
     public Mono<ServerResponse> predictTeamGoals(ServerRequest request) {
-        return ServerResponse.ok().build(trainingTestService.predictTeamGoals(
+        return ServerResponse.ok().build(testApiService.predictTeamGoals(
                 UUID.fromString(request.pathVariable("receipt")),
                 request.pathVariable("country"),
                 request.bodyToMono(JsonNode.class)
@@ -43,7 +44,7 @@ public class TestHandler {
 
 
     public Mono<ServerResponse> trainPlayers(ServerRequest request) {
-        return ServerResponse.ok().build(trainingTestService.trainPlayers(
+        return ServerResponse.ok().build(testApiService.trainPlayers(
                 UUID.fromString(request.pathVariable("receipt")),
                 request.pathVariable("to"),
                 request.pathVariable("from")
@@ -51,17 +52,21 @@ public class TestHandler {
     }
 
     public Mono<ServerResponse> playerConfig(ServerRequest request) {
-        return ServerResponse.ok().build(trainingTestService.playerConfig(
+        return ServerResponse.ok().build(testApiService.playerConfig(
                 request.pathVariable("type")
         ));
     }
 
     public Mono<ServerResponse> predictPlayer(ServerRequest request) {
-        return ServerResponse.ok().build(trainingTestService.predictPlayer(
+        return ServerResponse.ok().build(testApiService.predictPlayer(
                 UUID.fromString(request.pathVariable("receipt")),
                 Boolean.valueOf(request.pathVariable("init")),
                 request.bodyToMono(JsonNode.class)
         ));
+    }
+
+    public Mono<ServerResponse> uploadFile(ServerRequest request) {
+        return ServerResponse.ok().build(testApiService.uploadFile(request.bodyToMono(FileRequest.class)));
     }
 
 }

@@ -9,6 +9,7 @@ import com.timmytime.predictorclientreactive.model.EventOutcome;
 import com.timmytime.predictorclientreactive.model.FantasyOutcome;
 import com.timmytime.predictorclientreactive.model.TopSelection;
 import com.timmytime.predictorclientreactive.service.ILoadService;
+import com.timmytime.predictorclientreactive.service.PlayerService;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import com.timmytime.predictorclientreactive.service.TeamService;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,7 @@ public class BetServiceImpl implements ILoadService {
     private final WebClientFacade webClientFacade;
     private final ShutdownService shutdownService;
     private final TeamService teamService;
+    private final PlayerService playerService;
     @Value("${betting.home-win}")
     private Integer homeWin;
     @Value("${betting.away-win}")
@@ -51,9 +53,9 @@ public class BetServiceImpl implements ILoadService {
     private Integer assist;
     @Value("${betting.yellow-card}")
     private Integer yellowCard;
-    @Value("${clients.event}")
+    @Value("${clients.events}")
     private String eventHost;
-    @Value("${clients.players}")
+    @Value("${clients.player-events}")
     private String playersHost;
 
     @Override
@@ -108,7 +110,7 @@ public class BetServiceImpl implements ILoadService {
     private TopSelection processPlayerEvent(FantasyOutcome fantasyOutcome) {
         var prediction = convert(fantasyOutcome.getPrediction());
         return TopSelection.builder()
-                .label(fantasyOutcome.getLabel())
+                .label(playerService.get(fantasyOutcome.getPlayerId()).getLabel())
                 .subtitle("vs " + teamService.getTeam(fantasyOutcome.getOpponent()).getLabel())
                 .rating(getPlayerScore(prediction))
                 .market(fantasyOutcome.getFantasyEventType().name())

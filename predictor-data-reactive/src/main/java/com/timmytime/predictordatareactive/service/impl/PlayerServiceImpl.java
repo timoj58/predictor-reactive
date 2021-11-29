@@ -45,7 +45,7 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public Mono<Player> find(UUID id) {
-        return null;
+        return playerRepo.findById(id);
     }
 
     @Override

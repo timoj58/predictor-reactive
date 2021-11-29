@@ -46,8 +46,15 @@ public class WebClientFacade {
 
     }
 
-    public void finish(String url){
+    public void finish(String url, Message message){
         log.info("finish {}", url);
+        WebClient.builder().build()
+                .post()
+                .uri(url)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .body(Mono.just(message), Message.class)
+                .exchangeToMono(Mono::just)
+                .subscribe();
 
     }
 

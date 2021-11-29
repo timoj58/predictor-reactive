@@ -15,7 +15,6 @@ public class LineupPlayer implements Serializable {
 
     private UUID id;
     private UUID player;
-    private Integer appearance;
 
     //new fields
     private UUID matchId;

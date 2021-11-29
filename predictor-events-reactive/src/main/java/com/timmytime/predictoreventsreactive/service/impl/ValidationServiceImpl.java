@@ -125,10 +125,10 @@ public class ValidationServiceImpl implements ValidationService {
                 return match.getAwayScore().intValue() == match.getHomeScore().intValue();
             default:
                 return Boolean.FALSE;
-
         }
     }
 
+    //TODO remove.  lost all this data now.
     private JSONArray legacyShit(String prediction) {
         try {
             return new JSONObject(prediction).getJSONArray("result");

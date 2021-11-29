@@ -55,7 +55,7 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
 
     @Autowired
     public PreviousOutcomesServiceImpl(
-            @Value("${clients.event}") String eventsHost,
+            @Value("${clients.events}") String eventsHost,
             @Value("${clients.data}") String dataHost,
             @Value("${delays.delay}") Integer delay,
             WebClientFacade webClientFacade,
@@ -71,7 +71,7 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
         this.teamService = teamService;
         this.shutdownService = shutdownService;
 
-        Flux<Triple<EventOutcome, PredictionOutcomeResponse, Pair<Integer, Team>>> outcomes = Flux.push(sink ->
+        Flux<Triple<EventOutcome, PredictionOutcomeResponse, Pair<Integer, Team>>> outcomes = Flux.create(sink ->
                 PreviousOutcomesServiceImpl.this.receiver = sink::next, FluxSink.OverflowStrategy.BUFFER);
         outcomes.subscribe(this::saveOutcome);
     }

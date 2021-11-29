@@ -20,28 +20,12 @@ public class MessageFunction {
 
 
     @Bean
-    @RouterOperation(beanClass = MessageReceivedService.class, beanMethod = "receive")
-    RouterFunction<ServerResponse> receive(MessageHandler messageHandler) {
-        return route(RequestPredicates.POST("/message")
-                        .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON))
-                , messageHandler::receive);
-    }
-
-    @Bean
     @RouterOperation(beanClass = VocabService.class, beanMethod = "createVocab")
     RouterFunction<ServerResponse> createVocab(MessageHandler messageHandler) {
 
         return route(RequestPredicates.POST("/create-vocab")
                         .and(RequestPredicates.accept(MediaType.APPLICATION_STREAM_JSON)),
                 messageHandler::createVocab);
-    }
-
-    @Bean
-    @RouterOperation(beanClass = StartupService.class, beanMethod = "start")
-    RouterFunction<ServerResponse> start(MessageHandler messageHandler) {
-        return route(RequestPredicates.POST("/start")
-                        .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON))
-                , messageHandler::start);
     }
 
 }

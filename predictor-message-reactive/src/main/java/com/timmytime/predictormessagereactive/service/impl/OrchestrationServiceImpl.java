@@ -138,13 +138,34 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                 })
                 .build());
 
-        eventManager.put(Action.FINISH, EventAction.builder()
+        eventManager.put(Action.STOP_PLAYERS_MACHINE, EventAction.builder()
                 .processed(Boolean.FALSE)
                 .handler((ce) -> {
-                    if (ce.stream().map(m -> m.getMessage().getEvent()).collect(Collectors.toList()).containsAll(
-                            Arrays.asList(Event.PLAYERS_PREDICTED, Event.TEAMS_PREDICTED)
-                    )) {
-                        webClientFacade.finish("");
+                    if (ce.stream().map(m -> m.getMessage().getEvent()).collect(Collectors.toList()).contains(Event.PLAYERS_PREDICTED)) {
+                        webClientFacade.finish(
+                                hostsConfiguration.getClient()+"/message",
+                                Message.builder()
+                                        .event(Event.PLAYERS_PREDICTED)
+                                        .eventType(EventType.ALL)
+                                        .build()
+                        );
+                        return true;
+                    }
+                    return false;
+                })
+                .build());
+
+        eventManager.put(Action.STOP_TEAM_MACHINE, EventAction.builder()
+                .processed(Boolean.FALSE)
+                .handler((ce) -> {
+                    if (ce.stream().map(m -> m.getMessage().getEvent()).collect(Collectors.toList()).contains(Event.TEAMS_PREDICTED)) {
+                        webClientFacade.finish(
+                                hostsConfiguration.getClient()+"/message",
+                                Message.builder()
+                                        .event(Event.TEAMS_PREDICTED)
+                                        .eventType(EventType.ALL)
+                                        .build()
+                        );
                         return true;
                     }
                     return false;
