@@ -1,16 +1,11 @@
 package com.timmytime.predictorteamsreactive.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.timmytime.predictorteamsreactive.enumerator.CountryCompetitions;
 import com.timmytime.predictorteamsreactive.enumerator.Training;
 import com.timmytime.predictorteamsreactive.facade.WebClientFacade;
 import com.timmytime.predictorteamsreactive.model.Message;
 import com.timmytime.predictorteamsreactive.model.TrainingHistory;
 import com.timmytime.predictorteamsreactive.service.*;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,7 +15,9 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -87,7 +84,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                         if (trainingEvaluation) {
                             trainingModelService.create();
                         } else {
-                            if(!messages.isEmpty())
+                            if (!messages.isEmpty())
                                 process(messages.pop());
 
                             webClientFacade.sendMessage(
@@ -122,15 +119,15 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         return Mono.empty();
     }
 
-    private void queue(Message message){
-        if(messages.isEmpty())
+    private void queue(Message message) {
+        if (messages.isEmpty())
             process(message);
 
         messages.add(message);
     }
 
 
-    private void process(Message message){
+    private void process(Message message) {
         tensorflowDataService.loadOutstanding(message.getEventType().toLowerCase(), () ->
                 trainingService.train(i -> {
                     var trainingHistory = trainingHistoryService.find(Training.TRAIN_RESULTS, message.getEventType());

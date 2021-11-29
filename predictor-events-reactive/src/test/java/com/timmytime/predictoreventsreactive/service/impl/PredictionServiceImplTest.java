@@ -1,7 +1,6 @@
 package com.timmytime.predictoreventsreactive.service.impl;
 
 import com.timmytime.predictoreventsreactive.enumerator.Predictions;
-import com.timmytime.predictoreventsreactive.facade.WebClientFacade;
 import com.timmytime.predictoreventsreactive.model.Event;
 import com.timmytime.predictoreventsreactive.model.EventOutcome;
 import com.timmytime.predictoreventsreactive.request.TensorflowPrediction;
@@ -9,14 +8,9 @@ import com.timmytime.predictoreventsreactive.service.EventOutcomeService;
 import com.timmytime.predictoreventsreactive.service.EventService;
 import com.timmytime.predictoreventsreactive.service.PredictionService;
 import com.timmytime.predictoreventsreactive.service.TensorflowPredictionService;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.Arrays;
-import java.util.UUID;
 
 import static org.mockito.Mockito.*;
 
@@ -27,7 +21,7 @@ class PredictionServiceImplTest {
     private final TensorflowPredictionService tensorflowPredictionService = mock(TensorflowPredictionService.class);
     private final PredictionService predictionService
             = new PredictionServiceImpl(
-                    0,
+            0,
             eventService,
             tensorflowPredictionService,
             eventOutcomeService);
@@ -48,7 +42,7 @@ class PredictionServiceImplTest {
     }
 
     @Test
-    void reprocess(){
+    void reprocess() {
         when(eventOutcomeService.toFix()).thenReturn(
                 Flux.just(EventOutcome.builder().competition("greece_1")
                         .eventType(Predictions.PREDICT_RESULTS.name()).build())

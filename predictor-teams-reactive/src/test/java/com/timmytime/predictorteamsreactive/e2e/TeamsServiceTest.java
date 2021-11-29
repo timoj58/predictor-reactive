@@ -46,7 +46,7 @@ public class TeamsServiceTest {
             trainingHistoryService, trainingModelService, trainingService, tensorflowDataService, webClientFacade);
 
     @Test
-    void training(){
+    void training() {
 
         when(webClientFacade.getOutstandingEvents(anyString()))
                 .thenReturn(Flux.empty());

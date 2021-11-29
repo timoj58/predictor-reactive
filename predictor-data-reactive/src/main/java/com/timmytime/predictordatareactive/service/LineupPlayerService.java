@@ -1,7 +1,6 @@
 package com.timmytime.predictordatareactive.service;
 
 import com.timmytime.predictordatareactive.model.LineupPlayer;
-import com.timmytime.predictordatareactive.model.ResultData;
 import com.timmytime.predictordatareactive.model.Team;
 import org.json.JSONArray;
 import org.springframework.web.bind.annotation.PathVariable;

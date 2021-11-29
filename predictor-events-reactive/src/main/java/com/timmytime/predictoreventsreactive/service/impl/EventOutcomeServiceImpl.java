@@ -83,7 +83,7 @@ public class EventOutcomeServiceImpl implements EventOutcomeService {
     public Flux<EventOutcome> outstandingEvents(String country) {
         var minusDays = LocalDateTime.now().getDayOfWeek().equals(DayOfWeek.FRIDAY) ? 3 : 4;
         return eventOutcomeRepo.findByEventTypeAndCompetitionInAndSuccessNull(
-                Predictions.PREDICT_RESULTS.name(), CountryCompetitions.valueOf(country.toUpperCase()).getCompetitions())
+                        Predictions.PREDICT_RESULTS.name(), CountryCompetitions.valueOf(country.toUpperCase()).getCompetitions())
                 .filter(f -> f.getDate().isAfter(LocalDateTime.now().minusDays(10))) //could make it dynamic.
                 .filter(f -> f.getDate().isBefore(LocalDateTime.now().minusDays(minusDays)));
     }
@@ -95,25 +95,25 @@ public class EventOutcomeServiceImpl implements EventOutcomeService {
                 .filter(f -> thresholdCheck(filter(convert(f.getPrediction()), outcome), threshold));
     }
 
-    private JSONArray convert(String prediction){
-    //legacy stuff.
+    private JSONArray convert(String prediction) {
+        //legacy stuff.
         try {
-        return new JSONObject(prediction).getJSONArray("result");
-    } catch (Exception e) {
+            return new JSONObject(prediction).getJSONArray("result");
+        } catch (Exception e) {
             return new JSONArray(prediction);
         }
     }
 
-    private JSONObject filter(JSONArray predictions, String outcome){
-        for(int i=0;i<predictions.length();i++){
-            if(predictions.getJSONObject(i).get("key").equals(outcome)){
+    private JSONObject filter(JSONArray predictions, String outcome) {
+        for (int i = 0; i < predictions.length(); i++) {
+            if (predictions.getJSONObject(i).get("key").equals(outcome)) {
                 return predictions.getJSONObject(i);
             }
         }
         return new JSONObject().put("score", "0.0");
     }
 
-    private Boolean thresholdCheck(JSONObject prediction, Integer threshold){
+    private Boolean thresholdCheck(JSONObject prediction, Integer threshold) {
         return prediction.getDouble("score") >= threshold;
     }
 }

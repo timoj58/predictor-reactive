@@ -85,9 +85,9 @@ public class PreviousFixtureServiceImpl implements ILoadService {
                                                         fromStream(
                                                                 eventOutcomes.stream()
                                                         ).doOnNext(event ->
-                                                                webClientFacade.getMatch(getMatchUrl(event))
-                                                                        .subscribe(match -> byCompetition.get(competition).add(transform(event).withScore(match)))
-                                                        )
+                                                                        webClientFacade.getMatch(getMatchUrl(event))
+                                                                                .subscribe(match -> byCompetition.get(competition).add(transform(event).withScore(match)))
+                                                                )
                                                                 .doFinally(save ->
                                                                         just(competition).delayElement(Duration.ofMinutes(delay)).subscribe(this::save))
                                                                 .subscribe();
@@ -170,26 +170,26 @@ public class PreviousFixtureServiceImpl implements ILoadService {
                                 .anyMatch(e -> e.getEventType().equals("PREDICT_RESULTS"))
                 ).forEach(result -> {
 
-            result.getPreviousFixtureOutcomes().add(
-                    previousFixtureResponses
-                            .stream()
-                            .filter(f -> f.getHome().equals(result.getHome()))
-                            .filter(f -> f.getAway().equals(result.getAway()))
-                            .filter(f -> f.getEventDate().equals(result.getEventDate()))
-                            .filter(f ->
-                                    f.getPreviousFixtureOutcomes()
-                                            .stream()
-                                            .anyMatch(e -> e.getEventType().equals("PREDICT_GOALS")))
-                            .findFirst().get().getPreviousFixtureOutcomes().stream().findFirst().get()
-            );
+                    result.getPreviousFixtureOutcomes().add(
+                            previousFixtureResponses
+                                    .stream()
+                                    .filter(f -> f.getHome().equals(result.getHome()))
+                                    .filter(f -> f.getAway().equals(result.getAway()))
+                                    .filter(f -> f.getEventDate().equals(result.getEventDate()))
+                                    .filter(f ->
+                                            f.getPreviousFixtureOutcomes()
+                                                    .stream()
+                                                    .anyMatch(e -> e.getEventType().equals("PREDICT_GOALS")))
+                                    .findFirst().get().getPreviousFixtureOutcomes().stream().findFirst().get()
+                    );
 
-            result.getPreviousFixtureOutcomes()
-                    .forEach(type -> type.setTotalGoals(
-                            result.getHomeScore() + result.getAwayScore()
-                    ));
+                    result.getPreviousFixtureOutcomes()
+                            .forEach(type -> type.setTotalGoals(
+                                    result.getHomeScore() + result.getAwayScore()
+                            ));
 
-            toSave.add(result);
-        });
+                    toSave.add(result);
+                });
 
         return toSave;
     }

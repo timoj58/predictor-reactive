@@ -45,8 +45,8 @@ class FixtureServiceImplTest {
         when(teamService.getTeam(anyString(), any(UUID.class))).thenReturn(new Team());
 
         Arrays.asList(
-                CountryCompetitions.values()
-        )
+                        CountryCompetitions.values()
+                )
                 .stream()
                 .map(f -> f.getCompetitions())
                 .flatMap(Collection::stream)

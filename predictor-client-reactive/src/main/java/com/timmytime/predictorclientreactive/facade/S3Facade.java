@@ -6,7 +6,6 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ListObjectsV2Request;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.timmytime.predictorclientreactive.request.FileRequest;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,7 +33,7 @@ public class S3Facade implements IS3Facade {
             @Value("${clients.message}") String messageHost,
             AmazonS3 amazonS3,
             WebClientFacade webClientFacade
-    ){
+    ) {
         this.testMode = testMode;
         this.messageHost = messageHost;
         this.webClientFacade = webClientFacade;
@@ -45,9 +44,9 @@ public class S3Facade implements IS3Facade {
     @Override
     public void put(String key, String json) {
         if (testMode)
-            webClientFacade.put(messageHost+"/file", FileRequest.builder()
+            webClientFacade.put(messageHost + "/file", FileRequest.builder()
                     .content(json)
-                            .key(key)
+                    .key(key)
                     .build());
         else
             amazonS3.putObject("predictor-client-data", key, json);
@@ -55,18 +54,18 @@ public class S3Facade implements IS3Facade {
 
     @Override
     public void put(String bucket, String key, String csv) {
-        if(testMode)
-            webClientFacade.put(messageHost+"/file", FileRequest.builder()
+        if (testMode)
+            webClientFacade.put(messageHost + "/file", FileRequest.builder()
                     .content(csv)
-                            .key(key)
+                    .key(key)
                     .build());
         else
-         amazonS3.putObject(bucket, key, csv);
+            amazonS3.putObject(bucket, key, csv);
     }
 
     @Override
     public void delete(String folder) {
-        if(!testMode) {
+        if (!testMode) {
 
             ListObjectsV2Request listObjectsRequest = new ListObjectsV2Request()
                     .withBucketName("predictor-client-data")
@@ -93,7 +92,7 @@ public class S3Facade implements IS3Facade {
 
     @Override
     public void archive(String prefix) {
-        if(!testMode) {
+        if (!testMode) {
             log.info("archiving {}", prefix);
 
             ListObjectsV2Request listObjectsRequest = new ListObjectsV2Request()

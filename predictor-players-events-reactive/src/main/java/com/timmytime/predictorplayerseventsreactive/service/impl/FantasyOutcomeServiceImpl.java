@@ -25,7 +25,7 @@ public class FantasyOutcomeServiceImpl implements FantasyOutcomeService {
 
     @Override
     public Mono<FantasyOutcome> save(FantasyOutcome fantasyOutcome) {
-       return fantasyOutcomeRepo.save(fantasyOutcome);
+        return fantasyOutcomeRepo.save(fantasyOutcome);
     }
 
     @Override
@@ -52,10 +52,10 @@ public class FantasyOutcomeServiceImpl implements FantasyOutcomeService {
     public Flux<FantasyOutcome> topSelections(String market, Integer threshold) {
         return fantasyOutcomeRepo.findByCurrentAndFantasyEventType(Boolean.TRUE, FantasyEventTypes.valueOf(market))
                 .filter(f -> f.getEventDate().isAfter(LocalDateTime.now().minusDays(5)))
-                .filter(f -> thresholdCheck(average(convert(f.getPrediction())),threshold));
+                .filter(f -> thresholdCheck(average(convert(f.getPrediction())), threshold));
     }
 
-    private JSONArray convert(String prediction){
+    private JSONArray convert(String prediction) {
         //legacy stuff.
         try {
             return new JSONObject(prediction).getJSONArray("result");
@@ -64,23 +64,23 @@ public class FantasyOutcomeServiceImpl implements FantasyOutcomeService {
         }
     }
 
-    private Double average(JSONArray predictions){
+    private Double average(JSONArray predictions) {
         Double total = 0.0;
-        for(int i=0;i<predictions.length();i++){
-            if(!predictions.getJSONObject(i).getString("key").equals("0")) {
+        for (int i = 0; i < predictions.length(); i++) {
+            if (!predictions.getJSONObject(i).getString("key").equals("0")) {
                 total += predictions.getJSONObject(i).getDouble("score");
             }
         }
         return total;
     }
 
-    private Boolean thresholdCheck(Double prediction, Integer threshold){
+    private Boolean thresholdCheck(Double prediction, Integer threshold) {
         return prediction >= threshold;
     }
 
 
     @Override
-    public void init(){
+    public void init() {
         log.info("reset current events");
         fantasyOutcomeRepo.findByCurrent(Boolean.TRUE)
                 .filter(r -> r.getEventDate().isBefore(LocalDateTime.now()))

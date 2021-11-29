@@ -20,14 +20,13 @@ import java.util.UUID;
 @Builder(toBuilder = true)
 public class Player {
 
+    @Transient
+    @JsonIgnore
+    private final List<JSONObject> stats = new ArrayList<>();
     @Id
     private UUID id;
     private String label;
     private UUID latestTeam;
     private LocalDate lastAppearance;
     private String espnId;
-
-    @Transient
-    @JsonIgnore
-    private final List<JSONObject> stats = new ArrayList<>();
 }

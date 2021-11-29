@@ -8,9 +8,7 @@ import com.timmytime.predictorteamsreactive.service.TrainingHistoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -67,8 +65,8 @@ public class TrainingHistoryServiceImpl implements TrainingHistoryService {
             log.info("initialize history");
 
             Arrays.stream(
-                    CountryCompetitions.values()
-            )
+                            CountryCompetitions.values()
+                    )
                     .forEach(country ->
                             Arrays.stream(Training.values())
                                     .forEach(type -> {

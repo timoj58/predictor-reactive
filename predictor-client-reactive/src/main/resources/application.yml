@@ -9,7 +9,7 @@ spring:
   application:
     name: predictor-client-reactive
   config:
-    import:  "optional:configserver:http://172.31.24.130:8888"
+    import: "optional:configserver:http://172.31.24.130:8888"
 
 
 clients:
@@ -17,7 +17,7 @@ clients:
   event-data: http://172.22.0.22:8104
   events: http://172.22.0.24:8106
   player-events: http://172.22.0.26:8108
-  message:  http://172.22.0.18:8100
+  message: http://172.22.0.18:8100
 
 delays:
   delay: 1
@@ -31,12 +31,12 @@ vocab:
   teams: false
 
 betting:
-   home-win: 75
-   away-win: 50
-   draw: 40
-   goal: 50
-   assist: 40
-   yellow-card: 50
+  home-win: 75
+  away-win: 50
+  draw: 40
+  goal: 50
+  assist: 40
+  yellow-card: 50
 
 test:
-   mode: true
+  mode: true

@@ -33,8 +33,8 @@ public enum CountryCompetitions {
 
     public static CountryCompetitions findByCompetition(String competition) {
         return Arrays.stream(
-                CountryCompetitions.values()
-        )
+                        CountryCompetitions.values()
+                )
                 .filter(f -> f.getCompetitions().contains(competition))
                 .findFirst()
                 .get();

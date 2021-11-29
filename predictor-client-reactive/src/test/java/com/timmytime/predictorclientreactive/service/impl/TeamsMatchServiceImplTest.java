@@ -7,7 +7,6 @@ import com.timmytime.predictorclientreactive.model.EventOutcome;
 import com.timmytime.predictorclientreactive.model.Team;
 import com.timmytime.predictorclientreactive.service.ShutdownService;
 import com.timmytime.predictorclientreactive.service.TeamService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 
@@ -18,7 +17,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import static org.mockito.Mockito.*;
 
@@ -45,8 +43,8 @@ class TeamsMatchServiceImplTest {
                 .prediction("{}").build()));
 
         Arrays.asList(
-                CountryCompetitions.values()
-        )
+                        CountryCompetitions.values()
+                )
                 .stream()
                 .map(f -> f.getCompetitions())
                 .flatMap(Collection::stream)

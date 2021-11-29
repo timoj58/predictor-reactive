@@ -66,8 +66,8 @@ public class TrainingModelServiceImpl implements TrainingModelService {
                             tensorflowDataService::load))
                     .doFinally(this::startTraining)
                     .subscribe();
-        }else{
-           this.startTraining(null);
+        } else {
+            this.startTraining(null);
         }
     }
 

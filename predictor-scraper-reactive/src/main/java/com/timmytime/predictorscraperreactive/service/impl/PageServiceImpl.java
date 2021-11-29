@@ -2,7 +2,6 @@ package com.timmytime.predictorscraperreactive.service.impl;
 
 import com.timmytime.predictorscraperreactive.enumerator.CompetitionFixtureCodes;
 import com.timmytime.predictorscraperreactive.enumerator.ScraperType;
-import com.timmytime.predictorscraperreactive.facade.WebClientFacade;
 import com.timmytime.predictorscraperreactive.factory.ScraperFactory;
 import com.timmytime.predictorscraperreactive.service.MessageService;
 import com.timmytime.predictorscraperreactive.service.PageService;
@@ -62,8 +61,8 @@ public class PageServiceImpl implements PageService {
                 case RESULTS:
                     scraperFactory.getScraperTrackerService().removeResultsFromQueue(request.getLeft());
                     Flux.fromStream(scraperFactory.getResultScraper().scrape(
-                            request.getLeft(), response
-                    ).stream())
+                                    request.getLeft(), response
+                            ).stream())
                             .map(result -> Pair.of(request.getLeft(), messageService.send(result)))
                             .subscribe(matchId -> {
                                 var matchRequest = scraperFactory.getPlayerScraper().createRequest(matchId);

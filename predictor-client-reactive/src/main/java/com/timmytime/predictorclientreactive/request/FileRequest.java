@@ -5,7 +5,7 @@ import lombok.Builder;
 
 @AllArgsConstructor
 @Builder
-public class FileRequest{
+public class FileRequest {
     private String key;
     private String content;
 }

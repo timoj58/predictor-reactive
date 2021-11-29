@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.UUID;
 
 @Slf4j
 @Service("playerService")
@@ -33,8 +33,8 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public Flux<Player> get(String competition) {
-        return webClientFacade.getPlayers(dataHost+"/players/competition/"+competition
-        +"?date="+LocalDate.now().minusYears(2).format(
+        return webClientFacade.getPlayers(dataHost + "/players/competition/" + competition
+                + "?date=" + LocalDate.now().minusYears(2).format(
                 DateTimeFormatter.ofPattern("dd-MM-yyyy")
         ));
     }
@@ -46,12 +46,12 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public Mono<Player> get(UUID id) {
-        return webClientFacade.getPlayer(dataHost+"/players/"+id.toString());
+        return webClientFacade.getPlayer(dataHost + "/players/" + id.toString());
     }
 
     @Override
     public Flux<Player> get() {
-        return webClientFacade.getPlayers(dataHost+"/players")
+        return webClientFacade.getPlayers(dataHost + "/players")
                 .filter(f -> f.getLastAppearance() != null && f.getLastAppearance().isAfter(
                         LocalDate.now().minusYears(2)
                 ));

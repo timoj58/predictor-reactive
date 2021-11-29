@@ -1,6 +1,5 @@
 package com.timmytime.predictorplayerseventsreactive.handler;
 
-import com.timmytime.predictorplayerseventsreactive.request.Message;
 import com.timmytime.predictorplayerseventsreactive.request.TensorflowPrediction;
 import com.timmytime.predictorplayerseventsreactive.service.TensorflowPredictionService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +18,7 @@ public class PredictionHandler {
 
         return ServerResponse.ok()
                 .build(request.bodyToMono(TensorflowPrediction.class)
-                .doOnNext(tensorflowPredictionService::predict)
-                .thenEmpty(Mono.empty()));
+                        .doOnNext(tensorflowPredictionService::predict)
+                        .thenEmpty(Mono.empty()));
     }
 }

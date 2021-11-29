@@ -20,8 +20,8 @@ public class PredictionHandler {
 
         return ServerResponse.ok().build(
                 request.bodyToMono(TensorflowPrediction.class)
-                .doOnNext(tensorflowPredictionService::predict)
-                .thenEmpty(Mono.empty()));
+                        .doOnNext(tensorflowPredictionService::predict)
+                        .thenEmpty(Mono.empty()));
 
     }
 

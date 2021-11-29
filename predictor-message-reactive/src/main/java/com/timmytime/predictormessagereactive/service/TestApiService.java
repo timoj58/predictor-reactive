@@ -26,21 +26,21 @@ public class TestApiService {
     private final FileRequestRepo fileRequestRepo;
 
     public Mono<Void> trainTeams(
-            @PathVariable  UUID receipt,
+            @PathVariable UUID receipt,
             @PathVariable String to,
             @PathVariable String from,
-            @PathVariable String country){
+            @PathVariable String country) {
         log.info("received training teams: {}", receipt);
         webClientFacade.receipt(
-                hostsConfiguration.getTeams()+"/training?id="+receipt.toString()
+                hostsConfiguration.getTeams() + "/training?id=" + receipt.toString()
         );
         return Mono.empty();
     }
 
     public Mono<Void> predictTeamResult(
-            @PathVariable  UUID receipt,
+            @PathVariable UUID receipt,
             @PathVariable String country,
-            Mono<JsonNode> body){
+            Mono<JsonNode> body) {
         log.info("received predict team result: {}", receipt);
         JSONObject prediction = new JSONObject()
                 .put("0", new JSONObject()
@@ -61,14 +61,14 @@ public class TestApiService {
         }
 
         webClientFacade.receipt(
-                hostsConfiguration.getTeamEvents()+"/prediction?id="+receipt.toString(),response);
+                hostsConfiguration.getTeamEvents() + "/prediction?id=" + receipt.toString(), response);
         return Mono.empty();
     }
 
     public Mono<Void> predictTeamGoals(
-            @PathVariable  UUID receipt,
+            @PathVariable UUID receipt,
             @PathVariable String country,
-            Mono<JsonNode> body){
+            Mono<JsonNode> body) {
         log.info("received predict team goals: {}", receipt);
         JSONObject prediction = new JSONObject()
                 .put("0", new JSONObject()
@@ -89,32 +89,32 @@ public class TestApiService {
         }
 
         webClientFacade.receipt(
-                hostsConfiguration.getTeamEvents()+"/prediction?id="+receipt.toString(),response);
+                hostsConfiguration.getTeamEvents() + "/prediction?id=" + receipt.toString(), response);
         return Mono.empty();
     }
 
     public Mono<Void> trainPlayers(
-            @PathVariable  UUID receipt,
+            @PathVariable UUID receipt,
             @PathVariable String to,
-            @PathVariable String from){
+            @PathVariable String from) {
         log.info("received training players: {}", receipt);
         webClientFacade.receipt(
-                hostsConfiguration.getPlayers()+"/training?id="+receipt.toString()
+                hostsConfiguration.getPlayers() + "/training?id=" + receipt.toString()
         );
         return Mono.empty();
     }
 
     public Mono<Void> playerConfig(
             @PathVariable String type
-    ){
+    ) {
         log.info("config {}", type);
         return Mono.empty();
     }
 
     public Mono<Void> predictPlayer(
-            @PathVariable  UUID receipt,
+            @PathVariable UUID receipt,
             @PathVariable Boolean init,
-            Mono<JsonNode> body){
+            Mono<JsonNode> body) {
         log.info("received predict player: {}", receipt);
         JSONObject prediction = new JSONObject()
                 .put("0", new JSONObject()
@@ -135,13 +135,13 @@ public class TestApiService {
         }
 
         webClientFacade.receipt(
-                hostsConfiguration.getPlayerEvents()+"/prediction?id="+receipt.toString(),response);
+                hostsConfiguration.getPlayerEvents() + "/prediction?id=" + receipt.toString(), response);
         return Mono.empty();
     }
 
     public Mono<Void> uploadFile(
             Mono<FileRequest> fileRequest
-    ){
+    ) {
 
         fileRequest.doOnNext(fileRequestRepo::save);
         return Mono.empty();

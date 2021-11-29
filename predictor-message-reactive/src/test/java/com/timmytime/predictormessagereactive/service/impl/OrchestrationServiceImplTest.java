@@ -25,10 +25,10 @@ class OrchestrationServiceImplTest {
     private final HostsConfiguration hostsConfiguration = mock(HostsConfiguration.class);
 
     private final OrchestrationService orchestrationService
-            = new OrchestrationServiceImpl(webClientFacade, predictorCycleRepo,initService, hostsConfiguration);
+            = new OrchestrationServiceImpl(webClientFacade, predictorCycleRepo, initService, hostsConfiguration);
 
     @Test
-    void stop(){
+    void stop() {
 
         when(predictorCycleRepo.save(any())).thenReturn(Mono.empty());
 
@@ -68,10 +68,10 @@ class OrchestrationServiceImplTest {
     }
 
     @Test
-    void finish(){
+    void finish() {
 
         Arrays.asList(Event.PLAYERS_PREDICTED, Event.TEAMS_PREDICTED)
-                .forEach(event ->   orchestrationService.process(
+                .forEach(event -> orchestrationService.process(
                         CycleEvent.builder()
                                 .message(
                                         Message.builder()
@@ -86,9 +86,9 @@ class OrchestrationServiceImplTest {
     }
 
     @Test
-    void trainPlayers(){
+    void trainPlayers() {
         EventType.competitions()
-                .forEach(competition ->   orchestrationService.process(
+                .forEach(competition -> orchestrationService.process(
                         CycleEvent.builder()
                                 .message(
                                         Message.builder()
@@ -103,9 +103,9 @@ class OrchestrationServiceImplTest {
     }
 
     @Test
-    void predictPlayers(){
+    void predictPlayers() {
         EventType.competitions()
-                .forEach(competition ->   orchestrationService.process(
+                .forEach(competition -> orchestrationService.process(
                         CycleEvent.builder()
                                 .message(
                                         Message.builder()
@@ -131,10 +131,10 @@ class OrchestrationServiceImplTest {
     }
 
     @Test
-    void trainTeams(){
+    void trainTeams() {
 
         EventType.competitions()
-                .forEach(competition ->   orchestrationService.process(
+                .forEach(competition -> orchestrationService.process(
                         CycleEvent.builder()
                                 .message(
                                         Message.builder()
@@ -149,9 +149,9 @@ class OrchestrationServiceImplTest {
     }
 
     @Test
-    void predictTeams(){
+    void predictTeams() {
         EventType.countries()
-                .forEach(country ->   orchestrationService.process(
+                .forEach(country -> orchestrationService.process(
                         CycleEvent.builder()
                                 .message(
                                         Message.builder()
@@ -164,16 +164,16 @@ class OrchestrationServiceImplTest {
         verify(webClientFacade, never()).predict(anyString(), any());
 
         EventType.competitions()
-                        .forEach(competition ->
-        orchestrationService.process(
-                CycleEvent.builder()
-                        .message(
-                                Message.builder()
-                                        .event(Event.EVENTS_LOADED)
-                                        .eventType(competition)
-                                        .build()
-                        ).build()
-        ));
+                .forEach(competition ->
+                        orchestrationService.process(
+                                CycleEvent.builder()
+                                        .message(
+                                                Message.builder()
+                                                        .event(Event.EVENTS_LOADED)
+                                                        .eventType(competition)
+                                                        .build()
+                                        ).build()
+                        ));
 
         verify(webClientFacade, atLeast(EventType.countries().size())).predict(anyString(), any());
 

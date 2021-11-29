@@ -23,7 +23,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     @Autowired
     public MessageReceivedServiceImpl(
             OrchestrationService orchestrationService
-    ){
+    ) {
         this.orchestrationService = orchestrationService;
 
         Flux<Message> receiver = Flux.create(sink -> consumer = sink::next, FluxSink.OverflowStrategy.BUFFER);
@@ -36,7 +36,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                 .thenEmpty(Mono.empty());
     }
 
-    private void process(Message message){
+    private void process(Message message) {
         orchestrationService.process(new CycleEvent(message));
     }
 }

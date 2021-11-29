@@ -63,13 +63,13 @@ public class EventOddsServiceImpl implements EventOddsService {
                     var homeTeam = matchTeams.getHome();
                     var awayTeam = matchTeams.getAway();
 
-                    if(homeTeam.isPresent() && awayTeam.isPresent()) {
+                    if (homeTeam.isPresent() && awayTeam.isPresent()) {
                         create(eventOdds.toBuilder()
                                 .teams(Arrays.asList(
                                         homeTeam.get().getId(), awayTeam.get().getId()
                                 ))
                                 .build()).doOnError(e -> log.error("saving error", e)).subscribe();
-                    }else{
+                    } else {
                         log.error("one or more teams NOF");
                     }
                 });

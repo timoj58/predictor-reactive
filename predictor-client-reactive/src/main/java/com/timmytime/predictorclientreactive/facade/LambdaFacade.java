@@ -20,7 +20,7 @@ public class LambdaFacade {
     public void invoke(String functionName) {
         log.info("invoking {}", functionName);
 
-        if(!testMode) {
+        if (!testMode) {
 
             InvokeRequest invokeRequest = new InvokeRequest()
                     .withFunctionName("arn:aws:lambda:us-east-1:842788105885:function:" + functionName);

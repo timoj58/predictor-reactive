@@ -4,12 +4,7 @@ import com.timmytime.predictorclientreactive.facade.LambdaFacade;
 import com.timmytime.predictorclientreactive.facade.S3Facade;
 import com.timmytime.predictorclientreactive.facade.WebClientFacade;
 import com.timmytime.predictorclientreactive.service.StartupService;
-import com.timmytime.predictorclientreactive.service.TeamService;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import reactor.core.publisher.Flux;
-
-import java.util.Arrays;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;

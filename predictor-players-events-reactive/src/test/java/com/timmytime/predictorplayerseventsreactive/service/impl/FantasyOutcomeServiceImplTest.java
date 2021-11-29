@@ -25,7 +25,7 @@ class FantasyOutcomeServiceImplTest {
             = new FantasyOutcomeServiceImpl(fantasyOutcomeRepo);
 
     @Test
-    void topSelections(){
+    void topSelections() {
 
         var predictions = "[]";
 
@@ -44,7 +44,7 @@ class FantasyOutcomeServiceImplTest {
                                         .eventDate(LocalDateTime.now().minusDays(3))
                                         .prediction(predictions)
                                         .build()
-                                )
+                        )
                 );
 
         var result = fantasyOutcomeService.topSelections(FantasyEventTypes.GOALS.name(), 70).collectList().block();

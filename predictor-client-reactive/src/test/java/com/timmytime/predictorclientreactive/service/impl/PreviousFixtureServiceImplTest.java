@@ -43,8 +43,8 @@ class PreviousFixtureServiceImplTest {
 
 
         Arrays.asList(
-                CountryCompetitions.values()
-        )
+                        CountryCompetitions.values()
+                )
                 .stream()
                 .map(f -> f.getCompetitions())
                 .flatMap(Collection::stream)

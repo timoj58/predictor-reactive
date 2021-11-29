@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -50,11 +49,11 @@ public class LineupPlayerServiceImpl implements LineupPlayerService {
                             created.setLastAppearance(date.toLocalDate());
                             created.setLatestTeam(team.getId());
 
-                                statMetricService.create(
-                                        matchId,
-                                        created,
-                                        date
-                                ).forEach(Mono::subscribe);
+                            statMetricService.create(
+                                    matchId,
+                                    created,
+                                    date
+                            ).forEach(Mono::subscribe);
 
                             playerService.save(created).subscribe();
 
@@ -74,8 +73,8 @@ public class LineupPlayerServiceImpl implements LineupPlayerService {
 
         return date == null ?
                 lineupPlayerRepo.findByPlayer(player) :
-        lineupPlayerRepo.findByPlayerAndDateGreaterThanEqual(player, LocalDate.parse(date,
-                DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay());
+                lineupPlayerRepo.findByPlayerAndDateGreaterThanEqual(player, LocalDate.parse(date,
+                        DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay());
     }
 
     @Override

@@ -12,12 +12,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.IntStream;
 
-import static java.lang.Thread.sleep;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -47,7 +42,7 @@ class ValidationServiceImplTest {
                         Arrays.asList(eventOutcome, eventOutcome2).stream()
                 )
         );
-        
+
         when(eventOutcomeService.save(any())).thenReturn(Mono.just(new EventOutcome()));
 
         Match match = new Match();

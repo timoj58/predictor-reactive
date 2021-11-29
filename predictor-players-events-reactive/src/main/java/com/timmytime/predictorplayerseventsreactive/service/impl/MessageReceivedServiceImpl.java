@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
@@ -43,7 +43,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         return message.doOnNext(
                 msg -> {
                     log.info("received {}", msg.getEventType());
-                    if(ApplicableFantasyLeagues.getCountries().contains(msg.getEventType().toLowerCase())) {
+                    if (ApplicableFantasyLeagues.getCountries().contains(msg.getEventType().toLowerCase())) {
                         CompletableFuture.runAsync(() -> predictionService.start(msg.getEventType().toLowerCase()))
                                 .thenRun(() -> Mono.just(msg.getEventType().toLowerCase())
                                         .delayElement(Duration.ofMinutes(1))

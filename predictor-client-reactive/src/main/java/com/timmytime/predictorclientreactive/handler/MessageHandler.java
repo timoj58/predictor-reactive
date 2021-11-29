@@ -2,7 +2,6 @@ package com.timmytime.predictorclientreactive.handler;
 
 import com.timmytime.predictorclientreactive.request.Message;
 import com.timmytime.predictorclientreactive.service.MessageReceivedService;
-import com.timmytime.predictorclientreactive.service.StartupService;
 import com.timmytime.predictorclientreactive.service.VocabService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

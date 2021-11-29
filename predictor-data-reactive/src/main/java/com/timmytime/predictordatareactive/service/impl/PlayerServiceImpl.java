@@ -1,11 +1,9 @@
 package com.timmytime.predictordatareactive.service.impl;
 
-import com.timmytime.predictordatareactive.enumerator.CountryCompetitions;
 import com.timmytime.predictordatareactive.enumerator.PlayerStats;
 import com.timmytime.predictordatareactive.model.Player;
 import com.timmytime.predictordatareactive.model.Team;
 import com.timmytime.predictordatareactive.repo.PlayerRepo;
-import com.timmytime.predictordatareactive.repo.StatMetricRepo;
 import com.timmytime.predictordatareactive.service.PlayerService;
 import com.timmytime.predictordatareactive.service.TeamService;
 import lombok.extern.slf4j.Slf4j;
@@ -16,14 +14,12 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -128,7 +124,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public void init(){
+    public void init() {
         playerRepo.findAll().count().filter(count -> count == 0).subscribe(
                 then -> Flux.fromStream(
                         IntStream.range(0, 10000).boxed()

@@ -18,4 +18,4 @@ public class PlayerMatch {
     private LocalDateTime date;
     private Boolean home;
     private List<StatMetric> stats;
-  }
+}

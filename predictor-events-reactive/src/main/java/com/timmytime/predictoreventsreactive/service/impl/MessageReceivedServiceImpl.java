@@ -11,8 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.time.Duration;
-import java.util.*;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
@@ -46,18 +45,18 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     public Mono<Void> receive(Mono<Message> message) {
         return message.doOnNext(
                 msg -> {
-                        log.info("processing {}", msg.getEventType());
-                        validationService.resetLast(msg.getEventType(), (country) ->
-                                CompletableFuture.runAsync(() -> {
-                                    log.info("starting predictions {}", country);
-                                    validationService.validate(country);
-                                    predictionService.start(country);
-                                }).thenRun(() ->
-                                        Mono.just(country.toUpperCase())
-                                                .subscribe(v -> predictionMonitorService.addCountry(CountryCompetitions.valueOf(v))))
-                        );
+                    log.info("processing {}", msg.getEventType());
+                    validationService.resetLast(msg.getEventType(), (country) ->
+                            CompletableFuture.runAsync(() -> {
+                                log.info("starting predictions {}", country);
+                                validationService.validate(country);
+                                predictionService.start(country);
+                            }).thenRun(() ->
+                                    Mono.just(country.toUpperCase())
+                                            .subscribe(v -> predictionMonitorService.addCountry(CountryCompetitions.valueOf(v))))
+                    );
 
-                    }
+                }
 
         ).thenEmpty(Mono.empty());
 

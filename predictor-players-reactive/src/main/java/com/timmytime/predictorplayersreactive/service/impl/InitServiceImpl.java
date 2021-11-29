@@ -12,6 +12,7 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class InitServiceImpl implements InitService {
     private final PlayersTrainingHistoryService trainingHistoryService;
+
     @Override
     public Mono<Void> init(String from, String to) {
         CompletableFuture.runAsync(() -> trainingHistoryService.init(from, to));

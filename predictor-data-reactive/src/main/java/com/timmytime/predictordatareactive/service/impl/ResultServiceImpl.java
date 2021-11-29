@@ -13,7 +13,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 
-import javax.annotation.PostConstruct;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -60,18 +59,18 @@ public class ResultServiceImpl implements ResultService {
         resultRepo.findByProcessed(Boolean.FALSE)
                 .limitRate(10)
                 .subscribe(result -> {
-                      result.setLineup(new JSONObject()
-                              .put("data", new JSONObject()
-                                      .put("home", new JSONArray())
-                                      .put("away", new JSONArray())
-                              ).toString());
+                    result.setLineup(new JSONObject()
+                            .put("data", new JSONObject()
+                                    .put("home", new JSONArray())
+                                    .put("away", new JSONArray())
+                            ).toString());
 
-                     process(result);
+                    process(result);
                 });
     }
 
-   @Override
-   public void init() {
+    @Override
+    public void init() {
         resultRepo.deleteAll().subscribe();
     }
 

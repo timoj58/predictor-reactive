@@ -44,9 +44,9 @@ public class ValidationServiceImpl implements ValidationService {
         eventOutcomeService.toValidate(country)
                 .subscribe(eventOutcome ->
                         webClientFacade.getMatch(dataHost
-                                + "/match?home=" + eventOutcome.getHome()
-                                + "&away=" + eventOutcome.getAway()
-                                + "&date=" + eventOutcome.getDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+                                        + "/match?home=" + eventOutcome.getHome()
+                                        + "&away=" + eventOutcome.getAway()
+                                        + "&date=" + eventOutcome.getDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
                                 .subscribe(match -> {
 
                                     String prediction = predictionResult(eventOutcome);

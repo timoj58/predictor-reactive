@@ -9,7 +9,6 @@ import com.timmytime.predictoreventsreactive.service.EventOutcomeService;
 import com.timmytime.predictoreventsreactive.service.EventService;
 import com.timmytime.predictoreventsreactive.service.PredictionService;
 import com.timmytime.predictoreventsreactive.service.TensorflowPredictionService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +17,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
-import static java.time.Duration.ofMinutes;
 import static java.time.Duration.ofSeconds;
 import static reactor.core.publisher.Flux.fromArray;
 import static reactor.core.publisher.Flux.fromStream;
@@ -40,7 +38,7 @@ public class PredictionServiceImpl implements PredictionService {
             EventService eventService,
             TensorflowPredictionService tensorflowPredictionService,
             EventOutcomeService eventOutcomeService
-    ){
+    ) {
         this.delay = delay;
         this.eventService = eventService;
         this.tensorflowPredictionService = tensorflowPredictionService;

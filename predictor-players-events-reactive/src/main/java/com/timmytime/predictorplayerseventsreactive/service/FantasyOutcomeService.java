@@ -19,7 +19,7 @@ public interface FantasyOutcomeService {
 
     Flux<FantasyOutcome> reset();
 
-    Flux<FantasyOutcome> topSelections(@PathVariable String market, @RequestParam  Integer threshold);
+    Flux<FantasyOutcome> topSelections(@PathVariable String market, @RequestParam Integer threshold);
 
     void init();
 

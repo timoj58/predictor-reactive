@@ -17,13 +17,13 @@ class MessageServiceImplTest {
             = new MessageServiceImpl("eventsData", "events", webClientFacade);
 
     @Test
-    void sendModel(){
+    void sendModel() {
         messageService.send(ScraperModel.builder().data(new TextNode("")).build());
         verify(webClientFacade, atLeastOnce()).send(any(), any());
     }
 
     @Test
-    void send(){
+    void send() {
         messageService.send(Providers.ESPN_ODDS.name(), "greece_1");
         verify(webClientFacade, atLeastOnce()).send(any(), any());
     }

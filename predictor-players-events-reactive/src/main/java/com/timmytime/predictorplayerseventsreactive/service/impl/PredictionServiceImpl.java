@@ -15,7 +15,6 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 @Slf4j
 @Service("predictionService")
@@ -45,8 +44,8 @@ public class PredictionServiceImpl implements PredictionService {
         log.info("starting {}", country);
         //need to init all the types.
         Flux.fromStream(
-                ApplicableFantasyLeagues.findByCountry(country).stream()
-        )
+                        ApplicableFantasyLeagues.findByCountry(country).stream()
+                )
                 .delayElements(Duration.ofMinutes(1))
                 .subscribe(competition ->
                         eventsService.get(competition.name().toLowerCase())
@@ -93,8 +92,8 @@ public class PredictionServiceImpl implements PredictionService {
 
     private Boolean processPlayers(String competition, LocalDateTime date, UUID homeTeam, UUID awayTeam) {
         Flux.concat(
-                playerService.get(competition, homeTeam), playerService.get(competition, awayTeam)
-        )
+                        playerService.get(competition, homeTeam), playerService.get(competition, awayTeam)
+                )
                 .subscribe(player ->
                         Flux.fromArray(FantasyEventTypes.values())
                                 .filter(f -> f.getPredict() == Boolean.TRUE)

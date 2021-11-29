@@ -16,7 +16,6 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import static org.mockito.Mockito.*;
 
@@ -28,10 +27,10 @@ class MessageReceivedServiceImplTest {
     private final EventOutcomeService eventOutcomeService = mock(EventOutcomeService.class);
     private final PredictionMonitorService predictionMonitorService = mock(PredictionMonitorService.class);
     private final ValidationService validationService =
-            new ValidationServiceImpl("data", eventOutcomeService,webClientFacade);
+            new ValidationServiceImpl("data", eventOutcomeService, webClientFacade);
 
     private final MessageReceivedService messageReceivedService
-            = new MessageReceivedServiceImpl( 0,
+            = new MessageReceivedServiceImpl(0,
             predictionService, predictionResultService, predictionMonitorService,
             validationService);
 
@@ -51,10 +50,10 @@ class MessageReceivedServiceImplTest {
         when(webClientFacade.getMatch(any())).thenReturn(Mono.just(Match.builder().build()));
 
 
-                        messageReceivedService.receive(
-                                Mono.just(Message.builder()
-                                        .eventType("GREECE").build())
-                        ).subscribe();
+        messageReceivedService.receive(
+                Mono.just(Message.builder()
+                        .eventType("GREECE").build())
+        ).subscribe();
 
         Thread.sleep(250);
 

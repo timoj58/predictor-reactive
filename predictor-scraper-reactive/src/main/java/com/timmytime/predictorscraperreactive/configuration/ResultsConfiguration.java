@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import reactor.core.publisher.Flux;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +18,7 @@ public class ResultsConfiguration {
 
     public ResultsConfiguration(
             @Value("${scraper.results}") String resultsUrl
-    ){
+    ) {
         Flux.fromArray(CompetitionFixtureCodes.values())
                 .subscribe(code -> urls.add(
                         Pair.of(

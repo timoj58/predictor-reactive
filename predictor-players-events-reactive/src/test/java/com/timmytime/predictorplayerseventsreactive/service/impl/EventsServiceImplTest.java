@@ -6,7 +6,7 @@ import com.timmytime.predictorplayerseventsreactive.service.EventsService;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -17,7 +17,7 @@ class EventsServiceImplTest {
             = new EventsServiceImpl("data", webClientFacade);
 
     @Test
-    void get(){
+    void get() {
         when(webClientFacade.getEvents(anyString()))
                 .thenReturn(Flux.just(Event.builder().competition("greece_1").build()));
 

@@ -6,7 +6,6 @@ import com.timmytime.predictorclientreactive.facade.S3Facade;
 import com.timmytime.predictorclientreactive.facade.WebClientFacade;
 import com.timmytime.predictorclientreactive.request.Message;
 import com.timmytime.predictorclientreactive.service.StartupService;
-import com.timmytime.predictorclientreactive.service.TeamService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,14 +58,14 @@ public class StartupServiceImpl implements StartupService {
 
     private void completeStartup(String url) {
         runAsync(() -> webClientFacade.sendMessage(url,
-                        Message.builder()
-                                .event("START")
-                                .eventType("ALL")
-                                .build()));
+                Message.builder()
+                        .event("START")
+                        .eventType("ALL")
+                        .build()));
     }
 
     @Override
-    public Mono<Void> conduct(){
+    public Mono<Void> conduct() {
         runAsync(() ->
 
                 fromStream(
@@ -88,7 +87,7 @@ public class StartupServiceImpl implements StartupService {
                                         .map(LambdaFunctions::getFunctionName)
                                         .doOnNext(lambdaFacade::invoke)
                                         .doFinally(wakeup ->
-                                                just(messageHost+"/message")
+                                                just(messageHost + "/message")
                                                         .delayElement(ofMinutes(startDelay))
                                                         .subscribe(this::completeStartup))
                                         .subscribe()

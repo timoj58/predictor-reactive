@@ -6,5 +6,6 @@ import java.util.UUID;
 
 public interface PlayerService {
     void load();
+
     Player get(UUID id);
 }

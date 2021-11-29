@@ -3,7 +3,6 @@ package com.timmytime.predictoreventscraperreactive.service.impl;
 import com.timmytime.predictoreventscraperreactive.service.ScraperService;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class ScraperServiceImplTest {
@@ -15,7 +14,7 @@ class ScraperServiceImplTest {
             = new ScraperServiceImpl(espnService);
 
     @Test
-    void scrape(){
+    void scrape() {
         scraperService.scrape().subscribe();
         verify(espnService, atLeastOnce()).scrape();
     }

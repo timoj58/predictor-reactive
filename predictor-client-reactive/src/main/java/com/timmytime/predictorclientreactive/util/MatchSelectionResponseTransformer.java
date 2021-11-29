@@ -2,7 +2,6 @@ package com.timmytime.predictorclientreactive.util;
 
 import com.timmytime.predictorclientreactive.enumerator.FantasyEventTypes;
 import com.timmytime.predictorclientreactive.model.FantasyEvent;
-import com.timmytime.predictorclientreactive.model.FantasyResponse;
 import com.timmytime.predictorclientreactive.model.MatchSelectionResponse;
 import com.timmytime.predictorclientreactive.model.PlayerResponse;
 import lombok.Getter;

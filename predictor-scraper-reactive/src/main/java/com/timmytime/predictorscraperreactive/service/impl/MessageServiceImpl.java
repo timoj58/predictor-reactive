@@ -2,7 +2,6 @@ package com.timmytime.predictorscraperreactive.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.timmytime.predictorscraperreactive.enumerator.CompetitionFixtureCodes;
 import com.timmytime.predictorscraperreactive.facade.WebClientFacade;
 import com.timmytime.predictorscraperreactive.model.ScraperModel;
 import com.timmytime.predictorscraperreactive.request.Message;
@@ -15,9 +14,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 

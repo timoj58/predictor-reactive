@@ -17,7 +17,9 @@ import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static com.timmytime.predictoreventscraperreactive.enumerator.Providers.ESPN_ODDS;
@@ -32,11 +34,11 @@ public class CompetitionFixtureScraper {
     @Autowired
     public CompetitionFixtureScraper(
             MessageService messageService
-    ){
+    ) {
         this.messageService = messageService;
     }
 
-    public void scrape(CompetitionFixtures competitionFixtures){
+    public void scrape(CompetitionFixtures competitionFixtures) {
 
         log.info("scraping {}", competitionFixtures.getUrl());
         String response = "";
@@ -84,13 +86,13 @@ public class CompetitionFixtureScraper {
                                     .subscribe(notify -> messageService.send(ESPN_ODDS.name(), notify.name().toLowerCase()))
                     ).subscribe();
 
-        }catch (Exception e){
+        } catch (Exception e) {
             //completed if error.  TODO review.  page missing etc.
             messageService.send(ESPN_ODDS.name(), competitionFixtures.getCode().name().toLowerCase());
         }
     }
 
-    private JsonNode convert(JSONObject result){
+    private JsonNode convert(JSONObject result) {
         try {
             return new ObjectMapper().readTree(result.toString());
         } catch (JsonProcessingException e) {

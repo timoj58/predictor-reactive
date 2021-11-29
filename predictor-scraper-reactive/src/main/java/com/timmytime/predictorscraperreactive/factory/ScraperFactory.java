@@ -18,7 +18,7 @@ public class ScraperFactory {
     @Autowired
     public ScraperFactory(
             @Value("${scraper.match}") String matchUrl,
-            ScraperTrackerService scraperTrackerService){
+            ScraperTrackerService scraperTrackerService) {
         this.matchUrl = matchUrl;
         this.scraperTrackerService = scraperTrackerService;
     }

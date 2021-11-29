@@ -1,7 +1,6 @@
 package com.timmytime.predictoreventsreactive.repo;
 
 
-import com.timmytime.predictoreventsreactive.enumerator.Predictions;
 import com.timmytime.predictoreventsreactive.model.EventOutcome;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.stereotype.Repository;

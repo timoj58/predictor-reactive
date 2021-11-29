@@ -21,16 +21,16 @@ public enum ApplicableFantasyLeagues {
 
     public static List<ApplicableFantasyLeagues> findByCountry(String country) {
         return Arrays.stream(
-                ApplicableFantasyLeagues.values()
-        )
+                        ApplicableFantasyLeagues.values()
+                )
                 .filter(f -> f.getCountry().equalsIgnoreCase(country))
                 .collect(Collectors.toList());
     }
 
     public static List<String> getCountries() {
         return Arrays.stream(
-                ApplicableFantasyLeagues.values()
-        )
+                        ApplicableFantasyLeagues.values()
+                )
                 .map(ApplicableFantasyLeagues::getCountry)
                 .distinct()
                 .collect(Collectors.toList());

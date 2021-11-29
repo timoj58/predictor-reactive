@@ -8,7 +8,6 @@ import com.timmytime.predictormessagereactive.service.OrchestrationService;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class MessageReceivedServiceImplTest {
@@ -18,7 +17,7 @@ class MessageReceivedServiceImplTest {
             = new MessageReceivedServiceImpl(orchestrationService);
 
     @Test
-    void receive(){
+    void receive() {
 
         messageReceivedService.receive(Mono.just(Message.builder()
                 .event(Event.DATA_LOADED)

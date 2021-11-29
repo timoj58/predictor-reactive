@@ -73,7 +73,7 @@ public class ScraperTrackerServiceImpl implements ScraperTrackerService {
     }
 
     @Override
-    public void addFailedPlayersRequest(Triple<CompetitionFixtureCodes, ScraperType,  String> request) {
+    public void addFailedPlayersRequest(Triple<CompetitionFixtureCodes, ScraperType, String> request) {
         if (tripSwitch.getTripSwitch().get() >= 0) {
             failedCount.incrementAndGet();
             failedPlayersRequests.add(request);

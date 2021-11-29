@@ -1,7 +1,6 @@
 package com.timmytime.predictorplayerseventsreactive.request;
 
 
-import com.timmytime.predictorplayerseventsreactive.model.PlayerMatch;
 import com.timmytime.predictorplayerseventsreactive.model.StatMetric;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

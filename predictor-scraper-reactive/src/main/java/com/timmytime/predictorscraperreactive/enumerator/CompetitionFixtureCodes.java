@@ -42,8 +42,8 @@ public enum CompetitionFixtureCodes {
 
     public static List<CompetitionFixtureCodes> getForCountry(CompetitionFixtureCodes competitionFixtureCodes) {
         return Arrays.asList(
-                CompetitionFixtureCodes.values()
-        ).stream()
+                        CompetitionFixtureCodes.values()
+                ).stream()
                 .filter(f -> f.name().contains(competitionFixtureCodes.name().split("_")[0]))
                 .collect(Collectors.toList());
     }

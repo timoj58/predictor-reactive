@@ -37,31 +37,31 @@ public class CompetitionServiceImpl implements ILoadService {
                 of(CountryCompetitions.values())
         ).doOnNext(country -> {
 
-            log.info("processing {}", country.name());
+                    log.info("processing {}", country.name());
 
-            CountryAndCompetitionResponse countryAndCompetitionResponse = new CountryAndCompetitionResponse();
-            countryAndCompetitionResponse.setCountryResponse(new CountryResponse(country.name().toLowerCase()));
+                    CountryAndCompetitionResponse countryAndCompetitionResponse = new CountryAndCompetitionResponse();
+                    countryAndCompetitionResponse.setCountryResponse(new CountryResponse(country.name().toLowerCase()));
 
-            country.getCompetitions()
-                    .forEach(competition -> countryAndCompetitionResponse
-                            .getCompetitionResponses()
-                            .add(new CompetitionResponse(
-                                    country.name(), Competition.valueOf(competition)
-                            )));
+                    country.getCompetitions()
+                            .forEach(competition -> countryAndCompetitionResponse
+                                    .getCompetitionResponses()
+                                    .add(new CompetitionResponse(
+                                            country.name(), Competition.valueOf(competition)
+                                    )));
 
-            countryAndCompetitionResponses.add(countryAndCompetitionResponse);
+                    countryAndCompetitionResponses.add(countryAndCompetitionResponse);
 
-        }).doFinally(finish -> {
+                }).doFinally(finish -> {
 
-            log.info("finishing");
-            try {
-                s3Facade.put("leagues", new ObjectMapper().writeValueAsString(countryAndCompetitionResponses));
-                shutdownService.receive(CompetitionServiceImpl.class.getName());
-            } catch (JsonProcessingException e) {
-                log.error("json issue", e);
-            }
+                    log.info("finishing");
+                    try {
+                        s3Facade.put("leagues", new ObjectMapper().writeValueAsString(countryAndCompetitionResponses));
+                        shutdownService.receive(CompetitionServiceImpl.class.getName());
+                    } catch (JsonProcessingException e) {
+                        log.error("json issue", e);
+                    }
 
-        })
+                })
                 .subscribe();
 
     }

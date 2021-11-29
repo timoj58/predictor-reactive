@@ -1,6 +1,5 @@
 package com.timmytime.predictorteamsreactive.facade;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.timmytime.predictorteamsreactive.model.EventOutcome;
 import com.timmytime.predictorteamsreactive.model.Match;
 import com.timmytime.predictorteamsreactive.model.Message;

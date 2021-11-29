@@ -47,8 +47,8 @@ public class TrainingServiceImpl implements TrainingService {
         this.webClientFacade = webClientFacade;
 
         toTrain = Arrays.stream(
-                FantasyEventTypes.values()
-        ).filter(f -> f.getPredict() == Boolean.TRUE)
+                        FantasyEventTypes.values()
+                ).filter(f -> f.getPredict() == Boolean.TRUE)
                 .collect(Collectors.toList());
 
         first = toTrain.stream().findFirst().get();
@@ -93,7 +93,7 @@ public class TrainingServiceImpl implements TrainingService {
                         } else {
                             log.info("training is complete");
                             webClientFacade.sendMessage(
-                                    messageHost+"/message",
+                                    messageHost + "/message",
                                     Message.builder().event("PLAYERS_TRAINED").eventType("ALL").build()
 
                             );

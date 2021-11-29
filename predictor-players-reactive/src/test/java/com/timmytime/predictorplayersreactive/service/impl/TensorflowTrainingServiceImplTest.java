@@ -39,7 +39,7 @@ class TensorflowTrainingServiceImplTest {
 
         tensorflowTrainingService.train(id);
 
-        verify(webClientFacade, atLeastOnce()).train("traininggoals/"+formatted+"/"+formatted);
+        verify(webClientFacade, atLeastOnce()).train("traininggoals/" + formatted + "/" + formatted);
     }
 
 }

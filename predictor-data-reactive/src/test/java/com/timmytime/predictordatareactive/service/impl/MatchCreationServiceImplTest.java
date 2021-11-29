@@ -7,7 +7,6 @@ import com.timmytime.predictordatareactive.model.Team;
 import com.timmytime.predictordatareactive.repo.ResultRepo;
 import com.timmytime.predictordatareactive.service.LineupPlayerService;
 import com.timmytime.predictordatareactive.service.MatchService;
-import com.timmytime.predictordatareactive.service.StatMetricService;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

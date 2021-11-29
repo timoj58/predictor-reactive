@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 @Getter
 @Setter
 @Configuration
-@ConfigurationProperties(prefix="clients")
+@ConfigurationProperties(prefix = "clients")
 public class HostsConfiguration {
     private String dataScraper;
     private String eventsScraper;
@@ -22,7 +22,7 @@ public class HostsConfiguration {
     private String playerEvents;
     private String client;
 
-    public Stream<String> getInitHosts(){
+    public Stream<String> getInitHosts() {
         return Stream.of(dataScraper, data, dataEvent, teams, players, playerEvents);
     }
 }

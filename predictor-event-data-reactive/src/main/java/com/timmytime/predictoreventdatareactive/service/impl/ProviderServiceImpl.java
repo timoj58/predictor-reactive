@@ -41,12 +41,12 @@ public class ProviderServiceImpl implements ProviderService {
         messages.limitRate(10).subscribe(msg -> process(msg).forEach(receiveEvent));
         events.limitRate(10)
                 .subscribe(event -> {
-            switch (Providers.valueOf(event.getString("provider"))) {
-                case ESPN_ODDS:
-                    processBets(espnService.prepareWrapper(event));
-                    break;
-            }
-        });
+                    switch (Providers.valueOf(event.getString("provider"))) {
+                        case ESPN_ODDS:
+                            processBets(espnService.prepareWrapper(event));
+                            break;
+                    }
+                });
 
         bets.limitRate(10)
                 .subscribe(bet -> bet.getRight().accept(bet.getLeft()));

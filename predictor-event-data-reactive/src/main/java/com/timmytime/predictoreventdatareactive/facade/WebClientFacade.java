@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
 @Component
 public class WebClientFacade {
 
-    public Mono<MatchTeams> getMatchTeams(String url){
+    public Mono<MatchTeams> getMatchTeams(String url) {
         return WebClient.builder().build()
                 .get()
                 .uri(url)

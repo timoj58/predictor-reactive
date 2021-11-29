@@ -3,10 +3,10 @@ package com.timmytime.predictorplayersreactive.e2e;
 import com.timmytime.predictorplayersreactive.enumerator.CountryCompetitions;
 import com.timmytime.predictorplayersreactive.enumerator.FantasyEventTypes;
 import com.timmytime.predictorplayersreactive.facade.WebClientFacade;
+import com.timmytime.predictorplayersreactive.model.*;
 import com.timmytime.predictorplayersreactive.repo.PlayerMatchRepo;
 import com.timmytime.predictorplayersreactive.repo.PlayersTrainingHistoryRepo;
 import com.timmytime.predictorplayersreactive.request.Message;
-import com.timmytime.predictorplayersreactive.model.*;
 import com.timmytime.predictorplayersreactive.service.*;
 import com.timmytime.predictorplayersreactive.service.impl.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,7 +49,7 @@ public class PlayersServiceTest {
             = new MessageReceivedServiceImpl(trainingService, trainingModelService, playersTrainingHistoryService);
 
     @BeforeEach
-    void setup(){
+    void setup() {
         var history = PlayersTrainingHistory.builder()
                 .id(UUID.randomUUID())
                 .type(FantasyEventTypes.GOALS)

@@ -5,5 +5,5 @@ import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface FileRequestRepo  extends ReactiveMongoRepository<FileRequest, String> {
+public interface FileRequestRepo extends ReactiveMongoRepository<FileRequest, String> {
 }

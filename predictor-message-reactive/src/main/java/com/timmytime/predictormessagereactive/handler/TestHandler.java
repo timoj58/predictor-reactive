@@ -20,9 +20,9 @@ public class TestHandler {
     public Mono<ServerResponse> trainTeams(ServerRequest request) {
         return ServerResponse.ok().build(testApiService.trainTeams(
                 UUID.fromString(request.pathVariable("receipt")),
-                        request.pathVariable("to"),
-                        request.pathVariable("from"),
-                        request.pathVariable("country")
+                request.pathVariable("to"),
+                request.pathVariable("from"),
+                request.pathVariable("country")
         ));
     }
 

@@ -1,16 +1,11 @@
 package com.timmytime.predictordatareactive.service.impl;
 
-import com.timmytime.predictordatareactive.factory.MatchFactory;
 import com.timmytime.predictordatareactive.model.Player;
-import com.timmytime.predictordatareactive.model.ResultData;
 import com.timmytime.predictordatareactive.model.StatMetric;
-import com.timmytime.predictordatareactive.model.Team;
 import com.timmytime.predictordatareactive.repo.StatMetricRepo;
 import com.timmytime.predictordatareactive.service.StatMetricService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONArray;
-import org.jsoup.parser.Parser;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -19,7 +14,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -32,7 +26,6 @@ public class StatMetricServiceImpl implements StatMetricService {
     public Mono<StatMetric> save(StatMetric statMetric) {
         return statMetricRepo.save(statMetric);
     }
-
 
 
     @Override

@@ -42,7 +42,7 @@ public class PlayerMatchServiceImpl implements PlayerMatchService {
         var url = new StringBuilder(dataHost + "/players/appearances/" + player);
 
         date.ifPresent(then ->
-                url.append("?date="+then.format(
+                url.append("?date=" + then.format(
                         DateTimeFormatter.ofPattern("dd-MM-yyyy")
                 )));
 
@@ -66,7 +66,7 @@ public class PlayerMatchServiceImpl implements PlayerMatchService {
         getAppearances(player, Optional.empty())
                 .limitRate(1)
                 .subscribe(appearance -> processPlayerMatch(
-                        appearance, consumer
+                                appearance, consumer
                         )
                 );
     }

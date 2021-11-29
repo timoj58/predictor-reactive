@@ -22,7 +22,7 @@ public class WebClientFacade {
                 .subscribe();
     }
 
-    public void train(String url, Message message){
+    public void train(String url, Message message) {
         log.info("train {}", url);
         WebClient.builder().build()
                 .post()
@@ -34,7 +34,7 @@ public class WebClientFacade {
 
     }
 
-    public void predict(String url, Message message){
+    public void predict(String url, Message message) {
         log.info("predict {}", url);
         WebClient.builder().build()
                 .post()
@@ -46,7 +46,7 @@ public class WebClientFacade {
 
     }
 
-    public void finish(String url, Message message){
+    public void finish(String url, Message message) {
         log.info("finish {}", url);
         WebClient.builder().build()
                 .post()
@@ -58,7 +58,7 @@ public class WebClientFacade {
 
     }
 
-    public void init(String url){
+    public void init(String url) {
         log.info("init {}", url);
         WebClient.builder().build()
                 .post()
@@ -67,7 +67,7 @@ public class WebClientFacade {
                 .subscribe();
     }
 
-    public void receipt(String url){
+    public void receipt(String url) {
         log.info("receipt {}", url);
         WebClient.builder().build()
                 .put()
@@ -77,7 +77,7 @@ public class WebClientFacade {
 
     }
 
-    public void receipt(String url, JsonNode prediction){
+    public void receipt(String url, JsonNode prediction) {
         log.info("receipt {}", url);
         WebClient.builder().build()
                 .put()

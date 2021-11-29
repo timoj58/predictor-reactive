@@ -63,10 +63,10 @@ public class TrainingModelServiceImpl implements TrainingModelService {
                     .subscribe(country -> {
                         TrainingHistory trainingHistory = trainingHistoryService.next(Training.TRAIN_RESULTS, country.name(), interval);
                         webClientFacade.getMatches(
-                                dataHost + "/match/country/" + trainingHistory.getCountry()
-                                        + "/" + trainingHistory.getFromDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-                                        + "/" + trainingHistory.getToDate().plusYears(interval).toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-                        ).doOnNext(match -> tensorflowDataService.load(new CountryMatch(trainingHistory.getCountry(), match)))
+                                        dataHost + "/match/country/" + trainingHistory.getCountry()
+                                                + "/" + trainingHistory.getFromDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                                                + "/" + trainingHistory.getToDate().plusYears(interval).toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                                ).doOnNext(match -> tensorflowDataService.load(new CountryMatch(trainingHistory.getCountry(), match)))
                                 .doFinally(f -> tensorflowTrainService.train(trainingHistory))
                                 .subscribe();
                     });

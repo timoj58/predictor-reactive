@@ -52,15 +52,15 @@ public class TrainingServiceImpl implements TrainingService {
         if (trainingHistory.getType().equals(Training.TRAIN_RESULTS)) {
             //and also need to load our next section....
             webClientFacade.getMatches(
-                    dataHost + "/match/country/" + trainingHistory.getCountry()
-                            + "/" + trainingHistory.getFromDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-                            + "/" +
-                            (trainingEvaluation ?
-                                    trainingHistory.getToDate().toLocalDate().plusYears(interval).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-                                    :
-                                    trainingHistory.getToDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-                            )
-            ).doOnNext(match -> tensorflowDataService.load(new CountryMatch(trainingHistory.getCountry(), match)))
+                            dataHost + "/match/country/" + trainingHistory.getCountry()
+                                    + "/" + trainingHistory.getFromDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                                    + "/" +
+                                    (trainingEvaluation ?
+                                            trainingHistory.getToDate().toLocalDate().plusYears(interval).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                                            :
+                                            trainingHistory.getToDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                                    )
+                    ).doOnNext(match -> tensorflowDataService.load(new CountryMatch(trainingHistory.getCountry(), match)))
                     .doFinally(f -> tensorflowTrainService.train(trainingHistory))
                     .subscribe();
         } else {

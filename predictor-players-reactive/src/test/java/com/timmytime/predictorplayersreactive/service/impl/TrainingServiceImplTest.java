@@ -28,8 +28,8 @@ class TrainingServiceImplTest {
             webClientFacade);
 
     @Test
-    void trainEvent(){
-        var history =  PlayersTrainingHistory.builder()
+    void trainEvent() {
+        var history = PlayersTrainingHistory.builder()
                 .fromDate(LocalDateTime.now())
                 .toDate(LocalDateTime.now()).build();
         when(playersTrainingHistoryService.find(any(FantasyEventTypes.class)))
@@ -42,8 +42,8 @@ class TrainingServiceImplTest {
     }
 
     @Test
-    void trainHistory(){
-        var history =  PlayersTrainingHistory.builder()
+    void trainHistory() {
+        var history = PlayersTrainingHistory.builder()
                 .type(FantasyEventTypes.GOALS)
                 .fromDate(LocalDateTime.now())
                 .toDate(LocalDateTime.now()).build();
@@ -59,8 +59,8 @@ class TrainingServiceImplTest {
     }
 
     @Test
-    void trainHistoryStop(){
-        var history =  PlayersTrainingHistory.builder()
+    void trainHistoryStop() {
+        var history = PlayersTrainingHistory.builder()
                 .type(FantasyEventTypes.GOALS)
                 .fromDate(LocalDateTime.now().plusDays(1))
                 .toDate(LocalDateTime.now().plusDays(1)).build();
@@ -71,13 +71,13 @@ class TrainingServiceImplTest {
                 .thenReturn(Mono.just(history));
 
         trainingService.train(history);
-        history =  PlayersTrainingHistory.builder()
+        history = PlayersTrainingHistory.builder()
                 .type(FantasyEventTypes.ASSISTS)
                 .fromDate(LocalDateTime.now().plusDays(1))
                 .toDate(LocalDateTime.now().plusDays(1)).build();
         trainingService.train(history);
 
-        history =  PlayersTrainingHistory.builder()
+        history = PlayersTrainingHistory.builder()
                 .type(FantasyEventTypes.YELLOW_CARD)
                 .fromDate(LocalDateTime.now().plusDays(1))
                 .toDate(LocalDateTime.now().plusDays(1)).build();

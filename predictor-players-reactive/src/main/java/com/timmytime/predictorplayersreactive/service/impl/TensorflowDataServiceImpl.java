@@ -39,9 +39,9 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
     private void process(PlayerMatch playerMatch) {
         //hack due to messing about with data.  need to add compound index..
         CompletableFuture.runAsync(() ->
-        playerMatchRepo.findByDateAndPlayerId(playerMatch.getDate(), playerMatch.getPlayerId())
-                .ifPresentOrElse(then -> {
-                }, () -> playerMatchRepo.save(playerMatch.toBuilder().id(UUID.randomUUID()).build())));
+                playerMatchRepo.findByDateAndPlayerId(playerMatch.getDate(), playerMatch.getPlayerId())
+                        .ifPresentOrElse(then -> {
+                        }, () -> playerMatchRepo.save(playerMatch.toBuilder().id(UUID.randomUUID()).build())));
     }
 
     @Override

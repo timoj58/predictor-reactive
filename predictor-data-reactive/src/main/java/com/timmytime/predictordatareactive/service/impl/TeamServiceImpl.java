@@ -7,13 +7,10 @@ import com.timmytime.predictordatareactive.response.MatchTeams;
 import com.timmytime.predictordatareactive.service.TeamService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.annotation.PostConstruct;
-import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -116,11 +113,11 @@ public class TeamServiceImpl implements TeamService {
                         Team.builder().build()
                 ));
         var awayTeam = teamRepo.findByCompetitionAndLabel(competition, away)
-             .switchIfEmpty(Mono.just(
-                Team.builder().build()
-        ));
+                .switchIfEmpty(Mono.just(
+                        Team.builder().build()
+                ));
 
-        return homeTeam.zipWith(awayTeam, (h,a) ->
+        return homeTeam.zipWith(awayTeam, (h, a) ->
                 MatchTeams.builder()
                         .home(h.getId() != null ? Optional.of(h) : Optional.empty())
                         .away(a.getId() != null ? Optional.of(a) : Optional.empty())
@@ -152,24 +149,24 @@ public class TeamServiceImpl implements TeamService {
     public void init() {
 
         teamRepo.findAll().count().filter(count -> count == 0).doOnNext(
-                then -> Flux.fromArray(CountryCompetitions.values())
-                        .subscribe(country ->
-                                Flux.fromStream(
-                                        CountryCompetitions.valueOf(country.name()).getCompetitions().stream()
-                                ).subscribe(competition ->
+                        then -> Flux.fromArray(CountryCompetitions.values())
+                                .subscribe(country ->
+                                        Flux.fromStream(
+                                                CountryCompetitions.valueOf(country.name()).getCompetitions().stream()
+                                        ).subscribe(competition ->
 
-                                    IntStream.range(0, 50).forEach(index -> teamRepo.save(
-                                            Team.builder()
-                                                    .country(country.name().toLowerCase())
-                                                    .label("dummy")
-                                                    .competition("TBC")
-                                                    .espnId("dummy")
-                                                    .id(UUID.randomUUID())
-                                                    .build()
-                                    ).subscribe())
+                                                IntStream.range(0, 50).forEach(index -> teamRepo.save(
+                                                        Team.builder()
+                                                                .country(country.name().toLowerCase())
+                                                                .label("dummy")
+                                                                .competition("TBC")
+                                                                .espnId("dummy")
+                                                                .id(UUID.randomUUID())
+                                                                .build()
+                                                ).subscribe())
+                                        )
                                 )
-                        )
-        ).doFinally(finishLookup -> loadLookup())
-        .subscribe();
+                ).doFinally(finishLookup -> loadLookup())
+                .subscribe();
     }
 }

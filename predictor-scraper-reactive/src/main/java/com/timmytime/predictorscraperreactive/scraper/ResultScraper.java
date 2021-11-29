@@ -35,22 +35,22 @@ public class ResultScraper {
 
         document.head().getAllElements().stream().filter(f -> f.tag().toString().equals("script"))
                 .filter(f -> f.data().contains("window.espn.scoreboardData")).findFirst().ifPresent(
-                then -> {
+                        then -> {
 
-                    JSONArray events = new JSONObject(then.data().substring(then.data().indexOf("{"))
-                            .replace("<script>", "")
-                            .replace("</script>", "")).getJSONArray("events");
+                            JSONArray events = new JSONObject(then.data().substring(then.data().indexOf("{"))
+                                    .replace("<script>", "")
+                                    .replace("</script>", "")).getJSONArray("events");
 
-                    IntStream.range(0, events.length()).forEach(
-                            index -> {
-                                var event = events.getJSONObject(index);
-                                var status = event.getJSONObject("status").getJSONObject("type").getString("name");
-                                if (status.equals("STATUS_FULL_TIME")) {
-                                    results.add(create(event, competition));
-                                }
-                            }
-                    );
-                });
+                            IntStream.range(0, events.length()).forEach(
+                                    index -> {
+                                        var event = events.getJSONObject(index);
+                                        var status = event.getJSONObject("status").getJSONObject("type").getString("name");
+                                        if (status.equals("STATUS_FULL_TIME")) {
+                                            results.add(create(event, competition));
+                                        }
+                                    }
+                            );
+                        });
 
         return results;
     }

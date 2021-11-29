@@ -17,7 +17,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -81,24 +80,24 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
     public void loadOutstanding(String country, Runnable finish) {
         log.info("loading outstanding games");
         webClientFacade.getOutstandingEvents(
-                eventsHost + "/outstanding/" + country.toLowerCase()
-        ).doOnNext(event -> {
-                    log.info("found outstanding event {} vs {}, {}", event.getHome(), event.getAway(), event.getDate().toString());
-                    webClientFacade.getMatch(dataHost + "/match" +
-                            "?home=" + event.getHome() + "&away=" + event.getAway()
-                            + "&date=" + event.getDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
-                            .subscribe(match -> {
-                                        log.info("found the actual match {} vs {}", match.getHomeTeam(), match.getAwayTeam());
-                                        load(new CountryMatch(
-                                                country.toLowerCase(),
-                                                match.toBuilder().date(LocalDateTime.now().minusDays(1)).build()) //need to ensure it gets picked up.
-                                        );
-                                    }
+                        eventsHost + "/outstanding/" + country.toLowerCase()
+                ).doOnNext(event -> {
+                            log.info("found outstanding event {} vs {}, {}", event.getHome(), event.getAway(), event.getDate().toString());
+                            webClientFacade.getMatch(dataHost + "/match" +
+                                            "?home=" + event.getHome() + "&away=" + event.getAway()
+                                            + "&date=" + event.getDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+                                    .subscribe(match -> {
+                                                log.info("found the actual match {} vs {}", match.getHomeTeam(), match.getAwayTeam());
+                                                load(new CountryMatch(
+                                                        country.toLowerCase(),
+                                                        match.toBuilder().date(LocalDateTime.now().minusDays(1)).build()) //need to ensure it gets picked up.
+                                                );
+                                            }
 
-                            );
-                }
-        ).doFinally(then -> finish.run())
-        .subscribe();
+                                    );
+                        }
+                ).doFinally(then -> finish.run())
+                .subscribe();
     }
 
 

@@ -32,7 +32,7 @@ public enum CompetitionFixtureCodes {
 
     private String code;
 
-    CompetitionFixtureCodes(String code){
+    CompetitionFixtureCodes(String code) {
         this.code = code;
     }
 }

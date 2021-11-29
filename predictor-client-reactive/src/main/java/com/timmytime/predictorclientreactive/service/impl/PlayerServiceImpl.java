@@ -24,7 +24,7 @@ public class PlayerServiceImpl implements PlayerService {
     @Override
     public void load() {
 
-        webClientFacade.getPlayers(dataHost+"/players")
+        webClientFacade.getPlayers(dataHost + "/players")
                 .filter(f -> f.getLastAppearance() != null && f.getLastAppearance().isAfter(
                         LocalDate.now().minusYears(2)
                 ))

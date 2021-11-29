@@ -93,12 +93,12 @@ public class MatchFactory {
         return teamService.getTeam(resultData.getResult().getString("country"), label, espnId)
                 .or(() -> TeamLabelMatcher.match(label, countryTeams))
                 .or(() -> Optional.of(teamService.createNewTeam(
-                        Team.builder()
-                                .country(resultData.getResult().getString("country"))
-                                .label(label)
-                                .espnId(espnId)
-                                .competition(resultData.getResult().getString("competition")
-                                ).build())
+                                Team.builder()
+                                        .country(resultData.getResult().getString("country"))
+                                        .label(label)
+                                        .espnId(espnId)
+                                        .competition(resultData.getResult().getString("competition")
+                                        ).build())
                         )
                 ).get();
     }

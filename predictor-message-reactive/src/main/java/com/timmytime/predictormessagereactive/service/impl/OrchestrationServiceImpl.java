@@ -18,7 +18,6 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -78,7 +77,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                 .handler((ce) -> training.apply(
                         ce,
                         () -> EventType.countries().forEach(country -> webClientFacade.train(
-                                hostsConfiguration.getTeams()+"/message",
+                                hostsConfiguration.getTeams() + "/message",
                                 Message.builder()
                                         .event(Event.TEAMS_TRAINED)
                                         .eventType(country)
@@ -91,12 +90,12 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                 //input data loaded for all competitions, output -> train all
                 .handler((ce) -> training.apply(
                         ce,
-                        () -> webClientFacade.train(hostsConfiguration.getPlayers()+"/message",
+                        () -> webClientFacade.train(hostsConfiguration.getPlayers() + "/message",
                                 Message.builder()
                                         .event(Event.PLAYERS_TRAINED)
                                         .eventType(EventType.ALL)
                                         .build()
-                                )))
+                        )))
                 .build());
 
         eventManager.put(Action.PREDICT_TEAMS, EventAction.builder()
@@ -104,7 +103,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                 //input all countries trained, countries
                 .handler((ce) -> predictions.apply(
                         Triple.of(ce, TEAM_PREDICTION_EVENTS, EventType.countriesAndCompetitions()), (c) -> webClientFacade.predict(
-                                hostsConfiguration.getTeamEvents()+"/message",
+                                hostsConfiguration.getTeamEvents() + "/message",
                                 Message.builder()
                                         .event(Event.TEAMS_PREDICTED)
                                         .eventType(c)
@@ -116,7 +115,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                 .processed(Boolean.FALSE)
                 .handler((ce) -> predictions.apply(
                         Triple.of(ce, PLAYER_PREDICTION_EVENTS, EventType.competitionsAndAll()), (c) -> webClientFacade.predict(
-                                hostsConfiguration.getPlayerEvents()+"/message",
+                                hostsConfiguration.getPlayerEvents() + "/message",
                                 Message.builder()
                                         .event(Event.PLAYERS_PREDICTED)
                                         .eventType(c)
@@ -129,8 +128,8 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                 .handler((ce) -> {
                     if (ce.stream().anyMatch(m -> m.getMessage().getEvent().equals(Event.START))) {
                         initService.init().doFinally(scrape ->
-                             CompletableFuture.runAsync(() -> webClientFacade.scrape(hostsConfiguration.getDataScraper()+"/scrape"))
-                                .thenRun(() -> webClientFacade.scrape(hostsConfiguration.getEventsScraper()+"/scrape")))
+                                        CompletableFuture.runAsync(() -> webClientFacade.scrape(hostsConfiguration.getDataScraper() + "/scrape"))
+                                                .thenRun(() -> webClientFacade.scrape(hostsConfiguration.getEventsScraper() + "/scrape")))
                                 .subscribe();
                         return true;
                     }
@@ -143,7 +142,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                 .handler((ce) -> {
                     if (ce.stream().map(m -> m.getMessage().getEvent()).collect(Collectors.toList()).contains(Event.PLAYERS_PREDICTED)) {
                         webClientFacade.finish(
-                                hostsConfiguration.getClient()+"/message",
+                                hostsConfiguration.getClient() + "/message",
                                 Message.builder()
                                         .event(Event.PLAYERS_PREDICTED)
                                         .eventType(EventType.ALL)
@@ -160,7 +159,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                 .handler((ce) -> {
                     if (ce.stream().map(m -> m.getMessage().getEvent()).collect(Collectors.toList()).contains(Event.TEAMS_PREDICTED)) {
                         webClientFacade.finish(
-                                hostsConfiguration.getClient()+"/message",
+                                hostsConfiguration.getClient() + "/message",
                                 Message.builder()
                                         .event(Event.TEAMS_PREDICTED)
                                         .eventType(EventType.ALL)

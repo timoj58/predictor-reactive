@@ -63,32 +63,32 @@ public class BetServiceImpl implements ILoadService {
 
         log.info("loading bets...");
         Flux.fromStream(
-                Stream.of(Pair.of(FantasyEventTypes.GOALS, goal), Pair.of(FantasyEventTypes.ASSISTS, assist), Pair.of(FantasyEventTypes.YELLOW_CARD, yellowCard))
-        ).doOnNext(market -> {
-                    List<TopSelection> topSelections = new ArrayList<>();
-                    log.info("processing {}", market.getLeft().name());
-                    webClientFacade.topPlayerSelections(playersHost + "/top-selections/" + market.getLeft().name() + "?threshold=" + market.getRight())
-                            .doOnNext(event -> topSelections.add(processPlayerEvent(event)))
-                            .doFinally(save -> Mono.just(topSelections).delayElement(Duration.ofSeconds(10)).subscribe(
-                                    finish -> finish(finish, market.getLeft().name())
-                            ))
-                            .subscribe();
-                }
-        )
+                        Stream.of(Pair.of(FantasyEventTypes.GOALS, goal), Pair.of(FantasyEventTypes.ASSISTS, assist), Pair.of(FantasyEventTypes.YELLOW_CARD, yellowCard))
+                ).doOnNext(market -> {
+                            List<TopSelection> topSelections = new ArrayList<>();
+                            log.info("processing {}", market.getLeft().name());
+                            webClientFacade.topPlayerSelections(playersHost + "/top-selections/" + market.getLeft().name() + "?threshold=" + market.getRight())
+                                    .doOnNext(event -> topSelections.add(processPlayerEvent(event)))
+                                    .doFinally(save -> Mono.just(topSelections).delayElement(Duration.ofSeconds(10)).subscribe(
+                                            finish -> finish(finish, market.getLeft().name())
+                                    ))
+                                    .subscribe();
+                        }
+                )
                 .doFinally(results ->
                         Flux.fromStream(
-                                Stream.of(Pair.of("homeWin", homeWin), Pair.of("awayWin", awayWin), Pair.of("draw", draw))
-                        ).doOnNext(outcome -> {
-                                    List<TopSelection> topSelections = new ArrayList<>();
-                                    log.info("processing {}", outcome.getLeft());
-                                    webClientFacade.topMatchSelections(eventHost + "/top-selections/" + outcome.getLeft() + "?threshold=" + outcome.getRight())
-                                            .doOnNext(selection -> topSelections.add(processMatchEvent(selection, outcome.getLeft())))
-                                            .doFinally(save -> Mono.just(topSelections).delayElement(Duration.ofSeconds(10)).subscribe(
-                                                    finish -> finish(finish, outcome.getLeft())
-                                            ))
-                                            .subscribe();
-                                }
-                        )
+                                        Stream.of(Pair.of("homeWin", homeWin), Pair.of("awayWin", awayWin), Pair.of("draw", draw))
+                                ).doOnNext(outcome -> {
+                                            List<TopSelection> topSelections = new ArrayList<>();
+                                            log.info("processing {}", outcome.getLeft());
+                                            webClientFacade.topMatchSelections(eventHost + "/top-selections/" + outcome.getLeft() + "?threshold=" + outcome.getRight())
+                                                    .doOnNext(selection -> topSelections.add(processMatchEvent(selection, outcome.getLeft())))
+                                                    .doFinally(save -> Mono.just(topSelections).delayElement(Duration.ofSeconds(10)).subscribe(
+                                                            finish -> finish(finish, outcome.getLeft())
+                                                    ))
+                                                    .subscribe();
+                                        }
+                                )
                                 .doFinally(finish -> Mono.just(BetServiceImpl.class.getName())
                                         .delayElement(Duration.ofMinutes(1))
                                         .subscribe(shutdownService::receive)

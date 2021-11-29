@@ -12,7 +12,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import static org.mockito.Mockito.*;
 
@@ -31,14 +30,12 @@ public class EventsServiceTest {
 
     private final PredictionService predictionService =
             new PredictionServiceImpl(0, eventService, tensorflowPredictionService, eventOutcomeService);
+    private final PredictionMonitorService predictionMonitorService
+            = new PredictionMonitorService("clients", predictionService, webClientFacade);
     private final PredictionResultService predictionResultService
             = new PredictionResultServiceImpl(eventOutcomeService);
     private final ValidationService validationService
             = new ValidationServiceImpl("data", eventOutcomeService, webClientFacade);
-    private final PredictionMonitorService predictionMonitorService
-            = new PredictionMonitorService("clients", predictionService, webClientFacade);
-
-
     private final MessageReceivedService messageReceivedService
             = new MessageReceivedServiceImpl(0, predictionService,
             predictionResultService, predictionMonitorService, validationService);
@@ -60,13 +57,13 @@ public class EventsServiceTest {
                 Flux.just(Event.builder().build())
         );
 
-                messageReceivedService.receive(
-                        Mono.just(
-                                Message.builder()
-                                        .eventType("GREECE")
-                                        .build()
-                        )
-                ).subscribe();
+        messageReceivedService.receive(
+                Mono.just(
+                        Message.builder()
+                                .eventType("GREECE")
+                                .build()
+                )
+        ).subscribe();
 
         Thread.sleep(250);
 

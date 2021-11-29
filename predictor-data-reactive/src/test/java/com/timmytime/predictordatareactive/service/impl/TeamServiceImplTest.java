@@ -3,7 +3,6 @@ package com.timmytime.predictordatareactive.service.impl;
 import com.timmytime.predictordatareactive.model.Team;
 import com.timmytime.predictordatareactive.repo.TeamRepo;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -21,7 +20,7 @@ class TeamServiceImplTest {
     private static final TeamRepo teamRepo = mock(TeamRepo.class);
     private static final UUID teamToFind = UUID.randomUUID();
     TeamServiceImpl teamService
-            = new TeamServiceImpl( teamRepo);
+            = new TeamServiceImpl(teamRepo);
 
     @BeforeAll
     public static void setUp() {
@@ -41,7 +40,7 @@ class TeamServiceImplTest {
     }
 
     @Test
-    void matchTeams(){
+    void matchTeams() {
 
         var home = UUID.randomUUID();
         var away = UUID.randomUUID();
@@ -62,9 +61,6 @@ class TeamServiceImplTest {
                 result.getHome().get().getId().equals(home));
 
     }
-
-
-
 
 
 }

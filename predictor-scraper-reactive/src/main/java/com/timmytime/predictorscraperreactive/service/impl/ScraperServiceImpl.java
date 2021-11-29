@@ -10,11 +10,9 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.annotation.PostConstruct;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
@@ -89,11 +87,11 @@ public class ScraperServiceImpl implements ScraperService {
     }
 
     @Override
-    public Mono<Void> init(){
+    public Mono<Void> init() {
         //if we have no history based on historic run.
         var count = scraperHistoryRepo.count();
 
-        if(count == 0){
+        if (count == 0) {
             ScraperHistory scraperHistory = new ScraperHistory();
 
             //actual data 19/10/2021

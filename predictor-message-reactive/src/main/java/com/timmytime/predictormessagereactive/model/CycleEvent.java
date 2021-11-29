@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @AllArgsConstructor
@@ -17,7 +15,7 @@ public class CycleEvent {
     private final Message message;
     private final LocalDateTime timestamp;
 
-    public CycleEvent(Message message){
+    public CycleEvent(Message message) {
         this.message = message;
         this.timestamp = LocalDateTime.now();
     }

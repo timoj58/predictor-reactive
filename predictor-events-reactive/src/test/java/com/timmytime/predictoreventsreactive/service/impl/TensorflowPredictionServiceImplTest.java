@@ -9,12 +9,11 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class TensorflowPredictionServiceImplTest {
 
-    private final WebClientFacade webClientFacade =mock(WebClientFacade.class);
+    private final WebClientFacade webClientFacade = mock(WebClientFacade.class);
 
 
     private final TensorflowPredictionService tensorflowPredictionService
@@ -36,7 +35,7 @@ class TensorflowPredictionServiceImplTest {
 
         Thread.sleep(100);
 
-        verify(webClientFacade, atLeastOnce()).predict("trainingresults/any/"+id.toString(), prediction);
+        verify(webClientFacade, atLeastOnce()).predict("trainingresults/any/" + id.toString(), prediction);
 
     }
 }

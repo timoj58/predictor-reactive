@@ -55,13 +55,13 @@ public class MatchCreationServiceImpl implements MatchCreationService {
 
 
         matchService.save(match).doAfterTerminate(() ->
-                resultRepo.findById(resultData.getId()).subscribe(
-                        result -> {
-                            log.info("match {} processed", result.getMatchId());
-                            result.setProcessed(Boolean.TRUE);
-                            resultRepo.save(result).subscribe();
-                        })
-        )
+                        resultRepo.findById(resultData.getId()).subscribe(
+                                result -> {
+                                    log.info("match {} processed", result.getMatchId());
+                                    result.setProcessed(Boolean.TRUE);
+                                    resultRepo.save(result).subscribe();
+                                })
+                )
                 .subscribe();
     }
 

@@ -34,14 +34,11 @@ public class ScraperServiceTest {
 
     private final PageServiceImpl pageService = new PageServiceImpl(
             scraperFactory, messageService);
-
-    private final ResultsConfiguration resultsConfiguration = mock(ResultsConfiguration.class);
-
     private final CompetitionScraperServiceImpl competitionScraperService
             = new CompetitionScraperServiceImpl(scraperFactory, pageService, resultsConfiguration);
-
     private final ScraperServiceImpl scraperService
             = new ScraperServiceImpl(competitionScraperService, scraperHistoryRepo);
+    private final ResultsConfiguration resultsConfiguration = mock(ResultsConfiguration.class);
 
     @Test
     void smoke() {
@@ -54,14 +51,14 @@ public class ScraperServiceTest {
         when(scraperHistoryRepo.findFirstByOrderByDateDesc())
                 .thenReturn(Optional.of(
                         ScraperHistory.builder()
-                        .date(LocalDateTime.now().minusDays(10)).build()));
+                                .date(LocalDateTime.now().minusDays(10)).build()));
 
         scraperService.scrape().subscribe();
         verify(webClientFacade, atLeastOnce()).send(anyString(), any(JsonNode.class));
     }
 
     @Test
-    void sanity(){
+    void sanity() {
         LocalDate.parse("19/10/2021", DateTimeFormatter.ofPattern("d/MM/yyyy"));
     }
 }

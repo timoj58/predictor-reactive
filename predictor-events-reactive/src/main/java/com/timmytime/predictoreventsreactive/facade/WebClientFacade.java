@@ -51,12 +51,12 @@ public class WebClientFacade {
 
     }
 
-    public Flux<Event> getEvents(String url){
+    public Flux<Event> getEvents(String url) {
         return WebClient.builder().build()
                 .get()
                 .uri(url)
                 .retrieve()
-                .bodyToFlux(Event .class);
+                .bodyToFlux(Event.class);
 
     }
 

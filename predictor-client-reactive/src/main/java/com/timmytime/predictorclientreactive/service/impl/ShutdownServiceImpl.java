@@ -67,7 +67,7 @@ public class ShutdownServiceImpl implements ShutdownService {
                         .eventType("ALL")
                         .build())
                 .doOnNext(msg -> webClientFacade.sendMessage(
-                        messageHost+"/message", msg
+                        messageHost + "/message", msg
                 ))
                 .doFinally(shutdown ->
                         Mono.just(LambdaFunctions.SHUTDOWN)

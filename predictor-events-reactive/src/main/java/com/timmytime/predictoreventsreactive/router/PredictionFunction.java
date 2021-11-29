@@ -1,8 +1,6 @@
 package com.timmytime.predictoreventsreactive.router;
 
-import com.timmytime.predictoreventsreactive.handler.EventsHandler;
 import com.timmytime.predictoreventsreactive.handler.PredictionHandler;
-import com.timmytime.predictoreventsreactive.service.EventOutcomeService;
 import com.timmytime.predictoreventsreactive.service.TensorflowPredictionService;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springframework.context.annotation.Bean;

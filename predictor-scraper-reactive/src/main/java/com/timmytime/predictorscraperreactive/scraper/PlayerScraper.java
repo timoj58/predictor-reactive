@@ -33,7 +33,7 @@ public class PlayerScraper {
     }
 
     public Optional<Lineup> scrape(String url, String response) {
-        var matchId = Integer.valueOf(url.substring(url.lastIndexOf("/")+1));
+        var matchId = Integer.valueOf(url.substring(url.lastIndexOf("/") + 1));
         return process(Parser.htmlParser().parseInput(response, ""), matchId);
     }
 

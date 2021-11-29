@@ -3,7 +3,6 @@ package com.timmytime.predictoreventscraperreactive.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.timmytime.predictoreventscraperreactive.enumerator.CountryCompetitions;
 import com.timmytime.predictoreventscraperreactive.facade.WebClientFacade;
 import com.timmytime.predictoreventscraperreactive.model.ScraperModel;
 import com.timmytime.predictoreventscraperreactive.service.MessageService;
@@ -12,13 +11,6 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static com.timmytime.predictoreventscraperreactive.enumerator.Providers.ESPN_ODDS;
 
 @Slf4j
 @Service("messageService")
@@ -43,20 +35,20 @@ public class MessageServiceImpl implements MessageService {
     public void send(String provider, String competition) {
         log.info("provider {} finished for {}", provider, competition);
         try {
-                JsonNode message = new ObjectMapper().readTree(
-                        new JSONObject()
-                                .put("event", "EVENTS_LOADED")
-                                .put("eventType", competition.toUpperCase())
-                                .toString()
-                );
-                webClientFacade.send(
-                        messageHost + "/message", message
-                );
+            JsonNode message = new ObjectMapper().readTree(
+                    new JSONObject()
+                            .put("event", "EVENTS_LOADED")
+                            .put("eventType", competition.toUpperCase())
+                            .toString()
+            );
+            webClientFacade.send(
+                    messageHost + "/message", message
+            );
 
-            } catch (
-                    JsonProcessingException e) {
-                log.error("message issue", e);
-            }
+        } catch (
+                JsonProcessingException e) {
+            log.error("message issue", e);
+        }
     }
 
     @Override
