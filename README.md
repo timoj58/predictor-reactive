@@ -1,3 +1,3 @@
 # predictor-reactive
 
-![Screenshot](arch.png)
+TODO update with latest architecture and local test run

@@ -10,6 +10,7 @@ mvn -f predictor-events-reactive/pom.xml clean package && docker build -t timmyt
 mvn -f predictor-players-reactive/pom.xml clean package && docker build -t timmytime/predictor-players-reactive predictor-players-reactive/
 mvn -f predictor-players-events-reactive/pom.xml clean package && docker build -t timmytime/predictor-players-events-reactive predictor-players-events-reactive/
 mvn -f predictor-client-reactive/pom.xml clean package && docker build -t timmytime/predictor-client-reactive predictor-client-reactive/
+mvn -f predictor-message-reactive/pom.xml clean package && docker build -t timmytime/predictor-message-reactive predictor-client-message/
 docker push timmytime/predictor-scraper-reactive
 docker push timmytime/predictor-event-scraper-reactive
 docker push timmytime/predictor-data-reactive
@@ -19,6 +20,7 @@ docker push timmytime/predictor-events-reactive
 docker push timmytime/predictor-players-reactive
 docker push timmytime/predictor-players-events-reactive
 docker push timmytime/predictor-client-reactive
+rm -Rf build/*
 
 
 
