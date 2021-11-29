@@ -90,7 +90,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                             webClientFacade.sendMessage(
                                     messageHost + "/message",
                                     Message.builder()
-                                            .eventType("TEAMS_TRAINED")
+                                            .event("TEAMS_TRAINED")
                                             .eventType(history.getCountry().toUpperCase())
                                             .build()
                             );
