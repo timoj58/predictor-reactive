@@ -115,7 +115,7 @@ class OrchestrationServiceImplTest {
                                 ).build()
                 ));
 
-        verify(webClientFacade, never()).predict(anyString());
+        verify(webClientFacade, never()).predict(anyString(), any());
 
         orchestrationService.process(
                 CycleEvent.builder()
@@ -127,7 +127,7 @@ class OrchestrationServiceImplTest {
                         ).build()
         );
 
-        verify(webClientFacade, atLeast(EventType.countries().size())).predict(anyString());
+        verify(webClientFacade, atLeast(EventType.countries().size())).predict(anyString(), any());
     }
 
     @Test
@@ -161,7 +161,7 @@ class OrchestrationServiceImplTest {
                                 ).build()
                 ));
 
-        verify(webClientFacade, never()).predict(anyString());
+        verify(webClientFacade, never()).predict(anyString(), any());
 
         EventType.competitions()
                         .forEach(competition ->
@@ -175,7 +175,7 @@ class OrchestrationServiceImplTest {
                         ).build()
         ));
 
-        verify(webClientFacade, atLeast(EventType.countries().size())).predict(anyString());
+        verify(webClientFacade, atLeast(EventType.countries().size())).predict(anyString(), any());
 
     }
 

@@ -21,4 +21,6 @@ public interface FantasyOutcomeService {
 
     Flux<FantasyOutcome> topSelections(@PathVariable String market, @RequestParam  Integer threshold);
 
+    void init();
+
 }

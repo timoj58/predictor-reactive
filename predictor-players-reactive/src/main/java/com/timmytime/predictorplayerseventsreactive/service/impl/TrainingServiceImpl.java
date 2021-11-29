@@ -1,7 +1,9 @@
 package com.timmytime.predictorplayerseventsreactive.service.impl;
 
 import com.timmytime.predictorplayerseventsreactive.enumerator.FantasyEventTypes;
+import com.timmytime.predictorplayerseventsreactive.facade.WebClientFacade;
 import com.timmytime.predictorplayerseventsreactive.model.PlayersTrainingHistory;
+import com.timmytime.predictorplayerseventsreactive.request.Message;
 import com.timmytime.predictorplayerseventsreactive.service.PlayersTrainingHistoryService;
 import com.timmytime.predictorplayerseventsreactive.service.TensorflowTrainingService;
 import com.timmytime.predictorplayerseventsreactive.service.TrainingService;
@@ -22,8 +24,10 @@ public class TrainingServiceImpl implements TrainingService {
 
     private final PlayersTrainingHistoryService playersTrainingHistoryService;
     private final TensorflowTrainingService tensorflowTrainingService;
+    private final WebClientFacade webClientFacade;
 
     private final Integer interval;
+    private final String messageHost;
 
     private final FantasyEventTypes first;
     private final List<FantasyEventTypes> toTrain;
@@ -31,12 +35,16 @@ public class TrainingServiceImpl implements TrainingService {
     @Autowired
     public TrainingServiceImpl(
             @Value("${training.interval}") Integer interval,
+            @Value("${clients.message}") String messageHost,
             PlayersTrainingHistoryService playersTrainingHistoryService,
-            TensorflowTrainingService tensorflowTrainingService
+            TensorflowTrainingService tensorflowTrainingService,
+            WebClientFacade webClientFacade
     ) {
         this.interval = interval;
+        this.messageHost = messageHost;
         this.playersTrainingHistoryService = playersTrainingHistoryService;
         this.tensorflowTrainingService = tensorflowTrainingService;
+        this.webClientFacade = webClientFacade;
 
         toTrain = Arrays.stream(
                 FantasyEventTypes.values()
@@ -83,7 +91,12 @@ public class TrainingServiceImpl implements TrainingService {
                             train(next);
                             toTrain.remove(next);
                         } else {
-                            log.info("training is complete"); //we only train off-line not in realtime.  TODO reviewing this
+                            log.info("training is complete");
+                            webClientFacade.sendMessage(
+                                    messageHost+"/message",
+                                    Message.builder().event("PLAYERS_TRAINED").eventType("ALL").build()
+
+                            );
                         }
                     }
                 });

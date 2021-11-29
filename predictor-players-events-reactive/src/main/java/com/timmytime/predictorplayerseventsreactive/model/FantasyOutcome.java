@@ -28,7 +28,5 @@ public class FantasyOutcome {
     private UUID opponent;
     private LocalDateTime eventDate;
     private Boolean current = Boolean.FALSE;
-    @Transient
-    private String label;
 
 }

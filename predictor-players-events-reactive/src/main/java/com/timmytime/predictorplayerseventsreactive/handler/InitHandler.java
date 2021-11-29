@@ -1,6 +1,6 @@
-package com.timmytime.predictorteamsreactive.handler;
+package com.timmytime.predictorplayerseventsreactive.handler;
 
-import com.timmytime.predictorteamsreactive.service.InitService;
+import com.timmytime.predictorplayerseventsreactive.service.InitService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -14,9 +14,6 @@ public class InitHandler {
     private final InitService initService;
 
     public Mono<ServerResponse> init(ServerRequest request) {
-        return ServerResponse.ok().build(initService.init(
-                request.queryParam("from").get(),
-                request.queryParam("to").get()
-        ));
+        return ServerResponse.ok().build(initService.init());
     }
 }

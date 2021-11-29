@@ -101,6 +101,15 @@ services:
       predictornet:
         ipv4_address: 172.22.0.25
 
+  players-events:
+    image: timmytime/predictor-players-events-reactive:latest
+    container_name: predictor-players-events-reactive
+    ports:
+      - "8108:8108"
+    networks:
+      predictornet:
+        ipv4_address: 172.22.0.26
+
 networks:
   predictornet:
     driver: bridge

@@ -20,6 +20,5 @@ public class FantasyOutcome {
     private UUID opponent;
     private LocalDateTime eventDate;
     private Boolean current = Boolean.TRUE;
-    private String label;
 
 }

@@ -3,6 +3,7 @@ package com.timmytime.predictorteamsreactive.facade;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.timmytime.predictorteamsreactive.model.EventOutcome;
 import com.timmytime.predictorteamsreactive.model.Match;
+import com.timmytime.predictorteamsreactive.model.Message;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -43,14 +44,14 @@ public class WebClientFacade {
 
     }
 
-    public void sendMessage(String url, JsonNode payload) {
+    public void sendMessage(String url, Message payload) {
         log.info("sending {}", payload.toString());
 
         WebClient.builder().build()
                 .post()
                 .uri(url)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .body(Mono.just(payload), JsonNode.class)
+                .body(Mono.just(payload), Message.class)
                 .exchange()
                 .subscribe();
     }

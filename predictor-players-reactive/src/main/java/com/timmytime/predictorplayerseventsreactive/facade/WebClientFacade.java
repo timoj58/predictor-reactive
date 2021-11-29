@@ -5,6 +5,7 @@ import com.timmytime.predictorplayerseventsreactive.model.LineupPlayer;
 import com.timmytime.predictorplayerseventsreactive.model.Match;
 import com.timmytime.predictorplayerseventsreactive.model.Player;
 import com.timmytime.predictorplayerseventsreactive.model.StatMetric;
+import com.timmytime.predictorplayerseventsreactive.request.Message;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -18,12 +19,12 @@ import reactor.core.publisher.Mono;
 public class WebClientFacade {
 
 
-    public void sendMessage(String url, JsonNode payload) {
+    public void sendMessage(String url, Message payload) {
         WebClient.builder().build()
                 .post()
                 .uri(url)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .body(Mono.just(payload), JsonNode.class)
+                .body(Mono.just(payload), Message.class)
                 .exchange()
                 .subscribe();
     }

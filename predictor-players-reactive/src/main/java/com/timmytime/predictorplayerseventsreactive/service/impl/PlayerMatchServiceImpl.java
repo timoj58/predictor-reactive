@@ -14,7 +14,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -36,10 +38,15 @@ public class PlayerMatchServiceImpl implements PlayerMatchService {
 
 
     @Override
-    public Flux<LineupPlayer> getAppearances(UUID player) {
-        return webClientFacade.getAppearances(
-                dataHost + "/players/appearances/" + player
-        );
+    public Flux<LineupPlayer> getAppearances(UUID player, Optional<LocalDate> date) {
+        var url = new StringBuilder(dataHost + "/players/appearances/" + player);
+
+        date.ifPresent(then ->
+                url.append("?date="+then.format(
+                        DateTimeFormatter.ofPattern("dd-MM-yyyy")
+                )));
+
+        return webClientFacade.getAppearances(url.toString());
     }
 
     @Override
@@ -56,7 +63,7 @@ public class PlayerMatchServiceImpl implements PlayerMatchService {
     public void create(UUID player, Consumer<PlayerMatch> consumer) {
 
         log.info("creating {}", player);
-        getAppearances(player)
+        getAppearances(player, Optional.empty())
                 .limitRate(1)
                 .subscribe(appearance -> processPlayerMatch(
                         appearance, consumer
@@ -66,9 +73,9 @@ public class PlayerMatchServiceImpl implements PlayerMatchService {
 
     @Override
     public void next(UUID player, LocalDate date, Consumer<PlayerMatch> consumer) {
-        getAppearances(player)
+        getAppearances(player, Optional.of(date))
                 .filter(f -> f.getDate().toLocalDate().isAfter(date))
-                .limitRate(1)
+                .limitRate(10)
                 .subscribe(appearance -> processPlayerMatch(
                         appearance, consumer
                 ));

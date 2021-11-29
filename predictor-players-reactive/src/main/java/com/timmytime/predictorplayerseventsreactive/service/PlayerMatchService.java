@@ -8,11 +8,12 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
 public interface PlayerMatchService {
-    Flux<LineupPlayer> getAppearances(UUID player);
+    Flux<LineupPlayer> getAppearances(UUID player, Optional<LocalDate> date);
 
     Mono<Match> getMatch(UUID match);
 

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PlayerService {
-    Mono<Player> find(UUID id);
+    Mono<Player> find(@PathVariable UUID id);
 
     Mono<Player> save(Player player);
 

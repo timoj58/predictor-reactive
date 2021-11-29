@@ -52,11 +52,11 @@ public class OrchestrationServiceImpl implements OrchestrationService {
 
     };
 
-    private final BiFunction<Triple<List<CycleEvent>, List<Event>, List<EventType>>, Consumer<String>, Boolean> predictions = (events, predict) -> {
+    private final BiFunction<Triple<List<CycleEvent>, List<Event>, List<EventType>>, Consumer<EventType>, Boolean> predictions = (events, predict) -> {
         if (transform.apply(events.getLeft().stream().filter(f -> events.getMiddle().contains(f.getMessage().getEvent())))
                 .containsAll(events.getRight())
         ) {
-            EventType.countries().forEach(country -> predict.accept(country.name()));
+            EventType.countries().forEach(predict::accept);
             return true;
         }
         return false;
@@ -103,13 +103,25 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                 .processed(Boolean.FALSE)
                 //input all countries trained, countries
                 .handler((ce) -> predictions.apply(
-                        Triple.of(ce, TEAM_PREDICTION_EVENTS, EventType.countriesAndCompetitions()), (c) -> webClientFacade.predict("")))
+                        Triple.of(ce, TEAM_PREDICTION_EVENTS, EventType.countriesAndCompetitions()), (c) -> webClientFacade.predict(
+                                hostsConfiguration.getTeamEvents()+"/message",
+                                Message.builder()
+                                        .event(Event.TEAMS_PREDICTED)
+                                        .eventType(c)
+                                        .build()
+                        )))
                 .build());
 
         eventManager.put(Action.PREDICT_PLAYERS, EventAction.builder()
                 .processed(Boolean.FALSE)
                 .handler((ce) -> predictions.apply(
-                        Triple.of(ce, PLAYER_PREDICTION_EVENTS, EventType.competitionsAndAll()), (c) -> webClientFacade.predict("")))
+                        Triple.of(ce, PLAYER_PREDICTION_EVENTS, EventType.competitionsAndAll()), (c) -> webClientFacade.predict(
+                                hostsConfiguration.getPlayerEvents()+"/message",
+                                Message.builder()
+                                        .event(Event.PLAYERS_PREDICTED)
+                                        .eventType(c)
+                                        .build()
+                        )))
                 .build());
 
         eventManager.put(Action.SCRAPE, EventAction.builder()

@@ -37,12 +37,6 @@ public class PredictionServiceImpl implements PredictionService {
         this.playerService = playerService;
         this.tensorflowPredictionService = tensorflowPredictionService;
         this.fantasyOutcomeService = fantasyOutcomeService;
-
-        //init machine
-        Flux.fromStream(
-                Stream.of("assists", "goals", "yellow")
-        ).subscribe(tensorflowPredictionService::init);  //maybe this is the cause?  hard to tell.  review logs another day.
-
     }
 
     @Override
@@ -98,10 +92,8 @@ public class PredictionServiceImpl implements PredictionService {
 
 
     private Boolean processPlayers(String competition, LocalDateTime date, UUID homeTeam, UUID awayTeam) {
-        Flux.fromStream(
-                Stream.concat(
-                        playerService.get(competition, homeTeam).stream(),
-                        playerService.get(competition, awayTeam).stream())
+        Flux.concat(
+                playerService.get(competition, homeTeam), playerService.get(competition, awayTeam)
         )
                 .subscribe(player ->
                         Flux.fromArray(FantasyEventTypes.values())

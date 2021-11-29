@@ -19,6 +19,15 @@ public class PlayerHandler {
     private final PlayerService playerService;
     private final LineupPlayerService lineupPlayerService;
 
+    public Mono<ServerResponse> getPlayer(ServerRequest serverRequest) {
+
+        return ServerResponse.ok().body(
+                playerService.find(
+                        UUID.fromString(serverRequest.pathVariable("id"))),
+                Player.class
+        );
+    }
+
     public Mono<ServerResponse> getAllPlayers(ServerRequest serverRequest) {
 
         return ServerResponse.ok().body(
@@ -26,6 +35,7 @@ public class PlayerHandler {
                 Player.class
         );
     }
+
     public Mono<ServerResponse> getByCompetition(ServerRequest serverRequest) {
 
         return ServerResponse.ok().body(
@@ -41,7 +51,8 @@ public class PlayerHandler {
 
         return ServerResponse.ok().body(
                 lineupPlayerService.find(
-                        UUID.fromString(serverRequest.pathVariable("player"))
+                        UUID.fromString(serverRequest.pathVariable("player")),
+                                serverRequest.queryParam("date").orElse(null)
                 ),
                 LineupPlayer.class
         );

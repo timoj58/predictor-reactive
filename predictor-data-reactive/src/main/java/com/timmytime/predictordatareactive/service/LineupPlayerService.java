@@ -5,6 +5,7 @@ import com.timmytime.predictordatareactive.model.ResultData;
 import com.timmytime.predictordatareactive.model.Team;
 import org.json.JSONArray;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -22,7 +23,8 @@ public interface LineupPlayerService {
     Mono<Void> deleteByMatch(UUID matchId);
 
     Flux<LineupPlayer> find(
-            @PathVariable UUID player);
+            @PathVariable UUID player,
+            @RequestParam(required = false) String date);
 
     Mono<Long> totalAppearances(
             @PathVariable UUID player

@@ -1,6 +1,7 @@
 package com.timmytime.predictorplayerseventsreactive.service.impl;
 
 import com.timmytime.predictorplayerseventsreactive.enumerator.FantasyEventTypes;
+import com.timmytime.predictorplayerseventsreactive.facade.WebClientFacade;
 import com.timmytime.predictorplayerseventsreactive.model.PlayersTrainingHistory;
 import com.timmytime.predictorplayerseventsreactive.service.PlayerMatchService;
 import com.timmytime.predictorplayerseventsreactive.service.PlayersTrainingHistoryService;
@@ -18,11 +19,14 @@ class TrainingServiceImplTest {
 
     private final  PlayersTrainingHistoryService playersTrainingHistoryService = mock(PlayersTrainingHistoryService.class);
     private final TensorflowTrainingService tensorflowTrainingService = mock(TensorflowTrainingService.class);
+    private final WebClientFacade webClientFacade = mock(WebClientFacade.class);
     private final TrainingService trainingService
             = new TrainingServiceImpl(
             0,
+            "message",
             playersTrainingHistoryService,
-            tensorflowTrainingService);
+            tensorflowTrainingService,
+            webClientFacade);
 
     @Test
     void trainEvent(){

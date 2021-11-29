@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -35,7 +36,7 @@ class PlayerMatchServiceImplTest {
                 Flux.just(LineupPlayer.builder().player(id).build())
         );
 
-        assertTrue(playerMatchService.getAppearances(id).blockFirst().getPlayer() == id);
+        assertTrue(playerMatchService.getAppearances(id, Optional.empty()).blockFirst().getPlayer() == id);
     }
 
     @Test

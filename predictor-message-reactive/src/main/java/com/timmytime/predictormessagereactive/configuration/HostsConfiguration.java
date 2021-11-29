@@ -23,6 +23,6 @@ public class HostsConfiguration {
     private String client;
 
     public Stream<String> getInitHosts(){
-        return Stream.of(dataScraper, data, dataEvent, teams, players);
+        return Stream.of(dataScraper, data, dataEvent, teams, players, playerEvents);
     }
 }

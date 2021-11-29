@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.timmytime.predictoreventsreactive.enumerator.CountryCompetitions;
 import com.timmytime.predictoreventsreactive.facade.WebClientFacade;
+import com.timmytime.predictoreventsreactive.request.Message;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +63,11 @@ public class PredictionMonitorService {
                             predictionService.reProcess();
                         } else if (count == 0 && countries.containsAll(Arrays.asList(CountryCompetitions.values()))) {
                             log.info("finishing");
-                            webClientFacade.sendMessage(messageHost + "/message", createMessage());
+                            webClientFacade.sendMessage(messageHost + "/message",
+                                    Message.builder()
+                                            .event("TEAMS_PREDICTED")
+                                            .eventType("ALL")
+                                            .build());
                             process.set(false);
                         }
                         previousCount.set(count);
@@ -71,16 +76,4 @@ public class PredictionMonitorService {
 
     }
 
-    private JsonNode createMessage() {
-        try {
-            return new ObjectMapper().readTree(
-                    new JSONObject()
-                            .put("type", "MATCH_PREDICTIONS").toString()
-            );
-        } catch (JsonProcessingException e) {
-            log.error("message failed", e);
-
-            return null;
-        }
-    }
 }

@@ -36,7 +36,7 @@ public class PlayersServiceTest {
             = new TensorflowTrainingServiceImpl("training", "goals", "assists", "yellows",
             playersTrainingHistoryService, webClientFacade);
     private final TrainingService trainingService
-            = new TrainingServiceImpl(0, playersTrainingHistoryService, tensorflowTrainingService);
+            = new TrainingServiceImpl(0, "messages", playersTrainingHistoryService, tensorflowTrainingService, webClientFacade);
     private final PlayerMatchService playerMatchService
             = new PlayerMatchServiceImpl("data", webClientFacade);
     private final TensorflowDataService tensorflowDataService

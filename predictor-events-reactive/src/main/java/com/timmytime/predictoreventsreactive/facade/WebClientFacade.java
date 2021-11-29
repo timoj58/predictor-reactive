@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.timmytime.predictoreventsreactive.model.Event;
 import com.timmytime.predictoreventsreactive.model.Match;
+import com.timmytime.predictoreventsreactive.request.Message;
 import com.timmytime.predictoreventsreactive.request.Prediction;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -17,12 +18,12 @@ import reactor.core.publisher.Mono;
 @Component
 public class WebClientFacade {
 
-    public void sendMessage(String url, JsonNode payload) {
+    public void sendMessage(String url, Message payload) {
         WebClient.builder().build()
                 .post()
                 .uri(url)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .body(Mono.just(payload), JsonNode.class)
+                .body(Mono.just(payload), Message.class)
                 .exchange()
                 .subscribe();
     }

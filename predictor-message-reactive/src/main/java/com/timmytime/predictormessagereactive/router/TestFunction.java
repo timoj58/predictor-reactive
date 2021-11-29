@@ -4,6 +4,7 @@ import com.timmytime.predictormessagereactive.handler.TestHandler;
 import com.timmytime.predictormessagereactive.service.TrainingTestService;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -28,6 +29,22 @@ public class TestFunction {
     }
 
     @Bean
+    @RouterOperation(beanClass = TrainingTestService.class, beanMethod = "predictTeams")
+    RouterFunction<ServerResponse> predictTeamResults(TestHandler testHandler) {
+        return route(RequestPredicates.POST("/teams/predict/result/{country}/{receipt}")
+                        .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON))
+                , testHandler::predictTeamResult);
+    }
+
+    @Bean
+    @RouterOperation(beanClass = TrainingTestService.class, beanMethod = "predictTeams")
+    RouterFunction<ServerResponse> predictTeamGoals(TestHandler testHandler) {
+        return route(RequestPredicates.POST("/teams/predict/goals/{country}/{receipt}")
+                        .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON))
+                , testHandler::predictTeamGoals);
+    }
+
+    @Bean
     @RouterOperation(beanClass = TrainingTestService.class, beanMethod = "trainPlayers")
     RouterFunction<ServerResponse> trainPlayersGoals(TestHandler testHandler) {
         return route(RequestPredicates.POST("/players/train/goals/{from}/{to}/{receipt}")
@@ -47,5 +64,44 @@ public class TestFunction {
         return route(RequestPredicates.POST("/players/train/yellow-card/{from}/{to}/{receipt}")
                 , testHandler::trainPlayers);
     }
+
+    @Bean
+    @RouterOperation(beanClass = TrainingTestService.class, beanMethod = "playerConfig")
+    RouterFunction<ServerResponse> playerInit(TestHandler testHandler) {
+        return route(RequestPredicates.PUT("/players/predict/init/{type}")
+                , testHandler::playerConfig);
+    }
+
+    @Bean
+    @RouterOperation(beanClass = TrainingTestService.class, beanMethod = "playerConfig")
+    RouterFunction<ServerResponse> playerDestroy(TestHandler testHandler) {
+        return route(RequestPredicates.PUT("/players/predict/clear-down/{type}")
+                , testHandler::playerConfig);
+    }
+
+    @Bean
+    @RouterOperation(beanClass = TrainingTestService.class, beanMethod = "predictTeams")
+    RouterFunction<ServerResponse> predictPlayerGoals(TestHandler testHandler) {
+        return route(RequestPredicates.POST("/players/predict/goals/{init}/{receipt}")
+                        .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON))
+                , testHandler::predictPlayer);
+    }
+
+    @Bean
+    @RouterOperation(beanClass = TrainingTestService.class, beanMethod = "predictTeams")
+    RouterFunction<ServerResponse> predictPlayerAssists(TestHandler testHandler) {
+        return route(RequestPredicates.POST("/players/predict/assists/{init}/{receipt}")
+                        .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON))
+                , testHandler::predictPlayer);
+    }
+
+    @Bean
+    @RouterOperation(beanClass = TrainingTestService.class, beanMethod = "predictTeams")
+    RouterFunction<ServerResponse> predictPlayerCards(TestHandler testHandler) {
+        return route(RequestPredicates.POST("/players/predict/yellow-card/{init}/{receipt}")
+                        .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON))
+                , testHandler::predictPlayer);
+    }
+
 
 }

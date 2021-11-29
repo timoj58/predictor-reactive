@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.timmytime.predictorplayerseventsreactive.enumerator.ApplicableFantasyLeagues;
 import com.timmytime.predictorplayerseventsreactive.facade.WebClientFacade;
+import com.timmytime.predictorplayerseventsreactive.request.Message;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,42 +63,17 @@ public class PredictionMonitorService {
                             CompletableFuture.runAsync(predictionService::reProcess);
                         } else if (count == 0 && countriesProcessed.containsAll(ApplicableFantasyLeagues.getCountries())) {
                             log.info("finishing");
-                            webClientFacade.sendMessage(messageHost + "/message", createMessage());
+                            webClientFacade.sendMessage(messageHost + "/message",
+                                    Message.builder()
+                                            .event("PLAYERS_PREDICTED")
+                                            .eventType("ALL")
+                                            .build());
                             process.set(false);
                         }
                         previousCount.set(count);
                     });
         }
 
-    }
-
-    //due to some issues to force a restart.
-    @PostConstruct
-    private void processOutstanding() {
-        log.info("process outstanding");
-        CompletableFuture.runAsync(() ->
-        predictionService.outstanding()
-                .subscribe(count -> {
-                    if (count > 0) {
-                        log.info("records to resolve");
-                        //first reset all.
-                        predictionService.reset();
-                    }
-                })
-        );
-    }
-
-    private JsonNode createMessage() {
-        try {
-            return new ObjectMapper().readTree(
-                    new JSONObject()
-                            .put("type", "PLAYER_PREDICTIONS").toString()
-            );
-        } catch (JsonProcessingException e) {
-            log.error("message failed", e);
-
-            return null;
-        }
     }
 
 }

@@ -14,7 +14,7 @@ clients:
   teams: http://172.22.0.23:8105
   players: http://172.22.0.25:8107
   team-events: http://172.22.0.24:8106
-  player-events:
+  player-events: http://172.22.0.26:8108
   client:
 
 
@@ -33,4 +33,7 @@ spring:
       auto-index-creation: true
   config:
     import:  "optional:configserver:http://172.31.24.130:8888"
+
+test:
+  mode: true
 

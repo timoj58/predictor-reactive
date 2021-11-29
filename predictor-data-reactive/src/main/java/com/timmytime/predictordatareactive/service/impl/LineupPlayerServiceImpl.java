@@ -10,10 +10,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -66,10 +69,13 @@ public class LineupPlayerServiceImpl implements LineupPlayerService {
 
     @Override
     public Flux<LineupPlayer> find(
-            UUID player) {
+            UUID player,
+            String date) {
 
-        return lineupPlayerRepo.findByPlayer(
-                player);
+        return date == null ?
+                lineupPlayerRepo.findByPlayer(player) :
+        lineupPlayerRepo.findByPlayerAndDateGreaterThanEqual(player, LocalDate.parse(date,
+                DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay());
     }
 
     @Override

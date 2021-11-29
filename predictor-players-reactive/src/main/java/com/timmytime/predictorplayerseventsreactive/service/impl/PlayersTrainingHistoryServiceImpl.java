@@ -7,6 +7,7 @@ import com.timmytime.predictorplayerseventsreactive.service.PlayersTrainingHisto
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
@@ -49,7 +50,7 @@ public class PlayersTrainingHistoryServiceImpl implements PlayersTrainingHistory
     }
 
     @Override
-    public void init() {
+    public void init(String from, String to) {
 
         Arrays.stream(FantasyEventTypes.values())
                 .filter(f -> f.getPredict() == Boolean.TRUE)
@@ -60,8 +61,8 @@ public class PlayersTrainingHistoryServiceImpl implements PlayersTrainingHistory
                                             log.info("init record");
                                             var history = new PlayersTrainingHistory(
                                                     type,
-                                                    LocalDate.parse("01-08-2009", DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay(),
-                                                    LocalDate.parse("01-08-2009", DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay()
+                                                    LocalDate.parse(from, DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay(),
+                                                    LocalDate.parse(to, DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay()
                                             );
 
                                             history.setCompleted(Boolean.TRUE);

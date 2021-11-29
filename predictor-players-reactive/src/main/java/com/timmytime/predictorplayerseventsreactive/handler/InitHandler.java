@@ -14,6 +14,9 @@ public class InitHandler {
     private final InitService initService;
 
     public Mono<ServerResponse> init(ServerRequest request) {
-        return ServerResponse.ok().build(initService.init());
+        return ServerResponse.ok().build(initService.init(
+                request.queryParam("from").get(),
+                request.queryParam("to").get()
+        ));
     }
 }

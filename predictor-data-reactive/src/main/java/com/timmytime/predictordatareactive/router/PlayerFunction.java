@@ -23,6 +23,13 @@ public class PlayerFunction {
                 , playerHandler::getByCompetition);
     }
 
+    @Bean
+    @RouterOperation(beanClass = PlayerService.class, beanMethod = "find")
+    RouterFunction<ServerResponse> getPlayer(PlayerHandler playerHandler) {
+        return route(RequestPredicates.GET("/players/{id}")
+                , playerHandler::getPlayer);
+    }
+
 
     @Bean
     @RouterOperation(beanClass = LineupPlayerService.class, beanMethod = "find")

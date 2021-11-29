@@ -3,6 +3,7 @@ package com.timmytime.predictorplayerseventsreactive.facade;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.timmytime.predictorplayerseventsreactive.model.*;
+import com.timmytime.predictorplayerseventsreactive.request.Message;
 import com.timmytime.predictorplayerseventsreactive.request.PlayerEventOutcomeCsv;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -17,12 +18,12 @@ import reactor.core.publisher.Mono;
 public class WebClientFacade {
 
 
-    public void sendMessage(String url, JsonNode payload) {
+    public void sendMessage(String url, Message payload) {
         WebClient.builder().build()
                 .post()
                 .uri(url)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .body(Mono.just(payload), JsonNode.class)
+                .body(Mono.just(payload), Message.class)
                 .exchange()
                 .subscribe();
     }
@@ -35,6 +36,17 @@ public class WebClientFacade {
                 .uri(url)
                 .retrieve()
                 .bodyToFlux(Player.class);
+
+    }
+
+    public Mono<Player> getPlayer(
+            String url
+    ) {
+        return WebClient.builder().build()
+                .get()
+                .uri(url)
+                .retrieve()
+                .bodyToMono(Player.class);
 
     }
 
@@ -101,4 +113,5 @@ public class WebClientFacade {
                 .exchange()
                 .subscribe();
     }
+
 }

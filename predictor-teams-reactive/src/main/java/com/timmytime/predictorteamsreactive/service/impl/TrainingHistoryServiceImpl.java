@@ -8,6 +8,7 @@ import com.timmytime.predictorteamsreactive.service.TrainingHistoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
@@ -61,7 +62,7 @@ public class TrainingHistoryServiceImpl implements TrainingHistoryService {
     }
 
     @Override
-    public void init() {
+    public void init(String from, String to) {
         if (trainingHistoryRepo.count() == 0) {
             log.info("initialize history");
 
@@ -74,8 +75,9 @@ public class TrainingHistoryServiceImpl implements TrainingHistoryService {
                                         TrainingHistory trainingHistory = new TrainingHistory(
                                                 type,
                                                 country.name().toLowerCase(),
-                                                LocalDate.parse("01-08-2009", DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay(),
-                                                LocalDate.parse("01-08-2009", DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay());
+                                                //TODO needs param on init.....
+                                                LocalDate.parse(from, DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay(),
+                                                LocalDate.parse(to, DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay());
 
                                         trainingHistory.setCompleted(Boolean.TRUE);
                                         trainingHistoryRepo.save(trainingHistory);

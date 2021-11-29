@@ -14,11 +14,14 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Consumer;
 
 @Slf4j
 @Service("messageReceivedService")
@@ -31,8 +34,8 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     private final WebClientFacade webClientFacade;
     private final String messageHost;
     private final Boolean trainingEvaluation;
-
-    private final Deque<Message> messages = new ArrayDeque();
+    private final Deque<Message> messages = new ArrayDeque<>();
+    private Consumer<Message> consumer;
 
     @Autowired
     public MessageReceivedServiceImpl(
@@ -51,19 +54,14 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         this.trainingService = trainingService;
         this.tensorflowDataService = tensorflowDataService;
         this.webClientFacade = webClientFacade;
+
+        Flux<Message> receiver = Flux.create(sink -> consumer = sink::next, FluxSink.OverflowStrategy.BUFFER);
+        receiver.limitRate(1).subscribe(this::queue);
     }
 
     @Override
     public Mono<Void> receive(Mono<Message> message) {
-
-        return message.doOnNext(
-                msg -> {
-                    //fix this.  TODO.  need to manage it by receipts again.  not thread safe.
-                    if(messages.isEmpty())
-                        process(msg);
-
-                    messages.add(msg);
-                }).thenEmpty(Mono.empty());
+        return message.doOnNext(msg -> consumer.accept(msg)).thenEmpty(Mono.empty());
     }
 
     @Override
@@ -94,7 +92,10 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
 
                             webClientFacade.sendMessage(
                                     messageHost + "/message",
-                                    createMessage(history.getCountry().toUpperCase(), "TEAMS_TRAINED")
+                                    Message.builder()
+                                            .eventType("TEAMS_TRAINED")
+                                            .event(history.getCountry().toUpperCase())
+                                            .build()
                             );
                         }
 
@@ -121,18 +122,13 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
         return Mono.empty();
     }
 
-    private JsonNode createMessage(String country, String type) {
-        try {
-            return new ObjectMapper().readTree(
-                    new JSONObject()
-                            .put("event", type)
-                            .put("eventType", country)
-                            .toString()
-            );
-        } catch (JsonProcessingException e) {
-            return null;
-        }
+    private void queue(Message message){
+        if(messages.isEmpty())
+            process(message);
+
+        messages.add(message);
     }
+
 
     private void process(Message message){
         tensorflowDataService.loadOutstanding(message.getEventType().toLowerCase(), () ->
