@@ -3,13 +3,16 @@ package com.timmytime.predictorplayerseventsreactive.service;
 import com.timmytime.predictorplayerseventsreactive.enumerator.ApplicableFantasyLeagues;
 import com.timmytime.predictorplayerseventsreactive.facade.WebClientFacade;
 import com.timmytime.predictorplayerseventsreactive.request.Message;
+import com.timmytime.predictorplayerseventsreactive.request.TensorflowPrediction;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -28,6 +31,8 @@ public class PredictionMonitorService {
     private final AtomicBoolean process = new AtomicBoolean(true);
     private final List<String> countriesProcessed = new ArrayList<>();
 
+    //private final Deque<TensorflowPrediction> queue = new ArrayDeque<>();
+
 
     @Autowired
     public PredictionMonitorService(
@@ -43,6 +48,8 @@ public class PredictionMonitorService {
     public void addCountry(String country) {
         this.countriesProcessed.add(country);
     }
+
+
 
     @Scheduled(fixedDelay = 240000L) //once per 4 minutes is fine.
     public void predictionMonitor() {

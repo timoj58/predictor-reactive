@@ -142,8 +142,7 @@ public class TestApiService {
     public Mono<Void> uploadFile(
             Mono<FileRequest> fileRequest
     ) {
-
-        fileRequest.doOnNext(fileRequestRepo::save);
+        fileRequest.doOnNext(file -> fileRequestRepo.save(file).subscribe());
         return Mono.empty();
     }
 

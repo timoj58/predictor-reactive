@@ -1,8 +1,10 @@
 package com.timmytime.predictorclientreactive.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import lombok.*;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class FileRequest {

@@ -51,8 +51,8 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
         this.webClientFacade = webClientFacade;
 
         Flux<TensorflowPrediction> receiver = Flux.create(sink -> consumer = sink::next, FluxSink.OverflowStrategy.BUFFER);
-        receiver.delayElements(Duration.ofMillis(750))   //sped up again.  to test with this setting. //needs to be a param really.
-                .limitRate(5)
+        //TODO for testing.  need to  fix this.  refactor all code.
+        receiver.limitRate(10)
                 .subscribe(this::process);
 
     }
@@ -80,6 +80,8 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
     }
 
     private void process(TensorflowPrediction tensorflowPrediction) {
+        //TODO use monitor service and Queue....BETTER.  ie once received, send next one.  faster and less risk prone
+        //using multi thread.
         log.info("predicting id: {} {} {}",
                 tensorflowPrediction.getPlayerEventOutcomeCsv().getId(),
                 tensorflowPrediction.getPlayerEventOutcomeCsv().getPlayer(),
