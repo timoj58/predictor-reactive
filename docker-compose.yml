@@ -117,7 +117,7 @@ services:
       - "8109:8109"
     networks:
       predictornet:
-        ipv4_address: 172.22.0.28
+        ipv4_address: 172.22.0.27
 
 networks:
   predictornet:

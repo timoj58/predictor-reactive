@@ -34,6 +34,6 @@ training:
   interval: 1
   delay: 1
   create-delay: 3
-  update-delay: 125
+  update-delay: 100
   load: false
   cutoff:

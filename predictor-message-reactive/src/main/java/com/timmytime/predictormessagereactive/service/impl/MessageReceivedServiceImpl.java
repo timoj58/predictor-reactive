@@ -37,6 +37,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     }
 
     private void process(Message message) {
+        log.info("received {}", message);
         orchestrationService.process(new CycleEvent(message));
     }
 }

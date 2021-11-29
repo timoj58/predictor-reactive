@@ -75,7 +75,7 @@ public class TrainingModelServiceImpl implements TrainingModelService {
     public void next(PlayersTrainingHistory playersTrainingHistory) {
         CompletableFuture.runAsync(() ->
                 getPlayers(f -> f.getLastAppearance() != null && f.getLastAppearance().atStartOfDay().isAfter(playersTrainingHistory.getToDate()))
-                        .limitRate(5)
+                        .limitRate(10)
                         .delayElements(Duration.ofMillis(updateDelay))
                         .doOnNext(player -> playerMatchService.next(
                                 player.getId(),
