@@ -25,7 +25,7 @@ class OrchestrationServiceImplTest {
     private final HostsConfiguration hostsConfiguration = mock(HostsConfiguration.class);
 
     private final OrchestrationService orchestrationService
-            = new OrchestrationServiceImpl(webClientFacade, predictorCycleRepo, initService, hostsConfiguration);
+            = new OrchestrationServiceImpl(0, webClientFacade, predictorCycleRepo, initService, hostsConfiguration);
 
     @Test
     void stop() {
@@ -86,7 +86,7 @@ class OrchestrationServiceImplTest {
     }
 
     @Test
-    void trainPlayers() {
+    void trainPlayers() throws InterruptedException {
         EventType.competitions()
                 .forEach(competition -> orchestrationService.process(
                         CycleEvent.builder()
@@ -98,12 +98,14 @@ class OrchestrationServiceImplTest {
                                 ).build()
                 ));
 
+        Thread.sleep(100);
+
         verify(webClientFacade, atLeast(EventType.countries().size())).train(anyString(), any());
 
     }
 
     @Test
-    void predictPlayers() {
+    void predictPlayers() throws InterruptedException {
         EventType.competitions()
                 .forEach(competition -> orchestrationService.process(
                         CycleEvent.builder()
@@ -127,11 +129,13 @@ class OrchestrationServiceImplTest {
                         ).build()
         );
 
+        Thread.sleep(100);
+
         verify(webClientFacade, atLeast(EventType.countries().size())).predict(anyString(), any());
     }
 
     @Test
-    void trainTeams() {
+    void trainTeams() throws InterruptedException {
 
         EventType.competitions()
                 .forEach(competition -> orchestrationService.process(
@@ -144,12 +148,14 @@ class OrchestrationServiceImplTest {
                                 ).build()
                 ));
 
+        Thread.sleep(100);
+
         verify(webClientFacade, atLeast(EventType.countries().size())).train(anyString(), any());
 
     }
 
     @Test
-    void predictTeams() {
+    void predictTeams() throws InterruptedException {
         EventType.countries()
                 .forEach(country -> orchestrationService.process(
                         CycleEvent.builder()
@@ -174,6 +180,8 @@ class OrchestrationServiceImplTest {
                                                         .build()
                                         ).build()
                         ));
+
+        Thread.sleep(100);
 
         verify(webClientFacade, atLeast(EventType.countries().size())).predict(anyString(), any());
 

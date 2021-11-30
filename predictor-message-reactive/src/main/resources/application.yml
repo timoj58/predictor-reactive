@@ -35,4 +35,5 @@ spring:
 
 test:
   mode: true
+  delay: 5
 

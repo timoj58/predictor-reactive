@@ -14,12 +14,15 @@ import com.timmytime.predictormessagereactive.request.Message;
 import com.timmytime.predictormessagereactive.service.InitService;
 import com.timmytime.predictormessagereactive.service.OrchestrationService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -51,11 +54,14 @@ public class OrchestrationServiceImpl implements OrchestrationService {
 
     };
 
-    private final BiFunction<Triple<List<CycleEvent>, List<Event>, List<EventType>>, Consumer<EventType>, Boolean> predictions = (events, predict) -> {
+    private final BiFunction<Triple<List<CycleEvent>, List<Event>, List<EventType>>, Pair<Integer, Consumer<EventType>>, Boolean> predictions = (events, predict) -> {
         if (transform.apply(events.getLeft().stream().filter(f -> events.getMiddle().contains(f.getMessage().getEvent())))
                 .containsAll(events.getRight())
         ) {
-            EventType.countries().forEach(predict::accept);
+            Flux.fromStream(EventType.countries().stream())
+                    .limitRate(1)
+                    .delayElements(Duration.ofSeconds(predict.getLeft()))
+                    .subscribe(c -> predict.getRight().accept(c));
             return true;
         }
         return false;
@@ -67,6 +73,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
 
     @Autowired
     public OrchestrationServiceImpl(
+            @Value("${test.delay}") Integer delay,
             WebClientFacade webClientFacade,
             PredictorCycleRepo predictorCycleRepo,
             InitService initService,
@@ -76,13 +83,15 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                 .processed(Boolean.FALSE)
                 .handler((ce) -> training.apply(
                         ce,
-                        () -> EventType.countries().forEach(country -> webClientFacade.train(
-                                hostsConfiguration.getTeams() + "/message",
-                                Message.builder()
-                                        .event(Event.TEAMS_TRAINED)
-                                        .eventType(country)
-                                        .build()
-                        ))))
+                        () -> Flux.fromStream(EventType.countries().stream())
+                                .limitRate(1)
+                                .delayElements(Duration.ofSeconds(delay))
+                                .subscribe(country ->
+                                        webClientFacade.train(hostsConfiguration.getTeams() + "/message",
+                                                Message.builder()
+                                                        .event(Event.TEAMS_TRAINED)
+                                                        .eventType(country)
+                                                        .build()))))
                 .build());
 
         eventManager.put(Action.TRAIN_PLAYERS, EventAction.builder()
@@ -102,25 +111,27 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                 .processed(Boolean.FALSE)
                 //input all countries trained, countries
                 .handler((ce) -> predictions.apply(
-                        Triple.of(ce, TEAM_PREDICTION_EVENTS, EventType.countriesAndCompetitions()), (c) -> webClientFacade.predict(
+                        Triple.of(ce, TEAM_PREDICTION_EVENTS, EventType.countriesAndCompetitions()),
+                        Pair.of(delay, (c) -> webClientFacade.predict(
                                 hostsConfiguration.getTeamEvents() + "/message",
                                 Message.builder()
                                         .event(Event.TEAMS_PREDICTED)
                                         .eventType(c)
                                         .build()
-                        )))
+                        ))))
                 .build());
 
         eventManager.put(Action.PREDICT_PLAYERS, EventAction.builder()
                 .processed(Boolean.FALSE)
                 .handler((ce) -> predictions.apply(
-                        Triple.of(ce, PLAYER_PREDICTION_EVENTS, EventType.competitionsAndAll()), (c) -> webClientFacade.predict(
+                        Triple.of(ce, PLAYER_PREDICTION_EVENTS, EventType.competitionsAndAll()),
+                        Pair.of(delay, (c) -> webClientFacade.predict(
                                 hostsConfiguration.getPlayerEvents() + "/message",
                                 Message.builder()
                                         .event(Event.PLAYERS_PREDICTED)
                                         .eventType(c)
                                         .build()
-                        )))
+                        ))))
                 .build());
 
         eventManager.put(Action.SCRAPE, EventAction.builder()
@@ -175,6 +186,11 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                 .processed(Boolean.FALSE)
                 .handler((ce) -> {
                     if (ce.stream().anyMatch(m -> m.getMessage().getEvent().equals(Event.STOP))) {
+                        actions.add(ActionEvent.builder()
+                                .action(Action.FINALISE)
+                                .timestamp(LocalDateTime.now())
+                                .build());
+
                         predictorCycleRepo.save(
                                 PredictorCycle.builder()
                                         .id(UUID.randomUUID())
