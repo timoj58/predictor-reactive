@@ -2,6 +2,7 @@ package com.timmytime.predictormessagereactive.handler;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.timmytime.predictormessagereactive.model.FileRequest;
+import com.timmytime.predictormessagereactive.service.OrchestrationService;
 import com.timmytime.predictormessagereactive.service.TestApiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import java.util.UUID;
 public class TestHandler {
 
     private final TestApiService testApiService;
+    private final OrchestrationService orchestrationService;
 
     public Mono<ServerResponse> trainTeams(ServerRequest request) {
         return ServerResponse.ok().build(testApiService.trainTeams(
@@ -67,6 +69,11 @@ public class TestHandler {
 
     public Mono<ServerResponse> uploadFile(ServerRequest request) {
         return ServerResponse.ok().build(testApiService.uploadFile(request.bodyToMono(FileRequest.class)));
+    }
+
+    public Mono<ServerResponse> testStatus(ServerRequest request) {
+        return ServerResponse.ok()
+                .body(orchestrationService.testStatus(request.pathVariable("action")),Boolean.class);
     }
 
 }

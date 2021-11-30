@@ -227,4 +227,9 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                 .subscribe();
     }
 
+    @Override
+    public Mono<Boolean> testStatus(String action) {
+        return Mono.just(actions.stream().anyMatch(a -> a.getAction().equals(Action.valueOf(action))));
+    }
+
 }

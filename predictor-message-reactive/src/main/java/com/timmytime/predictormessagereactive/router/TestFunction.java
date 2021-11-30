@@ -1,6 +1,7 @@
 package com.timmytime.predictormessagereactive.router;
 
 import com.timmytime.predictormessagereactive.handler.TestHandler;
+import com.timmytime.predictormessagereactive.service.OrchestrationService;
 import com.timmytime.predictormessagereactive.service.TestApiService;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springframework.context.annotation.Bean;
@@ -109,6 +110,13 @@ public class TestFunction {
         return route(RequestPredicates.POST("/file")
                         .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON))
                 , testHandler::uploadFile);
+    }
+
+    @Bean
+    @RouterOperation(beanClass = OrchestrationService.class, beanMethod = "testStatus")
+    RouterFunction<ServerResponse> testStatus(TestHandler testHandler) {
+        return route(RequestPredicates.GET("/status/{action}")
+                , testHandler::testStatus);
     }
 
 }

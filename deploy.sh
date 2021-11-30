@@ -27,17 +27,28 @@ ports=(
 8108
 8109)
 
+action_check () {
+    action=false
+    while [ "action" != "true" ]
+    do
+      action=$(curl http://localhost:8100/status/$1)
+      echo $1 action
+      sleep 60
+    done
+
+    return 1
+}
 
 health_check () {
     health='waiting'
     while [ "$health" != "{\"status\":\"UP\"}" ]
     do
       health=$(curl http://localhost:$1/actuator/health)
-      echo $health
+      echo $1 $health
       sleep 10
     done
 
-    return true
+    return 1
 }
 
 for i in "${microservices[@]}"
@@ -53,7 +64,7 @@ done
 
 
 if [ "$build" = true ] ; then
-   echo 'e2e test runner'
+  echo 'e2e test runner'
   docker-compose up -d
 
   # need a timeout at some point.  to do.
@@ -64,8 +75,26 @@ if [ "$build" = true ] ; then
 
   echo 'services are up'
   $(curl -X POST "http://localhost:8100/message" -H "accept: */*" -H "Content-Type: application/json" -d "{\"event\":\"START\",\"eventType\":\"ALL\"}")
-   # check for test pass..TODO.
-   # this will also need a timeout.
+
+  action_check "SCRAPE"
+  echo "scrape completed"
+  action_check "TRAIN_TEAMS"
+  echo "teams trained"
+  action_check "PREDICT_TEAMS"
+  echo "teams predicted"
+  action_check "TRAIN_PLAYERS"
+  echo "players trained"
+  action_check "PREDICT_PLAYERS"
+  echo "players predicted"
+  action_check "STOP_TEAM_MACHINE"
+  echo "team machine stopped"
+  action_check "STOP_PLAYERS_MACHINE"
+  echo "players machine stopped"
+  action_check "FINALISE"
+  echo "completed"
+
+  deploy=true #fix this....needs a timeout etc.  sort of pointless at moment.
+
   if [ "deploy" = true ] ; then
      echo 'deploy images'
      for i in "${microservices[@]}"
