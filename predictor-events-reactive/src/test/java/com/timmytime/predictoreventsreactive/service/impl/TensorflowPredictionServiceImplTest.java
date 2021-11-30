@@ -17,7 +17,7 @@ class TensorflowPredictionServiceImplTest {
 
 
     private final TensorflowPredictionService tensorflowPredictionService
-            = new TensorflowPredictionServiceImpl("training", "results/<country>/<receipt>", "goals", 0, webClientFacade);
+            = new TensorflowPredictionServiceImpl("training", "results/<country>/<receipt>", "goals", webClientFacade);
 
     @Test
     void predict() throws InterruptedException {

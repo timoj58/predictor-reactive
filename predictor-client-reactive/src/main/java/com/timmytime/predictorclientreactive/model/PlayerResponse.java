@@ -18,12 +18,6 @@ public class PlayerResponse implements Serializable {
     private UUID id;
     private UUID currentTeam;
     private UUID teamId;
-    private Integer appearances;
-    private Integer goals;
-    private Integer assists;
-    private Integer redCards;
-    private Integer yellowCards;
-    private Integer saves;
 
     private Double fantasyEventScore; //saves time.  also should use this for the mobile
     private String fantasyEventKey; //saves time.  also should use this for the mobile
@@ -34,12 +28,6 @@ public class PlayerResponse implements Serializable {
         this.label = playerResponse.getLabel();
         this.id = playerResponse.getId();
         this.currentTeam = playerResponse.getCurrentTeam();
-        this.appearances = playerResponse.getAppearances();
-        this.goals = playerResponse.getGoals();
-        this.assists = playerResponse.getAssists();
-        this.redCards = playerResponse.getRedCards();
-        this.yellowCards = playerResponse.getYellowCards();
-        this.saves = playerResponse.getSaves();
         this.fantasyEventScore = fantasyEvent.getFantasyEventScore();
         this.fantasyEventKey = fantasyEvent.getFantasyEventKey();
         this.fantasyResponse = playerResponse.getFantasyResponse();

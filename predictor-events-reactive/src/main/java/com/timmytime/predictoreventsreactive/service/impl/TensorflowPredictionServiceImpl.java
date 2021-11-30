@@ -23,7 +23,6 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
     private final String resultsUrl;
     private final String goalsUrl;
     private final WebClientFacade webClientFacade;
-    private Consumer<TensorflowPrediction> consumer;
 
 
     @Autowired
@@ -31,27 +30,17 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
             @Value("${clients.training}") String trainingHost,
             @Value("${clients.ml-predict-result}") String resultsUrl,
             @Value("${clients.ml-predict-goals}") String goalsUrl,
-            @Value("${delays.competition}") Integer delay,
             WebClientFacade webClientFacade
     ) {
         this.trainingHost = trainingHost;
         this.resultsUrl = resultsUrl;
         this.goalsUrl = goalsUrl;
         this.webClientFacade = webClientFacade;
-
-        Flux<TensorflowPrediction> receiver = Flux.create(sink -> consumer = sink::next, FluxSink.OverflowStrategy.BUFFER);
-        receiver.delayElements(Duration.ofSeconds(delay * 2))
-                .limitRate(1)
-                .subscribe(this::process);
     }
 
 
     @Override
     public void predict(TensorflowPrediction tensorflowPrediction) {
-        CompletableFuture.runAsync(() -> consumer.accept(tensorflowPrediction));
-    }
-
-    private void process(TensorflowPrediction tensorflowPrediction) {
         log.info("predicting id {} {} {}",
                 tensorflowPrediction.getPrediction().getId(),
                 tensorflowPrediction.getPrediction().getHome(),

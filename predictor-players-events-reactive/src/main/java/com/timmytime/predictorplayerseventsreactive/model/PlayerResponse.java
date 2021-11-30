@@ -22,13 +22,6 @@ public class PlayerResponse implements Serializable {
     @Id
     private UUID id;
     private UUID currentTeam;
-    private Integer appearances;
-    private Integer goals;
-    private Integer assists;
-    private Integer redCards;
-    private Integer yellowCards;
-    private Integer saves;
-
     private Double fantasyEventScore; //saves time.  also should use this for the mobile
     private String fantasyEventKey; //saves time.  also should use this for the mobile
 

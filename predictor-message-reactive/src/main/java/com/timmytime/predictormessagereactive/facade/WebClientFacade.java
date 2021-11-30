@@ -68,7 +68,6 @@ public class WebClientFacade {
     }
 
     public void receipt(String url) {
-        log.info("receipt {}", url);
         WebClient.builder().build()
                 .put()
                 .uri(url)
@@ -78,7 +77,6 @@ public class WebClientFacade {
     }
 
     public void receipt(String url, JsonNode prediction) {
-        log.info("receipt {}", url);
         WebClient.builder().build()
                 .put()
                 .uri(url)

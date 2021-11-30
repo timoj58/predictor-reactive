@@ -2,6 +2,7 @@ package com.timmytime.predictoreventsreactive.service.impl;
 
 import com.timmytime.predictoreventsreactive.model.PredictionLine;
 import com.timmytime.predictoreventsreactive.service.EventOutcomeService;
+import com.timmytime.predictoreventsreactive.service.PredictionMonitorService;
 import com.timmytime.predictoreventsreactive.service.PredictionResultService;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
@@ -17,12 +18,15 @@ import java.util.stream.Collectors;
 public class PredictionResultServiceImpl implements PredictionResultService {
 
     private final EventOutcomeService eventOutcomeService;
+    private final PredictionMonitorService predictionMonitorService;
 
     @Autowired
     public PredictionResultServiceImpl(
-            EventOutcomeService eventOutcomeService
+            EventOutcomeService eventOutcomeService,
+            PredictionMonitorService predictionMonitorService
     ) {
         this.eventOutcomeService = eventOutcomeService;
+        this.predictionMonitorService = predictionMonitorService;
     }
 
     @Override
@@ -33,7 +37,9 @@ public class PredictionResultServiceImpl implements PredictionResultService {
                         .subscribe(eventOutcome -> {
                             eventOutcome.setPrediction(normalize(result).toString());
                             log.info("saving {}", eventOutcome.getId());
-                            eventOutcomeService.save(eventOutcome).subscribe();
+                            eventOutcomeService.save(eventOutcome).subscribe(
+                                    saved -> predictionMonitorService.next()
+                            );
                         })
         );
     }

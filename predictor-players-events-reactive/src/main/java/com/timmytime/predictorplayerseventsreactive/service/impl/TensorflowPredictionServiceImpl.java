@@ -28,8 +28,6 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
 
     private final WebClientFacade webClientFacade;
 
-    private Consumer<TensorflowPrediction> consumer;
-
 
     @Autowired
     public TensorflowPredictionServiceImpl(
@@ -50,16 +48,22 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
 
         this.webClientFacade = webClientFacade;
 
-        Flux<TensorflowPrediction> receiver = Flux.create(sink -> consumer = sink::next, FluxSink.OverflowStrategy.BUFFER);
-        //TODO for testing.  need to  fix this.  refactor all code.
-        receiver.limitRate(10)
-                .subscribe(this::process);
-
     }
 
     @Override
     public void predict(TensorflowPrediction tensorflowPrediction) {
-        CompletableFuture.runAsync(() -> consumer.accept(tensorflowPrediction));
+        log.info("predicting id: {} {} {}",
+                tensorflowPrediction.getPlayerEventOutcomeCsv().getId(),
+                tensorflowPrediction.getPlayerEventOutcomeCsv().getPlayer(),
+                tensorflowPrediction.getPlayerEventOutcomeCsv().getOpponent());
+
+        webClientFacade.predict(
+                trainingHost
+                        + getUrl(tensorflowPrediction.getFantasyEventTypes())
+                        .replace("<receipt>", tensorflowPrediction.getPlayerEventOutcomeCsv().getId().toString())
+                        .replace("<init>", "false"),
+                tensorflowPrediction.getPlayerEventOutcomeCsv()
+        );
     }
 
     @Override
@@ -77,23 +81,6 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
                 trainingHost
                         + destroyUrl.replace("<type>", type));
 
-    }
-
-    private void process(TensorflowPrediction tensorflowPrediction) {
-        //TODO use monitor service and Queue....BETTER.  ie once received, send next one.  faster and less risk prone
-        //using multi thread.
-        log.info("predicting id: {} {} {}",
-                tensorflowPrediction.getPlayerEventOutcomeCsv().getId(),
-                tensorflowPrediction.getPlayerEventOutcomeCsv().getPlayer(),
-                tensorflowPrediction.getPlayerEventOutcomeCsv().getOpponent());
-
-        webClientFacade.predict(
-                trainingHost
-                        + getUrl(tensorflowPrediction.getFantasyEventTypes())
-                        .replace("<receipt>", tensorflowPrediction.getPlayerEventOutcomeCsv().getId().toString())
-                        .replace("<init>", "false"),
-                tensorflowPrediction.getPlayerEventOutcomeCsv()
-        );
     }
 
 

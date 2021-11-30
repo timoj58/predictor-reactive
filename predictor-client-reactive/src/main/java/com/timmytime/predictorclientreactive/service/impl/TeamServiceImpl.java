@@ -40,10 +40,7 @@ public class TeamServiceImpl implements TeamService {
                             .uri(dataHost + "/teams/country/" + country.name().toLowerCase())
                             .retrieve()
                             .bodyToFlux(Team.class)
-                            .subscribe(team -> {
-                                log.info("adding {}", team.getLabel());
-                                teams.get(country.name().toLowerCase()).put(team.getId(), team);
-                            });
+                            .subscribe(team -> teams.get(country.name().toLowerCase()).put(team.getId(), team));
                 }
         );
 

@@ -10,11 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 @Slf4j
 @Service("predictionService")
@@ -22,20 +24,25 @@ public class PredictionServiceImpl implements PredictionService {
 
     private final EventsService eventsService;
     private final PlayerService playerService;
-    private final TensorflowPredictionService tensorflowPredictionService;
     private final FantasyOutcomeService fantasyOutcomeService;
+    private final PredictionMonitorService predictionMonitorService;
+
+    private Consumer<FantasyOutcome> consumer;
 
     @Autowired
     public PredictionServiceImpl(
             EventsService eventsService,
             PlayerService playerService,
-            TensorflowPredictionService tensorflowPredictionService,
-            FantasyOutcomeService fantasyOutcomeService
+            FantasyOutcomeService fantasyOutcomeService,
+            PredictionMonitorService predictionMonitorService
     ) {
         this.eventsService = eventsService;
         this.playerService = playerService;
-        this.tensorflowPredictionService = tensorflowPredictionService;
         this.fantasyOutcomeService = fantasyOutcomeService;
+        this.predictionMonitorService = predictionMonitorService;
+
+        Flux<FantasyOutcome> receiver = Flux.create(sink -> consumer = sink::next, FluxSink.OverflowStrategy.BUFFER);
+        receiver.limitRate(10).subscribe(this::process);
     }
 
     @Override
@@ -46,7 +53,6 @@ public class PredictionServiceImpl implements PredictionService {
         Flux.fromStream(
                         ApplicableFantasyLeagues.findByCountry(country).stream()
                 )
-                .delayElements(Duration.ofMinutes(1))
                 .subscribe(competition ->
                         eventsService.get(competition.name().toLowerCase())
                                 .subscribe(event -> {
@@ -56,41 +62,8 @@ public class PredictionServiceImpl implements PredictionService {
                 );
     }
 
-    @Override
-    public void reProcess() {
 
-        log.info("processing to fix");
-        fantasyOutcomeService.toFix()
-                .delayElements(Duration.ofMillis(10))
-                .subscribe(fantasyOutcome ->
-                        tensorflowPredictionService.predict(
-                                TensorflowPrediction.builder()
-                                        .fantasyEventTypes(fantasyOutcome.getFantasyEventType())
-                                        .playerEventOutcomeCsv(
-                                                new PlayerEventOutcomeCsv(
-                                                        fantasyOutcome.getId(),
-                                                        fantasyOutcome.getPlayerId(),
-                                                        fantasyOutcome.getOpponent(),
-                                                        fantasyOutcome.getHome()))
-                                        .build())
-                );
-    }
-
-    @Override
-    public Mono<Long> outstanding() {
-        return fantasyOutcomeService.toFix().count();
-    }
-
-    @Override
-    public void reset() {
-        fantasyOutcomeService.reset()
-                .doOnNext(record -> fantasyOutcomeService.save(record.toBuilder().prediction(null).build()).subscribe())
-                .doFinally(then -> reProcess())
-                .subscribe();
-    }
-
-
-    private Boolean processPlayers(String competition, LocalDateTime date, UUID homeTeam, UUID awayTeam) {
+    private void processPlayers(String competition, LocalDateTime date, UUID homeTeam, UUID awayTeam) {
         Flux.concat(
                         playerService.get(competition, homeTeam), playerService.get(competition, awayTeam)
                 )
@@ -99,7 +72,7 @@ public class PredictionServiceImpl implements PredictionService {
                                 .filter(f -> f.getPredict() == Boolean.TRUE)
                                 .limitRate(1)
                                 .subscribe(fantasyEvent ->
-                                        fantasyOutcomeService.save(
+                                        consumer.accept(
                                                 FantasyOutcome.builder()
                                                         .id(UUID.randomUUID())
                                                         .eventDate(date)
@@ -108,24 +81,26 @@ public class PredictionServiceImpl implements PredictionService {
                                                         .fantasyEventType(fantasyEvent)
                                                         .home(player.getLatestTeam().equals(homeTeam) ? "home" : "away") //not sure why its like this
                                                         .build()
-                                        ).subscribe(fantasyOutcome ->
-                                                tensorflowPredictionService.predict(
-                                                        TensorflowPrediction.builder()
-                                                                .fantasyEventTypes(fantasyEvent)
-                                                                .playerEventOutcomeCsv(
-                                                                        new PlayerEventOutcomeCsv(
-                                                                                fantasyOutcome.getId(),
-                                                                                player.getId(),
-                                                                                player.getLatestTeam().equals(homeTeam) ? awayTeam : homeTeam,
-                                                                                fantasyOutcome.getHome()))
-                                                                .build()
-
-                                                )
                                         )
+
                                 )
                 );
 
-        return Boolean.TRUE;
+    }
+
+    private void process(FantasyOutcome fantasyOutcome) {
+        fantasyOutcomeService.save(fantasyOutcome)
+                .subscribe(saved ->
+                        predictionMonitorService.addPrediction(
+                                TensorflowPrediction.builder()
+                                        .fantasyEventTypes(saved.getFantasyEventType())
+                                        .playerEventOutcomeCsv(
+                                                new PlayerEventOutcomeCsv(
+                                                        saved.getId(),
+                                                        saved.getPlayerId(),
+                                                        saved.getOpponent(),
+                                                        saved.getHome()))
+                                        .build()));
     }
 
 }

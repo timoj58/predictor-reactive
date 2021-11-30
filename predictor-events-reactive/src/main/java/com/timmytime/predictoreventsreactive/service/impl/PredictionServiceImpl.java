@@ -5,17 +5,20 @@ import com.timmytime.predictoreventsreactive.enumerator.Predictions;
 import com.timmytime.predictoreventsreactive.model.EventOutcome;
 import com.timmytime.predictoreventsreactive.request.Prediction;
 import com.timmytime.predictoreventsreactive.request.TensorflowPrediction;
-import com.timmytime.predictoreventsreactive.service.EventOutcomeService;
-import com.timmytime.predictoreventsreactive.service.EventService;
-import com.timmytime.predictoreventsreactive.service.PredictionService;
-import com.timmytime.predictoreventsreactive.service.TensorflowPredictionService;
+import com.timmytime.predictoreventsreactive.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import static java.time.Duration.ofSeconds;
 import static reactor.core.publisher.Flux.fromArray;
@@ -27,23 +30,23 @@ public class PredictionServiceImpl implements PredictionService {
 
 
     private final EventService eventService;
-    private final TensorflowPredictionService tensorflowPredictionService;
     private final EventOutcomeService eventOutcomeService;
+    private final PredictionMonitorService predictionMonitorService;
 
-    private final Integer delay;
+    private Consumer<EventOutcome> consumer;
 
     @Autowired
     public PredictionServiceImpl(
-            @Value("${delays.competition}") Integer delay,
             EventService eventService,
-            TensorflowPredictionService tensorflowPredictionService,
+            PredictionMonitorService predictionMonitorService,
             EventOutcomeService eventOutcomeService
     ) {
-        this.delay = delay;
         this.eventService = eventService;
-        this.tensorflowPredictionService = tensorflowPredictionService;
+        this.predictionMonitorService = predictionMonitorService;
         this.eventOutcomeService = eventOutcomeService;
 
+        Flux<EventOutcome> receiver = Flux.create(sink -> consumer = sink::next, FluxSink.OverflowStrategy.BUFFER);
+        receiver.limitRate(10).subscribe(this::process);
     }
 
     @Override
@@ -52,31 +55,20 @@ public class PredictionServiceImpl implements PredictionService {
         fromStream(
                 CountryCompetitions.valueOf(country).getCompetitions().stream()
         )
-                .delayElements(ofSeconds(delay))
                 .subscribe(competition ->
                         eventService.getEvents(competition)
                                 .subscribe(event ->
                                         fromArray(Predictions.values())
-                                                .limitRate(1)
                                                 .subscribe(predict ->
-                                                        eventOutcomeService.save(
-                                                                EventOutcome.builder()
-                                                                        .id(UUID.randomUUID())
-                                                                        .home(event.getHome())
-                                                                        .away(event.getAway())
-                                                                        .date(event.getDate())
-                                                                        .competition(event.getCompetition())
-                                                                        .eventType(predict.name())
-                                                                        .build()
-                                                        ).subscribe(eventOutcome ->
-                                                                tensorflowPredictionService.predict(
-                                                                        TensorflowPrediction.builder()
-                                                                                .predictions(predict)
-                                                                                .country(eventOutcome.getCountry())
-                                                                                .prediction(new Prediction(eventOutcome))
-                                                                                .build()
-                                                                )
-                                                        )
+                                                        consumer.accept(EventOutcome.builder()
+                                                                .id(UUID.randomUUID())
+                                                                .home(event.getHome())
+                                                                .away(event.getAway())
+                                                                .date(event.getDate())
+                                                                .competition(event.getCompetition())
+                                                                .eventType(predict.name())
+                                                                .build())
+
                                                 )
                                 )
                 );
@@ -84,24 +76,15 @@ public class PredictionServiceImpl implements PredictionService {
     }
 
 
-    @Override
-    public void reProcess() {
-        log.info("processing records to fix");
-        eventOutcomeService.toFix().subscribe(eventOutcome ->
-                tensorflowPredictionService.predict(
+    private void process(EventOutcome eventOutcome){
+        eventOutcomeService.save(eventOutcome).subscribe(saved ->
+                predictionMonitorService.addPrediction(
                         TensorflowPrediction.builder()
-                                .predictions(Predictions.valueOf(eventOutcome.getEventType()))
-                                .country(eventOutcome.getCountry())
-                                .prediction(new Prediction(eventOutcome))
-                                .build()
+                         .predictions(Predictions.valueOf(saved.getEventType()))
+                        .country(saved.getCountry())
+                        .prediction(new Prediction(saved))
+                        .build()
                 )
         );
     }
-
-    @Override
-    public Mono<Long> outstanding() {
-        return eventOutcomeService.toFix().count();
-    }
-
-
 }

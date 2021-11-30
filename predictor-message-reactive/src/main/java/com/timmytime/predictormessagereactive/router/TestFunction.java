@@ -106,7 +106,7 @@ public class TestFunction {
     @Bean
     @RouterOperation(beanClass = TestApiService.class, beanMethod = "uploadFile")
     RouterFunction<ServerResponse> uploadFile(TestHandler testHandler) {
-        return route(RequestPredicates.PUT("/file")
+        return route(RequestPredicates.POST("/file")
                         .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON))
                 , testHandler::uploadFile);
     }

@@ -50,38 +50,6 @@ public class WebClientFacade {
 
     }
 
-    public Flux<LineupPlayer> getAppearances(
-            String url
-    ) {
-        return WebClient.builder().build()
-                .get()
-                .uri(url)
-                .retrieve()
-                .bodyToFlux(LineupPlayer.class);
-
-    }
-
-    public Mono<Match> getMatch(
-            String url
-    ) {
-        return WebClient.builder().build()
-                .get()
-                .uri(url)
-                .retrieve()
-                .bodyToMono(Match.class);
-
-    }
-
-    public Flux<StatMetric> getStats(
-            String url
-    ) {
-        return WebClient.builder().build()
-                .get()
-                .uri(url)
-                .retrieve()
-                .bodyToFlux(StatMetric.class);
-
-    }
 
     public Flux<Event> getEvents(
             String url
@@ -113,5 +81,4 @@ public class WebClientFacade {
                 .exchange()
                 .subscribe();
     }
-
 }

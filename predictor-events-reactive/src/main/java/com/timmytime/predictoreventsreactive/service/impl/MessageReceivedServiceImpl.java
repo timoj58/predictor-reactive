@@ -21,22 +21,16 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     private final PredictionService predictionService;
     private final PredictionResultService predictionResultService;
     private final ValidationService validationService;
-    private final PredictionMonitorService predictionMonitorService;
 
-    private final Integer delay;
 
     @Autowired
     public MessageReceivedServiceImpl(
-            @Value("${delays.competition}") Integer delay,
             PredictionService predictionService,
             PredictionResultService predictionResultService,
-            PredictionMonitorService predictionMonitorService,
             ValidationService validationService
     ) {
-        this.delay = delay;
         this.predictionService = predictionService;
         this.predictionResultService = predictionResultService;
-        this.predictionMonitorService = predictionMonitorService;
         this.validationService = validationService;
 
     }
@@ -51,10 +45,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                                 log.info("starting predictions {}", country);
                                 validationService.validate(country);
                                 predictionService.start(country);
-                            }).thenRun(() ->
-                                    Mono.just(country.toUpperCase())
-                                            .subscribe(v -> predictionMonitorService.addCountry(CountryCompetitions.valueOf(v))))
-                    );
+                            }));
 
                 }
 

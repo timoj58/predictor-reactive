@@ -30,9 +30,7 @@ class MessageReceivedServiceImplTest {
             new ValidationServiceImpl("data", eventOutcomeService, webClientFacade);
 
     private final MessageReceivedService messageReceivedService
-            = new MessageReceivedServiceImpl(0,
-            predictionService, predictionResultService, predictionMonitorService,
-            validationService);
+            = new MessageReceivedServiceImpl(predictionService, predictionResultService, validationService);
 
     @Test
     void receive() throws InterruptedException {
@@ -58,7 +56,6 @@ class MessageReceivedServiceImplTest {
         Thread.sleep(250);
 
         verify(predictionService, atLeastOnce()).start("GREECE");
-        verify(predictionMonitorService, atLeastOnce()).addCountry(CountryCompetitions.GREECE);
 
     }
 

@@ -1,5 +1,6 @@
 package com.timmytime.predictoreventsreactive.e2e;
 
+import com.timmytime.predictoreventsreactive.enumerator.Predictions;
 import com.timmytime.predictoreventsreactive.facade.WebClientFacade;
 import com.timmytime.predictoreventsreactive.model.Event;
 import com.timmytime.predictoreventsreactive.model.EventOutcome;
@@ -23,28 +24,28 @@ public class EventsServiceTest {
     private final EventService eventService
             = new EventServiceImpl("event-data", webClientFacade);
     private final TensorflowPredictionService tensorflowPredictionService
-            = new TensorflowPredictionServiceImpl("training", "results", "goals", 0, webClientFacade);
+            = new TensorflowPredictionServiceImpl("training", "results", "goals", webClientFacade);
     private final EventOutcomeService eventOutcomeService
             = new EventOutcomeServiceImpl(eventOutcomeRepo);
 
 
-    private final PredictionService predictionService =
-            new PredictionServiceImpl(0, eventService, tensorflowPredictionService, eventOutcomeService);
     private final PredictionMonitorService predictionMonitorService
-            = new PredictionMonitorService("clients", predictionService, webClientFacade);
+            = new PredictionMonitorService("clients", tensorflowPredictionService, eventOutcomeService, webClientFacade);
+    private final PredictionService predictionService =
+            new PredictionServiceImpl(eventService, predictionMonitorService, eventOutcomeService);
     private final PredictionResultService predictionResultService
-            = new PredictionResultServiceImpl(eventOutcomeService);
+            = new PredictionResultServiceImpl(eventOutcomeService, predictionMonitorService);
     private final ValidationService validationService
             = new ValidationServiceImpl("data", eventOutcomeService, webClientFacade);
     private final MessageReceivedService messageReceivedService
-            = new MessageReceivedServiceImpl(0, predictionService,
-            predictionResultService, predictionMonitorService, validationService);
+            = new MessageReceivedServiceImpl( predictionService, predictionResultService, validationService);
 
     @Test
     void predict() throws InterruptedException {
 
         var outcome = EventOutcome.builder()
                 .id(UUID.randomUUID())
+                .eventType(Predictions.PREDICT_RESULTS.name())
                 .competition("greece_1").build();
 
         when(eventOutcomeRepo.findByCompetitionInAndPreviousEventTrue(any()))
@@ -54,7 +55,8 @@ public class EventsServiceTest {
         when(eventOutcomeRepo.findByCompetitionInAndSuccessNull(any())).thenReturn(Flux.empty());
 
         when(webClientFacade.getEvents(anyString())).thenReturn(
-                Flux.just(Event.builder().build())
+                Flux.just(Event.builder()
+                        .competition("greece_1").build())
         );
 
         messageReceivedService.receive(

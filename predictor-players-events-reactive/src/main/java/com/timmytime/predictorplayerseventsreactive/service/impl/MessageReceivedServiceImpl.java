@@ -23,18 +23,14 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
 
     private final PredictionService predictionService;
     private final PredictionResultService predictionResultService;
-    private final PredictionMonitorService predictionMonitorService;
 
     @Autowired
     public MessageReceivedServiceImpl(
             PredictionService predictionService,
-            PredictionResultService predictionResultService,
-            PredictionMonitorService predictionMonitorService
+            PredictionResultService predictionResultService
     ) {
         this.predictionService = predictionService;
         this.predictionResultService = predictionResultService;
-        this.predictionMonitorService = predictionMonitorService;
-
     }
 
     @Override
@@ -44,11 +40,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                 msg -> {
                     log.info("received {}", msg.getEventType());
                     if (ApplicableFantasyLeagues.getCountries().contains(msg.getEventType().toLowerCase())) {
-                        CompletableFuture.runAsync(() -> predictionService.start(msg.getEventType().toLowerCase()))
-                                .thenRun(() -> Mono.just(msg.getEventType().toLowerCase())
-                                        .delayElement(Duration.ofMinutes(1))
-                                        .subscribe(predictionMonitorService::addCountry)
-                                );
+                        CompletableFuture.runAsync(() -> predictionService.start(msg.getEventType().toLowerCase()));
                     }
                 }
         ).thenEmpty(Mono.empty());
@@ -58,7 +50,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     public Mono<Void> prediction(UUID id, Mono<JsonNode> prediction) {
         log.info("receiving prediction result for {}", id);
         return prediction.doOnNext(
-                msg -> predictionResultService.result(id, new JSONObject(msg.toString()), c -> predictionService.reProcess())
+                msg -> predictionResultService.result(id, new JSONObject(msg.toString()))
         ).thenEmpty(Mono.empty());
 
     }

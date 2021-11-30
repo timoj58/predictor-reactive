@@ -3,6 +3,7 @@ package com.timmytime.predictorplayerseventsreactive.service.impl;
 import com.timmytime.predictorplayerseventsreactive.model.Prediction;
 import com.timmytime.predictorplayerseventsreactive.service.FantasyOutcomeService;
 import com.timmytime.predictorplayerseventsreactive.service.PlayerResponseService;
+import com.timmytime.predictorplayerseventsreactive.service.PredictionMonitorService;
 import com.timmytime.predictorplayerseventsreactive.service.PredictionResultService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,9 +22,10 @@ public class PredictionResultServiceImpl implements PredictionResultService {
 
     private final FantasyOutcomeService fantasyOutcomeService;
     private final PlayerResponseService playerResponseService;
+    private final PredictionMonitorService predictionMonitorService;
 
     @Override
-    public void result(UUID id, JSONObject result, Consumer<UUID> fix) {
+    public void result(UUID id, JSONObject result) {
         log.info("processing prediction result {}", result.toString());
         CompletableFuture.runAsync(() ->
 
@@ -35,8 +37,10 @@ public class PredictionResultServiceImpl implements PredictionResultService {
                             );
 
                             log.info("saving prediction {} id: {}", fantasyOutcome.getFantasyEventType(), fantasyOutcome.getId());
-                            fantasyOutcomeService.save(fantasyOutcome).subscribe(
-                                    playerResponseService::addResult
+                            fantasyOutcomeService.save(fantasyOutcome).subscribe(saved -> {
+                                        predictionMonitorService.next();
+                                        playerResponseService.addResult(saved);
+                                    }
                             );
 
                         })

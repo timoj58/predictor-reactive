@@ -34,6 +34,8 @@ services:
     container_name: predictor-message-reactive
     ports:
       - "8100:8100"
+    depends_on:
+      - mongo
     networks:
       predictornet:
         ipv4_address: 172.22.0.18
@@ -43,6 +45,8 @@ services:
     container_name: predictor-scraper-reactive
     ports:
       - "8101:8101"
+    depends_on:
+      - mongo
     networks:
       predictornet:
         ipv4_address: 172.22.0.19
@@ -61,6 +65,8 @@ services:
     container_name: predictor-data-reactive
     ports:
       - "8103:8103"
+    depends_on:
+      - mongo
     networks:
       predictornet:
         ipv4_address: 172.22.0.21
@@ -70,6 +76,8 @@ services:
     container_name: predictor-event-data-reactive
     ports:
       - "8104:8104"
+    depends_on:
+      - mongo
     networks:
       predictornet:
         ipv4_address: 172.22.0.22
@@ -79,6 +87,8 @@ services:
     container_name: predictor-teams-reactive
     ports:
       - "8105:8105"
+    depends_on:
+      - mongo
     networks:
       predictornet:
         ipv4_address: 172.22.0.23
@@ -88,6 +98,8 @@ services:
     container_name: predictor-events-reactive
     ports:
       - "8106:8106"
+    depends_on:
+      - mongo
     networks:
       predictornet:
         ipv4_address: 172.22.0.24
@@ -97,6 +109,8 @@ services:
     container_name: predictor-players-reactive
     ports:
       - "8107:8107"
+    depends_on:
+      - mongo
     networks:
       predictornet:
         ipv4_address: 172.22.0.25
@@ -106,6 +120,8 @@ services:
     container_name: predictor-players-events-reactive
     ports:
       - "8108:8108"
+    depends_on:
+      - mongo
     networks:
       predictornet:
         ipv4_address: 172.22.0.26

@@ -2,6 +2,7 @@ package com.timmytime.predictoreventsreactive.service.impl;
 
 import com.timmytime.predictoreventsreactive.model.EventOutcome;
 import com.timmytime.predictoreventsreactive.service.EventOutcomeService;
+import com.timmytime.predictoreventsreactive.service.PredictionMonitorService;
 import com.timmytime.predictoreventsreactive.service.PredictionResultService;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -15,9 +16,11 @@ import static org.mockito.Mockito.*;
 class PredictionResultServiceImplTest {
 
     private final EventOutcomeService eventOutcomeService = mock(EventOutcomeService.class);
+    private final PredictionMonitorService predictionMonitorService = mock(PredictionMonitorService.class);
+
 
     private final PredictionResultService predictionResultService
-            = new PredictionResultServiceImpl(eventOutcomeService);
+            = new PredictionResultServiceImpl(eventOutcomeService, predictionMonitorService);
 
     @Test
     void result() throws InterruptedException {

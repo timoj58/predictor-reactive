@@ -117,7 +117,7 @@ public class WebClientFacade {
 
     public void put(String url, FileRequest fileRequest) {
         WebClient.builder().build()
-                .put()
+                .post()
                 .uri(url)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(Mono.just(fileRequest), FileRequest.class)

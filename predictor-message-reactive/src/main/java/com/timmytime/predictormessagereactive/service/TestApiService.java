@@ -14,7 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,7 +32,6 @@ public class TestApiService {
             @PathVariable String to,
             @PathVariable String from,
             @PathVariable String country) {
-        log.info("received training teams: {}", receipt);
         webClientFacade.receipt(
                 hostsConfiguration.getTeams() + "/training?id=" + receipt.toString()
         );
@@ -41,7 +42,6 @@ public class TestApiService {
             @PathVariable UUID receipt,
             @PathVariable String country,
             Mono<JsonNode> body) {
-        log.info("received predict team result: {}", receipt);
         JSONObject prediction = new JSONObject()
                 .put("0", new JSONObject()
                         .put("label", "homeWin")
@@ -57,7 +57,6 @@ public class TestApiService {
         try {
             response = new ObjectMapper().readTree(prediction.toString());
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
         }
 
         webClientFacade.receipt(
@@ -69,7 +68,6 @@ public class TestApiService {
             @PathVariable UUID receipt,
             @PathVariable String country,
             Mono<JsonNode> body) {
-        log.info("received predict team goals: {}", receipt);
         JSONObject prediction = new JSONObject()
                 .put("0", new JSONObject()
                         .put("label", "0")
@@ -97,7 +95,6 @@ public class TestApiService {
             @PathVariable UUID receipt,
             @PathVariable String to,
             @PathVariable String from) {
-        log.info("received training players: {}", receipt);
         webClientFacade.receipt(
                 hostsConfiguration.getPlayers() + "/training?id=" + receipt.toString()
         );
@@ -115,7 +112,6 @@ public class TestApiService {
             @PathVariable UUID receipt,
             @PathVariable Boolean init,
             Mono<JsonNode> body) {
-        log.info("received predict player: {}", receipt);
         JSONObject prediction = new JSONObject()
                 .put("0", new JSONObject()
                         .put("label", "0")
@@ -131,7 +127,6 @@ public class TestApiService {
         try {
             response = new ObjectMapper().readTree(prediction.toString());
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
         }
 
         webClientFacade.receipt(
@@ -142,13 +137,7 @@ public class TestApiService {
     public Mono<Void> uploadFile(
             Mono<FileRequest> fileRequest
     ) {
-
-        fileRequest.subscribe(file -> {
-            log.info("saving {}", file.getKey());
-            fileRequestRepo.save(file).subscribe();
-        });
-
-        return Mono.empty();
+        return fileRequest.doOnNext(file -> fileRequestRepo.save(file).subscribe()).thenEmpty(Mono.empty());
     }
 
 }
