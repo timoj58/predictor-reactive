@@ -77,36 +77,36 @@ if [ "$build" = true ] ; then
   $(curl -X POST "http://localhost:8100/message" -H "accept: */*" -H "Content-Type: application/json" -d "{\"event\":\"START\",\"eventType\":\"ALL\"}")
 
   action_check "SCRAPE"
-  echo "scrape completed"
+  echo "scrape started"
   action_check "TRAIN_TEAMS"
-  echo "teams trained"
+  echo "teams training started"
   action_check "PREDICT_TEAMS"
-  echo "teams predicted"
+  echo "teams predictions started"
   action_check "TRAIN_PLAYERS"
-  echo "players trained"
+  echo "players training started"
   action_check "PREDICT_PLAYERS"
-  echo "players predicted"
+  echo "players predictions started"
   action_check "STOP_TEAM_MACHINE"
-  echo "team machine stopped"
+  echo "team predictions finished"
   action_check "STOP_PLAYERS_MACHINE"
-  echo "players machine stopped"
+  echo "players predictions finished"
   action_check "FINALISE"
-  echo "completed"
+  echo "completed...shutting down"
 
-  deploy=true #fix this....needs a timeout etc.  sort of pointless at moment.
+  # ideally may want to preserve database to review.  add better tests in future to verify it
+  docker-compose down
 
-  if [ "deploy" = true ] ; then
-     echo 'deploy images'
-     for i in "${microservices[@]}"
-     do
-       docker push timmytime/$i
-     done
-  else
-     echo 'e2e test runner has failed, no deployment'
-  fi
+  echo 'deploy images'
+  for i in "${microservices[@]}"
+  do
+    docker push timmytime/$i
+  done
+  exit 0
 else
    echo 'microservices failed to package'
+   exit 1
 fi
+
 
 
 

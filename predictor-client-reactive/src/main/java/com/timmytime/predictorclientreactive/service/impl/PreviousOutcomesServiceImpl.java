@@ -83,7 +83,7 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
         runAsync(this::init)
                 .thenRun(() ->
                         fromStream(stream(CountryCompetitions.values()))
-                                .delayElements(ofSeconds(delay * 20))
+                                .delayElements(ofSeconds(delay * 20)) //can probably speed this up
                                 .subscribe(country ->
                                         fromStream(
                                                 teamService.get(country.name().toLowerCase()).stream()
