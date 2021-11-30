@@ -29,11 +29,11 @@ ports=(
 
 action_check () {
     action=false
-    while [ "action" != "true" ]
+    while [ "$action" != "true" ]
     do
       action=$(curl http://localhost:8100/status/$1)
-      echo $1 action
-      sleep 60
+      echo $1 $action
+      sleep 30
     done
 
     return 1
