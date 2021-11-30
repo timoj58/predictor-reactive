@@ -1,5 +1,8 @@
 # predictor-reactive
 
+Microservice architecture to predict likelihood of outcomes for football matcheds across europe.  Currently predicts match results (as %) and match goals (as avg), player likelihood of goals, cards and assists.
+
+
 ## running locally
 
 To run locally simply start the root compose script, wait for services to start and then execute curl command
