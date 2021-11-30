@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static reactor.core.publisher.Flux.fromArray;
 import static reactor.core.publisher.Flux.fromStream;
@@ -42,7 +43,8 @@ public class PreviousFixtureServiceImpl implements ILoadService {
     private final String dataHost;
     private final Integer delay;
 
-    private final Map<String, List<PreviousFixtureResponse>> byCompetition = new HashMap<>();
+    //TODO review this.  seems to be an issue.
+    private final Map<String, List<PreviousFixtureResponse>> byCompetition = new ConcurrentHashMap<>();
 
     @Autowired
     public PreviousFixtureServiceImpl(

@@ -37,3 +37,10 @@ delays:
 
 training:
   evaluation: false
+
+management:
+  endpoints:
+    enabled-by-default: false
+  endpoint:
+    health:
+      enabled: true

@@ -28,6 +28,12 @@ spring:
   config:
     import: "optional:configserver:http://172.31.24.130:8888"
 
+management:
+  endpoints:
+    enabled-by-default: false
+  endpoint:
+    health:
+      enabled: true
 
 
 

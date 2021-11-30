@@ -14,6 +14,8 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -32,7 +34,7 @@ public class PredictionMonitorService {
     private final AtomicBoolean process = new AtomicBoolean(true);
     private final AtomicBoolean start = new AtomicBoolean(false);
 
-    private final Deque<TensorflowPrediction> predictionQueue = new ArrayDeque();
+    private final BlockingDeque<TensorflowPrediction> predictionQueue = new LinkedBlockingDeque<>();
 
     @Autowired
     public PredictionMonitorService(
@@ -48,14 +50,15 @@ public class PredictionMonitorService {
     }
 
     public void addPrediction(TensorflowPrediction tensorflowPrediction){
-         predictionQueue.add(tensorflowPrediction);
-         if (!start.get())
+        log.info("pushing to queue {}", predictionQueue.size());
+         predictionQueue.push(tensorflowPrediction);
+         if (!start.get() || predictionQueue.size() == 1)
              Mono.just(1).doOnNext(d -> next()).doFinally(set -> start.set(true))
                      .subscribe();
     }
 
     public void next(){
-        log.info("queue size {}", predictionQueue.size());
+        log.info("popping from queue {}", predictionQueue.size());
         if (!predictionQueue.isEmpty())
           tensorflowPredictionService.predict(
                 predictionQueue.pop()
@@ -74,7 +77,7 @@ public class PredictionMonitorService {
                             log.info("reprocessing");
                             eventOutcomeService.toFix()
                                     .doOnNext(eventOutcome ->
-                                            predictionQueue.add(
+                                            predictionQueue.push(
                                                     TensorflowPrediction.builder()
                                                     .predictions(Predictions.valueOf(eventOutcome.getEventType()))
                                                     .country(eventOutcome.getCountry())

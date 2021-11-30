@@ -32,3 +32,10 @@ scraper:
 scheduler:
   retry: 60000
   tracker: 45000
+
+management:
+  endpoints:
+    enabled-by-default: false
+  endpoint:
+    health:
+      enabled: true

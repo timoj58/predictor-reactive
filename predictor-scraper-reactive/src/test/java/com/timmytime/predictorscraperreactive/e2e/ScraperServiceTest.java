@@ -34,11 +34,11 @@ public class ScraperServiceTest {
 
     private final PageServiceImpl pageService = new PageServiceImpl(
             scraperFactory, messageService);
+    private final ResultsConfiguration resultsConfiguration = mock(ResultsConfiguration.class);
     private final CompetitionScraperServiceImpl competitionScraperService
             = new CompetitionScraperServiceImpl(scraperFactory, pageService, resultsConfiguration);
     private final ScraperServiceImpl scraperService
             = new ScraperServiceImpl(competitionScraperService, scraperHistoryRepo);
-    private final ResultsConfiguration resultsConfiguration = mock(ResultsConfiguration.class);
 
     @Test
     void smoke() {

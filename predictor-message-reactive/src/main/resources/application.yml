@@ -37,3 +37,10 @@ test:
   mode: true
   delay: 5
 
+management:
+  endpoints:
+    enabled-by-default: false
+  endpoint:
+    health:
+      enabled: true
+

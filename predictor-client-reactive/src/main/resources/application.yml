@@ -40,3 +40,10 @@ betting:
 
 test:
   mode: true
+
+management:
+  endpoints:
+    enabled-by-default: false
+  endpoint:
+    health:
+      enabled: true

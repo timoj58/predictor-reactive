@@ -18,3 +18,10 @@ clients:
 
 fixtures:
   url: "https://www.espn.co.uk/soccer/fixtures/_/date/{date}/league/{competition}"
+
+management:
+  endpoints:
+    enabled-by-default: false
+  endpoint:
+    health:
+      enabled: true
