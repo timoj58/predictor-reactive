@@ -1,6 +1,6 @@
 # predictor-reactive
 
-Microservice architecture to predict likelihood of outcomes for football matcheds across europe.  Currently predicts match results (as %) and match goals (as avg), player likelihood of goals, cards and assists.
+Microservice architecture to predict likelihood of outcomes for football matches across europe's top leagues.  Currently predicts match results (as %) and match goals (as avg), player likelihood of goals, cards and assists.
 
 
 ## running locally
