@@ -3,6 +3,8 @@ package com.timmytime.predictorplayerseventsreactive.request;
 import com.timmytime.predictorplayerseventsreactive.enumerator.FantasyEventTypes;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -10,5 +12,5 @@ import lombok.*;
 @AllArgsConstructor
 public class TensorflowPrediction {
     private FantasyEventTypes fantasyEventTypes;
-    private PlayerEventOutcomeCsv playerEventOutcomeCsv;
+    private List<PlayerEventOutcomeCsv> playerEventOutcomeCsv;
 }

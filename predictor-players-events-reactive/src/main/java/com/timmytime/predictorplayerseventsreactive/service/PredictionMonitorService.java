@@ -1,5 +1,6 @@
 package com.timmytime.predictorplayerseventsreactive.service;
 
+import com.timmytime.predictorplayerseventsreactive.enumerator.ApplicableFantasyLeagues;
 import com.timmytime.predictorplayerseventsreactive.facade.WebClientFacade;
 import com.timmytime.predictorplayerseventsreactive.request.Message;
 import com.timmytime.predictorplayerseventsreactive.request.PlayerEventOutcomeCsv;
@@ -13,11 +14,13 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
@@ -31,8 +34,7 @@ public class PredictionMonitorService {
     private final TensorflowPredictionService tensorflowPredictionService;
 
     private final AtomicLong previousCount = new AtomicLong(0);
-    private final AtomicBoolean process = new AtomicBoolean(true);
-    private final AtomicBoolean start = new AtomicBoolean(false);
+    private final AtomicInteger started = new AtomicInteger(0);
     private final BlockingDeque<TensorflowPrediction> predictionQueue = new LinkedBlockingDeque<>();
 
 
@@ -49,12 +51,15 @@ public class PredictionMonitorService {
         this.tensorflowPredictionService = tensorflowPredictionService;
     }
 
+    public void setStart(){
+        started.getAndIncrement();
+    }
+
     public void addPrediction(TensorflowPrediction tensorflowPrediction){
         log.info("pushing to queue {}", predictionQueue.size());
         predictionQueue.push(tensorflowPrediction);
-        if (!start.get() || predictionQueue.size() == 1)
-            Mono.just(1).doOnNext(d -> next()).doFinally(set -> start.set(true))
-                    .subscribe();
+        if (predictionQueue.size() == 1)
+            Mono.just(1).subscribe(d -> next());
     }
 
     public void next(){
@@ -69,7 +74,7 @@ public class PredictionMonitorService {
     @Scheduled(fixedDelay = 240000L) //once per 4 minutes is fine.
     public void predictionMonitor() {
 
-        if (process.get() && predictionQueue.isEmpty() && start.get()) {
+        if (predictionQueue.isEmpty() && started.get() == ApplicableFantasyLeagues.values().length) {
 
             fantasyOutcomeService.toFix().count()
                     .subscribe(count -> {
@@ -77,16 +82,19 @@ public class PredictionMonitorService {
                         if (count != 0 && count == previousCount.get()) {
                             log.info("reprocessing");
                             fantasyOutcomeService.toFix()
+                                  // TODO review this......probably ok for now.
+                                    //Need to confirm performance increases
                                     .doOnNext(fantasyOutcome ->
                                             predictionQueue.push(
                                                     TensorflowPrediction.builder()
                                                             .fantasyEventTypes(fantasyOutcome.getFantasyEventType())
                                                             .playerEventOutcomeCsv(
-                                                                    new PlayerEventOutcomeCsv(
+                                                                    Arrays.asList(
+                                                                            new PlayerEventOutcomeCsv(
                                                                             fantasyOutcome.getId(),
                                                                             fantasyOutcome.getPlayerId(),
                                                                             fantasyOutcome.getOpponent(),
-                                                                            fantasyOutcome.getHome()))
+                                                                            fantasyOutcome.getHome())))
                                                             .build())
                                     )
                                     .doFinally(retry -> next())
@@ -99,7 +107,7 @@ public class PredictionMonitorService {
                                             .event("PLAYERS_PREDICTED")
                                             .eventType("ALL")
                                             .build());
-                            process.set(false);
+                            started.set(0);
                         }
                         previousCount.set(count);
                     });

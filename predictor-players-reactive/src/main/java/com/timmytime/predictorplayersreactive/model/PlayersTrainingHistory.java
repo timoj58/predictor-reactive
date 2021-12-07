@@ -31,9 +31,6 @@ public class PlayersTrainingHistory {
         this.type = type;
         this.fromDate = fromDate;
         this.toDate = toDate;
-        if (this.toDate.isAfter(LocalDateTime.now())) {
-            this.toDate = LocalDateTime.now();
-        }
     }
 
     public PlayersTrainingHistory(FantasyEventTypes type, UUID id, LocalDateTime fromDate, LocalDateTime toDate) {
@@ -42,9 +39,6 @@ public class PlayersTrainingHistory {
         this.type = type;
         this.fromDate = fromDate;
         this.toDate = toDate;
-        if (this.toDate.isAfter(LocalDateTime.now())) {
-            this.toDate = LocalDateTime.now();
-        }
     }
 
 }

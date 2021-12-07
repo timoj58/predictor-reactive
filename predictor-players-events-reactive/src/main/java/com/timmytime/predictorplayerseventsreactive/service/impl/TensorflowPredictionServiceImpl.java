@@ -52,15 +52,11 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
 
     @Override
     public void predict(TensorflowPrediction tensorflowPrediction) {
-        log.info("predicting id: {} {} {}",
-                tensorflowPrediction.getPlayerEventOutcomeCsv().getId(),
-                tensorflowPrediction.getPlayerEventOutcomeCsv().getPlayer(),
-                tensorflowPrediction.getPlayerEventOutcomeCsv().getOpponent());
 
         webClientFacade.predict(
                 trainingHost
                         + getUrl(tensorflowPrediction.getFantasyEventTypes())
-                        .replace("<receipt>", tensorflowPrediction.getPlayerEventOutcomeCsv().getId().toString())
+                       // .replace("<receipt>", tensorflowPrediction.getPlayerEventOutcomeCsv().getId().toString())
                         .replace("<init>", "false"),
                 tensorflowPrediction.getPlayerEventOutcomeCsv()
         );

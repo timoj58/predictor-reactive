@@ -31,9 +31,7 @@ public class MessageHandler {
         Mono<JsonNode> prediction = request.bodyToMono(JsonNode.class);
 
         return ServerResponse.ok().build(
-                messageReceivedService.prediction(
-                        UUID.fromString(request.queryParam("id").get()),
-                        prediction)
+                messageReceivedService.prediction(prediction)
         );
     }
 

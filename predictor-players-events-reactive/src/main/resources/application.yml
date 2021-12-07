@@ -10,9 +10,9 @@ clients:
   training: http://172.22.0.18:8100/players
   event-data: http://172.22.0.22:8104
   message: http://172.22.0.18:8100
-  ml-predict-goals: /predict/goals/<init>/<receipt>
-  ml-predict-assists: /predict/assists/<init>/<receipt>
-  ml-predict-yellow: /predict/yellow-card/<init>/<receipt>
+  ml-predict-goals: /predict/goals/<init>
+  ml-predict-assists: /predict/assists/<init>
+  ml-predict-yellow: /predict/yellow-card/<init>
   ml-predict-init: /predict/init/<type>
   ml-predict-destroy: /predict/clear-down/<type>
 

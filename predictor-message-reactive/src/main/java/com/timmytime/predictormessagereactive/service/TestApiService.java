@@ -9,6 +9,7 @@ import com.timmytime.predictormessagereactive.model.FileRequest;
 import com.timmytime.predictormessagereactive.repo.FileRequestRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -109,29 +110,45 @@ public class TestApiService {
     }
 
     public Mono<Void> predictPlayer(
-            @PathVariable UUID receipt,
             @PathVariable Boolean init,
             Mono<JsonNode> body) {
-        JSONObject prediction = new JSONObject()
-                .put("0", new JSONObject()
-                        .put("label", "0")
-                        .put("score", "10"))
-                .put("1", new JSONObject()
-                        .put("label", "1")
-                        .put("score", "10"))
-                .put("2", new JSONObject()
-                        .put("label", "2")
-                        .put("score", "10"));
-        JsonNode response = null;
 
-        try {
-            response = new ObjectMapper().readTree(prediction.toString());
-        } catch (JsonProcessingException e) {
-        }
+        return body.doOnNext(
+                payload -> {
+                    var json = new JSONArray(payload.toString());
 
-        webClientFacade.receipt(
-                hostsConfiguration.getPlayerEvents() + "/prediction?id=" + receipt.toString(), response);
-        return Mono.empty();
+                    var responseArray = new JSONArray();
+
+                    for(int i=0;i<json.length();i++){
+                        JSONObject prediction = new JSONObject()
+                                .put("0", new JSONObject()
+                                        .put("label", "0")
+                                        .put("score", "10"))
+                                .put("1", new JSONObject()
+                                        .put("label", "1")
+                                        .put("score", "10"))
+                                .put("2", new JSONObject()
+                                        .put("label", "2")
+                                        .put("score", "10"))
+                                .put("id", json.getJSONObject(i).get("id"));
+
+                        responseArray.put(prediction);
+                    }
+
+
+                    JsonNode response = null;
+
+                    try {
+                        response = new ObjectMapper().readTree(responseArray.toString());
+                    } catch (JsonProcessingException e) {
+                    }
+
+                    webClientFacade.receipt(
+                            hostsConfiguration.getPlayerEvents() + "/prediction", response);
+
+                }
+        ).thenEmpty(Mono.empty());
+
     }
 
     public Mono<Void> uploadFile(

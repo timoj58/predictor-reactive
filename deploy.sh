@@ -33,7 +33,7 @@ action_check () {
     do
       action=$(curl http://localhost:8100/status/$1)
       echo $1 $action
-      sleep 30
+      sleep $2
     done
 
     return 1
@@ -45,7 +45,7 @@ health_check () {
     do
       health=$(curl http://localhost:$1/actuator/health)
       echo $1 $health
-      sleep 10
+      sleep $2
     done
 
     return 1
@@ -66,31 +66,32 @@ done
 if [ "$build" = true ] ; then
   echo 'e2e test runner'
   docker-compose up -d
+  sleep 30
 
   # need a timeout at some point.  to do.
   for i in "${ports[@]}"
   do
-     health_check $i
+     health_check $i 2
   done
 
   echo 'services are up'
   $(curl -X POST "http://localhost:8100/message" -H "accept: */*" -H "Content-Type: application/json" -d "{\"event\":\"START\",\"eventType\":\"ALL\"}")
 
-  action_check "SCRAPE"
+  action_check "SCRAPE" 5
   echo "scrape started"
-  action_check "TRAIN_TEAMS"
+  action_check "TRAIN_TEAMS" 10
   echo "teams training started"
-  action_check "PREDICT_TEAMS"
+  action_check "PREDICT_TEAMS" 10
   echo "teams predictions started"
-  action_check "TRAIN_PLAYERS"
-  echo "players training started"
-  action_check "PREDICT_PLAYERS"
-  echo "players predictions started"
-  action_check "STOP_TEAM_MACHINE"
+  action_check "STOP_TEAM_MACHINE" 10
   echo "team predictions finished"
-  action_check "STOP_PLAYERS_MACHINE"
+  action_check "TRAIN_PLAYERS" 30
+  echo "players training started"
+  action_check "PREDICT_PLAYERS" 10
+  echo "players predictions started"
+  action_check "STOP_PLAYERS_MACHINE" 10
   echo "players predictions finished"
-  action_check "FINALISE"
+  action_check "FINALISE" 30
   echo "completed...shutting down"
 
   # ideally may want to preserve database to review.  add better tests in future to verify it
@@ -101,11 +102,11 @@ if [ "$build" = true ] ; then
   do
     docker push timmytime/$i
   done
-  exit 0
 else
    echo 'microservices failed to package'
-   exit 1
 fi
+
+exit 0
 
 
 

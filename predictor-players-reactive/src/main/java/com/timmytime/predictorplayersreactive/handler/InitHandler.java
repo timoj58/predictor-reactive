@@ -15,8 +15,8 @@ public class InitHandler {
 
     public Mono<ServerResponse> init(ServerRequest request) {
         return ServerResponse.ok().build(initService.init(
-                request.queryParam("from").get(),
-                request.queryParam("to").get()
+                request.queryParam("from").orElse("01-08-2009"),
+                request.queryParam("to").orElse("01-08-2009")
         ));
     }
 }

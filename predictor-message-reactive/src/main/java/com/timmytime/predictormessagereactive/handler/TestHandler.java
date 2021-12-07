@@ -61,7 +61,6 @@ public class TestHandler {
 
     public Mono<ServerResponse> predictPlayer(ServerRequest request) {
         return ServerResponse.ok().build(testApiService.predictPlayer(
-                UUID.fromString(request.pathVariable("receipt")),
                 Boolean.valueOf(request.pathVariable("init")),
                 request.bodyToMono(JsonNode.class)
         ));

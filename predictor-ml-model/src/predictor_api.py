@@ -12,7 +12,7 @@ from service.config_service import get_dir_cfg
 
 app = Flask(__name__)
 
-logging.basicConfig(filename=get_dir_cfg()['local'] + 'predictor.log', level=logging.NOTSET)
+logging.basicConfig(filename=get_dir_cfg()['local'] + 'predictor.log', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":

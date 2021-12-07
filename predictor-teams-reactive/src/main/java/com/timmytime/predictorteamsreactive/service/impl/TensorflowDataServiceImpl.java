@@ -58,7 +58,10 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
         LocalDate startDate = LocalDate.parse(fromDate, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         LocalDate endDate = LocalDate.parse(toDate, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
-        return data.get(country)
+        var countryData = data.get(country);
+        log.info("we have {} records for {}", countryData.size(), country);
+
+        return countryData
                 .stream()
                 .filter(f -> f.getDate().toLocalDate().isEqual(startDate) || f.getDate().toLocalDate().isAfter(startDate))
                 .filter(f -> f.getDate().toLocalDate().isBefore(endDate))
@@ -70,6 +73,7 @@ public class TensorflowDataServiceImpl implements TensorflowDataService {
     @Override
     public void clear(String country) {
         if (data.containsKey(country)) {
+            log.info("clearing data for {}", country);
             data.get(country).clear();
         } else {
             log.info("no data to clear for {}", country);

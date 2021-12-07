@@ -57,8 +57,4 @@ public class ScraperServiceTest {
         verify(webClientFacade, atLeastOnce()).send(anyString(), any(JsonNode.class));
     }
 
-    @Test
-    void sanity() {
-        LocalDate.parse("19/10/2021", DateTimeFormatter.ofPattern("d/MM/yyyy"));
-    }
 }

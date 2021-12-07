@@ -7,12 +7,14 @@ import com.timmytime.predictorscraperreactive.service.ScraperService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
@@ -87,17 +89,15 @@ public class ScraperServiceImpl implements ScraperService {
     }
 
     @Override
-    public Mono<Void> init() {
-        //if we have no history based on historic run.
+    public Mono<Void> init(String from, String to) {
+        //if we have no history based on historic run.  add the dates in.
         var count = scraperHistoryRepo.count();
 
         if (count == 0) {
             ScraperHistory scraperHistory = new ScraperHistory();
 
-            //actual data 19/10/2021
-
             scraperHistory.setId(UUID.randomUUID());
-            scraperHistory.setDate(LocalDateTime.now().minusDays(5));
+            scraperHistory.setDate(LocalDate.parse(from, DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay());
             scraperHistory.setDaysScraped((int)
                     Duration.between(
                             scraperHistory.getDate(),

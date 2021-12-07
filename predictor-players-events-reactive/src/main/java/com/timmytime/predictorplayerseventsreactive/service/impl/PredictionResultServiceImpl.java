@@ -7,12 +7,12 @@ import com.timmytime.predictorplayerseventsreactive.service.PredictionMonitorSer
 import com.timmytime.predictorplayerseventsreactive.service.PredictionResultService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -25,26 +25,29 @@ public class PredictionResultServiceImpl implements PredictionResultService {
     private final PredictionMonitorService predictionMonitorService;
 
     @Override
-    public void result(UUID id, JSONObject result) {
+    public void result(JSONArray result) {
         log.info("processing prediction result {}", result.toString());
-        CompletableFuture.runAsync(() ->
+        CompletableFuture.runAsync(predictionMonitorService::next)
+                .thenRun(() -> {
 
-                fantasyOutcomeService.find(id)
-                        .subscribe(fantasyOutcome -> {
-                            fantasyOutcome.setCurrent(Boolean.TRUE);
-                            fantasyOutcome.setPrediction(
-                                    normalize(result).toString()
-                            );
+                    for (int i = 0; i < result.length(); i++) {
 
-                            log.info("saving prediction {} id: {}", fantasyOutcome.getFantasyEventType(), fantasyOutcome.getId());
-                            fantasyOutcomeService.save(fantasyOutcome).subscribe(saved -> {
-                                        predictionMonitorService.next();
-                                        playerResponseService.addResult(saved);
-                                    }
-                            );
+                        var id = result.getJSONObject(i).getString("id");
+                        var resultData = result.getJSONObject(i);
 
-                        })
-        );
+                        fantasyOutcomeService.find(UUID.fromString(id))
+                                .subscribe(fantasyOutcome -> {
+                                    fantasyOutcome.setCurrent(Boolean.TRUE);
+                                    fantasyOutcome.setPrediction(
+                                            normalize(resultData).toString()
+                                    );
+
+                                    log.info("saving prediction {} id: {}", fantasyOutcome.getFantasyEventType(), fantasyOutcome.getId());
+                                    fantasyOutcomeService.save(fantasyOutcome).subscribe(playerResponseService::addResult);
+
+                                });
+                    }
+                });
     }
 
     private List<Prediction> normalize(JSONObject result) {

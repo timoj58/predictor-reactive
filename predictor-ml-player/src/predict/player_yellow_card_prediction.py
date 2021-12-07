@@ -2,11 +2,10 @@ import dataset.match_dataset as match_dataset
 from service.predict_service import predict as predict_process
 
 
-def predict(data, init, receipt):
+def predict(data, init):
     predict_process(
         data=data,
         init=init,
         label='yellow',
         label_values=match_dataset.CARDS,
-        model_dir="yellow",
-        receipt=receipt)
+        model_dir="yellow")

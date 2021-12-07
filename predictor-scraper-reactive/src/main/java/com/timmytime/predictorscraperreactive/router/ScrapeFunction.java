@@ -42,9 +42,11 @@ public class ScrapeFunction {
     @Bean
     @RouterOperation(beanClass = ScraperService.class, beanMethod = "init")
     RouterFunction<ServerResponse> init() {
-
         return route(RequestPredicates.POST("/init"),
-                (scrape) -> ServerResponse.ok().build(scraperService.init()));
+                (scrape) -> ServerResponse.ok().build(scraperService.init(
+                        scrape.queryParam("from").orElse("19-10-2021"),
+                        scrape.queryParam("to").orElse("19-10-2021")
+                )));
     }
 
 }

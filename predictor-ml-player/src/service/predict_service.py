@@ -9,9 +9,7 @@ local_dir = get_dir_cfg()['local']
 logger = logging.getLogger(__name__)
 
 
-def predict(data, init, label, label_values, model_dir, receipt):
-    # def create(type, country, train, label, label_values, model_dir, train_filename, test_filename, outcome, previous_vocab_date):
-    # there is no guarantee the predict is on same day as the train.  so we need the history
+def predict(data, init, label, label_values, model_dir):
     classifier = match_model.create(
         train=False,
         label=label,
@@ -20,30 +18,35 @@ def predict(data, init, label, label_values, model_dir, receipt):
         train_filename='',
         test_filename='',
         init=init)
+    responses = []
 
-    player = []
-    home = []
-    opponent = []
+    for item in data:
 
-    # Generate predictions from the model
+        player = []
+        home = []
+        opponent = []
+        # Generate predictions from the model
 
-    opponent.append(data['opponent'])
-    home.append(data['home'])
-    player.append(data['player'])
+        opponent.append(item['opponent'])
+        home.append(item['home'])
+        player.append(item['player'])
 
-    predict_x = {
-        'player': player,
-        'opponent': opponent,
-        'home': home
-    }
+        predict_x = {
+            'player': player,
+            'opponent': opponent,
+            'home': home
+        }
 
-    response = model_utils.predict(
-        classifier=classifier,
-        predict_x=predict_x,
-        label_values=label_values)
+        response = model_utils.predict(
+            classifier=classifier,
+            predict_x=predict_x,
+            label_values=label_values)
 
-    if init:
-        logger.info('tidying up')
-        match_model.tidy_up(local_dir + '/models/' + model_dir, None, None, None)
+        response['id'] = item['id']
+        responses.append(response)
 
-    receipt_service.put_receipt(receipt_service.PREDICT_RECEIPT_URL, receipt, response)
+        if init:
+            logger.info('tidying up')
+            match_model.tidy_up(local_dir + '/models/' + model_dir, None, None, None)
+
+    receipt_service.put_receipt(receipt_service.PREDICT_RECEIPT_URL, None, responses)

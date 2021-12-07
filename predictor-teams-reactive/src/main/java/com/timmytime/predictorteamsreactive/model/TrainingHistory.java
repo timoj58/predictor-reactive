@@ -42,9 +42,5 @@ public class TrainingHistory {
         this.country = country.toLowerCase();
         this.fromDate = fromDate;
         this.toDate = toDate;
-
-        if (this.toDate.isAfter(LocalDate.now().atStartOfDay())) {
-            this.toDate = LocalDateTime.now();
-        }
     }
 }

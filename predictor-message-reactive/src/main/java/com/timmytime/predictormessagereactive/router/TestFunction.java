@@ -81,25 +81,25 @@ public class TestFunction {
     }
 
     @Bean
-    @RouterOperation(beanClass = TestApiService.class, beanMethod = "predictTeams")
+    @RouterOperation(beanClass = TestApiService.class, beanMethod = "predictPlayer")
     RouterFunction<ServerResponse> predictPlayerGoals(TestHandler testHandler) {
-        return route(RequestPredicates.POST("/players/predict/goals/{init}/{receipt}")
+        return route(RequestPredicates.POST("/players/predict/goals/{init}")
                         .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON))
                 , testHandler::predictPlayer);
     }
 
     @Bean
-    @RouterOperation(beanClass = TestApiService.class, beanMethod = "predictTeams")
+    @RouterOperation(beanClass = TestApiService.class, beanMethod = "predictPlayer")
     RouterFunction<ServerResponse> predictPlayerAssists(TestHandler testHandler) {
-        return route(RequestPredicates.POST("/players/predict/assists/{init}/{receipt}")
+        return route(RequestPredicates.POST("/players/predict/assists/{init}")
                         .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON))
                 , testHandler::predictPlayer);
     }
 
     @Bean
-    @RouterOperation(beanClass = TestApiService.class, beanMethod = "predictTeams")
+    @RouterOperation(beanClass = TestApiService.class, beanMethod = "predictPlayer")
     RouterFunction<ServerResponse> predictPlayerCards(TestHandler testHandler) {
-        return route(RequestPredicates.POST("/players/predict/yellow-card/{init}/{receipt}")
+        return route(RequestPredicates.POST("/players/predict/yellow-card/{init}")
                         .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON))
                 , testHandler::predictPlayer);
     }

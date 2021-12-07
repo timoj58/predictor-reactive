@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
 
@@ -51,6 +52,7 @@ public class TrainingServiceImpl implements TrainingService {
 
         if (trainingHistory.getType().equals(Training.TRAIN_RESULTS)) {
             //and also need to load our next section....
+            log.info("loading matches for {}", trainingHistory.getCountry());
             webClientFacade.getMatches(
                             dataHost + "/match/country/" + trainingHistory.getCountry()
                                     + "/" + trainingHistory.getFromDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
@@ -61,7 +63,10 @@ public class TrainingServiceImpl implements TrainingService {
                                             trainingHistory.getToDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
                                     )
                     ).doOnNext(match -> tensorflowDataService.load(new CountryMatch(trainingHistory.getCountry(), match)))
-                    .doFinally(f -> tensorflowTrainService.train(trainingHistory))
+                    .doFinally(f -> Mono.just(trainingHistory)
+                            //TODO remove.  this is likely not the issue
+                            .delayElement(Duration.ofMinutes(interval))
+                            .subscribe(tensorflowTrainService::train))
                     .subscribe();
         } else {
             Mono.just(trainingHistory)

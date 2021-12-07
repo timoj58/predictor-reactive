@@ -15,9 +15,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -31,7 +29,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     private final WebClientFacade webClientFacade;
     private final String messageHost;
     private final Boolean trainingEvaluation;
-    private final Deque<Message> messages = new ArrayDeque<>();
+    private final Deque<String> countries = new ArrayDeque<>();
     private Consumer<Message> consumer;
 
     @Autowired
@@ -84,8 +82,9 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
                         if (trainingEvaluation) {
                             trainingModelService.create();
                         } else {
-                            if (!messages.isEmpty())
-                                process(messages.pop());
+                            countries.remove(history.getCountry());
+                            if(!countries.isEmpty())
+                              process(countries.pop());
 
                             webClientFacade.sendMessage(
                                     messageHost + "/message",
@@ -120,17 +119,17 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     }
 
     private void queue(Message message) {
-        if (messages.isEmpty())
-            process(message);
+        if(countries.isEmpty())
+            process(message.getEventType().toLowerCase());
 
-        messages.add(message);
+        countries.push(message.getEventType().toLowerCase());
     }
 
 
-    private void process(Message message) {
-        tensorflowDataService.loadOutstanding(message.getEventType().toLowerCase(), () ->
+    private void process(String country) {
+        tensorflowDataService.loadOutstanding(country, () ->
                 trainingService.train(i -> {
-                    var trainingHistory = trainingHistoryService.find(Training.TRAIN_RESULTS, message.getEventType());
+                    var trainingHistory = trainingHistoryService.find(Training.TRAIN_RESULTS, country);
                     return trainingHistoryService.save(
                             new TrainingHistory(
                                     trainingHistory.getType(),

@@ -8,6 +8,7 @@ import com.timmytime.predictorplayerseventsreactive.service.PredictionMonitorSer
 import com.timmytime.predictorplayerseventsreactive.service.PredictionResultService;
 import com.timmytime.predictorplayerseventsreactive.service.PredictionService;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,10 +48,10 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     }
 
     @Override
-    public Mono<Void> prediction(UUID id, Mono<JsonNode> prediction) {
-        log.info("receiving prediction result for {}", id);
+    public Mono<Void> prediction(Mono<JsonNode> prediction) {
+        log.info("receiving prediction result");
         return prediction.doOnNext(
-                msg -> predictionResultService.result(id, new JSONObject(msg.toString()))
+                msg -> predictionResultService.result( new JSONArray(msg.toString()))
         ).thenEmpty(Mono.empty());
 
     }

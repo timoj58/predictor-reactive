@@ -37,7 +37,7 @@ public class InitServiceImpl implements InitService {
         var url = new StringBuilder("/init");
 
         if (testMode) {
-            var queryParam = LocalDate.now().minusYears(1).format(
+            var queryParam = LocalDate.now().minusDays(5).format(
                     DateTimeFormatter.ofPattern("dd-MM-yyyy")
             );
             url.append("?from=" + queryParam + "&to=" + queryParam);
