@@ -56,7 +56,6 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
         webClientFacade.predict(
                 trainingHost
                         + getUrl(tensorflowPrediction.getFantasyEventTypes())
-                       // .replace("<receipt>", tensorflowPrediction.getPlayerEventOutcomeCsv().getId().toString())
                         .replace("<init>", "false"),
                 tensorflowPrediction.getPlayerEventOutcomeCsv()
         );

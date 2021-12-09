@@ -25,21 +25,21 @@ public class PredictionResultServiceImpl implements PredictionResultService {
     private final PredictionMonitorService predictionMonitorService;
 
     @Override
-    public void result(JSONArray result) {
-        log.info("processing prediction result {}", result.toString());
+    public void result(JSONArray results) {
+        log.info("processing prediction result {}", results.toString());
         CompletableFuture.runAsync(predictionMonitorService::next)
                 .thenRun(() -> {
 
-                    for (int i = 0; i < result.length(); i++) {
+                    for (int i = 0; i < results.length(); i++) {
 
-                        var id = result.getJSONObject(i).getString("id");
-                        var resultData = result.getJSONObject(i);
+                        var result = results.getJSONObject(i);
+                        var id = result.remove("id").toString();
 
                         fantasyOutcomeService.find(UUID.fromString(id))
                                 .subscribe(fantasyOutcome -> {
                                     fantasyOutcome.setCurrent(Boolean.TRUE);
                                     fantasyOutcome.setPrediction(
-                                            normalize(resultData).toString()
+                                            normalize(result).toString()
                                     );
 
                                     log.info("saving prediction {} id: {}", fantasyOutcome.getFantasyEventType(), fantasyOutcome.getId());

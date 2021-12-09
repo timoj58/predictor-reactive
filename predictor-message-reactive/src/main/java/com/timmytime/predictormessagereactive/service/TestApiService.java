@@ -115,6 +115,7 @@ public class TestApiService {
 
         return body.doOnNext(
                 payload -> {
+                    log.info("prediction payload {}", payload.toString());
                     var json = new JSONArray(payload.toString());
 
                     var responseArray = new JSONArray();

@@ -14,7 +14,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -71,29 +70,23 @@ public class PredictionServiceImpl implements PredictionService {
                         playerService.get(competition, homeTeam), playerService.get(competition, awayTeam)
                 )
                 .collectList()
+                .filter(f -> !f.isEmpty()) //no players, no predictions.
                 .subscribe(players ->
                         Flux.fromArray(FantasyEventTypes.values())
                                 .filter(f -> f.getPredict() == Boolean.TRUE)
                                 .limitRate(1)
-                                .subscribe(fantasyEvent -> {
-
-                                            List<FantasyOutcome> playersOutcomes = new ArrayList<>();
-
-                                            players.forEach(
-                                                    player ->
-                                                            playersOutcomes.add(FantasyOutcome.builder()
-                                                                    .id(UUID.randomUUID())
-                                                                    .eventDate(date)
-                                                                    .opponent(player.getLatestTeam().equals(homeTeam) ? awayTeam : homeTeam)
-                                                                    .playerId(player.getId())
-                                                                    .fantasyEventType(fantasyEvent)
-                                                                    .home(player.getLatestTeam().equals(homeTeam) ? "home" : "away") //not sure why its like this
-                                                                    .build()
-                                                            ));
-
-                                            consumer.accept(Pair.of(fantasyEvent, playersOutcomes));
-
-                                        }
+                                .subscribe(fantasyEvent ->
+                                        consumer.accept(Pair.of(fantasyEvent, players.stream()
+                                                .map(player ->
+                                                        FantasyOutcome.builder()
+                                                                .id(UUID.randomUUID())
+                                                                .eventDate(date)
+                                                                .opponent(player.getLatestTeam().equals(homeTeam) ? awayTeam : homeTeam)
+                                                                .playerId(player.getId())
+                                                                .fantasyEventType(fantasyEvent)
+                                                                .home(player.getLatestTeam().equals(homeTeam) ? "home" : "away") //not sure why its like this
+                                                                .build())
+                                                .collect(Collectors.toList())))
 
                                 )
                 );
@@ -102,26 +95,28 @@ public class PredictionServiceImpl implements PredictionService {
 
     private void process(Pair<FantasyEventTypes, List<FantasyOutcome>> fantasyOutcomes) {
 
-        fantasyOutcomes.getRight()
-                .forEach(
-                        fantasyOutcome -> fantasyOutcomeService.save(fantasyOutcome).subscribe()
-                );
+        Flux.fromStream(fantasyOutcomes.getRight().stream())
+                .doOnNext(fantasyOutcome -> fantasyOutcomeService.save(fantasyOutcome).subscribe()
+                )
+                .doFinally(
+                        add -> predictionMonitorService.addPrediction(
+                                TensorflowPrediction.builder()
+                                        .fantasyEventTypes(fantasyOutcomes.getLeft())
+                                        .playerEventOutcomeCsv(
+                                                fantasyOutcomes.getRight()
+                                                        .stream()
+                                                        .map(saved ->
+                                                                new PlayerEventOutcomeCsv(
+                                                                        saved.getId(),
+                                                                        saved.getPlayerId(),
+                                                                        saved.getOpponent(),
+                                                                        saved.getHome()))
+                                                        .collect(Collectors.toList()))
 
-        predictionMonitorService.addPrediction(
-                TensorflowPrediction.builder()
-                        .fantasyEventTypes(fantasyOutcomes.getLeft())
-                        .playerEventOutcomeCsv(
-                                fantasyOutcomes.getRight()
-                                        .stream()
-                                        .map(saved ->
-                                                new PlayerEventOutcomeCsv(
-                                                        saved.getId(),
-                                                        saved.getPlayerId(),
-                                                        saved.getOpponent(),
-                                                        saved.getHome()))
-                                        .collect(Collectors.toList()))
+                                        .build())
+                )
+                .subscribe();
 
-                        .build());
 
     }
 
