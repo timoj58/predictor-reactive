@@ -71,16 +71,16 @@ def predict_clear_down(type):
 
 
 @app.route('/predict/goals/<init>', methods=['POST'])
-def predict_goals(init, receipt):
+def predict_goals(init):
     thread = threading.Thread(target=player_goals_prediction.predict,
-                              args=(json.loads(request.data), set_init(init), receipt))
+                              args=(json.loads(request.data), set_init(init)))
     process(thread)
 
     return json.dumps(done_response())
 
 
 @app.route('/predict/assists/<init>', methods=['POST'])
-def predict_assists(init, receipt):
+def predict_assists(init):
     thread = threading.Thread(target=player_assists_prediction.predict,
                               args=(json.loads(request.data), set_init(init)))
     process(thread)
@@ -89,7 +89,7 @@ def predict_assists(init, receipt):
 
 
 @app.route('/predict/yellow-card/<init>', methods=['POST'])
-def predict_yellow(init, receipt):
+def predict_yellow(init):
     thread = threading.Thread(target=player_yellow_card_prediction.predict,
                               args=(json.loads(request.data), set_init(init)))
     process(thread)
@@ -100,7 +100,7 @@ def predict_yellow(init, receipt):
 @app.route('/train/goals/<start>/<end>/<receipt>', methods=['POST'])
 def train_goals_scored(start, end, receipt):
     thread = threading.Thread(target=player_goals_train.train,
-                              args=(start, end))
+                              args=(start, end, receipt))
     process(thread)
 
     return json.dumps(done_response())

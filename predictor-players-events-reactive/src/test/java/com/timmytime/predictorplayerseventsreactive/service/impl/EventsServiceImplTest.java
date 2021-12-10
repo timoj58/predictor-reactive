@@ -23,5 +23,5 @@ class EventsServiceImplTest {
 
         assertTrue(eventsService.get("greece_1").blockFirst().getCompetition().equals("greece_1"));
     }
-    
+
 }

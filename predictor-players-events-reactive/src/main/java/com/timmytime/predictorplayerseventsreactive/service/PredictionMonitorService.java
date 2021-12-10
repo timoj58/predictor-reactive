@@ -35,6 +35,7 @@ public class PredictionMonitorService {
 
     private final AtomicLong previousCount = new AtomicLong(0);
     private final AtomicInteger started = new AtomicInteger(0);
+    private final AtomicBoolean popped = new AtomicBoolean(false);
     private final BlockingDeque<TensorflowPrediction> predictionQueue = new LinkedBlockingDeque<>();
 
 
@@ -58,13 +59,12 @@ public class PredictionMonitorService {
     public void addPrediction(TensorflowPrediction tensorflowPrediction){
         log.info("pushing to queue {}", predictionQueue.size());
         predictionQueue.push(tensorflowPrediction);
-        if (predictionQueue.size() == 1)
-            Mono.just(1).subscribe(d -> next());
     }
 
     public void next(){
         log.info("popping from queue {}", predictionQueue.size());
         if (!predictionQueue.isEmpty())
+            popped.set(true);
             tensorflowPredictionService.predict(
                     predictionQueue.pop()
             );
@@ -74,7 +74,10 @@ public class PredictionMonitorService {
     @Scheduled(fixedDelay = 240000L) //once per 4 minutes is fine.
     public void predictionMonitor() {
 
-        if (predictionQueue.isEmpty() && started.get() == ApplicableFantasyLeagues.values().length) {
+        if(started.get() == ApplicableFantasyLeagues.values().length && !popped.get()){
+           next();
+        }
+        else if (predictionQueue.isEmpty() && started.get() == ApplicableFantasyLeagues.values().length) {
 
             fantasyOutcomeService.toFix().count()
                     .subscribe(count -> {
