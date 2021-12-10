@@ -24,4 +24,11 @@ class EventsServiceImplTest {
         assertTrue(eventsService.get("greece_1").blockFirst().getCompetition().equals("greece_1"));
     }
 
+    @Test
+    void sanity(){
+        String s = "s";
+        var res = ((Object)s).equals("s");
+        System.out.println(res);
+    }
+
 }

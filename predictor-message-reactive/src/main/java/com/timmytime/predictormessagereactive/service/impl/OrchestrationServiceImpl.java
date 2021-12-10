@@ -139,9 +139,11 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                 .handler((ce) -> {
                     if (ce.stream().anyMatch(m -> m.getMessage().getEvent().equals(Event.START))) {
                         initService.init().doFinally(scrape ->
-                                        CompletableFuture.runAsync(() -> webClientFacade.scrape(hostsConfiguration.getDataScraper() + "/scrape"))
-                                                .thenRun(() -> webClientFacade.scrape(hostsConfiguration.getEventsScraper() + "/scrape")))
-                                .subscribe();
+                                    Flux.fromStream(
+                                            Stream.of(hostsConfiguration.getDataScraper() + "/scrape", hostsConfiguration.getEventsScraper() + "/scrape")
+                                    ).delayElements(Duration.ofSeconds(delay))
+                                                    .subscribe(webClientFacade::scrape)
+                                ).subscribe();
                         return true;
                     }
                     return false;
