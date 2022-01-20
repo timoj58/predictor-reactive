@@ -24,7 +24,7 @@ class TrainingServiceImplTest {
             tensorflowDataService, tensorflowTrainService, webClientFacade);
 
     @Test
-    public void trainResults() {
+    public void trainResults() throws InterruptedException {
 
         when(webClientFacade.getMatches(anyString()))
                 .thenReturn(Flux.just(Match.builder().build()));
@@ -33,6 +33,8 @@ class TrainingServiceImplTest {
                 .type(Training.TRAIN_RESULTS)
                 .toDate(LocalDateTime.now())
                 .fromDate(LocalDateTime.now()).build());
+
+        Thread.sleep(250);
 
         verify(tensorflowDataService, atLeastOnce()).load(any());
         verify(tensorflowTrainService, atLeastOnce()).train(any());

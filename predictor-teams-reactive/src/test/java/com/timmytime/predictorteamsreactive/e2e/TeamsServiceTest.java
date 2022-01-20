@@ -46,7 +46,7 @@ public class TeamsServiceTest {
             trainingHistoryService, trainingModelService, trainingService, tensorflowDataService, webClientFacade);
 
     @Test
-    void training() {
+    void training() throws InterruptedException {
 
         when(webClientFacade.getOutstandingEvents(anyString()))
                 .thenReturn(Flux.empty());
@@ -73,6 +73,8 @@ public class TeamsServiceTest {
         messageReceivedService.receive(Mono.just(
                 Message.builder().eventType("ENGLAND").build()
         )).subscribe();
+
+        Thread.sleep(250);
 
         verify(webClientFacade, atLeastOnce()).train(anyString());
     }
