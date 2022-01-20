@@ -1,11 +1,11 @@
-name: Players CI
+name: Event Scraper CI
 
 on:
   push:
      branches: 
        - master
      paths:
-       - "predictor-players-reactive/**"       
+       - "predictor-event-scraper-reactive/**"       
 
 
 jobs:
@@ -20,5 +20,5 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: Build with Maven
-        run: mvn clean package --file predictor-players-reactive/pom.xml
+        run: mvn clean package --file predictor-event-scraper-reactive/pom.xml
         
