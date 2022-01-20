@@ -1,8 +1,12 @@
 name: Java CI
 
 on:
-        push:
-          paths: -"*-reactive*"       
+  push:
+     branches: 
+       - master
+     paths:
+       - "predictor-teams-reactive/**"       
+
 
 jobs:
   build:
@@ -16,4 +20,5 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: Build with Maven
-        run: mvn clean package
+        run: mvn clean package --file predictor-teams-reactive/pom.xml
+        
