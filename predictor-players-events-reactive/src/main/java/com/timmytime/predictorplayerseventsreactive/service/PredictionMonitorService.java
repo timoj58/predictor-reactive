@@ -10,18 +10,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
+import reactor.core.publisher.Flux;
 
-import java.time.Duration;
-import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.Deque;
+import java.util.List;
 import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service("predictionMonitorService")
@@ -35,7 +34,6 @@ public class PredictionMonitorService {
 
     private final AtomicLong previousCount = new AtomicLong(0);
     private final AtomicInteger started = new AtomicInteger(0);
-    private final AtomicBoolean popped = new AtomicBoolean(false);
     private final BlockingDeque<TensorflowPrediction> predictionQueue = new LinkedBlockingDeque<>();
 
 
@@ -50,34 +48,47 @@ public class PredictionMonitorService {
         this.webClientFacade = webClientFacade;
         this.fantasyOutcomeService = fantasyOutcomeService;
         this.tensorflowPredictionService = tensorflowPredictionService;
+
+        new Thread(() -> {
+            try {
+                tensorflowPredictionService.predict(
+                        predictionQueue.take()
+                );
+            } catch (InterruptedException e) {
+                log.error("start", e);
+            }
+        }).start();
+
     }
 
-    public void setStart(){
-        started.getAndIncrement();
+    public void setStart() {
+        if (1 == started.incrementAndGet()) {
+            //init machine
+            Flux.fromStream(
+                    Stream.of("assists", "goals", "yellow")
+            ).subscribe(tensorflowPredictionService::init);
+        }
     }
 
-    public void addPrediction(TensorflowPrediction tensorflowPrediction){
+    public void addPrediction(TensorflowPrediction tensorflowPrediction) {
         log.info("pushing to queue {}", predictionQueue.size());
         predictionQueue.push(tensorflowPrediction);
     }
 
-    public void next(){
+     public void next() {
         log.info("popping from queue {}", predictionQueue.size());
-        if (!predictionQueue.isEmpty())
-            popped.set(true);
+        if (!predictionQueue.isEmpty()) {
             tensorflowPredictionService.predict(
                     predictionQueue.pop()
             );
+        }
     }
 
 
-    @Scheduled(fixedDelay = 240000L) //once per 4 minutes is fine.
+    @Scheduled(fixedDelay = 120000L) //shorter interval is better
     public void predictionMonitor() {
 
-        if(started.get() == ApplicableFantasyLeagues.values().length && !popped.get()){
-           next();
-        }
-        else if (predictionQueue.isEmpty() && started.get() == ApplicableFantasyLeagues.values().length) {
+        if (predictionQueue.isEmpty() && started.get() == ApplicableFantasyLeagues.values().length) {
 
             fantasyOutcomeService.toFix().count()
                     .subscribe(count -> {
@@ -85,19 +96,19 @@ public class PredictionMonitorService {
                         if (count != 0 && count == previousCount.get()) {
                             log.info("reprocessing");
                             fantasyOutcomeService.toFix()
-                                  // TODO review this......probably ok for now.
+                                    // TODO review this......probably ok for now.
                                     //Need to confirm performance increases
                                     .doOnNext(fantasyOutcome ->
                                             predictionQueue.push(
                                                     TensorflowPrediction.builder()
                                                             .fantasyEventTypes(fantasyOutcome.getFantasyEventType())
                                                             .playerEventOutcomeCsv(
-                                                                    Arrays.asList(
+                                                                    List.of(
                                                                             new PlayerEventOutcomeCsv(
-                                                                            fantasyOutcome.getId(),
-                                                                            fantasyOutcome.getPlayerId(),
-                                                                            fantasyOutcome.getOpponent(),
-                                                                            fantasyOutcome.getHome())))
+                                                                                    fantasyOutcome.getId(),
+                                                                                    fantasyOutcome.getPlayerId(),
+                                                                                    fantasyOutcome.getOpponent(),
+                                                                                    fantasyOutcome.getHome())))
                                                             .build())
                                     )
                                     .doFinally(retry -> next())

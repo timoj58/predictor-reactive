@@ -74,7 +74,7 @@ public class PlayerMatchServiceImpl implements PlayerMatchService {
     @Override
     public void next(UUID player, LocalDate date, Consumer<PlayerMatch> consumer) {
         getAppearances(player, Optional.of(date))
-                .filter(f -> f.getDate().toLocalDate().isAfter(date))
+                //.filter(f -> f.getDate().toLocalDate().isAfter(date)) //not required TODO.  also some missing results not processed
                 .limitRate(10)
                 .subscribe(appearance -> processPlayerMatch(
                         appearance, consumer

@@ -8,12 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.FluxSink;
-
-import java.time.Duration;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 @Slf4j
 @Service("tensorflowPredictionService")
@@ -63,7 +57,6 @@ public class TensorflowPredictionServiceImpl implements TensorflowPredictionServ
 
     @Override
     public void init(String type) {
-        //TODO review
         webClientFacade.config(
                 trainingHost
                         + initUrl.replace("<type>", type));

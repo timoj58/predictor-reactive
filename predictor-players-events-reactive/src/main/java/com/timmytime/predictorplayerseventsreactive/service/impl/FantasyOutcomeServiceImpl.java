@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -49,7 +50,8 @@ public class FantasyOutcomeServiceImpl implements FantasyOutcomeService {
     }
 
     @Override
-    public Flux<FantasyOutcome> topSelections(String market, Integer threshold) {
+    public Flux<FantasyOutcome> topSelections(String market, Integer threshold) throws ResponseStatusException {
+
         return fantasyOutcomeRepo.findByCurrentAndFantasyEventType(Boolean.TRUE, FantasyEventTypes.valueOf(market))
                 .filter(f -> f.getEventDate().isAfter(LocalDateTime.now().minusDays(5)))
                 .filter(f -> thresholdCheck(average(convert(f.getPrediction())), threshold));

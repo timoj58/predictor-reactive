@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -80,17 +81,21 @@ public class PlayersMatchServiceImpl implements ILoadService {
         fromStream(
                 of(Competition.values())
                         .filter(f -> f.getFantasyLeague() == Boolean.TRUE)
-        ).subscribe(this::create);
+        )
+                .delayElements(Duration.ofSeconds(10L * delay))
+                .subscribe(this::create);
     }
 
     private void create(Competition league) {
         byCompetition.put(league, new ArrayList<>());
 
+        //TODO refactor all of this..... most of client ias a mess as old code (REVIEW)
         webClientFacade.getUpcomingEvents(eventDataHost + "/events/" + league.name().toLowerCase())
+                .limitRate(1)
                 .doOnNext(event -> {
-                    log.info("processing {} vs {}", event.getHome(), event.getAway());
                     List<PlayerResponse> playerResponses = new ArrayList<>();
                     webClientFacade.getPlayers(playersHost + "/players/match/" + league + "?home=" + event.getHome() + "&away=" + event.getAway()) //need players by teams...
+                            .limitRate(10)
                             .doOnNext(player ->
                                     webClientFacade.getPlayer(playersHost + "/player/" + player.getId()) //get player response
                                             .subscribe(playerResponses::add)

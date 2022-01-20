@@ -1,8 +1,9 @@
 package com.timmytime.predictorplayerseventsreactive.service.impl;
 
 import com.timmytime.predictorplayerseventsreactive.enumerator.FantasyEventTypes;
-import com.timmytime.predictorplayerseventsreactive.facade.WebClientFacade;
-import com.timmytime.predictorplayerseventsreactive.model.*;
+import com.timmytime.predictorplayerseventsreactive.model.FantasyOutcome;
+import com.timmytime.predictorplayerseventsreactive.model.FantasyResponse;
+import com.timmytime.predictorplayerseventsreactive.model.PlayerResponse;
 import com.timmytime.predictorplayerseventsreactive.repo.PlayerResponseRepo;
 import com.timmytime.predictorplayerseventsreactive.service.FantasyOutcomeService;
 import com.timmytime.predictorplayerseventsreactive.service.PlayerResponseService;
@@ -10,17 +11,12 @@ import com.timmytime.predictorplayerseventsreactive.service.PlayerService;
 import com.timmytime.predictorplayerseventsreactive.util.FantasyResponseTransformer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 

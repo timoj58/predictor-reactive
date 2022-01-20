@@ -3,6 +3,7 @@ package com.timmytime.predictorplayerseventsreactive.service;
 import com.timmytime.predictorplayerseventsreactive.model.FantasyOutcome;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -19,7 +20,8 @@ public interface FantasyOutcomeService {
 
     Flux<FantasyOutcome> reset();
 
-    Flux<FantasyOutcome> topSelections(@PathVariable String market, @RequestParam Integer threshold);
+    Flux<FantasyOutcome> topSelections(@PathVariable String market, @RequestParam Integer threshold)
+            throws ResponseStatusException;
 
     void init();
 

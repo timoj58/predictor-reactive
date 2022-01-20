@@ -52,7 +52,7 @@ public class MatchSelectionResponseTransformer {
         List<PlayerEventScore> yellows = new ArrayList<>();
 
         //ok the hard part...so wait.  a bit.  need to filter the map..on combined totals pretty much.
-        //or map the lot to a simple map of <PlayerId, Value> or each event. then select top 5 sorted....
+        //or map the lot to a simple map of <PlayerId, Value>forEach or each event. then select top 5 sorted....
         combined.forEach(player -> {
 
             goals.add(

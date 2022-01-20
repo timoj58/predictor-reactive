@@ -29,7 +29,6 @@ public class PredictionResultServiceImpl implements PredictionResultService {
         log.info("processing prediction result {}", results.toString());
         CompletableFuture.runAsync(predictionMonitorService::next)
                 .thenRun(() -> {
-
                     for (int i = 0; i < results.length(); i++) {
 
                         var result = results.getJSONObject(i);
