@@ -20,6 +20,6 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: Build with Maven
-        run: mvn clean package --file predictor-teams-reactive/pom.xml && docker build . --file predictor-teams-reactive/Dockerfile
+        run: mvn clean package --file predictor-teams-reactive/pom.xml && docker build -t timmytime/predictor-teams-reactive predictor-teams-reactive/
 
         
