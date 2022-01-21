@@ -20,5 +20,5 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: Build with Maven
-        run: mvn clean package --file predictor-data-reactive/pom.xml
+        run: mvn clean package --file predictor-data-reactive/pom.xml && docker build -t timmytime/predictor-data-reactive predictor-data-reactive/
         

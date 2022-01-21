@@ -20,5 +20,5 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: Build with Maven
-        run: mvn clean package --file predictor-events-reactive/pom.xml
+        run: mvn clean package --file predictor-events-reactive/pom.xml && docker build -t timmytime/predictor-events-reactive predictor-events-reactive/
         

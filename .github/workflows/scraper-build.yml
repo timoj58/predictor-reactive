@@ -20,5 +20,5 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: Build with Maven
-        run: mvn clean package --file predictor-scraper-reactive/pom.xml
+        run: mvn clean package --file predictor-scraper-reactive/pom.xml && docker build -t timmytime/predictor-scraper-reactive predictor-scraper-reactive/
         
