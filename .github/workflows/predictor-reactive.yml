@@ -35,7 +35,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish teams
         run: docker push timmytime/predictor-teams-reactive:latest
-     - name: publish players
+      - name: publish players
         run: docker push timmytime/predictor-players-reactive:latest
 
 
