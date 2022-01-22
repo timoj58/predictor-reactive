@@ -19,7 +19,6 @@ jobs:
           distribution: 'adopt'
       - name: build teams
         run: mvn clean package --file predictor-teams-reactive/pom.xml && docker build -t timmytime/predictor-teams-reactive:latest
-      - name: build players
   build-player:
     runs-on: ubuntu-latest
 
