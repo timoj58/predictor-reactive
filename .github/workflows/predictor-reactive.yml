@@ -18,7 +18,7 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: build teams
-        run: mvn clean package --file predictor-teams-reactive/pom.xml && docker build -t timmytime/predictor-teams-reactive:latest
+        run: mvn clean package --file predictor-teams-reactive/pom.xml && docker build -t timmytime/predictor-teams-reactive:latest predictor-teams-reactive/
   build-player:
     runs-on: ubuntu-latest
 
@@ -30,7 +30,7 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: build players
-        run: mvn clean package --file predictor-players-reactive/pom.xml && docker build -t timmytime/predictor-players-reactive:latest
+        run: mvn clean package --file predictor-players-reactive/pom.xml && docker build -t timmytime/predictor-players-reactive:latest predictor-players-reactive/
   build-player-event:
     runs-on: ubuntu-latest
 
@@ -42,7 +42,7 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: build players events
-        run: mvn clean package --file predictor-players-events-reactive/pom.xml && docker build -t timmytime/predictor-players-events-reactive:latest
+        run: mvn clean package --file predictor-players-events-reactive/pom.xml && docker build -t timmytime/predictor-players-events-reactive:latest predictor-players-events-reactive/
   build-event:
     runs-on: ubuntu-latest
 
@@ -54,7 +54,7 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: build events
-        run: mvn clean package --file predictor-events-reactive/pom.xml && docker build -t timmytime/predictor-events-reactive:latest
+        run: mvn clean package --file predictor-events-reactive/pom.xml && docker build -t timmytime/predictor-events-reactive:latest predictor-events-reactive/
   build-client:
     runs-on: ubuntu-latest
 
@@ -66,7 +66,7 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: build client
-        run: mvn clean package --file predictor-client-reactive/pom.xml && docker build -t timmytime/predictor-client-reactive:latest
+        run: mvn clean package --file predictor-client-reactive/pom.xml && docker build -t timmytime/predictor-client-reactive:latest predictor-client-reactive/
   build-data:
     runs-on: ubuntu-latest
 
@@ -78,7 +78,7 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: build data
-        run: mvn clean package --file predictor-data-reactive/pom.xml && docker build -t timmytime/predictor-data-reactive:latest
+        run: mvn clean package --file predictor-data-reactive/pom.xml && docker build -t timmytime/predictor-data-reactive:latest predictor-data-reactive/
   build-event-data:
     runs-on: ubuntu-latest
 
@@ -90,7 +90,7 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: build event data
-        run: mvn clean package --file predictor-event-data-reactive/pom.xml && docker build -t timmytime/predictor-event-data-reactive:latest
+        run: mvn clean package --file predictor-event-data-reactive/pom.xml && docker build -t timmytime/predictor-event-data-reactive:latest predictor-event-data-reactive/
   build-scraper:
     runs-on: ubuntu-latest
 
@@ -102,7 +102,7 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: build scraper
-        run: mvn clean package --file predictor-scraper-reactive/pom.xml && docker build -t timmytime/predictor-scraper-reactive:latest
+        run: mvn clean package --file predictor-scraper-reactive/pom.xml && docker build -t timmytime/predictor-scraper-reactive:latest predictor-scraper-reactive/
   build-event-scraper:
     runs-on: ubuntu-latest
 
@@ -114,7 +114,7 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: build event scraper
-        run: mvn clean package --file predictor-event-scraper-reactive/pom.xml && docker build -t timmytime/predictor-event-scraper-reactive:latest
+        run: mvn clean package --file predictor-event-scraper-reactive/pom.xml && docker build -t timmytime/predictor-event-scraper-reactive:latest predictor-event-scraper-reactive/
   build-message:
     runs-on: ubuntu-latest
 
@@ -126,7 +126,7 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: build message
-        run: mvn clean package --file predictor-message-reactive/pom.xml && docker build -t timmytime/predictor-message-reactive:latest
+        run: mvn clean package --file predictor-message-reactive/pom.xml && docker build -t timmytime/predictor-message-reactive:latest predictor-message-reactive/
 
 
 
