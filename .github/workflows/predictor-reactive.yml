@@ -21,10 +21,27 @@ jobs:
         run: mvn clean package --file predictor-teams-reactive/pom.xml && docker build -t timmytime/predictor-teams-reactive:latest
       - name: build players
         run: mvn clean package --file predictor-players-reactive/pom.xml && docker build -t timmytime/predictor-players-reactive:latest
+      - name: build players events
+        run: mvn clean package --file predictor-players-events-reactive/pom.xml && docker build -t timmytime/predictor-players-events-reactive:latest
+      - name: build events
+        run: mvn clean package --file predictor-events-reactive/pom.xml && docker build -t timmytime/predictor-events-reactive:latest
+      - name: build client
+        run: mvn clean package --file predictor-client-reactive/pom.xml && docker build -t timmytime/predictor-client-reactive:latest
+      - name: build data
+        run: mvn clean package --file predictor-data-reactive/pom.xml && docker build -t timmytime/predictor-data-reactive:latest
+      - name: build event data
+        run: mvn clean package --file predictor-event-data-reactive/pom.xml && docker build -t timmytime/predictor-event-data-reactive:latest
+      - name: build scraper
+        run: mvn clean package --file predictor-scraper-reactive/pom.xml && docker build -t timmytime/predictor-scraper-reactive:latest
+      - name: build event scraper
+        run: mvn clean package --file predictor-event-scraper-reactive/pom.xml && docker build -t timmytime/predictor-event-scraper-reactive:latest
+      - name: build message
+        run: mvn clean package --file predictor-message-reactive/pom.xml && docker build -t timmytime/predictor-message-reactive:latest
 
 
 
   publish:
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
@@ -37,6 +54,22 @@ jobs:
         run: docker push timmytime/predictor-teams-reactive:latest
       - name: publish players
         run: docker push timmytime/predictor-players-reactive:latest
+      - name: publish players events
+        run: docker push timmytime/predictor-players-events-reactive:latest
+      - name: publish events
+        run: docker push timmytime/predictor-events-reactive:latest
+      - name: publish data
+        run: docker push timmytime/predictor-data-reactive:latest
+      - name: publish event data
+        run: docker push timmytime/predictor-event-data-reactive:latest
+      - name: publish scraper
+        run: docker push timmytime/predictor-scraper-reactive:latest
+      - name: publish event scraper
+        run: docker push timmytime/predictor-event-scraper-reactive:latest
+      - name: publish client
+        run: docker push timmytime/predictor-client-reactive:latest
+      - name: publish message
+        run: docker push timmytime/predictor-message-reactive:latest
 
 
 
