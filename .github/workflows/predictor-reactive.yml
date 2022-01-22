@@ -7,7 +7,7 @@ on:
 
 
 jobs:
-  build:
+  build-team:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,28 +20,119 @@ jobs:
       - name: build teams
         run: mvn clean package --file predictor-teams-reactive/pom.xml && docker build -t timmytime/predictor-teams-reactive:latest
       - name: build players
+  build-player:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+      - name: build players
         run: mvn clean package --file predictor-players-reactive/pom.xml && docker build -t timmytime/predictor-players-reactive:latest
+  build-player-event:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'adopt'
       - name: build players events
         run: mvn clean package --file predictor-players-events-reactive/pom.xml && docker build -t timmytime/predictor-players-events-reactive:latest
+  build-event:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'adopt'
       - name: build events
         run: mvn clean package --file predictor-events-reactive/pom.xml && docker build -t timmytime/predictor-events-reactive:latest
+  build-client:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'adopt'
       - name: build client
         run: mvn clean package --file predictor-client-reactive/pom.xml && docker build -t timmytime/predictor-client-reactive:latest
+  build-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'adopt'
       - name: build data
         run: mvn clean package --file predictor-data-reactive/pom.xml && docker build -t timmytime/predictor-data-reactive:latest
+  build-event-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'adopt'
       - name: build event data
         run: mvn clean package --file predictor-event-data-reactive/pom.xml && docker build -t timmytime/predictor-event-data-reactive:latest
+  build-scraper:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'adopt'
       - name: build scraper
         run: mvn clean package --file predictor-scraper-reactive/pom.xml && docker build -t timmytime/predictor-scraper-reactive:latest
+  build-event-scraper:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'adopt'
       - name: build event scraper
         run: mvn clean package --file predictor-event-scraper-reactive/pom.xml && docker build -t timmytime/predictor-event-scraper-reactive:latest
+  build-message:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'adopt'
       - name: build message
         run: mvn clean package --file predictor-message-reactive/pom.xml && docker build -t timmytime/predictor-message-reactive:latest
 
 
 
-  publish:
-    needs: build
+  publish-team:
+    needs: build-team
     runs-on: ubuntu-latest
 
     steps:
@@ -54,20 +145,112 @@ jobs:
         run: docker push timmytime/predictor-teams-reactive:latest
       - name: publish players
         run: docker push timmytime/predictor-players-reactive:latest
+  publish-player:
+    needs: build-player
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: publish players
+        run: docker push timmytime/predictor-players-reactive:latest
+  publish-player-event:
+    needs: build-player-event
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish players events
         run: docker push timmytime/predictor-players-events-reactive:latest
+  publish-event:
+    needs: build-event
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish events
         run: docker push timmytime/predictor-events-reactive:latest
+  publish-data:
+    needs: build-data
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish data
         run: docker push timmytime/predictor-data-reactive:latest
+  publish-event-data:
+    needs: build-event-data
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish event data
         run: docker push timmytime/predictor-event-data-reactive:latest
+  publish-scraper:
+    needs: build-scraper
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish scraper
         run: docker push timmytime/predictor-scraper-reactive:latest
+  publish-event-scraper:
+    needs: build-event-scraper
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish event scraper
         run: docker push timmytime/predictor-event-scraper-reactive:latest
+  publish-client:
+    needs: build-client
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish client
         run: docker push timmytime/predictor-client-reactive:latest
+  publish-message:
+    needs: build-message
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish message
         run: docker push timmytime/predictor-message-reactive:latest
 
