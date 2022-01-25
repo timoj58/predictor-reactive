@@ -253,10 +253,12 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      - name: publish client
-        run: docker pull timmytime/predictor-client-reactive:test && docker tag timmytime/predictor-client-reactive:test timmytime/predictor-client-reactive:latest && docker push timmytime/predictor-client-reactive:latest
-      - name: list stuff
-        run:  docker images   
+      - name: pull test image
+        run: docker pull timmytime/predictor-client-reactive:test
+      - name: tag as latest
+        run: docker tag timmytime/predictor-client-reactive:test timmytime/predictor-client-reactive:latest
+      - name: push
+        run: docker push timmytime/predictor-client-reactive:latest
 
   publish-message:
     needs: build-message
