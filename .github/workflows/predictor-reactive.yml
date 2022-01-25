@@ -17,7 +17,7 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: build teams
-        run: mvn clean package --file predictor-teams-reactive/pom.xml && docker build -t timmytime/predictor-teams-reactive:latest predictor-teams-reactive/
+        run: mvn clean package --file predictor-teams-reactive/pom.xml && docker build -t timmytime/predictor-teams-reactive:test predictor-teams-reactive/
 
   build-player:
     runs-on: ubuntu-latest
@@ -30,7 +30,7 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: build players
-        run: mvn clean package --file predictor-players-reactive/pom.xml && docker build -t timmytime/predictor-players-reactive:latest predictor-players-reactive/
+        run: mvn clean package --file predictor-players-reactive/pom.xml && docker build -t timmytime/predictor-players-reactive:test predictor-players-reactive/
 
   build-player-event:
     runs-on: ubuntu-latest
@@ -43,7 +43,7 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: build players events
-        run: mvn clean package --file predictor-players-events-reactive/pom.xml && docker build -t timmytime/predictor-players-events-reactive:latest predictor-players-events-reactive/
+        run: mvn clean package --file predictor-players-events-reactive/pom.xml && docker build -t timmytime/predictor-players-events-reactive:test predictor-players-events-reactive/
 
   build-event:
     runs-on: ubuntu-latest
@@ -56,7 +56,7 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: build events
-        run: mvn clean package --file predictor-events-reactive/pom.xml && docker build -t timmytime/predictor-events-reactive:latest predictor-events-reactive/
+        run: mvn clean package --file predictor-events-reactive/pom.xml && docker build -t timmytime/predictor-events-reactive:test predictor-events-reactive/
 
   build-client:
     runs-on: ubuntu-latest
@@ -69,7 +69,7 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: build client
-        run: mvn clean package --file predictor-client-reactive/pom.xml && docker build -t timmytime/predictor-client-reactive:latest predictor-client-reactive/
+        run: mvn clean package --file predictor-client-reactive/pom.xml && docker build -t timmytime/predictor-client-reactive:test predictor-client-reactive/
 
   build-data:
     runs-on: ubuntu-latest
@@ -82,7 +82,7 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: build data
-        run: mvn clean package --file predictor-data-reactive/pom.xml && docker build -t timmytime/predictor-data-reactive:latest predictor-data-reactive/
+        run: mvn clean package --file predictor-data-reactive/pom.xml && docker build -t timmytime/predictor-data-reactive:test predictor-data-reactive/
 
   build-event-data:
     runs-on: ubuntu-latest
@@ -95,7 +95,7 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: build event data
-        run: mvn clean package --file predictor-event-data-reactive/pom.xml && docker build -t timmytime/predictor-event-data-reactive:latest predictor-event-data-reactive/
+        run: mvn clean package --file predictor-event-data-reactive/pom.xml && docker build -t timmytime/predictor-event-data-reactive:test predictor-event-data-reactive/
 
   build-scraper:
     runs-on: ubuntu-latest
@@ -108,7 +108,7 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: build scraper
-        run: mvn clean package --file predictor-scraper-reactive/pom.xml && docker build -t timmytime/predictor-scraper-reactive:latest predictor-scraper-reactive/
+        run: mvn clean package --file predictor-scraper-reactive/pom.xml && docker build -t timmytime/predictor-scraper-reactive:test predictor-scraper-reactive/
 
   build-event-scraper:
     runs-on: ubuntu-latest
@@ -121,7 +121,7 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: build event scraper
-        run: mvn clean package --file predictor-event-scraper-reactive/pom.xml && docker build -t timmytime/predictor-event-scraper-reactive:latest predictor-event-scraper-reactive/
+        run: mvn clean package --file predictor-event-scraper-reactive/pom.xml && docker build -t timmytime/predictor-event-scraper-reactive:test predictor-event-scraper-reactive/
 
   build-message:
     runs-on: ubuntu-latest
@@ -134,7 +134,7 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: build message
-        run: mvn clean package --file predictor-message-reactive/pom.xml && docker build -t timmytime/predictor-message-reactive:latest predictor-message-reactive/
+        run: mvn clean package --file predictor-message-reactive/pom.xml && docker build -t timmytime/predictor-message-reactive:test predictor-message-reactive/
 
 
 
@@ -149,7 +149,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish teams
-        run: docker push timmytime/predictor-teams-reactive
+        run: docker pull timmytime/predictor-teams-reactive:test && docker tag timmytime/predictor-teams-reactive:test timmytime/predictor-teams-reactive:latest && docker push timmytime/predictor-teams-reactive
 
   publish-player:
     needs: build-player
@@ -162,7 +162,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish players
-        run: docker push timmytime/predictor-players-reactive
+        run: docker pull timmytime/predictor-players-reactive:test && docker tag timmytime/predictor-players-reactive:test timmytime/predictor-players-reactive:latest && docker push timmytime/predictor-players-reactive
 
   publish-player-event:
     needs: build-player-event
@@ -174,8 +174,8 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      - name: publish players events
-        run: docker push timmytime/predictor-players-events-reactive
+      - name: publish player events
+        run: docker pull timmytime/predictor-players-events-reactive:test && docker tag timmytime/predictor-players-events-reactive:test timmytime/predictor-players-events-reactive:latest && docker push timmytime/predictor-players-events-reactive
 
   publish-event:
     needs: build-event
@@ -188,7 +188,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish events
-        run: docker push timmytime/predictor-events-reactive
+        run: docker pull timmytime/predictor-events-reactive:test && docker tag timmytime/predictor-events-reactive:test timmytime/predictor-events-reactive:latest && docker push timmytime/predictor-events-reactive
 
   publish-data:
     needs: build-data
@@ -201,7 +201,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish data
-        run: docker push timmytime/predictor-data-reactive
+        run: docker pull timmytime/predictor-data-reactive:test && docker tag timmytime/predictor-data-reactive:test timmytime/predictor-data-reactive:latest && docker push timmytime/predictor-data-reactive
 
   publish-event-data:
     needs: build-event-data
@@ -214,7 +214,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish event data
-        run: docker push timmytime/predictor-event-data-reactive
+        run: docker pull timmytime/predictor-event-data-reactive:test && docker tag timmytime/predictor-event-data-reactive:test timmytime/predictor-event-data-reactive:latest && docker push timmytime/predictor-event-data-reactive
 
   publish-scraper:
     needs: build-scraper
@@ -228,7 +228,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish scraper
-        run: docker build -t timmytime/predictor-scraper-reactive:latest predictor-scraper-reactive/ && docker push timmytime/predictor-event-data-reactive
+        run: docker pull timmytime/predictor-scraper-reactive:test && docker tag timmytime/predictor-scraper-reactive:test timmytime/predictor-scraper-reactive:latest && docker push timmytime/predictor-scraper-reactive
         
   publish-event-scraper:
     needs: build-event-scraper
@@ -241,7 +241,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish event scraper
-        run: docker push timmytime/predictor-event-scraper-reactive
+        run: docker pull timmytime/predictor-event-scraper-reactive:test && docker tag timmytime/predictor-event-scraper-reactive:test timmytime/predictor-event-scraper-reactive:latest && docker push timmytime/predictor-event-scraper-reactive
 
   publish-client:
     needs: build-client
@@ -254,7 +254,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish client
-        run: docker push timmytime/predictor-client-reactive
+        run: docker pull timmytime/predictor-client-reactive:test && docker tag timmytime/predictor-client-reactive:test timmytime/predictor-client-reactive:latest && docker push timmytime/predictor-client-reactive
 
   publish-message:
     needs: build-message
@@ -267,7 +267,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish message
-        run: docker push timmytime/predictor-message-reactive
+        run: docker pull timmytime/predictor-message-reactive:test && docker tag timmytime/predictor-message-reactive:test timmytime/predictor-message-reactive:latest && docker push timmytime/predictor-message-reactive
 
 
 
