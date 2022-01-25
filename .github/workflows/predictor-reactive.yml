@@ -233,6 +233,7 @@ jobs:
     timeout-minutes: 15
 
     steps:
+      - uses: actions/checkout@v2
       - name: run e2e smoke test
         run: ./e2e.sh
         shell: bash
@@ -306,7 +307,7 @@ jobs:
         run: docker push timmytime/predictor-events-reactive:latest
 
   publish-data:
-    needs: [build-data,e2e-smoke-test]
+    needs: e2e-smoke-test
     runs-on: ubuntu-latest
 
     steps:
