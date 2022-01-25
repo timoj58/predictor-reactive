@@ -238,7 +238,7 @@ jobs:
         shell: bash
 
   publish-team:
-    needs: [build-team,e2e-smoke-test]
+    needs: e2e-smoke-test
     runs-on: ubuntu-latest
 
     steps:
@@ -255,7 +255,7 @@ jobs:
         run: docker push timmytime/predictor-team-reactive:latest
 
   publish-player:
-    needs: [build-player,e2e-smoke-test]
+    needs: e2e-smoke-test
     runs-on: ubuntu-latest
 
     steps:
@@ -272,7 +272,7 @@ jobs:
         run: docker push timmytime/predictor-players-reactive:latest
 
   publish-player-event:
-    needs: [build-player-event,e2e-smoke-test]
+    needs: e2e-smoke-test
     runs-on: ubuntu-latest
 
     steps:
@@ -289,7 +289,7 @@ jobs:
         run: docker push timmytime/predictor-players-events-reactive:latest
 
   publish-event:
-    needs: [build-event,e2e-smoke-test]
+    needs: e2e-smoke-test
     runs-on: ubuntu-latest
 
     steps:
@@ -323,7 +323,7 @@ jobs:
         run: docker push timmytime/predictor-data-reactive:latest
 
   publish-event-data:
-    needs: [build-event-data,e2e-smoke-test]
+    needs: e2e-smoke-test
     runs-on: ubuntu-latest
 
     steps:
@@ -340,7 +340,7 @@ jobs:
         run: docker push timmytime/predictor-event-data-reactive:latest
 
   publish-scraper:
-    needs: [build-scraper,e2e-smoke-test]
+    needs: e2e-smoke-test
     runs-on: ubuntu-latest
 
     steps:
@@ -358,7 +358,7 @@ jobs:
         run: docker push timmytime/predictor-scraper-reactive:latest
         
   publish-event-scraper:
-    needs: [build-event-scraper,e2e-smoke-test]
+    needs: e2e-smoke-test
     runs-on: ubuntu-latest
 
     steps:
@@ -375,7 +375,7 @@ jobs:
         run: docker push timmytime/predictor-event-scraper-reactive:latest
 
   publish-client:
-    needs: [build-client,e2e-smoke-test]
+    needs: e2e-smoke-test
     runs-on: ubuntu-latest
 
     steps:
@@ -392,7 +392,7 @@ jobs:
         run: docker push timmytime/predictor-client-reactive:latest
 
   publish-message:
-    needs: [build-message,e2e-smoke-test]
+    needs: e2e-smoke-test
     runs-on: ubuntu-latest
 
     steps:

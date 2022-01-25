@@ -42,7 +42,7 @@ public class EventScraperServiceTest {
                         CompetitionFixtures.builder()
                                 .code(CompetitionFixtureCodes.ENGLAND_1)
                                 .url("https://www.espn.co.uk/soccer/fixtures/_/date/{date}/league/eng.1"
-                                        .replace("{date}", LocalDate.now().format(
+                                        .replace("{date}", LocalDate.now().minusDays(10).format(
                                                 DateTimeFormatter.ofPattern("yyyyMMdd")
                                         ))).build()
                 ));
