@@ -228,7 +228,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish scraper
-        run: docker build -t timmytime/predictor-scraper-reactive:latest predictor-scraper-reactive/ && push timmytime/predictor-event-data-reactive
+        run: docker build -t timmytime/predictor-scraper-reactive:latest predictor-scraper-reactive/ && docker push timmytime/predictor-event-data-reactive
         
   publish-event-scraper:
     needs: build-event-scraper
