@@ -234,8 +234,8 @@ jobs:
 
     steps:
       - name: run e2e smoke test
-         run: ./e2e.sh
-         shell: bash
+        run: ./e2e.sh
+        shell: bash
 
   publish-team:
     needs: [build-team,e2e-smoke-test]
