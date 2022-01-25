@@ -227,9 +227,18 @@ jobs:
         run: docker push timmytime/predictor-message-reactive:test 
 
 
+  e2e-smoke-test:
+    needs: [build-team, build-player, build-data, build-client, build-message, build-scraper, build-event-scraper, build-event, build-player-event, build-event-data]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: run e2e smoke test
+         run: ./e2e.sh
+         shell: bash
 
   publish-team:
-    needs: build-team
+    needs: [build-team,e2e-smoke-test]
     runs-on: ubuntu-latest
 
     steps:
@@ -246,7 +255,7 @@ jobs:
         run: docker push timmytime/predictor-team-reactive:latest
 
   publish-player:
-    needs: build-player
+    needs: [build-player,e2e-smoke-test]
     runs-on: ubuntu-latest
 
     steps:
@@ -263,7 +272,7 @@ jobs:
         run: docker push timmytime/predictor-players-reactive:latest
 
   publish-player-event:
-    needs: build-player-event
+    needs: [build-player-event,e2e-smoke-test]
     runs-on: ubuntu-latest
 
     steps:
@@ -280,7 +289,7 @@ jobs:
         run: docker push timmytime/predictor-players-events-reactive:latest
 
   publish-event:
-    needs: build-event
+    needs: [build-event,e2e-smoke-test]
     runs-on: ubuntu-latest
 
     steps:
@@ -297,7 +306,7 @@ jobs:
         run: docker push timmytime/predictor-events-reactive:latest
 
   publish-data:
-    needs: build-data
+    needs: [build-data,e2e-smoke-test]
     runs-on: ubuntu-latest
 
     steps:
@@ -314,7 +323,7 @@ jobs:
         run: docker push timmytime/predictor-data-reactive:latest
 
   publish-event-data:
-    needs: build-event-data
+    needs: [build-event-data,e2e-smoke-test]
     runs-on: ubuntu-latest
 
     steps:
@@ -331,7 +340,7 @@ jobs:
         run: docker push timmytime/predictor-event-data-reactive:latest
 
   publish-scraper:
-    needs: build-scraper
+    needs: [build-scraper,e2e-smoke-test]
     runs-on: ubuntu-latest
 
     steps:
@@ -349,7 +358,7 @@ jobs:
         run: docker push timmytime/predictor-scraper-reactive:latest
         
   publish-event-scraper:
-    needs: build-event-scraper
+    needs: [build-event-scraper,e2e-smoke-test]
     runs-on: ubuntu-latest
 
     steps:
@@ -366,7 +375,7 @@ jobs:
         run: docker push timmytime/predictor-event-scraper-reactive:latest
 
   publish-client:
-    needs: build-client
+    needs: [build-client,e2e-smoke-test]
     runs-on: ubuntu-latest
 
     steps:
@@ -383,7 +392,7 @@ jobs:
         run: docker push timmytime/predictor-client-reactive:latest
 
   publish-message:
-    needs: build-message
+    needs: [build-message,e2e-smoke-test]
     runs-on: ubuntu-latest
 
     steps:

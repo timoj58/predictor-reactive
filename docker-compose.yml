@@ -30,7 +30,7 @@ services:
         ipv4_address: 172.22.0.15
 
   scraper:
-    image: timmytime/predictor-scraper-reactive:latest
+    image: timmytime/predictor-scraper-reactive:test
     container_name: predictor-scraper-reactive
     ports:
       - "8101:8101"
@@ -41,7 +41,7 @@ services:
         ipv4_address: 172.22.0.19
 
   event-scraper:
-    image: timmytime/predictor-event-scraper-reactive:latest
+    image: timmytime/predictor-event-scraper-reactive:test
     container_name: predictor-event-scraper-reactive
     ports:
       - "8102:8102"
@@ -50,7 +50,7 @@ services:
         ipv4_address: 172.22.0.20
 
   data:
-    image: timmytime/predictor-data-reactive:latest
+    image: timmytime/predictor-data-reactive:test
     container_name: predictor-data-reactive
     ports:
       - "8103:8103"
@@ -61,7 +61,7 @@ services:
         ipv4_address: 172.22.0.21
 
   event-data:
-    image: timmytime/predictor-event-data-reactive:latest
+    image: timmytime/predictor-event-data-reactive:test
     container_name: predictor-event-data-reactive
     ports:
       - "8104:8104"
@@ -72,7 +72,7 @@ services:
         ipv4_address: 172.22.0.22
 
   teams:
-    image: timmytime/predictor-teams-reactive:latest
+    image: timmytime/predictor-teams-reactive:test
     container_name: predictor-teams-reactive
     ports:
       - "8105:8105"
@@ -83,7 +83,7 @@ services:
         ipv4_address: 172.22.0.23
 
   team-events:
-    image: timmytime/predictor-events-reactive:latest
+    image: timmytime/predictor-events-reactive:test
     container_name: predictor-events-reactive
     ports:
       - "8106:8106"
@@ -94,7 +94,7 @@ services:
         ipv4_address: 172.22.0.24
 
   players:
-    image: timmytime/predictor-players-reactive:latest
+    image: timmytime/predictor-players-reactive:test
     container_name: predictor-players-reactive
     ports:
       - "8107:8107"
@@ -105,7 +105,7 @@ services:
         ipv4_address: 172.22.0.25
 
   players-events:
-    image: timmytime/predictor-players-events-reactive:latest
+    image: timmytime/predictor-players-events-reactive:test
     container_name: predictor-players-events-reactive
     ports:
       - "8108:8108"
@@ -116,7 +116,7 @@ services:
         ipv4_address: 172.22.0.26
 
   client:
-    image: timmytime/predictor-client-reactive:latest
+    image: timmytime/predictor-client-reactive:test
     container_name: predictor-client-reactive
     ports:
       - "8109:8109"
@@ -125,7 +125,7 @@ services:
         ipv4_address: 172.22.0.27
 
   message:
-    image: timmytime/predictor-message-reactive:latest
+    image: timmytime/predictor-message-reactive:test
     container_name: predictor-message-reactive
     ports:
       - "8100:8100"
