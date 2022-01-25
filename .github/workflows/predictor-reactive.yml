@@ -149,7 +149,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish teams
-        run: docker pull timmytime/predictor-teams-reactive:test && docker tag timmytime/predictor-teams-reactive:test timmytime/predictor-teams-reactive:latest && docker push timmytime/predictor-teams-reactive
+        run: docker pull timmytime/predictor-teams-reactive:test && docker tag timmytime/predictor-teams-reactive:test timmytime/predictor-teams-reactive:latest && docker push timmytime/predictor-teams-reactive:latest
 
   publish-player:
     needs: build-player
@@ -162,7 +162,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish players
-        run: docker pull timmytime/predictor-players-reactive:test && docker tag timmytime/predictor-players-reactive:test timmytime/predictor-players-reactive:latest && docker push timmytime/predictor-players-reactive
+        run: docker pull timmytime/predictor-players-reactive:test && docker tag timmytime/predictor-players-reactive:test timmytime/predictor-players-reactive:latest && docker push timmytime/predictor-players-reactive:latest
 
   publish-player-event:
     needs: build-player-event
@@ -175,7 +175,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish player events
-        run: docker pull timmytime/predictor-players-events-reactive:test && docker tag timmytime/predictor-players-events-reactive:test timmytime/predictor-players-events-reactive:latest && docker push timmytime/predictor-players-events-reactive
+        run: docker pull timmytime/predictor-players-events-reactive:test && docker tag timmytime/predictor-players-events-reactive:test timmytime/predictor-players-events-reactive:latest && docker push timmytime/predictor-players-events-reactive:latest
 
   publish-event:
     needs: build-event
@@ -188,7 +188,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish events
-        run: docker pull timmytime/predictor-events-reactive:test && docker tag timmytime/predictor-events-reactive:test timmytime/predictor-events-reactive:latest && docker push timmytime/predictor-events-reactive
+        run: docker pull timmytime/predictor-events-reactive:test && docker tag timmytime/predictor-events-reactive:test timmytime/predictor-events-reactive:latest && docker push timmytime/predictor-events-reactive:latest
 
   publish-data:
     needs: build-data
@@ -201,7 +201,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish data
-        run: docker pull timmytime/predictor-data-reactive:test && docker tag timmytime/predictor-data-reactive:test timmytime/predictor-data-reactive:latest && docker push timmytime/predictor-data-reactive
+        run: docker pull timmytime/predictor-data-reactive:test && docker tag timmytime/predictor-data-reactive:test timmytime/predictor-data-reactive:latest && docker push timmytime/predictor-data-reactive:latest
 
   publish-event-data:
     needs: build-event-data
@@ -214,7 +214,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish event data
-        run: docker pull timmytime/predictor-event-data-reactive:test && docker tag timmytime/predictor-event-data-reactive:test timmytime/predictor-event-data-reactive:latest && docker push timmytime/predictor-event-data-reactive
+        run: docker pull timmytime/predictor-event-data-reactive:test && docker tag timmytime/predictor-event-data-reactive:test timmytime/predictor-event-data-reactive:latest && docker push timmytime/predictor-event-data-reactive:latest
 
   publish-scraper:
     needs: build-scraper
@@ -228,7 +228,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish scraper
-        run: docker pull timmytime/predictor-scraper-reactive:test && docker tag timmytime/predictor-scraper-reactive:test timmytime/predictor-scraper-reactive:latest && docker push timmytime/predictor-scraper-reactive
+        run: docker pull timmytime/predictor-scraper-reactive:test && docker tag timmytime/predictor-scraper-reactive:test timmytime/predictor-scraper-reactive:latest && docker push timmytime/predictor-scraper-reactive:latest
         
   publish-event-scraper:
     needs: build-event-scraper
@@ -241,7 +241,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish event scraper
-        run: docker pull timmytime/predictor-event-scraper-reactive:test && docker tag timmytime/predictor-event-scraper-reactive:test timmytime/predictor-event-scraper-reactive:latest && docker push timmytime/predictor-event-scraper-reactive
+        run: docker pull timmytime/predictor-event-scraper-reactive:test && docker tag timmytime/predictor-event-scraper-reactive:test timmytime/predictor-event-scraper-reactive:latest && docker push timmytime/predictor-event-scraper-reactive:latest
 
   publish-client:
     needs: build-client
@@ -254,7 +254,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish client
-        run: docker pull timmytime/predictor-client-reactive:test && docker tag timmytime/predictor-client-reactive:test timmytime/predictor-client-reactive:latest && docker push timmytime/predictor-client-reactive
+        run: docker pull timmytime/predictor-client-reactive:test && docker tag timmytime/predictor-client-reactive:test timmytime/predictor-client-reactive:latest && docker push timmytime/predictor-client-reactive:latest
 
   publish-message:
     needs: build-message
@@ -267,7 +267,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: publish message
-        run: docker pull timmytime/predictor-message-reactive:test && docker tag timmytime/predictor-message-reactive:test timmytime/predictor-message-reactive:latest && docker push timmytime/predictor-message-reactive
+        run: docker pull timmytime/predictor-message-reactive:test && docker tag timmytime/predictor-message-reactive:test timmytime/predictor-message-reactive:latest && docker push timmytime/predictor-message-reactive:latest
 
 
 
