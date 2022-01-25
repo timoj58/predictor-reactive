@@ -231,7 +231,7 @@ jobs:
         with:
           context: predictor-scraper-reactive/
           push: true
-          tags: latest
+          tags: timmytime/predictor-scraper-reactive:latest
          
   publish-event-scraper:
     needs: build-event-scraper
