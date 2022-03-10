@@ -249,11 +249,11 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: pull test image
-        run: docker pull timmytime/predictor-team-reactive:test
+        run: docker pull timmytime/predictor-teams-reactive:test
       - name: tag as latest
-        run: docker tag timmytime/predictor-team-reactive:test timmytime/predictor-team-reactive:latest
+        run: docker tag timmytime/predictor-teams-reactive:test timmytime/predictor-teams-reactive:latest
       - name: push
-        run: docker push timmytime/predictor-team-reactive:latest
+        run: docker push timmytime/predictor-teams-reactive:latest
 
   publish-player:
     needs: e2e-smoke-test
@@ -266,7 +266,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: pull test image
-        run: docker pull timmytime/predictor-client-reactive:test
+        run: docker pull timmytime/predictor-players-reactive:test
       - name: tag as latest
         run: docker tag timmytime/predictor-players-reactive:test timmytime/predictor-players-reactive:latest
       - name: push
@@ -302,7 +302,7 @@ jobs:
       - name: pull test image
         run: docker pull timmytime/predictor-events-reactive:test
       - name: tag as latest
-        run: docker tag timmytime/predictor-evenst-reactive:test timmytime/predictor-events-reactive:latest
+        run: docker tag timmytime/predictor-events-reactive:test timmytime/predictor-events-reactive:latest
       - name: push
         run: docker push timmytime/predictor-events-reactive:latest
 
