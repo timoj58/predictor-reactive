@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -113,7 +114,9 @@ public class TestApiService {
             @PathVariable Boolean init,
             Mono<JsonNode> body) {
 
-        return body.doOnNext(
+        return body
+                .delayElement(Duration.ofSeconds(1))
+                .doOnNext(
                 payload -> {
                     log.info("prediction payload {}", payload.toString());
                     var json = new JSONArray(payload.toString());

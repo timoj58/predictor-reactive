@@ -64,8 +64,7 @@ public class TrainingServiceImpl implements TrainingService {
                                     )
                     ).doOnNext(match -> tensorflowDataService.load(new CountryMatch(trainingHistory.getCountry(), match)))
                     .doFinally(f -> Mono.just(trainingHistory)
-                            //TODO remove.  this is likely not the issue
-                            .delayElement(Duration.ofMinutes(interval))
+                            .delayElement(Duration.ofSeconds(interval))
                             .subscribe(tensorflowTrainService::train))
                     .subscribe();
         } else {

@@ -28,7 +28,7 @@ class OrchestrationServiceImplTest {
             = new OrchestrationServiceImpl(0, webClientFacade, predictorCycleRepo, initService, hostsConfiguration);
 
     @Test
-    void stop() {
+    void stop() throws InterruptedException {
 
         when(predictorCycleRepo.save(any())).thenReturn(Mono.empty());
 
@@ -41,6 +41,8 @@ class OrchestrationServiceImplTest {
                                         .build()
                         ).build()
         );
+
+        Thread.sleep(200);
 
         verify(predictorCycleRepo, atLeastOnce()).save(any());
 
@@ -68,7 +70,7 @@ class OrchestrationServiceImplTest {
     }
 
     @Test
-    void finish() {
+    void finish() throws InterruptedException {
 
         Arrays.asList(Event.PLAYERS_PREDICTED, Event.TEAMS_PREDICTED)
                 .forEach(event -> orchestrationService.process(
@@ -80,6 +82,8 @@ class OrchestrationServiceImplTest {
                                                 .build()
                                 ).build()
                 ));
+
+        Thread.sleep(200);
 
         verify(webClientFacade, atLeastOnce()).finish(anyString(), any());
 
@@ -98,7 +102,7 @@ class OrchestrationServiceImplTest {
                                 ).build()
                 ));
 
-        Thread.sleep(100);
+        Thread.sleep(200);
 
         verify(webClientFacade, atLeast(EventType.countries().size())).train(anyString(), any());
 

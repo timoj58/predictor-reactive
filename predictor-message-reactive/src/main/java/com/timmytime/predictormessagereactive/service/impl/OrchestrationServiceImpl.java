@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
@@ -67,6 +68,8 @@ public class OrchestrationServiceImpl implements OrchestrationService {
         return false;
     };
 
+    private Consumer<CycleEvent> consumer;
+
     private final List<CycleEvent> events = new ArrayList<>();
     private final List<ActionEvent> actions = new ArrayList<>();
     private final Map<Action, EventAction> eventManager = new ConcurrentHashMap<>();
@@ -79,6 +82,9 @@ public class OrchestrationServiceImpl implements OrchestrationService {
             InitService initService,
             HostsConfiguration hostsConfiguration
     ) {
+        Flux<CycleEvent> receiver = Flux.create(sink -> consumer = sink::next, FluxSink.OverflowStrategy.BUFFER);
+        receiver.limitRate(1).subscribe(this::testCycleEvents);
+
         eventManager.put(Action.TRAIN_TEAMS, EventAction.builder()
                 .processed(Boolean.FALSE)
                 .handler((ce) -> training.apply(
@@ -210,28 +216,30 @@ public class OrchestrationServiceImpl implements OrchestrationService {
 
     @Override
     public void process(CycleEvent cycleEvent) {
-        Mono.just(cycleEvent)
-                .doOnNext(events::add)
-                .doFinally(check ->
-                        Flux.just(Action.values())
-                                .filter(action -> !eventManager.get(action).getProcessed())
-                                .subscribe(action -> {
-                                    var actionEvent = eventManager.get(action);
-                                    var actionResult = actionEvent.getHandler().apply(events);
-                                    if (actionResult)
-                                        actions.add(ActionEvent.builder()
-                                                .action(action)
-                                                .timestamp(LocalDateTime.now())
-                                                .build());
-
-                                    eventManager.get(action).setProcessed(actionResult);
-                                }))
-                .subscribe();
+       consumer.accept(cycleEvent);
     }
 
     @Override
     public Mono<Boolean> testStatus(String action) {
         return Mono.just(actions.stream().anyMatch(a -> a.getAction().equals(Action.valueOf(action))));
+    }
+
+    private void testCycleEvents(CycleEvent cycleEvent){
+        events.add(cycleEvent);
+        Flux.just(Action.values())
+                .filter(action -> !eventManager.get(action).getProcessed())
+                .subscribe(action -> {
+                    var actionEvent = eventManager.get(action);
+                    var  actionResult = actionEvent.getHandler().apply(events);
+
+                    if (actionResult)
+                        actions.add(ActionEvent.builder()
+                                .action(action)
+                                .timestamp(LocalDateTime.now())
+                                .build());
+
+                    eventManager.get(action).setProcessed(actionResult);
+                });
     }
 
 }

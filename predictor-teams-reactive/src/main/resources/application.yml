@@ -32,7 +32,6 @@ spring:
 
 delays:
   interval: 1
-  training: 15
   training-init: 1
 
 training:
