@@ -6,16 +6,22 @@ import com.timmytime.predictormessagereactive.enumerator.EventType;
 import com.timmytime.predictormessagereactive.facade.WebClientFacade;
 import com.timmytime.predictormessagereactive.model.CycleEvent;
 import com.timmytime.predictormessagereactive.request.Message;
-import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 public abstract class StopMachine {
 
     private final WebClientFacade webClientFacade;
     private final HostsConfiguration hostsConfiguration;
+
+    public StopMachine(
+            WebClientFacade webClientFacade,
+            HostsConfiguration hostsConfiguration
+    ){
+        this.webClientFacade = webClientFacade;
+        this.hostsConfiguration = hostsConfiguration;
+    }
 
     public boolean stop(List<CycleEvent> ce, Event event) {
         if (ce.stream().map(m -> m.getMessage().getEvent()).collect(Collectors.toList()).contains(event)) {

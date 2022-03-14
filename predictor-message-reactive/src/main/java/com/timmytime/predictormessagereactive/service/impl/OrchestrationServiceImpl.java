@@ -35,6 +35,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
         this.eventManager = eventManager;
         Flux<CycleEvent> receiver = Flux.create(sink -> consumer = sink::next, FluxSink.OverflowStrategy.BUFFER);
         receiver.limitRate(1).subscribe(this::testCycleEvents);
+
         eventManager.init();
     }
 
