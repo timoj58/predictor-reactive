@@ -58,7 +58,7 @@ public class PageServiceImpl implements PageService {
                     HttpMethod.GET, null, String.class).getBody();
 
             switch (request.getMiddle()) {
-                case RESULTS:
+                case RESULTS -> {
                     scraperFactory.getScraperTrackerService().removeResultsFromQueue(request.getLeft());
                     Flux.fromStream(scraperFactory.getResultScraper().scrape(
                                     request.getLeft(), response
@@ -69,25 +69,19 @@ public class PageServiceImpl implements PageService {
                                 scraperFactory.getScraperTrackerService().addMatch(Pair.of(matchRequest.getLeft(), matchRequest.getRight()));
                                 addPageRequest(matchRequest);
                             });
-                    break;
-                case MATCH:
-                    scraperFactory.getPlayerScraper().scrape(
-                            request.getRight(), response
-                    ).ifPresent(match -> {
-                        scraperFactory.getScraperTrackerService().removeMatch(Pair.of(request.getLeft(), request.getRight()));
-                        messageService.send(match);
-                    });
-                    break;
+                }
+                case MATCH -> scraperFactory.getPlayerScraper().scrape(
+                        request.getRight(), response
+                ).ifPresent(match -> {
+                    scraperFactory.getScraperTrackerService().removeMatch(Pair.of(request.getLeft(), request.getRight()));
+                    messageService.send(match);
+                });
             }
 
         } catch (RestClientException restClientException) {
             switch (request.getMiddle()) {
-                case RESULTS:
-                    scraperFactory.getScraperTrackerService().addFailedResultsRequest(request);
-                    break;
-                case MATCH:
-                    scraperFactory.getScraperTrackerService().addFailedPlayersRequest(request);
-                    break;
+                case RESULTS -> scraperFactory.getScraperTrackerService().addFailedResultsRequest(request);
+                case MATCH -> scraperFactory.getScraperTrackerService().addFailedPlayersRequest(request);
             }
         }
 

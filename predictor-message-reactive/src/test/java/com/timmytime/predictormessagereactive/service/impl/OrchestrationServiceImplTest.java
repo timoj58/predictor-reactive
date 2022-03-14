@@ -1,5 +1,7 @@
 package com.timmytime.predictormessagereactive.service.impl;
 
+import com.timmytime.predictormessagereactive.action.EventManager;
+import com.timmytime.predictormessagereactive.action.event.*;
 import com.timmytime.predictormessagereactive.configuration.HostsConfiguration;
 import com.timmytime.predictormessagereactive.enumerator.Event;
 import com.timmytime.predictormessagereactive.enumerator.EventType;
@@ -14,6 +16,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 
@@ -24,8 +29,22 @@ class OrchestrationServiceImplTest {
     private final InitService initService = mock(InitService.class);
     private final HostsConfiguration hostsConfiguration = mock(HostsConfiguration.class);
 
+    private final EventManager eventManager
+            = new EventManager(
+            List.of(
+                    new Scrape(0, webClientFacade,hostsConfiguration, initService),
+                    new Finalise(predictorCycleRepo),
+                    new StopPlayersMachine(webClientFacade, hostsConfiguration),
+                    new StopTeamsMachine(webClientFacade, hostsConfiguration),
+                    new TrainPlayers(webClientFacade, hostsConfiguration),
+                    new TrainTeams(0, webClientFacade, hostsConfiguration),
+                    new PredictTeams(0, webClientFacade, hostsConfiguration),
+                    new PredictPlayers(0,webClientFacade, hostsConfiguration)
+            )
+    );
+
     private final OrchestrationService orchestrationService
-            = new OrchestrationServiceImpl(0, webClientFacade, predictorCycleRepo, initService, hostsConfiguration);
+            = new OrchestrationServiceImpl(eventManager);
 
     @Test
     void stop() throws InterruptedException {
