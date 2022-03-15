@@ -24,6 +24,8 @@ import static org.mockito.Mockito.*;
 
 class OrchestrationServiceImplTest {
 
+    private static final long WAIT = 500;
+
     private final WebClientFacade webClientFacade = mock(WebClientFacade.class);
     private final PredictorCycleRepo predictorCycleRepo = mock(PredictorCycleRepo.class);
     private final InitService initService = mock(InitService.class);
@@ -61,7 +63,7 @@ class OrchestrationServiceImplTest {
                         ).build()
         );
 
-        Thread.sleep(350);
+        Thread.sleep(WAIT);
 
         verify(predictorCycleRepo, atLeastOnce()).save(any());
 
@@ -82,7 +84,7 @@ class OrchestrationServiceImplTest {
                         ).build()
         );
 
-        Thread.sleep(350);
+        Thread.sleep(WAIT);
 
         verify(webClientFacade, atLeast(2)).scrape(anyString());
 
@@ -102,7 +104,7 @@ class OrchestrationServiceImplTest {
                                 ).build()
                 ));
 
-        Thread.sleep(350);
+        Thread.sleep(WAIT);
 
         verify(webClientFacade, atLeastOnce()).finish(anyString(), any());
 
@@ -121,7 +123,7 @@ class OrchestrationServiceImplTest {
                                 ).build()
                 ));
 
-        Thread.sleep(350);
+        Thread.sleep(WAIT);
 
         verify(webClientFacade, atLeast(EventType.countries().size())).train(anyString(), any());
 
@@ -152,7 +154,7 @@ class OrchestrationServiceImplTest {
                         ).build()
         );
 
-        Thread.sleep(350);
+        Thread.sleep(WAIT);
 
         verify(webClientFacade, atLeast(EventType.countries().size())).predict(anyString(), any());
     }
@@ -171,7 +173,7 @@ class OrchestrationServiceImplTest {
                                 ).build()
                 ));
 
-        Thread.sleep(350);
+        Thread.sleep(WAIT);
 
         verify(webClientFacade, atLeast(EventType.countries().size())).train(anyString(), any());
 
@@ -204,7 +206,7 @@ class OrchestrationServiceImplTest {
                                         ).build()
                         ));
 
-        Thread.sleep(350);
+        Thread.sleep(WAIT);
 
         verify(webClientFacade, atLeast(EventType.countries().size())).predict(anyString(), any());
 
