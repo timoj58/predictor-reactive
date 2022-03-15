@@ -1,6 +1,7 @@
 # predictor-reactive
 
-![Coverage](.github/badges/scraper.svg)
+![Coverage](.github/badges/scraper-coverage.svg)
+![Branches](.github/badges/scraper-branches.svg)
 
 Microservice architecture to predict likelihood of outcomes for football matches across europe's top leagues.  Currently predicts match results (as %) and match goals (as avg), player likelihood of goals, cards and assists.
 
