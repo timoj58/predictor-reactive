@@ -32,10 +32,4 @@ public enum CountryCompetitions {
         this.competitions = competitions;
     }
 
-    public static List<String> allCompetitions() {
-        return Stream.of(CountryCompetitions.values())
-                .map(CountryCompetitions::getCompetitions)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
-    }
 }
