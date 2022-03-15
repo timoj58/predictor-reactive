@@ -3,13 +3,13 @@ package com.timmytime.predictormessagereactive.action;
 import com.timmytime.predictormessagereactive.action.event.IEventAction;
 import com.timmytime.predictormessagereactive.enumerator.Action;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Component
+@Service
 public class EventManager {
     private final Map<Action, EventAction> eventManager = new ConcurrentHashMap<>();
 

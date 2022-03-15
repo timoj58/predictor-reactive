@@ -6,12 +6,10 @@ import com.timmytime.predictormessagereactive.enumerator.EventType;
 import com.timmytime.predictormessagereactive.facade.WebClientFacade;
 import com.timmytime.predictormessagereactive.model.CycleEvent;
 import com.timmytime.predictormessagereactive.request.Message;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
 public abstract class StopMachine {
 
     private final WebClientFacade webClientFacade;
