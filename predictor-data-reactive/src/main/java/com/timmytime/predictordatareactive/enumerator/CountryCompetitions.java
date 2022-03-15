@@ -30,20 +30,4 @@ public enum CountryCompetitions {
     CountryCompetitions(List<String> competitions) {
         this.competitions = competitions;
     }
-
-    public static CountryCompetitions findByCompetition(String competition) {
-        return Arrays.stream(
-                        CountryCompetitions.values()
-                )
-                .filter(f -> f.getCompetitions().contains(competition))
-                .findFirst()
-                .get();
-    }
-
-    public static List<String> getAllCompetitions() {
-        return Arrays.stream(CountryCompetitions.values())
-                .map(CountryCompetitions::getCompetitions)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
-    }
 }
