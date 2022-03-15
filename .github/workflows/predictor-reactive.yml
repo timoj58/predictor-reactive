@@ -271,6 +271,62 @@ jobs:
           generate-branches-badge: true
           coverage-badge-filename: event-scraper-coverage.svg
           branches-badge-filename: event-scraper-branches.svg
+      - name: Generate JaCoCo Badge for data
+        uses: cicirello/jacoco-badge-generator@v2
+        with:
+          jacoco-csv-file: predictor-data-reactive/target/site/jacoco/jacoco.csv
+          generate-branches-badge: true
+          coverage-badge-filename: data-coverage.svg
+          branches-badge-filename: data-branches.svg
+      - name: Generate JaCoCo Badge for event data
+        uses: cicirello/jacoco-badge-generator@v2
+        with:
+          jacoco-csv-file: predictor-event-data-reactive/target/site/jacoco/jacoco.csv
+          generate-branches-badge: true
+          coverage-badge-filename: event-data-coverage.svg
+          branches-badge-filename: event-data-branches.svg
+      - name: Generate JaCoCo Badge for teams
+        uses: cicirello/jacoco-badge-generator@v2
+        with:
+          jacoco-csv-file: predictor-teams-reactive/target/site/jacoco/jacoco.csv
+          generate-branches-badge: true
+          coverage-badge-filename: teams-coverage.svg
+          branches-badge-filename: teams-branches.svg
+      - name: Generate JaCoCo Badge for players
+        uses: cicirello/jacoco-badge-generator@v2
+        with:
+          jacoco-csv-file: predictor-players-reactive/target/site/jacoco/jacoco.csv
+          generate-branches-badge: true
+          coverage-badge-filename: players-coverage.svg
+          branches-badge-filename: players-branches.svg
+      - name: Generate JaCoCo Badge for events
+        uses: cicirello/jacoco-badge-generator@v2
+        with:
+          jacoco-csv-file: predictor-events-reactive/target/site/jacoco/jacoco.csv
+          generate-branches-badge: true
+          coverage-badge-filename: events-coverage.svg
+          branches-badge-filename: events-branches.svg
+      - name: Generate JaCoCo Badge for players events
+        uses: cicirello/jacoco-badge-generator@v2
+        with:
+          jacoco-csv-file: predictor-players-events-reactive/target/site/jacoco/jacoco.csv
+          generate-branches-badge: true
+          coverage-badge-filename: players-events-coverage.svg
+          branches-badge-filename: players-events-branches.svg
+      - name: Generate JaCoCo Badge for messages
+        uses: cicirello/jacoco-badge-generator@v2
+        with:
+          jacoco-csv-file: predictor-message-reactive/target/site/jacoco/jacoco.csv
+          generate-branches-badge: true
+          coverage-badge-filename: message-coverage.svg
+          branches-badge-filename: message-branches.svg
+      - name: Generate JaCoCo Badge for client
+        uses: cicirello/jacoco-badge-generator@v2
+        with:
+          jacoco-csv-file: predictor-client-reactive/target/site/jacoco/jacoco.csv
+          generate-branches-badge: true
+          coverage-badge-filename: client-coverage.svg
+          branches-badge-filename: client-branches.svg
       - name: Commit the badge (if it changed)
         run: |
           if [[ `git status --porcelain` ]]; then

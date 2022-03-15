@@ -61,7 +61,7 @@ class OrchestrationServiceImplTest {
                         ).build()
         );
 
-        Thread.sleep(250);
+        Thread.sleep(350);
 
         verify(predictorCycleRepo, atLeastOnce()).save(any());
 
@@ -82,7 +82,7 @@ class OrchestrationServiceImplTest {
                         ).build()
         );
 
-        Thread.sleep(250);
+        Thread.sleep(350);
 
         verify(webClientFacade, atLeast(2)).scrape(anyString());
 
@@ -102,7 +102,7 @@ class OrchestrationServiceImplTest {
                                 ).build()
                 ));
 
-        Thread.sleep(250);
+        Thread.sleep(350);
 
         verify(webClientFacade, atLeastOnce()).finish(anyString(), any());
 
@@ -121,7 +121,7 @@ class OrchestrationServiceImplTest {
                                 ).build()
                 ));
 
-        Thread.sleep(250);
+        Thread.sleep(350);
 
         verify(webClientFacade, atLeast(EventType.countries().size())).train(anyString(), any());
 
@@ -152,7 +152,7 @@ class OrchestrationServiceImplTest {
                         ).build()
         );
 
-        Thread.sleep(250);
+        Thread.sleep(350);
 
         verify(webClientFacade, atLeast(EventType.countries().size())).predict(anyString(), any());
     }
@@ -171,7 +171,7 @@ class OrchestrationServiceImplTest {
                                 ).build()
                 ));
 
-        Thread.sleep(250);
+        Thread.sleep(350);
 
         verify(webClientFacade, atLeast(EventType.countries().size())).train(anyString(), any());
 
@@ -204,7 +204,7 @@ class OrchestrationServiceImplTest {
                                         ).build()
                         ));
 
-        Thread.sleep(250);
+        Thread.sleep(350);
 
         verify(webClientFacade, atLeast(EventType.countries().size())).predict(anyString(), any());
 

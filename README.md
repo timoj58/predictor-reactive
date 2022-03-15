@@ -10,6 +10,46 @@
 ![Coverage](.github/badges/event-scraper-coverage.svg)
 ![Branches](.github/badges/event-scraper-branches.svg)
 
+## predictor-data-reactive
+
+![Coverage](.github/badges/data-coverage.svg)
+![Branches](.github/badges/data-branches.svg)
+
+## predictor-event-data-reactive
+
+![Coverage](.github/badges/event-data-coverage.svg)
+![Branches](.github/badges/event-data-branches.svg)
+
+## predictor-teams-reactive
+
+![Coverage](.github/badges/teams-coverage.svg)
+![Branches](.github/badges/teams-branches.svg)
+
+## predictor-players-reactive
+
+![Coverage](.github/badges/players-coverage.svg)
+![Branches](.github/badges/players-branches.svg)
+
+## predictor-events-reactive
+
+![Coverage](.github/badges/events-coverage.svg)
+![Branches](.github/badges/events-branches.svg)
+
+## predictor-players-events-reactive
+
+![Coverage](.github/badges/players-events-coverage.svg)
+![Branches](.github/badges/players-events-branches.svg)
+
+## predictor-message-reactive
+
+![Coverage](.github/badges/message-coverage.svg)
+![Branches](.github/badges/message-branches.svg)
+
+## predictor-client-reactive
+
+![Coverage](.github/badges/client-coverage.svg)
+![Branches](.github/badges/client-branches.svg)
+
 
 Microservice architecture to predict likelihood of outcomes for football matches across europe's top leagues.  Currently predicts match results (as %) and match goals (as avg), player likelihood of goals, cards and assists.
 
