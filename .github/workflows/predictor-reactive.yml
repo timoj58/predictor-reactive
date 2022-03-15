@@ -238,25 +238,25 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: mvn test scraper
-        run: mvn test --file predictor-scraper-reactive/pom.xml
+        run: mvn test jacoco:report --file predictor-scraper-reactive/pom.xml
       - name: mvn test event scraper
-        run: mvn test --file predictor-event-scraper-reactive/pom.xml
+        run: mvn test jacoco:report --file predictor-event-scraper-reactive/pom.xml
       - name: mvn test message
-        run: mvn test --file predictor-message-reactive/pom.xml
+        run: mvn test jacoco:report --file predictor-message-reactive/pom.xml
       - name: mvn test client
-        run: mvn test --file predictor-client-reactive/pom.xml
+        run: mvn test jacoco:report --file predictor-client-reactive/pom.xml
       - name: mvn test data
-        run: mvn test --file predictor-data-reactive/pom.xml
+        run: mvn test jacoco:report --file predictor-data-reactive/pom.xml
       - name: mvn test event data
-        run: mvn test --file predictor-event-data-reactive/pom.xml
+        run: mvn test jacoco:report --file predictor-event-data-reactive/pom.xml
       - name: mvn test team
-        run: mvn test --file predictor-teams-reactive/pom.xml
+        run: mvn test jacoco:report --file predictor-teams-reactive/pom.xml
       - name: mvn test players
-        run: mvn test --file predictor-players-reactive/pom.xml
+        run: mvn test jacoco:report --file predictor-players-reactive/pom.xml
       - name: mvn test events
-        run: mvn test --file predictor-events-reactive/pom.xml
+        run: mvn test jacoco:report --file predictor-events-reactive/pom.xml
       - name: mvn test players events
-        run: mvn test --file predictor-players-events-reactive/pom.xml
+        run: mvn test jacoco:report --file predictor-players-events-reactive/pom.xml
       - name: Generate JaCoCo Badge for Scraper
         uses: cicirello/jacoco-badge-generator@v2
         with:
