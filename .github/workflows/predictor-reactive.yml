@@ -354,52 +354,52 @@ jobs:
             git push
           fi
       - name: Upload JaCoCo coverage report (scraper)
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
          name: scraper-jacoco-report
          path: predictor-scraper-reactive/target/site/jacoco/
       - name: Upload JaCoCo coverage report (event scraper)
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
          name: event-scraper-jacoco-report
          path: predictor-event-scraper-reactive/target/site/jacoco/
       - name: Upload JaCoCo coverage report (data)
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
          name: data-jacoco-report
          path: predictor-data-reactive/target/site/jacoco/
       - name: Upload JaCoCo coverage report (event data)
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
          name: event-data-jacoco-report
          path: predictor-event-data-reactive/target/site/jacoco/
       - name: Upload JaCoCo coverage report (teams)
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
          name: teams-jacoco-report
          path: predictor-teams-reactive/target/site/jacoco/
       - name: Upload JaCoCo coverage report (players)
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
          name: players-jacoco-report
          path: predictor-players-reactive/target/site/jacoco/
       - name: Upload JaCoCo coverage report (events)
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
          name: events-jacoco-report
          path: predictor-events-reactive/target/site/jacoco/
       - name: Upload JaCoCo coverage report (players events)
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
          name: players-events-jacoco-report
          path: predictor-players-events-reactive/target/site/jacoco/
       - name: Upload JaCoCo coverage report (message)
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
          name: message-jacoco-report
          path: predictor-message-reactive/target/site/jacoco/
       - name: Upload JaCoCo coverage report (cient)
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
          name: client-jacoco-report
          path: predictor-client-reactive/target/site/jacoco/
