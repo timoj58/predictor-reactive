@@ -1,9 +1,6 @@
 # predictor-reactive
 
-## predictor-scraper-reactive
-
-![Coverage](.github/badges/scraper-coverage.svg)
-![Branches](.github/badges/scraper-branches.svg)
+## predictor-scraper-reactive ![Coverage](.github/badges/scraper-coverage.svg) ![Branches](.github/badges/scraper-branches.svg)
 
 ## predictor-event-scraper-reactive
 
