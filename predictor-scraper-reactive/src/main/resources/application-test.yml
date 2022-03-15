@@ -1,0 +1,3 @@
+scheduler:
+  retry: 10
+  tracker: 20

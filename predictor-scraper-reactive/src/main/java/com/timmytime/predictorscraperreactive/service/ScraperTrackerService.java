@@ -1,18 +1,10 @@
 package com.timmytime.predictorscraperreactive.service;
 
 import com.timmytime.predictorscraperreactive.enumerator.CompetitionFixtureCodes;
-import com.timmytime.predictorscraperreactive.enumerator.ScraperType;
+import com.timmytime.predictorscraperreactive.util.IRequests;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 
-import java.util.List;
-
-public interface ScraperTrackerService {
-    void addFailedResultsRequest(Triple<CompetitionFixtureCodes, ScraperType, String> request);
-
-    void addFailedPlayersRequest(Triple<CompetitionFixtureCodes, ScraperType, String> request);
-
-    List<Triple<CompetitionFixtureCodes, ScraperType, String>> getFailedRequests();
+public interface ScraperTrackerService extends IRequests {
 
     void addResultsInQueue(CompetitionFixtureCodes competition, int total);
 
@@ -21,7 +13,5 @@ public interface ScraperTrackerService {
     void addMatch(Pair<CompetitionFixtureCodes, String> matchRequest);
 
     void removeMatch(Pair<CompetitionFixtureCodes, String> matchRequest);
-
-    void incrementRequest();
 
 }

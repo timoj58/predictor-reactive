@@ -21,7 +21,7 @@ class PageServiceImplTest {
             = new PageServiceImpl(scraperFactory, messageService);
 
     @Test
-    void addPageRequestBadRequest() {
+    void addMatchRequestBadRequest() {
 
         ScraperTrackerService scraperTrackerService = mock(ScraperTrackerService.class);
         when(scraperFactory.getScraperTrackerService()).thenReturn(scraperTrackerService);
@@ -33,6 +33,21 @@ class PageServiceImplTest {
 
         verify(scraperTrackerService, atLeastOnce()).incrementRequest();
         verify(scraperTrackerService, atLeastOnce()).addFailedPlayersRequest(any());
+    }
+
+    @Test
+    void addResultRequestBadRequest() {
+
+        ScraperTrackerService scraperTrackerService = mock(ScraperTrackerService.class);
+        when(scraperFactory.getScraperTrackerService()).thenReturn(scraperTrackerService);
+
+
+        pageService.addPageRequest(
+                Triple.of(CompetitionFixtureCodes.BELGIUM_1, ScraperType.RESULTS, "http://random")
+        );
+
+        verify(scraperTrackerService, atLeastOnce()).incrementRequest();
+        verify(scraperTrackerService, atLeastOnce()).addFailedResultsRequest(any());
     }
 
 

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
+import org.springframework.stereotype.Component;
 
 import java.util.Deque;
 import java.util.List;
@@ -14,13 +15,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 @Slf4j
+@Component
 public class TripSwitch {
 
     public static final Integer TRIP_THRESHOLD = 5;
     @Getter
     private final AtomicInteger tripSwitch = new AtomicInteger(TRIP_THRESHOLD);
 
-    public void tripSwitchActivated(
+    public void activate(
             Deque<Triple<CompetitionFixtureCodes, ScraperType, String>> failedResultsRequests,
             Deque<Triple<CompetitionFixtureCodes, ScraperType, String>> failedPlayersRequests,
             Map<CompetitionFixtureCodes, Pair<AtomicInteger, List<String>>> matches

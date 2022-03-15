@@ -38,4 +38,16 @@ class ScraperServiceImplTest {
         verify(competitionScraperService, atLeastOnce()).scrape(any());
     }
 
+    @Test
+    void initTest() {
+
+        when(scraperHistoryRepo.count()).thenReturn(0L);
+
+        scraperService.init("01-01-2011", "05-01-2011");
+
+        verify(scraperHistoryRepo, atLeastOnce()).save(any());
+
+
+    }
+
 }
