@@ -240,6 +240,8 @@ jobs:
 
   generate-test-coverage:
     needs: e2e-smoke-test
+    runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 17
