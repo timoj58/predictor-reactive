@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 
 class OrchestrationServiceImplTest {
 
-    private static final long WAIT = 500;
+    private static final long WAIT = 250;
 
     private final WebClientFacade webClientFacade = mock(WebClientFacade.class);
     private final PredictorCycleRepo predictorCycleRepo = mock(PredictorCycleRepo.class);

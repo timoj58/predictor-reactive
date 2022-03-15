@@ -49,8 +49,9 @@ public class OrchestrationServiceImpl implements OrchestrationService {
     }
 
     private void testCycleEvents(CycleEvent cycleEvent) {
-        CompletableFuture.runAsync(() -> events.add(cycleEvent))
-                .thenRun(() ->
+        Mono.just(events)
+                .doOnNext(e -> e.add(cycleEvent))
+                .doFinally(test ->
                         Flux.just(Action.values())
                                 .filter(action -> !eventManager.get(action).getProcessed())
                                 .subscribe(action -> {
@@ -64,7 +65,8 @@ public class OrchestrationServiceImpl implements OrchestrationService {
                                                 .build());
 
                                     eventManager.get(action).setProcessed(actionResult);
-                                }));
+                                })
+                ).subscribe();
     }
 
 }
