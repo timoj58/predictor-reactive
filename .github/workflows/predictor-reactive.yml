@@ -177,6 +177,11 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: mvn build
         run: mvn clean package --file predictor-scraper-reactive/pom.xml
+      - name: Generate JaCoCo Badge
+        uses: cicirello/jacoco-badge-generator@v2
+        with:
+          generate-branches-badge: true
+          coverage-badge-filename: scraper.svg
       - name: docker build and tag
         run: docker build -t timmytime/predictor-scraper-reactive:test predictor-scraper-reactive/ 
       - name: docker push
