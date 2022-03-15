@@ -129,6 +129,8 @@ services:
     container_name: predictor-message-reactive
     ports:
       - "8100:8100"
+    environment:
+      - "SPRING_PROFILES_ACTIVE=test"
     depends_on:
       - mongo
     networks:
