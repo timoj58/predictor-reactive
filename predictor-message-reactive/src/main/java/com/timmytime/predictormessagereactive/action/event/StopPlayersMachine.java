@@ -7,7 +7,9 @@ import com.timmytime.predictormessagereactive.enumerator.Event;
 import com.timmytime.predictormessagereactive.facade.WebClientFacade;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class StopPlayersMachine extends StopMachine implements IEventAction {
     @Autowired
     public StopPlayersMachine(WebClientFacade webClientFacade, HostsConfiguration hostsConfiguration) {

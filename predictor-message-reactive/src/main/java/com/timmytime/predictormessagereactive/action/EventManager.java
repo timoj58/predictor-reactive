@@ -16,7 +16,7 @@ public class EventManager {
     @Autowired
     public EventManager(
             Collection<IEventAction> eventActions
-    ){
+    ) {
         eventActions.forEach(impl -> {
             var created = impl.create();
             eventManager.put(created.getLeft(), created.getRight());

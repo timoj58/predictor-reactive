@@ -10,9 +10,11 @@ import com.timmytime.predictormessagereactive.facade.WebClientFacade;
 import com.timmytime.predictormessagereactive.request.Message;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
+@Component
 @RequiredArgsConstructor
 public class TrainPlayers implements IEventAction {
 

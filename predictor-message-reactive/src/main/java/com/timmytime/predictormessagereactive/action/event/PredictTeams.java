@@ -12,11 +12,13 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class PredictTeams implements IEventAction {
 
     private final List<Event> TEAM_PREDICTION_EVENTS = Arrays.asList(Event.TEAMS_TRAINED, Event.EVENTS_LOADED);

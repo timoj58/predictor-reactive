@@ -8,10 +8,12 @@ import com.timmytime.predictormessagereactive.model.PredictorCycle;
 import com.timmytime.predictormessagereactive.repo.PredictorCycleRepo;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Component
 @RequiredArgsConstructor
 public class Finalise implements IEventAction {
 

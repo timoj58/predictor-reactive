@@ -11,11 +11,13 @@ import com.timmytime.predictormessagereactive.request.Message;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
 import java.time.Duration;
 import java.util.stream.Collectors;
 
+@Component
 public class TrainTeams implements IEventAction {
 
     private final Integer delay;
