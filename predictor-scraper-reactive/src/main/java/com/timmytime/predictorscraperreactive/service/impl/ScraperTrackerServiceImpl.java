@@ -114,12 +114,12 @@ public class ScraperTrackerServiceImpl implements ScraperTrackerService {
 
     @Scheduled(fixedRateString = "${scheduler.tracker}")
     private void tracker() {
+        var messageSentCount = messageService.getMessagesSentCount();
         CompletableFuture.runAsync(trackerMetrics::calculate)
                 .thenRun(() -> {
-                    var stats = matchTracker.calculate(messageService::getMessagesSentCount);
+                    var stats = matchTracker.calculate(messageSentCount);
                     var latchStatus = stats.getLeft();
-                    var queueTotal = stats.getMiddle();
-                    var messageSentCount = stats.getRight();
+                    var queueTotal = stats.getRight();
 
                     if (latchStatus && messageSentCount == previousMessagesSentCount.get() && queueTotal < 5) {
                         log.info("trip activated {}", tripSwitch.getTripSwitch().decrementAndGet());
@@ -136,7 +136,7 @@ public class ScraperTrackerServiceImpl implements ScraperTrackerService {
                     }
 
                     matchTracker.testFinished(messageService::send);
-                    previousMessagesSentCount.set(messageService.getMessagesSentCount());
+                    previousMessagesSentCount.set(messageSentCount);
                 });
 
     }

@@ -49,14 +49,13 @@ public class MatchTracker {
         }
     }
 
-    public Triple<Boolean, Integer, Integer> calculate(Supplier<Integer> messagesSent) {
-        var messageSentCount = messagesSent.get();
+    public Pair<Boolean, Integer> calculate(Integer messageSentCount) {
         var latchStatus = getLatchStatus();
         var queueTotal = getQueueTotal();
 
         log.info("messagesSent: {}, latchStatus: {}, queueTotal: {}", messageSentCount, latchStatus, queueTotal);
 
-        return Triple.of(latchStatus, queueTotal, messageSentCount);
+        return Pair.of(latchStatus, queueTotal);
     }
 
     public void testFinished(Consumer<Message> send) {
