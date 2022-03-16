@@ -14,7 +14,7 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class RequestTracker implements IFailedRequests {
+public class FailedRequestTracker implements IFailedRequests {
     @Getter
     private final Deque<Triple<CompetitionFixtureCodes, ScraperType, String>> failedResultsRequests = new ArrayDeque();
     @Getter

@@ -11,6 +11,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Flux;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -57,6 +59,38 @@ class MatchServiceImplTest {
         matchService.getMatchesByCountry("england", "01-01-2010", "01-01-2011").collectList()
                 .subscribe(matches -> assertThat(matches.size()).isEqualTo(1));
 
+    }
+
+    @Test
+    void getMatchOpponent(){
+        var id = UUID.randomUUID();
+        var date = LocalDateTime.now().format(
+                DateTimeFormatter.ofPattern("dd-MM-yyyy")
+        );
+
+        when(matchRepo.findByAwayTeam(id)).thenReturn(
+                Flux.just(Match.builder()
+                                .awayTeam(id)
+                        .date(LocalDateTime.now()).build())
+        );
+
+        when(matchRepo.findByHomeTeam(id)).thenReturn(
+                Flux.just(Match.builder()
+                        .homeTeam(id)
+                        .date(LocalDateTime.now()).build())
+        );
+
+        var res = matchService.getMatchByOpponent(
+                id, Boolean.TRUE, date
+        );
+
+        res.subscribe(m -> assertThat(m.getHomeTeam()).isEqualTo(id));
+
+        res = matchService.getMatchByOpponent(
+                id, Boolean.FALSE, date
+        );
+
+        res.subscribe(m -> assertThat(m.getAwayTeam()).isEqualTo(id));
     }
 
 }

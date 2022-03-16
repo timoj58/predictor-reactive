@@ -2,7 +2,7 @@ package com.timmytime.predictorscraperreactive.service.impl;
 
 import com.timmytime.predictorscraperreactive.service.ScraperTrackerService;
 import com.timmytime.predictorscraperreactive.util.MatchTracker;
-import com.timmytime.predictorscraperreactive.util.RequestTracker;
+import com.timmytime.predictorscraperreactive.util.FailedRequestTracker;
 import com.timmytime.predictorscraperreactive.util.TrackerMetrics;
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.verify;
 class ScraperTrackerServiceImplTest {
 
     @SpyBean
-    private RequestTracker requestTracker;
+    private FailedRequestTracker failedRequestTracker;
 
     @SpyBean
     private TrackerMetrics trackerMetrics;
@@ -42,7 +42,7 @@ class ScraperTrackerServiceImplTest {
         service.addFailedResultsRequest(Triple.of(null, null, null));
 
         verify(trackerMetrics, atLeastOnce()).addFailedResultsRequest(any());
-        verify(requestTracker, atLeastOnce()).addFailedResultsRequest(any());
+        verify(failedRequestTracker, atLeastOnce()).addFailedResultsRequest(any());
 
     }
 
@@ -52,7 +52,7 @@ class ScraperTrackerServiceImplTest {
         service.addFailedPlayersRequest(Triple.of(null, null, null));
 
         verify(trackerMetrics, atLeastOnce()).addFailedPlayersRequest(any());
-        verify(requestTracker, atLeastOnce()).addFailedPlayersRequest(any());
+        verify(failedRequestTracker, atLeastOnce()).addFailedPlayersRequest(any());
 
     }
 

@@ -7,7 +7,7 @@ import com.timmytime.predictorscraperreactive.enumerator.TrackerQueueAction;
 import com.timmytime.predictorscraperreactive.service.MessageService;
 import com.timmytime.predictorscraperreactive.service.ScraperTrackerService;
 import com.timmytime.predictorscraperreactive.util.MatchTracker;
-import com.timmytime.predictorscraperreactive.util.RequestTracker;
+import com.timmytime.predictorscraperreactive.util.FailedRequestTracker;
 import com.timmytime.predictorscraperreactive.util.TrackerMetrics;
 import com.timmytime.predictorscraperreactive.util.TripSwitch;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +25,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
+import static com.timmytime.predictorscraperreactive.util.TripSwitch.TRIP_THRESHOLD;
+
 
 @Slf4j
 @Service
@@ -34,7 +36,7 @@ public class ScraperTrackerServiceImpl implements ScraperTrackerService {
     private final TrackerMetrics trackerMetrics;
     private final TripSwitch tripSwitch;
     private final MatchTracker matchTracker;
-    private final RequestTracker requestTracker;
+    private final FailedRequestTracker failedRequestTracker;
 
     private final AtomicInteger previousMessagesSentCount = new AtomicInteger(0);
     private Consumer<Triple<CompetitionFixtureCodes, String, TrackerQueueAction>> matchConsumer;
@@ -45,13 +47,13 @@ public class ScraperTrackerServiceImpl implements ScraperTrackerService {
             TrackerMetrics trackerMetrics,
             TripSwitch tripSwitch,
             MatchTracker matchTracker,
-            RequestTracker requestTracker
+            FailedRequestTracker failedRequestTracker
     ) {
         this.messageService = messageService;
         this.trackerMetrics = trackerMetrics;
         this.tripSwitch = tripSwitch;
         this.matchTracker = matchTracker;
-        this.requestTracker = requestTracker;
+        this.failedRequestTracker = failedRequestTracker;
 
         Flux<Triple<CompetitionFixtureCodes, String, TrackerQueueAction>> trackerQueue = Flux.create(sink ->
                 ScraperTrackerServiceImpl.this.matchConsumer = sink::next, FluxSink.OverflowStrategy.BUFFER);
@@ -65,7 +67,7 @@ public class ScraperTrackerServiceImpl implements ScraperTrackerService {
     @Override
     public void addFailedResultsRequest(Triple<CompetitionFixtureCodes, ScraperType, String> request) {
         if (tripSwitch.getTripSwitch().get() >= 0) {
-            requestTracker.addFailedResultsRequest(request);
+            failedRequestTracker.addFailedResultsRequest(request);
             trackerMetrics.addFailedResultsRequest(request);
         }
     }
@@ -73,7 +75,7 @@ public class ScraperTrackerServiceImpl implements ScraperTrackerService {
     @Override
     public void addFailedPlayersRequest(Triple<CompetitionFixtureCodes, ScraperType, String> request) {
         if (tripSwitch.getTripSwitch().get() >= 0) {
-            requestTracker.addFailedPlayersRequest(request);
+            failedRequestTracker.addFailedPlayersRequest(request);
             trackerMetrics.addFailedPlayersRequest(request);
         }
     }
@@ -83,7 +85,7 @@ public class ScraperTrackerServiceImpl implements ScraperTrackerService {
         if (tripSwitch.getTripSwitch().get() < 0)
             return Collections.emptyList();
 
-        return requestTracker.getFailedRequests();
+        return failedRequestTracker.getFailedRequests();
     }
 
     @Override
@@ -121,18 +123,18 @@ public class ScraperTrackerServiceImpl implements ScraperTrackerService {
                     var latchStatus = stats.getLeft();
                     var queueTotal = stats.getRight();
 
-                    if (latchStatus && messageSentCount == previousMessagesSentCount.get() && queueTotal < 5) {
+                    if (latchStatus && messageSentCount == previousMessagesSentCount.get() && queueTotal < TRIP_THRESHOLD) {
                         log.info("trip activated {}", tripSwitch.getTripSwitch().decrementAndGet());
                         if (tripSwitch.getTripSwitch().get() < 0) {
                             tripSwitch.activate(
-                                    requestTracker.getFailedResultsRequests(),
-                                    requestTracker.getFailedPlayersRequests(),
+                                    failedRequestTracker.getFailedResultsRequests(),
+                                    failedRequestTracker.getFailedPlayersRequests(),
                                     matchTracker.getMatches()
                             );
                         }
-                    } else if (latchStatus && messageSentCount != previousMessagesSentCount.get() && tripSwitch.getTripSwitch().get() != TripSwitch.TRIP_THRESHOLD) {
+                    } else if (latchStatus && messageSentCount != previousMessagesSentCount.get() && tripSwitch.getTripSwitch().get() != TRIP_THRESHOLD) {
                         log.info("trip reset");
-                        tripSwitch.getTripSwitch().set(TripSwitch.TRIP_THRESHOLD);
+                        tripSwitch.getTripSwitch().set(TRIP_THRESHOLD);
                     }
 
                     matchTracker.testFinished(messageService::send);

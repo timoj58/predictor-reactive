@@ -10,7 +10,7 @@ import com.timmytime.predictorscraperreactive.repo.ScraperHistoryRepo;
 import com.timmytime.predictorscraperreactive.service.ScraperTrackerService;
 import com.timmytime.predictorscraperreactive.service.impl.*;
 import com.timmytime.predictorscraperreactive.util.MatchTracker;
-import com.timmytime.predictorscraperreactive.util.RequestTracker;
+import com.timmytime.predictorscraperreactive.util.FailedRequestTracker;
 import com.timmytime.predictorscraperreactive.util.TrackerMetrics;
 import com.timmytime.predictorscraperreactive.util.TripSwitch;
 import org.apache.commons.lang3.tuple.Pair;
@@ -34,7 +34,7 @@ public class ScraperServiceTest {
             = new MessageServiceImpl("data", "team", webClientFacade);
     private final ScraperTrackerService scraperTrackerService
             = new ScraperTrackerServiceImpl(messageService, trackerMetrics,
-            new TripSwitch(), new MatchTracker(), new RequestTracker());
+            new TripSwitch(), new MatchTracker(), new FailedRequestTracker());
     private final ScraperFactory scraperFactory = new ScraperFactory(
             "https://www.espn.co.uk/football/match/_/gameId/{game_id}",
             scraperTrackerService);

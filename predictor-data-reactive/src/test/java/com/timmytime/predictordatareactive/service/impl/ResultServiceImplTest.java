@@ -65,4 +65,12 @@ class ResultServiceImplTest {
 
     }
 
+    @Test
+    void initTest(){
+        when(resultRepo.deleteAll()).thenReturn(Mono.empty());
+        resultService.init();
+
+        verify(resultRepo, atLeastOnce()).deleteAll();
+    }
+
 }

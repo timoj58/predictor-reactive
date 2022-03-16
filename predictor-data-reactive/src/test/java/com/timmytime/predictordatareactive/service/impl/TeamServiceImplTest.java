@@ -1,5 +1,6 @@
 package com.timmytime.predictordatareactive.service.impl;
 
+import com.timmytime.predictordatareactive.enumerator.CountryCompetitions;
 import com.timmytime.predictordatareactive.model.Team;
 import com.timmytime.predictordatareactive.repo.TeamRepo;
 import org.junit.jupiter.api.BeforeAll;
@@ -12,8 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class TeamServiceImplTest {
 
@@ -60,6 +60,19 @@ class TeamServiceImplTest {
         assertTrue(result.getAway().get().getId().equals(away) &&
                 result.getHome().get().getId().equals(home));
 
+    }
+
+    @Test
+    void initTest(){
+        when(teamRepo.findAll()).thenReturn(
+                Flux.empty()
+        );
+        when(teamRepo.save(any())).thenReturn(Mono.just(
+                Team.builder().build()
+        ));
+
+        teamService.init();
+        verify(teamRepo, atLeast(50 * CountryCompetitions.values().length)).save(any());
     }
 
 
