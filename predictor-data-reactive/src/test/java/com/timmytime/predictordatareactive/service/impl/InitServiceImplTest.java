@@ -18,9 +18,11 @@ class InitServiceImplTest {
             = new InitServiceImpl(teamService, playerService, resultService);
 
     @Test
-    void initTest(){
+    void initTest() throws InterruptedException {
 
         initService.init();
+
+        Thread.sleep(100);
 
         verify(teamService, atLeastOnce()).init();
         verify(playerService,atLeastOnce()).init();
