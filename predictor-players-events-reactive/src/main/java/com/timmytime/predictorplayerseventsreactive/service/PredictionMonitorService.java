@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 import java.util.List;
@@ -91,12 +92,12 @@ public class PredictionMonitorService {
         if (predictionQueue.isEmpty() && started.get() == ApplicableFantasyLeagues.values().length) {
 
             fantasyOutcomeService.toFix().count()
+                    .switchIfEmpty(Mono.just(0L))
                     .subscribe(count -> {
                         log.info("we have {} waiting ({})", count, previousCount.get());
                         if (count != 0 && count == previousCount.get()) {
                             log.info("reprocessing");
                             fantasyOutcomeService.toFix()
-                                    // TODO review this......probably ok for now.
                                     //Need to confirm performance increases
                                     .doOnNext(fantasyOutcome ->
                                             predictionQueue.push(
