@@ -40,7 +40,7 @@ public class EventOutcomeServiceImpl implements EventOutcomeService {
     public Flux<EventOutcome> toValidate(String country) {
         return eventOutcomeRepo.findByCompetitionInAndSuccessNull(
                 CountryCompetitions.valueOf(country.toUpperCase()).getCompetitions()
-        );
+        ).filter(f -> f.getDate().isAfter(LocalDateTime.now().minusMonths(1)));
     }
 
     @Override

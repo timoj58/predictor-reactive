@@ -4,6 +4,7 @@ import com.timmytime.predictorplayerseventsreactive.enumerator.ApplicableFantasy
 import com.timmytime.predictorplayerseventsreactive.facade.WebClientFacade;
 import com.timmytime.predictorplayerseventsreactive.request.TensorflowPrediction;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 
@@ -34,6 +35,23 @@ class PredictionMonitorServiceTest {
         Thread.sleep(100L);
 
         verify(tensorflowPredictionService, atLeastOnce()).predict(any());
+
+    }
+
+    @Test
+    void stopTest() throws InterruptedException {
+
+        when(fantasyOutcomeService.toFix()).thenReturn(Flux.empty());
+
+        List.of(
+                ApplicableFantasyLeagues.values()
+        ).forEach(league -> predictionMonitorService.setStart());
+
+        predictionMonitorService.predictionMonitor();
+
+        Thread.sleep(100L);
+
+        verify(webClientFacade, atLeastOnce()).sendMessage(any(), any());
 
     }
 }

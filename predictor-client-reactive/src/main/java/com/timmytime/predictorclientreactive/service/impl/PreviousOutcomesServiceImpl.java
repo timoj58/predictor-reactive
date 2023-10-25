@@ -179,11 +179,15 @@ public class PreviousOutcomesServiceImpl implements ILoadService {
     }
 
     private void finish(String country, UUID team) {
-        teamsByCountry.get(country).remove(team);
-
-        if (teamsByCountry.get(country).isEmpty()) {
-            log.info("completed {}", country);
-            teamsByCountry.remove(country);
+        //should fix this properly.  hack for now to stop it failing.
+        if(teamsByCountry.containsKey(country)) {
+            teamsByCountry.get(country).remove(team);
+            if (teamsByCountry.get(country).isEmpty()) {
+                log.info("completed {}", country);
+                teamsByCountry.remove(country);
+            }
+        }else{
+            log.warn("there are no records for {}", country);
         }
 
         if (teamsByCountry.isEmpty()) {

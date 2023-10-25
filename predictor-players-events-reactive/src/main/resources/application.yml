@@ -16,7 +16,6 @@ clients:
   ml-predict-init: /predict/init/<type>
   ml-predict-destroy: /predict/clear-down/<type>
 
-
 connection:
   details:
     host: 172.22.0.16

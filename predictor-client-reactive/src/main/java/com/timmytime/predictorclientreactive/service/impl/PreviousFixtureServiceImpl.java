@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -172,18 +171,17 @@ public class PreviousFixtureServiceImpl implements ILoadService {
                                 .anyMatch(e -> e.getEventType().equals("PREDICT_RESULTS"))
                 ).forEach(result -> {
 
-                    result.getPreviousFixtureOutcomes().add(
-                            previousFixtureResponses
-                                    .stream()
-                                    .filter(f -> f.getHome().equals(result.getHome()))
-                                    .filter(f -> f.getAway().equals(result.getAway()))
-                                    .filter(f -> f.getEventDate().equals(result.getEventDate()))
-                                    .filter(f ->
-                                            f.getPreviousFixtureOutcomes()
-                                                    .stream()
-                                                    .anyMatch(e -> e.getEventType().equals("PREDICT_GOALS")))
-                                    .findFirst().get().getPreviousFixtureOutcomes().stream().findFirst().get()
-                    );
+                    var data = previousFixtureResponses
+                            .stream()
+                            .filter(f -> f.getHome().equals(result.getHome()))
+                            .filter(f -> f.getAway().equals(result.getAway()))
+                            .filter(f -> f.getEventDate().equals(result.getEventDate()))
+                            .filter(f ->
+                                    f.getPreviousFixtureOutcomes()
+                                            .stream()
+                                            .anyMatch(e -> e.getEventType().equals("PREDICT_GOALS"))).findFirst();
+
+                    data.flatMap(then -> then.getPreviousFixtureOutcomes().stream().findFirst()).ifPresent(add -> result.getPreviousFixtureOutcomes().add(add));
 
                     result.getPreviousFixtureOutcomes()
                             .forEach(type -> type.setTotalGoals(

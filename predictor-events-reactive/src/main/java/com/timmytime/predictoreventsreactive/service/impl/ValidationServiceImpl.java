@@ -52,12 +52,8 @@ public class ValidationServiceImpl implements ValidationService {
                                     String prediction = predictionResult(eventOutcome);
 
                                     switch (Predictions.valueOf(eventOutcome.getEventType())) {
-                                        case PREDICT_RESULTS:
-                                            eventOutcome.setSuccess(validateResult(prediction, match));
-                                            break;
-                                        case PREDICT_GOALS:
-                                            eventOutcome.setSuccess(validateGoals(prediction, match));
-                                            break;
+                                        case PREDICT_RESULTS -> eventOutcome.setSuccess(validateResult(prediction, match));
+                                        case PREDICT_GOALS -> eventOutcome.setSuccess(validateGoals(prediction, match));
                                     }
 
                                     eventOutcome.setPreviousEvent(Boolean.TRUE);

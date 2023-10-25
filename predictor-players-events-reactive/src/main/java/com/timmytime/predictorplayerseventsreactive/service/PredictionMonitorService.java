@@ -29,6 +29,8 @@ public class PredictionMonitorService {
 
     private final String messageHost;
 
+    private String test = "";
+
     private final WebClientFacade webClientFacade;
     private final FantasyOutcomeService fantasyOutcomeService;
     private final TensorflowPredictionService tensorflowPredictionService;
@@ -86,13 +88,13 @@ public class PredictionMonitorService {
     }
 
 
-    @Scheduled(fixedDelay = 120000L) //shorter interval is better
+    @Scheduled(fixedDelay = 12000) //shorter interval is better
     public void predictionMonitor() {
 
         if (predictionQueue.isEmpty() && started.get() == ApplicableFantasyLeagues.values().length) {
 
             fantasyOutcomeService.toFix().count()
-                    .switchIfEmpty(Mono.just(0L))
+               //     .switchIfEmpty(Mono.just(0L))
                     .subscribe(count -> {
                         log.info("we have {} waiting ({})", count, previousCount.get());
                         if (count != 0 && count == previousCount.get()) {
